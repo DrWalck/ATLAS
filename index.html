@@ -1,0 +1,151 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATLAS · Practice Labs</title>
+<meta name="description" content="ATLAS: research-informed practice labs for foundational engineering courses. Every problem gets new numbers, worked solutions, MATLAB practice and real-world sense-making.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#060a14; --grid:rgba(34,211,238,.05); --surface:rgba(13,20,38,.86);
+  --ink:#e9f1ff; --muted:#97a7c9; --line:#23345c; --good:#7cff6b;
+  --grad:linear-gradient(135deg,#22d3ee 0%,#8b5cf6 55%,#ff4fd8 100%);
+  --display:"Chakra Petch","Barlow Semi Condensed",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{background:#060a14}
+body{margin:0;background-color:var(--bg);
+  background-image:radial-gradient(900px 520px at 0% -10%,rgba(139,92,246,.24),transparent 62%),radial-gradient(800px 480px at 100% 0%,rgba(34,211,238,.16),transparent 60%),radial-gradient(700px 500px at 50% 110%,rgba(255,79,216,.10),transparent 60%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:auto,auto,auto,28px 28px,28px 28px;
+  color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:0 56px;min-height:100vh}
+::selection{background:rgba(34,211,238,.35)}
+.wrap{max-width:1080px;margin:0 auto}
+header{padding-block:56px 32px;margin-bottom:34px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px 32px;align-items:end;position:relative}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,#22d3ee,#8b5cf6,#ff4fd8,transparent);box-shadow:0 0 16px #8b5cf6}
+.logo{display:flex;align-items:center;gap:18px}
+.mark{width:72px;height:72px;flex:none;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,rgba(139,92,246,.45),rgba(6,10,20,.95) 75%);border:1px solid rgba(139,92,246,.6);box-shadow:0 0 30px -8px #8b5cf6,inset 0 0 14px rgba(34,211,238,.15)}
+.mark svg{width:46px;height:46px;overflow:visible}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(3rem,8vw,5rem);line-height:.9;margin:0;letter-spacing:.12em;background:linear-gradient(90deg,#fff 20%,#a78bfa 60%,#ff4fd8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font-family:var(--display);letter-spacing:.32em;text-transform:uppercase;font-size:.72rem;color:#5eeaff;margin:6px 0 0}
+header p.lead{margin:16px 0 0;color:var(--muted);max-width:62ch;font-size:1.08rem}
+.how{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.how li{display:flex;gap:9px;align-items:center;background:rgba(10,16,32,.85);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;font-size:.92rem}
+.how b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--grad);color:#050b18;font:700 .8rem var(--display)}
+.hud{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:250px}
+.hud .cell{background:rgba(10,16,32,.9);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.hud .k{font-family:var(--display);font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.14em}
+.hud .n{font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.hud .lvl{grid-column:1/-1;border-color:rgba(139,92,246,.55);box-shadow:0 0 22px -8px #8b5cf6}
+.hud .lvl .row{display:flex;align-items:center;gap:12px}
+.hud .lvl .n{color:#c4b5fd}
+.xpbar{flex:1;height:8px;border-radius:9px;background:#1a2648;overflow:hidden}
+.xpbar i{display:block;height:100%;background:var(--grad);box-shadow:0 0 10px #22d3ee}
+.hud .st .n{color:#ffb35c}.hud .cl .n{color:var(--good)}
+section h2{font-family:var(--display);font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.2em;color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:12px}
+section h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.course{--z:#22d3ee;position:relative;display:flex;flex-direction:column;gap:14px;background:linear-gradient(160deg,color-mix(in srgb,var(--z) 12%,rgba(13,20,38,.92)),rgba(9,14,28,.92) 55%);border:1px solid color-mix(in srgb,var(--z) 30%,var(--line));border-radius:16px;padding:22px;color:inherit;text-decoration:none;overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .2s;min-height:300px}
+.course::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--z),transparent)}
+a.course:hover{border-color:var(--z);box-shadow:0 0 0 1px var(--z),0 0 34px -8px var(--z)}
+@media (prefers-reduced-motion:no-preference){a.course:hover{transform:translateY(-3px)}}
+a.course:focus-visible{outline:2px solid var(--z);outline-offset:3px}
+.course.soon{opacity:.75}
+.course .top{display:flex;gap:14px;align-items:center}
+.icon{flex:none;width:60px;height:60px;border-radius:15px;display:grid;place-items:center;color:var(--z);background:radial-gradient(circle at 30% 25%,color-mix(in srgb,var(--z) 30%,transparent),rgba(6,10,20,.9) 75%);border:1px solid color-mix(in srgb,var(--z) 50%,transparent);box-shadow:0 0 20px -6px var(--z)}
+.icon svg{width:38px;height:38px;filter:drop-shadow(0 0 4px var(--z));overflow:visible}
+.course .eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:600;color:var(--z)}
+.course h3{font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1.05;margin:2px 0 0;color:#fff}
+.course p{margin:0;color:var(--muted);font-size:.95rem}
+.stats{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.stats li{font-family:var(--mono);font-size:.74rem;color:#c9d6f2;background:rgba(6,10,20,.7);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.go{margin-top:auto;align-self:flex-start;font-family:var(--display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.85rem;background:var(--z);color:#050b18;padding:10px 16px;border-radius:10px;box-shadow:0 0 18px -6px var(--z)}
+.soon .go{background:transparent;color:var(--muted);border:1px dashed var(--line);box-shadow:none}
+.feat{margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.feat div{background:rgba(8,14,30,.7);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.93rem;color:var(--muted)}
+.feat b{display:block;color:#fff;font-family:var(--display);letter-spacing:.04em;margin-bottom:3px}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:center}
+footer a{color:#5eeaff;text-decoration:none}footer a:hover{text-decoration:underline}
+.handle{font-family:var(--display);letter-spacing:.06em;color:#fff}
+.social{margin-left:8px}.social a{padding:2px 8px;border:1px solid var(--line);border-radius:999px;font-size:.85rem}
+@media (max-width:720px){header{grid-template-columns:1fr}.hud{min-width:0}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="logo">
+        <span class="mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#c4b5fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 6 41h36z"/><path d="M24 17v14M17 31h14" stroke="#22d3ee"/><circle cx="24" cy="31" r="3" fill="#ff4fd8" stroke="none"/></svg></span>
+        <div><h1>ATLAS</h1><p class="tag">Practice labs for foundational engineering</p></div>
+      </div>
+      <p class="lead">Pick a course. Every problem gets new numbers each time, so you can practice until it clicks: check your answer, follow the worked solution step by step, fill in the matching MATLAB script, and see what each number means in the real world.</p>
+      <ul class="how">
+        <li><b>1</b> Predict &amp; work it on paper</li>
+        <li><b>2</b> Check, get hints, earn XP</li>
+        <li><b>3</b> Explain it with the worked solution</li>
+        <li><b>4</b> Code it in MATLAB</li>
+      </ul>
+    </div>
+    <div class="hud" id="hud" aria-label="Your progress"></div>
+  </header>
+
+  <section>
+    <h2>Courses</h2>
+    <div class="grid" id="courses"></div>
+  </section>
+
+  <div class="feat">
+    <div><b>Endless practice</b>Numbers change every time, so the method matters more than the answer key.</div>
+    <div><b>Feedback that teaches</b>Three levels of hints, step-by-step solutions, and a live schematic that redraws with your numbers.</div>
+    <div><b>Engineering judgment</b>Every answer is compared with something real, so 60 m/s reads as "highway speed ×2", not just a number.</div>
+    <div><b>Open to everyone</b>No login, no cost. Progress and XP are saved in your own browser.</div>
+  </div>
+
+  <footer>
+    <span>ATLAS · created by Dr. Christine Walck · <span class="handle">@LearningwithDrWalck</span>
+      <span class="social"><a href="https://www.instagram.com/learningwithdrwalck" target="_blank" rel="noopener">Instagram</a> · <a href="https://youtube.com/@learningwithdrwalck" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.erbal.org/" target="_blank" rel="noopener">ERBAL lab</a></span></span>
+    <span>Instructors: the site is plain HTML — fork it on GitHub and add your own course.</span>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   COURSES — to add a course, upload its folder (with an index.html)
+   and add one entry below. href is the folder name.
+   ============================================================ */
+const COURSES = [
+  { href:"setup/", color:"#7cff6b", icon:"setup", group:"Start here", title:"Setup Lab",
+    blurb:"Particle or rigid body? Which coordinates? Where does the origin go, which way do the axes point, and which principle? Practice the decisions without solving.",
+    stats:["35 scenarios","reference frames","coordinate systems","particle vs rigid body"], live:true },
+  { href:"dynamics/", color:"#22d3ee", icon:"dyn", group:"Sophomore mechanics", title:"Engineering Dynamics",
+    blurb:"Particle and rigid-body kinematics and kinetics: Newton's laws, work–energy, impulse–momentum, rolling, impacts and more.",
+    stats:["12 topics","104 problems","MATLAB practice","schematics"], live:true, key:"dynamics" },
+  { href:"thermodynamics/", color:"#ff8a3d", icon:"thermo", group:"Energy systems", title:"Thermodynamics",
+    blurb:"Properties, the first and second laws, cycles and devices. Coming soon.", stats:["coming soon"], live:false },
+  { href:"biomechanics/", color:"#7cff6b", icon:"bio", group:"Applied mechanics", title:"Fundamentals of Biomechanics",
+    blurb:"Forces, moments and motion in the human body: joints, muscles, gait and impact. Coming soon.", stats:["coming soon"], live:false }
+];
+const ICON={
+  setup:'<path d="M8 40V8M8 40h32"/><path d="M8 40 30 14m0 0-6 1.5M30 14l-1.5 6"/><circle cx="8" cy="40" r="3" fill="currentColor"/><path d="M22 32a6 6 0 1 0 12 0a6 6 0 1 0-12 0" opacity=".6"/>',
+  dyn:'<path d="M4 40C18 40 22 12 44 10"/><circle cx="21" cy="28" r="3.2" fill="currentColor"/><path d="M21 28l9-11m0 0-4.4 1m4.4-1-.6 4.5"/>',
+  thermo:'<path d="M20 6v24a6 6 0 1 0 8 0V6a4 4 0 0 0-8 0z"/><circle cx="24" cy="34" r="3" fill="currentColor"/><path d="M24 30V16" stroke-width="3.5"/><path d="M32 12h6M32 18h4M32 24h6"/>',
+  bio:'<circle cx="24" cy="8" r="4"/><path d="M24 12v14M24 18l-9 6M24 18l9 8M24 26l-6 14M24 26l7 13"/>'
+};
+let G={xp:0,streak:0,best:0,solved:{}}; try{ Object.assign(G, JSON.parse(localStorage.getItem("dpl-game"))||{}); }catch(e){}
+const cleared=Object.values(G.solved||{}).reduce((n,a)=>n+a.length,0);
+document.getElementById("hud").innerHTML=`
+  <div class="cell lvl"><span class="k">Level</span><div class="row"><span class="n">${Math.floor(G.xp/100)+1}</span><span class="xpbar" title="${G.xp%100}/100 XP to next level"><i style="width:${G.xp%100}%"></i></span></div><span class="k">${G.xp} XP total</span></div>
+  <div class="cell st"><span class="k">Streak · best ${G.best}</span><span class="n">${G.streak}</span></div>
+  <div class="cell cl"><span class="k">Problems cleared</span><span class="n">${cleared}</span></div>`;
+document.getElementById("courses").innerHTML=COURSES.map(c=>`
+  <${c.live?`a href="${c.href}"`:"div"} class="course${c.live?"":" soon"}" style="--z:${c.color}">
+    <div class="top"><span class="icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ICON[c.icon]}</svg></span>
+      <div><span class="eyebrow">${c.group}</span><h3>${c.title}</h3></div></div>
+    <p>${c.blurb}</p>
+    <ul class="stats">${c.stats.map(s=>`<li>${s}</li>`).join("")}</ul>
+    <span class="go">${c.live?"Enter &rarr;":"Coming soon"}</span>
+  </${c.live?"a":"div"}>`).join("");
+</script>
+</body></html>
