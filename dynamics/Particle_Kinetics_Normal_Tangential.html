@@ -1016,6 +1016,12 @@ const SENSE=(()=>{
   function nearest(x,ladder){ let best=null, bd=Infinity; for(const [v,s] of ladder){ const d=Math.abs(Math.log(x/v)); if(d<bd){ bd=d; best=[v,s]; } } return best; }
   function ladderText(x,ladder){ if(!(x>0)) return ""; const [v,s]=nearest(x,ladder); return ratioText(x/v,s); }
   /* --- ladders (SI) --- */
+  const PRESS=[[0.001,"the pressure of a whisper ÷ 10"],[0.1,"a gentle breath on your hand ×100"],[1,"one kilopascal — a gentle breeze on a wall"],[3.4,"the suction of a drinking straw"],[10,"the pressure in your ears 1 m under water"],[101.3,"atmospheric pressure at sea level"],[220,"a car tire (32 psi)"],[400,"a bicycle road tire (60 psi)"],[700,"a pressure cooker × 3.5"],[1000,"a champagne bottle ÷ 0.6"],[2000,"a home water heater relief valve"],[5000,"a scuba tank ÷ 4"],[10000,"the bottom of the ocean's twilight zone (1 km)"],[20000,"a scuba tank"],[60000,"a modern power-plant boiler ÷ 3"],[100000,"the deepest ocean trench"],[300000,"a supercritical power-plant boiler"],[1e6,"a diesel injector"]];
+  const ENERGYK=[[0.001,"lifting an apple 1 m"],[0.02,"a hard-thrown baseball"],[0.1,"lifting a person one stair step"],[1,"a person running (about 1 kJ)"],[4.184,"one food Calorie"],[10,"a AA battery's stored energy"],[100,"a compact car at 30 mph"],[360,"boiling a cup of water from cold"],[3600,"one kilowatt-hour"],[36000,"a phone battery × 1000"],[130000,"a gallon of gasoline"],[100000,"a day of an average US home's electricity"]];
+  const POWER=[[0.001,"a night-light"],[0.005,"an LED indicator"],[0.06,"a laptop"],[0.1,"a bright LED bulb"],[0.75,"a strong person pedaling (1 hp)"],[1.5,"a hair dryer"],[3,"an electric kettle"],[10,"a home's peak electric load"],[100,"a family car cruising"],[300,"a sports car at full throttle"],[1000,"a wind turbine ÷ 3"],[3000,"a diesel locomotive"],[100000,"a jumbo-jet engine's shaft power"],[1000000,"a large power plant"]];
+  const TEMPK=[[4,"liquid helium"],[77,"liquid nitrogen"],[195,"dry ice"],[233,"a bitter −40° day"],[273,"ice melting"],[293,"room temperature"],[310,"body temperature"],[323,"a hot bath (50 °C)"],[373,"boiling water"],[450,"a home oven baking"],[600,"a wood fire's embers"],[800,"molten aluminum"],[1100,"a candle flame"],[1500,"a gas-turbine inlet"],[1800,"molten steel"],[2500,"a light-bulb filament"],[5800,"the Sun's surface"]];
+  const VOL=[[0.000005,"a teaspoon"],[0.00025,"a coffee cup"],[0.001,"a liter bottle"],[0.0038,"a gallon jug"],[0.02,"a scuba tank"],[0.05,"a car's gas tank"],[0.2,"a bathtub"],[1,"a cubic meter — a big fridge"],[3,"a hot tub"],[50,"a backyard swimming pool"],[2500,"an Olympic pool"]];
+  const MFLOW=[[0.001,"a dripping faucet ÷ 10"],[0.015,"a kitchen faucet ÷ 6"],[0.1,"a kitchen faucet"],[0.3,"a garden hose"],[1,"a fire hose ÷ 10"],[10,"a fire hose"],[100,"a jet engine's airflow ÷ 5"],[500,"a jet engine's airflow"],[5000,"a large power plant's steam ÷ 0.3"]];
   const SPEED=[[0.0014,"a garden snail"],[0.04,"a tortoise"],[0.3,"a slow stroll"],[1.4,"walking pace"],[3,"a jog"],[5.5,"a fast run"],[10.4,"an Olympic sprinter"],[13.4,"a car at 30 mph"],[20,"a car at 45 mph"],[29,"highway speed (65 mph)"],[45,"a car at 100 mph"],[62,"a cheetah / airliner takeoff"],[95,"an F1 car on a straight"],[130,"a fastball ×3 / a hurricane's strongest gusts ×2"],[250,"an airliner at cruise"],[343,"the speed of sound"],[600,"a rifle bullet"],[1000,"a high-speed rifle bullet"],[2000,"Mach 6"],[7660,"the ISS in orbit"],[11200,"Earth escape speed"],[30000,"Earth around the Sun"],[3e8,"the speed of light"]];
   const ACC=[[0.01,"a train creeping out of a station — barely noticeable"],[0.1,"an elevator starting up"],[0.5,"a gentle city bus pulling away"],[1.5,"a normal car accelerating"],[3,"a sports car launch"],[5,"hard braking in a car"],[9.81,"free fall (1 g)"],[20,"a roller-coaster launch"],[40,"a fighter-jet turn (4 g)"],[60,"the g-limit for a jet pilot"],[100,"a bad car crash with an airbag"],[300,"a hard hit in football"],[1000,"a pistol bullet in the barrel ÷ 100"],[3000,"a golf ball at impact ÷ 100"]];
   const ANGV=[[0.00007292,"the Earth's rotation"],[0.00175,"a clock's minute hand"],[0.105,"a clock's second hand"],[0.5,"a slow ceiling fan ÷ 40"],[1.6,"a wind turbine (15 rpm)"],[3.5,"a record player (33 rpm)"],[8,"a washing machine agitator"],[21,"a ceiling fan on high (200 rpm)"],[84,"a car engine at idle (800 rpm)"],[210,"a car engine at 2000 rpm"],[315,"a car engine cruising (3000 rpm)"],[630,"an engine near redline (6000 rpm)"],[2100,"a kitchen blender (20 000 rpm)"],[5200,"a Dremel tool on high"],[31000,"a dental drill"]];
@@ -1027,7 +1033,13 @@ const SENSE=(()=>{
   const IMPULSE=[[0.15,"catching a tossed tennis ball"],[1,"a thrown apple hitting your hand"],[6,"catching a fastball"],[30,"stopping a bowling ball rolled at you"],[100,"a walking person's momentum"],[1000,"a sprinter's momentum"],[10000,"a small car at 15 mph"],[40000,"a compact car at highway speed"],[500000,"a loaded semi-truck at highway speed"]];
   const TORQUE=[[0.5,"turning a door knob"],[2,"tightening a jar lid"],[10,"a strong hand twist on a screwdriver"],[30,"pedaling a bike hard"],[100,"tightening a car lug nut"],[250,"a sedan's engine at full torque"],[600,"a diesel pickup's engine torque"],[3000,"a locomotive's wheel torque ÷ 10"]];
   const INERTIA=[[0.0002,"a spinning coin about its axis × 10"],[0.005,"a baseball about its center"],[0.03,"a bowling ball about its center"],[0.15,"a bicycle wheel"],[1,"a car wheel and tire"],[3,"a person spinning with arms out"],[10,"a large office door about its hinges"],[100,"a small merry-go-round"],[1000,"a car about its center (yaw)"]];
+
   const CONV={ // to SI
+    "bar":100,"kPa":1,"psia":6.895,"psig":6.895,"MPa":1000,"Pa":0.001,"psi":6.895,"lbf/in²":6.895,"atm":101.325,"mmHg":0.1333,"inHg":3.386,
+    "kW":1,"W":0.001,"MW":1000,"hp":0.7457,"Btu/h":0.000293,"Btu/s":1.0551,
+    "K":1,"°C":1,"°F":1,"°R":1,
+    "m³":1,"L":0.001,"ft³":0.02832,"gal":0.003785,"in³":1.639e-5,
+    "kg/s":1,"lb/s":0.4536,"kg/h":1/3600,"lb/h":0.000126,"lb/min":0.00756,"kg/min":1/60,
     "m/s":1,"ft/s":0.3048,"mm/s":0.001,"in/s":0.0254,"km/h":1/3.6,"mph":0.44704,"km/s":1000,"mi/s":1609.34,
     "m/s²":1,"ft/s²":0.3048,"mm/s²":0.001,"in/s²":0.0254,"g":9.81,
     "rad/s":1,"rpm":2*Math.PI/60,"rev/s":2*Math.PI,"deg/s":Math.PI/180,
@@ -1035,15 +1047,16 @@ const SENSE=(()=>{
     "kg":1,"slug":14.5939,"lbm":0.453592,"g_mass":0.001,
     "m":1,"ft":0.3048,"in":0.0254,"mm":0.001,"cm":0.01,"km":1000,"mi":1609.34,
     "s":1,"min":60,"h":3600,"hr":3600,"days":86400,"day":86400,
-    "J":1,"kJ":1000,"MJ":1e6,"ft·lb":1.35582,
+    "J":1,"kJ":1000,"MJ":1e6,"ft·lb":1.35582,"Btu":1055.1,"kWh":3.6e6,"ft·lbf":1.35582,
     "N·s":1,"lb·s":4.44822,"kg·m/s":1,
     "N·m":1,"lb·ft":1.35582,"ft·lb_t":1.35582,
     "kg·m²":1,"slug·ft²":1.35582
   };
   const KIND={
+    press:["bar","kPa","psia","psig","MPa","Pa","psi","lbf/in²","atm","mmHg","inHg"], power:["kW","W","MW","hp","Btu/h","Btu/s"], temp:["K","°C","°F","°R"], vol:["m³","L","ft³","gal","in³"], mflow:["kg/s","lb/s","kg/h","lb/h","lb/min","kg/min"],
     speed:["m/s","ft/s","mm/s","in/s","km/h","mph","km/s","mi/s"], acc:["m/s²","ft/s²","mm/s²","in/s²","g"], angv:["rad/s","rpm","rev/s","deg/s"],
     force:["N","lbf","lb","kN","MN"], mass:["kg","slug","lbm"], len:["m","ft","in","mm","cm","km","mi"], time:["s","min","h","hr","days","day"],
-    energy:["J","kJ","MJ","ft·lb"], impulse:["N·s","lb·s","kg·m/s"], torque:["N·m","lb·ft"], inertia:["kg·m²","slug·ft²"], anga:["rad/s²"], angle:["°","deg","rad"]
+    energy:["J","kJ","MJ","ft·lb","Btu","kWh","ft·lbf"], impulse:["N·s","lb·s","kg·m/s"], torque:["N·m","lb·ft"], inertia:["kg·m²","slug·ft²"], anga:["rad/s²"], angle:["°","deg","rad"]
   };
   function kindOf(unit){ for(const k in KIND) if(KIND[k].includes(unit)) return k; return null; }
   function sense(val,unit,label=""){
@@ -1063,6 +1076,11 @@ const SENSE=(()=>{
       case "impulse": return ladderText(si,IMPULSE);
       case "torque": return ladderText(si,TORQUE);
       case "inertia": return ladderText(si,INERTIA);
+      case "press": { const psi=si/6.895; return (unit!=="psi"&&unit!=="lbf/in²"?Number(psi.toPrecision(3))+" psi · ":"")+(si>=95&&si<=108?"about 1 atm · ":"")+ladderText(si,PRESS); }
+      case "power": { const hp=si/0.7457; return (hp>=0.5?Number(hp.toPrecision(3))+" hp · ":"")+ladderText(si,POWER); }
+      case "temp": { const K=unit==="K"?x:unit==="°C"?val+273.15:unit==="°F"?(val+459.67)*5/9:val*5/9; if(K<=0) return "absolute zero"; const [v,s]=nearest(K,TEMPK); const d=K-v; return (Math.abs(d)<15?"about ":(d>0?Number(d.toPrecision(2))+" K hotter than ":Number((-d).toPrecision(2))+" K colder than "))+s; }
+      case "vol": return ladderText(si,VOL);
+      case "mflow": return (unit!=="kg/s"?Number(si.toPrecision(3))+" kg/s · ":"")+ladderText(si,MFLOW);
       case "angle": { const deg=unit==="rad"?x*180/Math.PI:x; const rev=deg/360; if(deg<1) return "a hair under 1° — barely a tilt"; if(deg<10) return "a small tilt (a clock's minute hand moves 6° per minute)"; if(deg<80) return Number((deg/90).toPrecision(2))+" of a right angle"; if(deg<100) return "about a right angle (quarter turn)"; if(deg<170) return "between a quarter and a half turn ("+Number(rev.toPrecision(2))+" rev)"; if(deg<190) return "about a half turn"; if(deg<350) return Number(rev.toPrecision(2))+" of a full turn"; return Number(rev.toPrecision(2))+" full revolution"+(rev>=1.5?"s":""); }
     }
     return "";

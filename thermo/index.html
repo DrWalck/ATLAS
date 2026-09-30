@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dynamics Practice · ATLAS</title>
+<title>Thermodynamics Practice · ATLAS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -31,6 +31,7 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,6vw,4rem);l
 header p{margin:12px 0 0;color:var(--muted);max-width:60ch;font-size:1.05rem}
 .how{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
 .how li{display:flex;gap:9px;align-items:center;background:rgba(10,16,32,.85);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;font-size:.93rem}
+.how a.tblink{color:#ffe27a;text-decoration:none;display:flex;gap:9px;align-items:center}.how a.tblink b{background:#ffd23f}
 .how b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--grad);color:#050b18;font:700 .8rem var(--display)}
 .hud{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:250px}
 .hud .cell{background:rgba(10,16,32,.9);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
@@ -67,19 +68,19 @@ a.topic:focus-visible{outline:2px solid var(--z);outline-offset:3px}
 sub{font-size:.72em;line-height:0;vertical-align:-.25em}
 .eyebrow sub{text-transform:none}
 @media (max-width:720px){header{grid-template-columns:1fr}.hud{min-width:0}}
-</style>
-</head><body>
+</style></head><body>
 
 <div class="wrap">
   <header>
     <div>
-      <a class="kicker" href="../">&larr; ATLAS · Engineering Dynamics</a>
-      <h1>Dynamics Practice</h1>
-      <p>Pick a topic. Every problem gets new numbers each time, so you can play it as many times as you like. Earn XP for correct answers and keep your streak alive.</p>
+      <a class="kicker" href="../">&larr; ATLAS · Thermodynamics</a>
+      <h1>Thermo Practice</h1>
+      <p>Pick a chapter. Every problem gets new numbers each time and is solved the ES 305 way: Known, Find, Schematic, Assumptions, Properties, Analysis. The property tables are built in.</p>
       <ul class="how">
         <li><b>1</b> Work it on paper</li>
         <li><b>2</b> Check your answer</li>
         <li><b>3</b> Open the worked solution</li>
+        <li><a class="tblink" href="tables.html"><b>T</b> Property tables tool &rarr;</a></li>
       </ul>
     </div>
     <div class="hud" id="hud" aria-label="Your progress"></div>
@@ -109,203 +110,36 @@ function fixSubs(root){
    ============================================================ */
 const TOPICS = [
   {
-    file: "setup/",
+    file: "concepts/",
     group: "Start here",
-    title: "Setup Lab: Frames, Coordinates & Particle vs Rigid Body",
+    title: "Concepts Lab: Definitions, Processes & Devices",
     setup: true,
     problems: [
-      ["Particle vs rigid body", "8 scenarios"],
-      ["Particle kinematics", "10 scenarios"],
-      ["Particle kinetics", "11 scenarios"],
-      ["Rigid-body kinematics", "6 scenarios"]
+      ["Definitions quiz", "system, property, state…"],
+      ["Effects from processes", "fill-in table"],
+      ["Match the device", "pictures → names"]
     ]
   },
   {
-    file: "Particle_Kinematics_Cartesian.html",
-    group: "Particle kinematics",
-    title: "Cartesian Coordinates",
+    file: "Getting_Started_Pressure_Units.html",
+    group: "Chapter 1",
+    title: "Getting Started: Systems, Properties & Pressure",
     problems: [
-      ["Private Plane", "a = const"],
-      ["Scotch Yoke", "a(t)"],
-      ["Parachute", "a(v)"],
-      ["Gas Gun", "a(s)"],
-      ["Survey Plane Drop", "2-D projectile"],
-      ["Subway Station", "a = const, km/h"],
-      ["Tram v–t Graph", "v–t graph"],
-      ["Motorcycle Ramp Jump", "projectile"],
-      ["Field Goal", "y at x_c"],
-      ["Table & Movable Pulley", "dependent motion"]
+      ["Piston, Resistor & Gage Pressure", "p_abs vs p_gage"],
+      ["Receiver Tank & Bourdon Gage", "gage vs vacuum reading"],
+      ["Anchored Spherical Buoy", "buoyancy, cable tension, cable size"]
     ]
   },
   {
-    file: "Particle_Kinematics_Normal_Tangential.html",
-    group: "Particle kinematics",
-    title: "Normal & Tangential Coordinates",
+    file: "Energy_and_the_First_Law.html",
+    group: "Chapter 2",
+    title: "Energy & the First Law (Closed Systems)",
     problems: [
-      ["Robot Arm", "a_t const"],
-      ["Crank AB", "v = rω"],
-      ["Circle Track", "find t, s"],
-      ["Race Track", "ρ → ∞ vs. ρ"],
-      ["Motorcycle Track", "a_t(t)"],
-      ["Lab Centrifuge", "a_n = rω²"]
-    ]
-  },
-  {
-    file: "Particle_Kinematics_Polar_Relative_Motion.html",
-    group: "Particle kinematics",
-    title: "Polar Coordinates & Relative Motion",
-    problems: [
-      ["Simple Collar", "r(t), θ(t)"],
-      ["Sliding Collar Arc", "r = b cos θ"],
-      ["Cam & Roller Follower", "polar → x–y"],
-      ["Bar with Spring", "a_r(r)"],
-      ["Survey Boat Spiral", "r = bθ"],
-      ["Intersection", "relative"],
-      ["Trains", "relative, curved"],
-      ["Carrier & Jet", "relative velocity"],
-      ["Fire-Truck Ladder", "ṙ, θ̇ const"]
-    ]
-  },
-  {
-    file: "Particle_Kinetics_Cartesian.html",
-    group: "Particle kinetics",
-    title: "Newton, Energy & Momentum",
-    problems: [
-      ["Model Rocket", "ΣF = ma"],
-      ["Sliding Box with Friction", "ΣF = ma"],
-      ["Space Shuttle Payload", "ΣF = ma"],
-      ["Comparison: Newton vs. Impulse", "both"],
-      ["Two Blocks & Movable Pulley", "ΣF = ma"],
-      ["Block on a Sliding Wedge", "ΣF = ma"],
-      ["Traction-Limited Car", "ΣF = ma"],
-      ["Satellite Thruster Burn", "ΣF = ma"],
-      ["Collar & Spring: Max Speed", "work–energy"],
-      ["Collar & Spring: 2-D", "work–energy"],
-      ["Satellite Orbit Transfer", "work–energy"],
-      ["Simple Impulse & Momentum", "impulse"],
-      ["Airplane Takeoff Thrust", "impulse"],
-      ["Cathode-Ray Tube", "impulse"],
-      ["Fire Truck Water Jet", "momentum flux"],
-      ["Train Car Collision", "conservation"],
-      ["Train Collision on a Slope", "conservation"]
-    ]
-  },
-  {
-    file: "Particle_Kinetics_Normal_Tangential.html",
-    group: "Particle kinetics",
-    title: "Normal & Tangential Coordinates",
-    problems: [
-      ["Vertical Pole", "ΣF_n, ΣF_b"],
-      ["Boat in a Turn", "constant speed"],
-      ["Banked Off-Ramp", "max speed, μ_s"],
-      ["Pendulum Bob Tension", "ΣF_n, ΣF_t"],
-      ["Banked Highway Curve", "rated speed"],
-      ["Released Ball", "W–E + ΣF_n"],
-      ["Stunt Driver Loop", "W–E + ΣF_n"],
-      ["Sun-Powered Car", "a_t, then a_n"],
-      ["Roller Coaster Brakes", "tangential impulse"]
-    ]
-  },
-  {
-    file: "Particle_Kinetics_Polar.html",
-    group: "Particle kinetics",
-    title: "Polar Coordinates",
-    problems: [
-      ["Smooth Bar in a Horizontal Plane", "Newton"],
-      ["Collar Released on a Rotating Arm", "Newton"],
-      ["Spatial Disorientation Trainer", "Newton"],
-      ["Moon's Orbit", "Newton"],
-      ["Satellite in Low Orbit", "Newton"],
-      ["Constant Transverse Push", "work–energy"],
-      ["Central Force", "work–energy"],
-      ["Frictionless Collar & Spring", "work–energy"],
-      ["Escape Velocity", "work–energy"],
-      ["Force Acts for a Short Time", "impulse"],
-      ["Radial Force Impulse", "impulse"],
-      ["Tangential Force on a Collar", "impulse"]
-    ]
-  },
-  {
-    file: "Rigid_Body_Kinematics.html",
-    group: "Rigid-body kinematics",
-    title: "Rigid Body Kinematics",
-    problems: [
-      ["Gear & Hook", "fixed axis"],
-      ["Sliding Bar", "velocity, IC"],
-      ["Linkage Driving a Rack", "velocity"],
-      ["Four-Bar Linkage", "acceleration"],
-      ["Flywheel Linkage", "acceleration"],
-      ["Linear Acceleration of a Piston", "acceleration"],
-      ["Disk Rolling on a Curved Surface", "acceleration"],
-      ["Slider-Crank with Law of Sines", "acceleration"],
-      ["Rolling Wheel: Top and Contact Points", "acceleration"],
-      ["Compound Gear Train", "fixed axis"]
-    ]
-  },
-  {
-    file: "Sliding_Contacts_Moving_Frames.html",
-    group: "Rigid-body kinematics",
-    title: "Sliding Contacts & Moving Frames",
-    problems: [
-      ["Collar on a Rotating Arm", "Coriolis"],
-      ["Pin in a Rotating Slot", "sliding contact"],
-      ["Walking on a Turntable", "moving frame"]
-    ]
-  },
-  {
-    file: "Center_of_Mass_Moment_of_Inertia.html",
-    group: "Mass properties",
-    title: "Center of Mass & Moments of Inertia",
-    problems: [
-      ["L-Shaped Bar", "center of mass"],
-      ["Plate with a Hole", "center of mass"],
-      ["Rod-and-Sphere Pendulum", "parallel axis"],
-      ["Disk with a Bolted Block", "which I?"],
-      ["Disk Pivoted at Its Rim", "which I?"]
-    ]
-  },
-  {
-    file: "Rigid_Body_Kinetics.html",
-    group: "Rigid-body kinetics",
-    title: "Rigid Body Kinetics",
-    problems: [
-      ["Robotic Arm (Fixed Base)", "ΣM = Iα"],
-      ["Robotic Arm (Moving Base)", "ΣM = Iα"],
-      ["Bar & Collar in a Horizontal Plane", "ΣM = Iα"],
-      ["Two-Link Slender Bars", "ΣM = Iα"],
-      ["Linkage with an Added Axial Force", "ΣM = Iα"],
-      ["Two Bars with a Vertical Spring", "work–energy"],
-      ["Unknown Spring Force", "work–energy"],
-      ["Force of a Club on a Ball", "impulse"],
-      ["Three Disks in Contact", "impulse"],
-      ["Gravity Research Satellites", "conservation"],
-      ["Satellite Side Thruster", "impulse"],
-      ["Pulley, Hanging Mass & Spring", "ΣM = Iα"]
-    ]
-  },
-  {
-    file: "Rolling_Bodies.html",
-    group: "Rigid-body kinetics",
-    title: "Rolling Bodies",
-    problems: [
-      ["Rolling Down an Incline", "Newton"],
-      ["Rolling Race", "work–energy"],
-      ["Spool Pulled by a String", "ΣM about C"],
-      ["Bowling Ball: Slip to Roll", "kinetic friction"]
-    ]
-  },
-  {
-    file: "Impacts.html",
-    group: "Particle & rigid-body",
-    title: "Impacts",
-    problems: [
-      ["Direct Central Impact", "e"],
-      ["Bouncing Ball", "e"],
-      ["Oblique Impact of Two Pucks", "n–t"],
-      ["Ball Hits a Wall", "n–t"],
-      ["Ball Strikes a Pinned Bar", "rigid body"],
-      ["Bullet into a Hanging Bar", "rigid body"],
-      ["Ball Strikes a Free Rod", "rigid body"]
+      ["Three Processes in Series", "pV = const, V = const, p = const"],
+      ["Conduction & Convection Rates", "Fourier's law, Newton's law of cooling"],
+      ["Closed-System Energy Table", "ΔE = Q − W = E₂ − E₁"],
+      ["Three-Process Cycle: Heat, Work & Energy", "Q for each process, W_cycle sign"],
+      ["Refrigeration Cycle from its COP", "β = Q_in / W_cycle"]
     ]
   }
 ];
@@ -313,21 +147,18 @@ const TOPICS = [
 
 /* colour + icon for each topic card (keyed by file name) */
 const LOOK = {
-  "setup/":                                       ["#7cff6b","setup"],
-  "Particle_Kinematics_Cartesian.html":           ["#22d3ee","cart"],
-  "Particle_Kinematics_Normal_Tangential.html":   ["#22d3ee","nt"],
-  "Particle_Kinematics_Polar_Relative_Motion.html":["#22d3ee","polar"],
-  "Particle_Kinetics_Cartesian.html":             ["#ff8a3d","force"],
-  "Particle_Kinetics_Normal_Tangential.html":     ["#ff8a3d","loop"],
-  "Particle_Kinetics_Polar.html":                 ["#ff8a3d","orbit"],
-  "Rigid_Body_Kinematics.html":                   ["#a78bfa","gear"],
-  "Sliding_Contacts_Moving_Frames.html":          ["#a78bfa","arm"],
-  "Center_of_Mass_Moment_of_Inertia.html":        ["#7cff6b","target"],
-  "Rigid_Body_Kinetics.html":                     ["#ff4fd8","bar"],
-  "Rolling_Bodies.html":                          ["#ff4fd8","wheel"],
-  "Impacts.html":                                 ["#ffd23f","impact"]
+  "concepts/":                              ["#7cff6b","setup"],
+  "tables.html":                            ["#ffd23f","thermo"],
+  "Getting_Started_Pressure_Units.html":    ["#ff8a3d","force"],
+  "Energy_and_the_First_Law.html":          ["#ff8a3d","thermo"],
+  "Properties_of_Pure_Substances.html":     ["#ffd23f","thermo"],
+  "Control_Volume_Energy_Analysis.html":    ["#22d3ee","thermo"],
+  "Second_Law.html":                        ["#a78bfa","thermo"],
+  "Entropy.html":                           ["#a78bfa","thermo"],
+  "Power_and_Refrigeration_Cycles.html":    ["#ff4fd8","orbit"]
 };
 const ICON = {
+  thermo:'<path d="M20 6v24a6 6 0 1 0 8 0V6a4 4 0 0 0-8 0z"/><circle cx="24" cy="34" r="3" fill="currentColor"/><path d="M24 30V16" stroke-width="3.5"/><path d="M32 12h6M32 18h4M32 24h6"/>',
   setup: '<path d="M8 40V8M8 40h32"/><path d="M8 40 30 14m0 0-6 1.5M30 14l-1.5 6"/><circle cx="8" cy="40" r="3" fill="currentColor"/><path d="M22 32a6 6 0 1 0 12 0a6 6 0 1 0-12 0" opacity=".6"/>',
   cart:  '<path d="M6 42V6M6 42h36" opacity=".55"/><path d="M6 40C14 8 28 8 40 36"/><circle cx="14" cy="21" r="3.2" fill="currentColor"/><path d="M14 21l8-7m0 0-4 .3m4-.3-.6 4"/>',
   nt:    '<path d="M4 40C18 40 22 12 44 10"/><circle cx="21" cy="28" r="3.2" fill="currentColor"/><path d="M21 28l9-11m0 0-4.4 1m4.4-1-.6 4.5M21 28l-9-6m0 0 2.2 3.8M12 22l4.3-.6"/>',
@@ -354,11 +185,11 @@ document.getElementById("hud").innerHTML=`
 
 document.getElementById("topics").innerHTML = TOPICS.map(t => {
   const [z,ic]=LOOK[t.file]||["#22d3ee","cart"];
-  let done=(G.solved&&G.solved[t.file])||[], n=Math.min(done.length,t.problems.length), tot=t.problems.length; if(t.setup){ let c=0; try{ c=((JSON.parse(localStorage.getItem('dpl-setup'))||{}).cleared||[]).length; }catch(e){} n=Math.min(c,35); tot=35; } const pct=Math.round(100*n/tot);
+  let done=(G.solved&&G.solved[t.file])||[], n=Math.min(done.length,t.problems.length), tot=t.problems.length; if(t.setup){ let c=0; try{ c=((JSON.parse(localStorage.getItem('dpl-concepts'))||{}).cleared||[]).length; }catch(e){} n=Math.min(c,3); tot=3; } const pct=Math.round(100*n/tot);
   return `
   <a class="topic" href="${t.file}" style="--z:${z}">
     <div class="top"><span class="icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ICON[ic]}</svg></span>
-      <div><span class="eyebrow">${t.group}${t.setup?" · 35 scenarios":""}</span><h3>${t.title}</h3></div></div>
+      <div><span class="eyebrow">${t.group}${t.setup?" · 3 activities":""}</span><h3>${t.title}</h3></div></div>
     <ul>${t.problems.map(([nm,tag]) => `<li${t.setup?"":""}><span>${nm}</span><span>${tag}</span></li>`).join("")}</ul>
     <div class="prog"><span class="bar"><i style="width:${pct}%"></i></span><span>${n}/${tot} cleared</span></div>
     <span class="go">${n?"Continue":"Start"} &rarr;</span>
