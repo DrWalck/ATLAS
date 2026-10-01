@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Energy & the First Law (Closed Systems) · ATLAS Thermodynamics</title>
+<title>Control Volumes: Open Systems · ATLAS Thermodynamics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -301,7 +301,7 @@ ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,
 /* keep symbols like ma, Iα, a_t in their real case */
 .eyebrow,.topic h2{text-transform:none;letter-spacing:.06em;font-size:.86rem}
 .final .ans .k,.cgrid h4{text-transform:none;letter-spacing:.05em}
-:root:root:root{--zone:#ff8a3d}
+:root:root:root{--zone:#22d3ee}
 /* ---------- hints ---------- */
 .hints{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .hintcard{border:1px solid rgba(255,210,63,.35);background:rgba(255,210,63,.06);border-radius:10px;padding:10px 14px;font-size:.95rem}
@@ -458,17 +458,18 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 </head><body>
 <div class="wrap">
   <header class="top">
-    <div><a class="back" href="./">&larr; All topics</a><h1>Energy & the First Law (Closed Systems)</h1></div>
+    <div><a class="back" href="./">&larr; All topics</a><h1>Control Volumes: Open Systems</h1></div>
     <p>Every problem gets fresh numbers each time you press <b>New numbers</b>. Set it up the ES 305 way — Known, Find, Schematic, Assumptions, Properties — then check your answers and open the Analysis.</p>
   </header>
   <details class="concepts" id="concepts">
-    <summary>Key equations: work, heat and the first law for closed systems</summary>
+    <summary>Key equations: mass and energy rate balances for control volumes</summary>
     <div class="cgrid">
-  <div><h4>Boundary work</h4><div class="ceq" data-tex="W_{12}=\\int_{V_1}^{V_2}p\\,dV"></div><p>Area under the process path on a p–V diagram. Positive when the system expands (work <b>out</b>).</p></div>
-  <div><h4>Polytropic process pVⁿ = const</h4><div class="ceq" data-tex="W=\\frac{p_2V_2-p_1V_1}{1-n}\\ (n\\ne1),\\qquad W=p_1V_1\\ln\\frac{V_2}{V_1}\\ (n=1)"></div><p>n = 0 isobaric, n = 1 isothermal (ideal gas), n → ∞ isochoric (W = 0).</p></div>
-  <div><h4>First law, closed system</h4><div class="ceq" data-tex="\\Delta E=\\Delta KE+\\Delta PE+\\Delta U=Q-W"></div><p>Sign convention: Q <b>into</b> the system positive, W done <b>by</b> the system positive.</p></div>
-  <div><h4>Cycles</h4><div class="ceq" data-tex="W_{cycle}=Q_{cycle}=Q_{in}-Q_{out},\\quad \\eta=\\frac{W_{cycle}}{Q_{in}},\\quad \\beta=\\frac{Q_{in}}{W_{cycle}},\\quad \\gamma=\\frac{Q_{out}}{W_{cycle}}"></div><p>η for power cycles, β for refrigerators, γ for heat pumps.</p></div>
-  <div><h4>Heat transfer modes</h4><div class="ceq" data-tex="\\dot Q_x=-\\kappa A\\frac{dT}{dx},\\qquad \\dot Q_c=hA(T_b-T_f),\\qquad \\dot Q_e=\\varepsilon\\sigma A T_b^4"></div><p>Conduction (Fourier), convection (Newton), radiation (Stefan–Boltzmann).</p></div></div>
+  <div><h4>Mass rate balance</h4><div class="ceq" data-tex="\\frac{dm_{cv}}{dt}=\\sum_i\\dot m_i-\\sum_e\\dot m_e,\\qquad \\dot m=\\rho AV=\\frac{AV}{v}"></div><p>AV is the <b>volumetric</b> flow rate (m³/s, ft³/min, gal/h…); divide by v (or multiply by ρ) to get mass flow. At steady state Σṁ_in = Σṁ_out.</p></div>
+  <div><h4>Energy rate balance</h4><div class="ceq" data-tex="\\frac{dE_{cv}}{dt}=\\dot Q_{cv}-\\dot W_{cv}+\\sum_i\\dot m_i\\Big(h_i+\\tfrac{V_i^2}{2}+gz_i\\Big)-\\sum_e\\dot m_e\\Big(h_e+\\tfrac{V_e^2}{2}+gz_e\\Big)"></div><p>Enthalpy h = u + pv already contains the flow work. Q̇ into the CV positive, Ẇ by the CV positive (shaft, electrical). Steady state: dE/dt = 0.</p></div>
+  <div><h4>Steady state, one inlet / one exit</h4><div class="ceq" data-tex="0=\\dot Q_{cv}-\\dot W_{cv}+\\dot m\\Big[(h_1-h_2)+\\tfrac{V_1^2-V_2^2}{2}+g(z_1-z_2)\\Big]"></div><p>Cross out what the device does not do — that is the whole art of Chapter 4.</p></div>
+  <div><h4>The standard devices</h4><p><b>Nozzle / diffuser:</b> Ẇ = 0, Q̇ ≈ 0 → h₁ + V₁²/2 = h₂ + V₂²/2. <b>Turbine:</b> Ẇ_cv = ṁ(h₁ − h₂) (+ KE if given), Q̇ ≈ 0. <b>Compressor / pump:</b> same, Ẇ_cv &lt; 0 (work in). <b>Throttling valve:</b> h₂ = h₁. <b>Heat exchanger:</b> Ẇ = 0, Q̇ = 0 for the whole box → Σṁh in = Σṁh out. <b>Mixing chamber:</b> ṁ₁h₁ + ṁ₂h₂ = ṁ₃h₃.</p></div>
+  <div><h4>Unit conversions that bite</h4><div class="ceq" data-tex="1\\ \\tfrac{\\text{kJ}}{\\text{kg}}=1000\\ \\tfrac{\\text{m}^2}{\\text{s}^2},\\qquad 1\\ \\tfrac{\\text{Btu}}{\\text{lb}}=25{,}037\\ \\tfrac{\\text{ft}^2}{\\text{s}^2},\\qquad 1\\ \\text{hp}=2545\\ \\tfrac{\\text{Btu}}{\\text{h}},\\qquad 1\\ \\text{ft}^3=7.48\\ \\text{gal}"></div><p>Kinetic energy V²/2 comes out in m²/s² or ft²/s² — convert before adding it to h. In English units V²/2 needs g_c = 32.174 lbm·ft/lbf·s² and 778.17 ft·lbf/Btu: 32.174 × 778.17 = 25,037.</p></div>
+  <div><h4>Ideal gas in a control volume</h4><div class="ceq" data-tex="v=\\frac{RT}{p},\\quad R=\\frac{\\bar R}{M},\\quad h_2-h_1=c_p(T_2-T_1)\\ \\text{or Table A-22}"></div><p>Absolute T and p in v = RT/p. Use Table A-22 (air) when ΔT is large; constant c_p when it is modest.</p></div></div>
   </details>
   <div class="layout">
     <nav class="problems" id="nav" aria-label="Problems"></nav>
@@ -477,7 +478,7 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 </div>
 
 <script>
-const GAME_PAGE="Energy_and_the_First_Law.html";
+const GAME_PAGE="Control_Volume_Energy_Analysis.html";
 const T = String.raw;
 const g = 9.81;
 function pick(min, max, step){ const n = Math.round((max-min)/step); return +(min + step*Math.floor(Math.random()*(n+1))).toFixed(6); }
@@ -573,169 +574,460 @@ const PROPS=(()=>{
   return {U,TN,FN,f4,sat,satHow,sup,comp,grid,gridHow,state,findSup,air,airHow,GAS,RU,interpRows};
 })();
 
-/* ===================== THERMO PROBLEM BANK: Energy & the First Law (closed systems) ===================== */
-const CONCEPTS_TITLE="Key equations: work, heat and the first law for closed systems";
+/* ===================== THERMO PROBLEM BANK: Control Volumes (Chapter 4) =====================
+   Schema: see THERMOSPEC.md. Every property comes from PROPS (Tables A-2…A-5, A-10…A-12, A-22 and the E versions).
+   Every problem carries a flow(v,r) animation of the device(s) with the dashed control volume.            */
+const CONCEPTS_TITLE="Key equations: mass and energy rate balances for control volumes";
 const CONCEPTS=`
-  <div><h4>Boundary work</h4><div class="ceq" data-tex="W_{12}=\\int_{V_1}^{V_2}p\\,dV"></div><p>Area under the process path on a p–V diagram. Positive when the system expands (work <b>out</b>).</p></div>
-  <div><h4>Polytropic process pVⁿ = const</h4><div class="ceq" data-tex="W=\\frac{p_2V_2-p_1V_1}{1-n}\\ (n\\ne1),\\qquad W=p_1V_1\\ln\\frac{V_2}{V_1}\\ (n=1)"></div><p>n = 0 isobaric, n = 1 isothermal (ideal gas), n → ∞ isochoric (W = 0).</p></div>
-  <div><h4>First law, closed system</h4><div class="ceq" data-tex="\\Delta E=\\Delta KE+\\Delta PE+\\Delta U=Q-W"></div><p>Sign convention: Q <b>into</b> the system positive, W done <b>by</b> the system positive.</p></div>
-  <div><h4>Cycles</h4><div class="ceq" data-tex="W_{cycle}=Q_{cycle}=Q_{in}-Q_{out},\\quad \\eta=\\frac{W_{cycle}}{Q_{in}},\\quad \\beta=\\frac{Q_{in}}{W_{cycle}},\\quad \\gamma=\\frac{Q_{out}}{W_{cycle}}"></div><p>η for power cycles, β for refrigerators, γ for heat pumps.</p></div>
-  <div><h4>Heat transfer modes</h4><div class="ceq" data-tex="\\dot Q_x=-\\kappa A\\frac{dT}{dx},\\qquad \\dot Q_c=hA(T_b-T_f),\\qquad \\dot Q_e=\\varepsilon\\sigma A T_b^4"></div><p>Conduction (Fourier), convection (Newton), radiation (Stefan–Boltzmann).</p></div>`;
+  <div><h4>Mass rate balance</h4><div class="ceq" data-tex="\\frac{dm_{cv}}{dt}=\\sum_i\\dot m_i-\\sum_e\\dot m_e,\\qquad \\dot m=\\rho AV=\\frac{AV}{v}"></div><p>AV is the <b>volumetric</b> flow rate (m³/s, ft³/min, gal/h…); divide by v (or multiply by ρ) to get mass flow. At steady state Σṁ_in = Σṁ_out.</p></div>
+  <div><h4>Energy rate balance</h4><div class="ceq" data-tex="\\frac{dE_{cv}}{dt}=\\dot Q_{cv}-\\dot W_{cv}+\\sum_i\\dot m_i\\Big(h_i+\\tfrac{V_i^2}{2}+gz_i\\Big)-\\sum_e\\dot m_e\\Big(h_e+\\tfrac{V_e^2}{2}+gz_e\\Big)"></div><p>Enthalpy h = u + pv already contains the flow work. Q̇ into the CV positive, Ẇ by the CV positive (shaft, electrical). Steady state: dE/dt = 0.</p></div>
+  <div><h4>Steady state, one inlet / one exit</h4><div class="ceq" data-tex="0=\\dot Q_{cv}-\\dot W_{cv}+\\dot m\\Big[(h_1-h_2)+\\tfrac{V_1^2-V_2^2}{2}+g(z_1-z_2)\\Big]"></div><p>Cross out what the device does not do — that is the whole art of Chapter 4.</p></div>
+  <div><h4>The standard devices</h4><p><b>Nozzle / diffuser:</b> Ẇ = 0, Q̇ ≈ 0 → h₁ + V₁²/2 = h₂ + V₂²/2. <b>Turbine:</b> Ẇ_cv = ṁ(h₁ − h₂) (+ KE if given), Q̇ ≈ 0. <b>Compressor / pump:</b> same, Ẇ_cv &lt; 0 (work in). <b>Throttling valve:</b> h₂ = h₁. <b>Heat exchanger:</b> Ẇ = 0, Q̇ = 0 for the whole box → Σṁh in = Σṁh out. <b>Mixing chamber:</b> ṁ₁h₁ + ṁ₂h₂ = ṁ₃h₃.</p></div>
+  <div><h4>Unit conversions that bite</h4><div class="ceq" data-tex="1\\ \\tfrac{\\text{kJ}}{\\text{kg}}=1000\\ \\tfrac{\\text{m}^2}{\\text{s}^2},\\qquad 1\\ \\tfrac{\\text{Btu}}{\\text{lb}}=25{,}037\\ \\tfrac{\\text{ft}^2}{\\text{s}^2},\\qquad 1\\ \\text{hp}=2545\\ \\tfrac{\\text{Btu}}{\\text{h}},\\qquad 1\\ \\text{ft}^3=7.48\\ \\text{gal}"></div><p>Kinetic energy V²/2 comes out in m²/s² or ft²/s² — convert before adding it to h. In English units V²/2 needs g_c = 32.174 lbm·ft/lbf·s² and 778.17 ft·lbf/Btu: 32.174 × 778.17 = 25,037.</p></div>
+  <div><h4>Ideal gas in a control volume</h4><div class="ceq" data-tex="v=\\frac{RT}{p},\\quad R=\\frac{\\bar R}{M},\\quad h_2-h_1=c_p(T_2-T_1)\\ \\text{or Table A-22}"></div><p>Absolute T and p in v = RT/p. Use Table A-22 (air) when ΔT is large; constant c_p when it is modest.</p></div>`;
+
+const R3=(x)=>Number(x.toPrecision(3));
+const KE=(V1,V2)=>(V2*V2-V1*V1)/2000; /* m²/s² → kJ/kg */
+/* inverse saturated-liquid lookup: find T such that q_f(T) = val (Table A-2 / A-2E rows) */
+function satInv(fluid,q,val,units){ const rows=TABLES[units][fluid].satT; const tab=PROPS.TN[units][fluid].satT; const uT=PROPS.U[units].T, uq=PROPS.U[units].h;
+  for(let i=1;i<rows.length;i++){ const a=rows[i-1], b=rows[i]; if(a[q]<=val&&b[q]>=val){ const f=(val-a[q])/(b[q]-a[q]); const T=a.T+f*(b.T-a.T); return {T,lo:a,hi:b,f,table:tab,how:[`Table ${tab}, read backwards: ${q.replace("f","_f")} = ${PROPS.f4(val)} ${uq} lies between the rows T = ${PROPS.f4(a.T)} (${PROPS.f4(a[q])}) and T = ${PROPS.f4(b.T)} (${PROPS.f4(b[q])}); f = ${f.toFixed(4)}.`,`T = ${PROPS.f4(a.T)} + ${f.toFixed(4)} × (${PROPS.f4(b.T)} − ${PROPS.f4(a.T)}) = ${PROPS.f4(T)} ${uT}`]}; } }
+  return {error:`${q} = ${val} is outside Table ${tab}`,T:NaN,how:[]}; }
+/* Table A-20 (Moran & Shapiro): c_p of air, kJ/kg·K, vs T in K */
+const CP_AIR=[[250,1.003],[300,1.005],[350,1.008],[400,1.013],[450,1.020],[500,1.029],[550,1.040],[600,1.051],[650,1.063],[700,1.075],[750,1.087],[800,1.099],[900,1.121],[1000,1.142]];
+function cpAir(TK){ const t=CP_AIR; if(TK<=t[0][0]) return {cp:t[0][1],how:[`Table A-20 at ${t[0][0]} K: c_p = ${t[0][1]} kJ/kg·K`]}; for(let i=1;i<t.length;i++){ if(TK<=t[i][0]){ const [Ta,ca]=t[i-1],[Tb,cb]=t[i]; if(Math.abs(TK-Tb)<1e-9) return {cp:cb,how:[`Table A-20 at ${Tb} K: c_p = ${cb} kJ/kg·K (read directly)`]}; const f=(TK-Ta)/(Tb-Ta); const cp=ca+f*(cb-ca); return {cp,how:[`Table A-20: T = ${PROPS.f4(TK)} K lies between ${Ta} K (c_p = ${ca}) and ${Tb} K (c_p = ${cb}); c_p = ${ca} + ${f.toFixed(4)} × (${cb} − ${ca}) = ${PROPS.f4(cp)} kJ/kg·K`]}; } } return {cp:t[t.length-1][1],how:[`Table A-20 at ${t[t.length-1][0]} K: c_p = ${t[t.length-1][1]} kJ/kg·K`]}; }
+const GAS=(u)=>PROPS.GAS[u].air;
+
+const choice=(arr)=>arr[Math.floor(Math.random()*arr.length)];
 
 const PROBLEMS = [
+/* ------------------------------------------------------------------ 4.5 ------------------------------------------------------------------ */
 {
-  id:"threeproc", topic:"Work & the p–V diagram", name:"Three Processes in Series", tag:"pV = const, V = const, p = const",
-  kind:"Closed system · boundary work", units:"EN",
-  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 2.35 (8th ed.). Numbers changed.",
-  original:{ p1:10, V1:4, p2:50 },
-  randomize(){ return { p1:pick(8,20,1), V1:pick(2,6,0.5), p2:pick(40,90,5) }; },
-  solve(v){ const V2=v.p1*v.V1/v.p2; const K=144/778.17; /* (lbf/ft² · ft³) → Btu */ const W12=v.p1*144*v.V1*Math.log(V2/v.V1)/778.17; const W23=0; const W31=v.p1*144*(v.V1-V2)/778.17; return {V2,K,W12,W23,W31,Wcyc:W12+W23+W31}; },
-  statement:(v)=>`Air contained in a piston–cylinder assembly undergoes three processes in series. Process 1–2: compression with pV = constant from p₁ = ${N(v.p1,"lbf/in²")}, V₁ = ${N(v.V1,"ft³")} to p₂ = ${N(v.p2,"lbf/in²")}. Process 2–3: constant volume to p₃ = p₁. Process 3–1: constant-pressure expansion back to the initial state. Sketch the processes on p–V coordinates and evaluate (a) the volume at state 2, in ft³, and (b) the work for each process, in Btu.`,
-  known:(v)=>[`Air, closed system, three processes in series`,`p₁ = ${fmt(v.p1)} lbf/in², V₁ = ${fmt(v.V1)} ft³`,`1–2: pV = constant to p₂ = ${fmt(v.p2)} lbf/in²`,`2–3: V = constant, p₃ = p₁ = ${fmt(v.p1)} lbf/in²`,`3–1: p = constant back to state 1`],
-  find:["V₂, in ft³","W₁₂, W₂₃ and W₃₁, in Btu"],
-  assumptions:()=>["The air is a closed system","Each process is quasi-equilibrium (the p–V path is defined)","Boundary work only: W = ∫p dV"],
-  properties:()=>[{title:"No table lookups needed",fixed:"The p–V relations define each path; no property tables are required.",items:[]}],
-  answers:(v,r)=>[{label:"V₂",unit:"ft³",val:r.V2},{label:"W₁₂",unit:"Btu",val:r.W12},{label:"W₂₃",unit:"Btu",val:0,scale:Math.abs(r.W12)},{label:"W₃₁",unit:"Btu",val:r.W31}],
+  id:"air_massflow", topic:"Mass & volumetric flow", name:"Mass Flow Rate from a Volumetric Flow Rate", tag:"Easy · ṁ = AV/v, ideal gas v = RT/p",
+  kind:"Control volume · mass rate balance", units:"SI",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.5 (8th ed.). Numbers changed.",
+  original:{ p:200, T:150, AV:7000 },
+  randomize(){ return { p:pick(120,500,10), T:pick(80,400,10), AV:pick(2000,12000,250) }; },
+  solve(v){ const g=GAS("SI"); const TK=v.T+273.15; const R=PROPS.RU.SI/g.M; const vv=R*TK/v.p; const mdot=v.AV/1000/vv; const rho=1/vv; return {TK,R,vv,mdot,rho,M:g.M}; },
+  statement:(v)=>`Air leaves a gas turbine at ${N(v.p,"kPa")} and ${N(v.T,"°C")} with a volumetric flow rate of ${N(v.AV,"L/s")}. Modeling the air as an ideal gas, determine the specific volume of the air at the exit, in m³/kg, and the mass flow rate, in kg/s.`,
+  known:(v)=>[`Air at the turbine exit: p = ${fmt(v.p)} kPa, T = ${fmt(v.T)} °C`,`Volumetric flow rate (AV) = ${fmt(v.AV)} L/s`,`Air is an ideal gas, M = 28.97 kg/kmol`],
+  find:["v at the exit, in m³/kg","ṁ, in kg/s"],
+  assumptions:()=>["One-dimensional flow at the exit (uniform properties over the cross-section)","The air behaves as an ideal gas, pv = RT","Steady flow through the exit plane"],
+  properties:(v,r)=>[{title:"Air at the exit",fixed:`p = ${fmt(v.p)} kPa, T = ${fmt(v.T)} °C = ${fmt(r.TK)} K`,phase:"ideal gas",items:[{sym:"M (air)",val:28.97,unit:"kg/kmol",table:"A-1"},{sym:"R = R̄/M = 8.314/28.97",val:r.R,unit:"kJ/kg·K",table:"A-1",how:["R = 8.314 kJ/kmol·K ÷ 28.97 kg/kmol = 0.2870 kJ/kg·K (Table A-1 gives M; R̄ is universal)."]}]}],
+  answers:(v,r)=>[{label:"v",unit:"m³/kg",val:r.vv},{label:"ṁ",unit:"kg/s",val:r.mdot}],
   analysis(v,r){ return [
-    {t:"(a) State 2 from pV = constant", eq:T`p_1V_1=p_2V_2\;\Rightarrow\;V_2=V_1\frac{p_1}{p_2}=(${fmt(v.V1)}\ \text{ft}^3)\frac{${fmt(v.p1)}}{${fmt(v.p2)}}=${fmt(r.V2)}\ \text{ft}^3`, box:T`V_2=${fmt(r.V2)}\ \text{ft}^3`},
-    {t:"(b) Process 1–2: work for pV = c (n = 1)", eq:T`W_{12}=\int_1^2 p\,dV=\int_1^2\frac{c}{V}dV=c\ln\frac{V_2}{V_1}=p_1V_1\ln\frac{V_2}{V_1}`, note:"Set up the integral from the path, then substitute p = c/V. c = p₁V₁."},
-    {t:"Plug in with unit conversions (in² → ft², ft·lbf → Btu)", eq:T`W_{12}=\left(${fmt(v.p1)}\tfrac{\text{lbf}}{\text{in}^2}\right)\left(\tfrac{144\ \text{in}^2}{1\ \text{ft}^2}\right)(${fmt(v.V1)}\ \text{ft}^3)\ln\!\left(\tfrac{${fmt(r.V2)}}{${fmt(v.V1)}}\right)\left(\tfrac{1\ \text{Btu}}{778.17\ \text{ft·lbf}}\right)=${fmt(r.W12)}\ \text{Btu}`, box:T`W_{12}=${fmt(r.W12)}\ \text{Btu}`, note:"Negative: work is done ON the air during the compression."},
-    {t:"Process 2–3: constant volume", eq:T`W_{23}=\int_2^3 p\,dV=0\quad(dV=0)`, box:T`W_{23}=0`},
-    {t:"Process 3–1: constant pressure", eq:T`W_{31}=\int_3^1 p\,dV=p_1(V_1-V_3)=p_1(V_1-V_2)`},
-    {t:"Plug in", eq:T`W_{31}=\left(${fmt(v.p1)}\tfrac{\text{lbf}}{\text{in}^2}\right)\left(\tfrac{144\ \text{in}^2}{\text{ft}^2}\right)(${fmt(v.V1)}-${fmt(r.V2)})\,\text{ft}^3\left(\tfrac{1\ \text{Btu}}{778.17\ \text{ft·lbf}}\right)=${fmt(r.W31)}\ \text{Btu}`, box:T`W_{31}=${fmt(r.W31)}\ \text{Btu}`, note:"Positive: the air expands and does work on the piston."}
+    {t:"Mass flow rate in terms of the volumetric flow rate", eq:T`\dot m=\rho AV=\frac{AV}{v}`, note:"AV (area × velocity) is the volume passing the exit plane per second. Dividing by the specific volume turns volume into mass — this is Eq. 4.4b."},
+    {t:"Specific volume from the ideal-gas equation of state", eq:T`v=\frac{RT}{p}=\frac{\left(\tfrac{8.314}{28.97}\ \tfrac{\text{kJ}}{\text{kg·K}}\right)(${fmt(r.TK)}\ \text{K})}{${fmt(v.p)}\ \text{kPa}}\left|\tfrac{10^3\ \text{N·m}}{1\ \text{kJ}}\right|\left|\tfrac{1\ \text{kPa}}{10^3\ \text{N/m}^2}\right|=${fmt(r.vv)}\ \text{m}^3\text{/kg}`, box:T`v=${fmt(r.vv)}\ \text{m}^3\text{/kg}`, note:`Absolute temperature: T = ${fmt(v.T)} + 273.15 = ${fmt(r.TK)} K. kJ/(kg·K)·K/kPa = (kN·m/kg)/(kN/m²) = m³/kg, so the two conversion factors cancel.`},
+    {t:"Mass flow rate", eq:T`\dot m=\frac{AV}{v}=\frac{${fmt(v.AV)}\ \text{L/s}}{${fmt(r.vv)}\ \text{m}^3\text{/kg}}\left|\tfrac{10^{-3}\ \text{m}^3}{1\ \text{L}}\right|=${fmt(r.mdot)}\ \text{kg/s}`, box:T`\dot m=${fmt(r.mdot)}\ \text{kg/s}`}
   ]; },
-  comments:(v,r)=>[`Net work for the loop W_cycle = ${fmt(r.W12)} + 0 + ${fmt(r.W31)} = ${fmt(r.Wcyc)} Btu — negative, so this is a refrigeration/heat-pump-type loop (traversed counter-clockwise on p–V), not a power cycle.`,`The area under the hyperbola 1–2 is larger than the rectangle under 3–1 because the compression happens at higher pressure than the expansion.`],
-  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 2.2.3 (expansion or compression work), Eq. 2.17."],
-  takeaway:(v,r)=>`Work is the area under the path, so the same two end states give different work for different paths — that is why W is a path function and not a property.`,
-  diagram:(v,r)=>({ x:"v", y:"P", fluid:null, units:"EN", logx:false, xlab:"V (ft³)", ylab:"p (lbf/in²)", title:"p–V diagram",
-    states:[{P:v.p1,v:v.V1,label:"1"},{P:v.p2,v:r.V2,label:"2"},{P:v.p1,v:r.V2,label:"3"}],
-    paths:[{a:0,b:1,kind:"polytropic",n:1,label:"pV = c",heat:-1},{a:1,b:2,kind:"isochoric",label:"V = c",heat:-1},{a:2,b:0,kind:"isobaric",label:"p = c",heat:1}],
-    cap:"Work = area under each path. 1–2 is a hyperbola (pV = c), 2–3 a vertical line (no work), 3–1 a horizontal line (rectangle)." }),
-  anim:(v,r)=>({type:"piston"})
+  comments:(v,r)=>[`The density of the exhaust is ρ = 1/v = ${fmt(r.rho)} kg/m³ — hot, low-pressure gas is much less dense than room air (1.2 kg/m³), which is why the volumetric flow looks so large for a mass flow of only ${fmt(r.mdot)} kg/s.`,`Mass flow, not volumetric flow, is what the energy balance needs: ṁh, ṁV²/2. Volumetric flow changes from one point to another as v changes; ṁ is the same at every cross-section at steady state.`,`A quick check on the ideal-gas model: at ${fmt(v.p)} kPa the pressure is far below the critical pressure of air (37.7 bar) and T is well above T_c (133 K), so Z ≈ 1.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.1 (mass rate balance), Eqs. 4.4b and 3.32 (ideal gas); Table A-1."],
+  takeaway:(v,r)=>`ṁ = AV/v: get v from the state (here RT/p), then convert the volumetric flow. ${fmt(v.AV)} L/s of hot exhaust is only ${fmt(r.mdot)} kg/s.`,
+  flow:(v,r)=>({ title:"Air leaving the turbine", cap:"Particles are colored by temperature and sized by specific volume. The dashed line is the control volume around the exit plane, where ṁ = AV/v is evaluated.", w:360,h:220, cv:[214,60,60,110],
+    nodes:[{id:"t",x:90,y:60,w:110,h:100,kind:"turbine",label:"gas turbine"}],
+    streams:[{pts:[[20,110],[95,110]],T:[1,0.95],size:[0.8,0.85],label:"hot gas in"},{pts:[[95,110],[200,110],[330,110]],T:[0.95,0.6],size:[0.85,1.2],label:""}],
+    arrows:[{x:150,y:36,dir:"out",kind:"W",label:"Ẇ_t"}],
+    readout:[{label:"p",val:fmt(v.p)+" kPa"},{label:"T",val:fmt(v.T)+" °C"},{label:"AV",val:fmt(v.AV)+" L/s"},{label:"ṁ",val:fmt(r.mdot)+" kg/s"}] })
 },
+/* ------------------------------------------------------------------ 4.25 ------------------------------------------------------------------ */
 {
-  id:"condconv", topic:"Heat transfer", name:"Conduction & Convection Rates", tag:"Fourier's law, Newton's law of cooling",
-  kind:"Heat transfer modes · rate equations", units:"SI",
-  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 2.52 (8th ed.). Numbers changed.",
-  original:{ k:0.07, A:0.125, L:0.127, T1:298, T2:273, h:10, Ac:0.125, Tb:305, Tf:298 },
-  randomize(){ return { k:pick(0.04,0.6,0.01), A:pick(0.1,0.6,0.025), L:pick(0.05,0.3,0.005), T1:pick(290,330,1), T2:pick(255,285,1), h:pick(5,60,1), Ac:pick(0.05,0.6,0.025), Tb:pick(300,350,1), Tf:pick(275,299,1) }; },
-  solve(v){ const dTdx=(v.T2-v.T1)/v.L; const Qx=-v.k*v.A*dTdx; const Qc=-v.h*v.Ac*(v.Tb-v.Tf); return {dTdx,Qx,Qc,QcMag:-Qc}; },
-  statement:(v)=>`Use the heat-transfer rate equations for the two situations below. (a) A plane wall of thickness ${N(v.L,"m")} and thermal conductivity κ = ${N(v.k,"W/m·K")} has a face area of ${N(v.A,"m²")}; at steady state its temperature varies linearly from T₁ = ${N(v.T1,"K")} on one face to T₂ = ${N(v.T2,"K")} on the other. Determine the rate of conduction heat transfer through the wall, in W. (b) A surface of area ${N(v.Ac,"m²")} at T_b = ${N(v.Tb,"K")} is cooled by air at T_f = ${N(v.Tf,"K")} with a convective heat transfer coefficient h = ${N(v.h,"W/m²·K")}. Determine the rate of convection heat transfer, in W, using the sign convention that energy transfer <i>into</i> the surface is positive.`,
-  known:(v)=>[`(a) Conduction: κ = ${fmt(v.k)} W/m·K, A = ${fmt(v.A)} m², ℓ = ${fmt(v.L)} m, T₁ = ${fmt(v.T1)} K, T₂ = ${fmt(v.T2)} K`,`(b) Convection: h = ${fmt(v.h)} W/m²·K, A = ${fmt(v.Ac)} m², T_b = ${fmt(v.Tb)} K, T_f = ${fmt(v.Tf)} K`],
-  find:["(a) Rate of heat transfer by conduction, Q̇_x, in W","(b) Rate of heat transfer by convection, Q̇_c, in W (positive = into the surface)"],
-  assumptions:()=>["Steady state: temperatures do not change with time","(a) One-dimensional conduction; κ is constant, so T varies linearly across the wall","(b) The convection coefficient h is uniform over the surface","No radiation is considered"],
-  properties:(v)=>[{title:"Transport properties",fixed:"Given in the statement (Table 2.1 gives typical ranges of h).",items:[{sym:"κ (wall)",val:v.k,unit:"W/m·K"},{sym:"h (air over surface)",val:v.h,unit:"W/m²·K"}]}],
-  answers:(v,r)=>[{label:"(a) Q̇_x (conduction)",unit:"W",val:r.Qx},{label:"(b) Q̇_c (convection, + into surface)",unit:"W",val:r.Qc}],
+  id:"resistor_pipe", topic:"Mass & volumetric flow", name:"Air Heated by a Resistor in an Insulated Pipe", tag:"Easy · ṁ from (AV), Ẇ_cv = −VI, c_p ΔT",
+  kind:"Control volume · steady state · electrical work", units:"SI",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.25 (8th ed.). Numbers changed.",
+  original:{ T1:25, p1:100, AV:23, volt:120, amp:4 },
+  randomize(){ return { T1:pick(10,35,1), p1:pick(95,110,1), AV:pick(12,60,1), volt:choice([120,208,240]), amp:pick(2,10,0.5) }; },
+  solve(v){ const g=GAS("SI"); const R=PROPS.RU.SI/g.M; const T1K=v.T1+273.15; const v1=R*T1K/v.p1; const mdot=v.AV/v1; const W=-v.volt*v.amp/1000; const T2K=T1K-W/((mdot/3600)*g.cp); return {R,T1K,v1,mdot,mdots:mdot/3600,W,Wabs:-W,T2K,T2:T2K-273.15,cp:g.cp,dT:T2K-T1K}; },
+  statement:(v)=>`Air enters a length of pipe at ${N(v.T1,"°C")}, ${N(v.p1,"kPa")} with a volumetric flow rate of ${N(v.AV,"m³/h")}. An electrical resistor wound around the outside of the pipe is covered by insulation; it is supplied at ${N(v.volt,"V")} and draws ${N(v.amp,"A")}. Model the air as an ideal gas with c_p = 1.005 kJ/kg·K and neglect kinetic and potential energy effects. Determine (a) the mass flow rate of the air, in kg/h, and (b) the air temperature at the exit, in °C.`,
+  known:(v)=>[`Air: T₁ = ${fmt(v.T1)} °C, p₁ = ${fmt(v.p1)} kPa, (AV)₁ = ${fmt(v.AV)} m³/h`,`Resistor: ${fmt(v.volt)} V, ${fmt(v.amp)} A; pipe insulated on the outside`,`Ideal gas, c_p = 1.005 kJ/kg·K`],
+  find:["(a) ṁ, in kg/h","(b) T₂, in °C"],
+  assumptions:()=>["The control volume (pipe + resistor) is at steady state","Stray heat transfer to the surroundings is negligible (insulated): Q̇_cv = 0","Kinetic and potential energy effects are negligible","The air is an ideal gas with constant c_p, so h₂ − h₁ = c_p(T₂ − T₁)","The electrical work crosses the boundary: Ẇ_cv = −(voltage)(current)"],
+  properties:(v,r)=>[{title:"Air (ideal gas)",fixed:`T₁ = ${fmt(v.T1)} °C = ${fmt(r.T1K)} K, p₁ = ${fmt(v.p1)} kPa`,phase:"ideal gas",items:[{sym:"R = 8.314/28.97",val:r.R,unit:"kJ/kg·K",table:"A-1"},{sym:"c_p",val:1.005,unit:"kJ/kg·K",table:"A-20",how:["Given in the statement; Table A-20 lists c_p = 1.005 kJ/kg·K for air at 300 K."]},{sym:"v₁ = RT₁/p₁",val:r.v1,unit:"m³/kg",table:"",how:[`v₁ = (${fmt(r.R)} kJ/kg·K)(${fmt(r.T1K)} K)/(${fmt(v.p1)} kPa) = ${fmt(r.v1)} m³/kg`]}]}],
+  answers:(v,r)=>[{label:"(a) ṁ",unit:"kg/h",val:r.mdot},{label:"(b) T₂",unit:"°C",val:r.T2}],
   analysis(v,r){ return [
-    {t:"(a) Fourier's law of conduction", eq:T`\dot Q_x=-\kappa A\frac{dT}{dx}`, note:"The minus sign makes Q̇_x positive in the direction of decreasing temperature: heat flows down the temperature gradient."},
-    {t:"Linear profile through the wall", eq:T`\frac{dT}{dx}=\frac{T_2-T_1}{\ell}=\frac{${fmt(v.T2)}\ \text{K}-${fmt(v.T1)}\ \text{K}}{${fmt(v.L)}\ \text{m}}=${fmt(r.dTdx)}\ \text{K/m}`, note:"Steady state with constant κ means the temperature drops in a straight line from face 1 to face 2."},
-    {t:"Plug in", eq:T`\dot Q_x=-\left(${fmt(v.k)}\ \tfrac{\text{W}}{\text{m·K}}\right)(${fmt(v.A)}\ \text{m}^2)\left(${fmt(r.dTdx)}\ \tfrac{\text{K}}{\text{m}}\right)=${fmt(r.Qx)}\ \text{W}`, box:T`\dot Q_x=${fmt(r.Qx)}\ \text{W}`, note:`Positive: energy flows in the +x direction, from the ${fmt(v.T1)} K face toward the ${fmt(v.T2)} K face.`},
-    {t:"(b) Newton's law of cooling, written for energy INTO the surface", eq:T`\dot Q_c=-hA\,(T_b-T_f)`, note:"The textbook writes Q̇_c = hA(T_b − T_f) for the rate leaving the surface. With the first-law convention (heat into the system positive) we add a minus sign, as in the class key."},
-    {t:"Plug in", eq:T`\dot Q_c=-\left(${fmt(v.h)}\ \tfrac{\text{W}}{\text{m}^2\text{·K}}\right)(${fmt(v.Ac)}\ \text{m}^2)(${fmt(v.Tb)}\ \text{K}-${fmt(v.Tf)}\ \text{K})=${fmt(r.Qc)}\ \text{W}`, box:T`\dot Q_c=${fmt(r.Qc)}\ \text{W}`, note:`Negative: ${fmt(r.QcMag)} W leaves the surface and goes into the cooler air.`}
+    {t:"(a) Mass flow rate from the volumetric flow rate at the inlet", eq:T`\dot m=\frac{(AV)_1}{v_1}=\frac{p_1(AV)_1}{RT_1}=\frac{(${fmt(v.p1)}\ \text{kPa})(${fmt(v.AV)}\ \text{m}^3\text{/h})}{\left(\tfrac{8.314}{28.97}\ \tfrac{\text{kJ}}{\text{kg·K}}\right)(${fmt(r.T1K)}\ \text{K})}=${fmt(r.mdot)}\ \text{kg/h}`, box:T`\dot m=${fmt(r.mdot)}\ \text{kg/h}`, note:"kPa·m³ = kJ, so the units cancel to kg/h directly. At steady state the same ṁ leaves at 2."},
+    {t:"(b) Energy rate balance, reduced with the assumptions", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}+\dot m\Big[(h_1-h_2)+\tfrac{V_1^2-V_2^2}{2}^{\,0}+g(z_1-z_2)^{\,0}\Big]\ \Rightarrow\ 0=-\dot W_{cv}+\dot m\,c_p(T_1-T_2)`, note:"Insulated → Q̇_cv = 0. The resistor's electrical work is work done ON the control volume, so Ẇ_cv is negative."},
+    {t:"Electrical power", eq:T`\dot W_{cv}=-(\text{voltage})(\text{current})=-(${fmt(v.volt)}\ \text{V})(${fmt(v.amp)}\ \text{A})\left|\tfrac{1\ \text{W}}{1\ \text{V·A}}\right|\left|\tfrac{1\ \text{kW}}{10^3\ \text{W}}\right|=${fmt(r.W)}\ \text{kW}`},
+    {t:"Solve for T₂", eq:T`T_2=T_1-\frac{\dot W_{cv}}{\dot m\,c_p}=${fmt(r.T1K)}\ \text{K}-\frac{(${fmt(r.W)}\ \text{kW})}{\left(${fmt(r.mdot)}\ \tfrac{\text{kg}}{\text{h}}\right)\left(1.005\ \tfrac{\text{kJ}}{\text{kg·K}}\right)}\left|\tfrac{3600\ \text{s}}{1\ \text{h}}\right|\left|\tfrac{1\ \text{kJ/s}}{1\ \text{kW}}\right|=${fmt(r.T2K)}\ \text{K}`, box:T`T_2=${fmt(r.T2)}^\circ\text{C}`, note:`The air warms by ${fmt(r.dT,3)} K: all ${fmt(r.Wabs)} kW of electrical power ends up as enthalpy of the air stream.`}
   ]; },
-  comments:(v,r)=>[`Sign convention: both answers are rates of energy transfer <i>to</i> the body (the wall material for (a), the surface for (b)). A negative Q̇_c says the surface is losing energy to the fluid — which must be so, since T_b > T_f. If the air were hotter than the surface the sign would flip.`,`Conduction depends on the temperature <i>gradient</i>, convection on the temperature <i>difference</i>. Halving the wall thickness doubles Q̇_x for the same face temperatures; doubling the air speed raises h and Q̇_c but the ΔT stays the same.`,`Both rate equations are empirical laws, not consequences of the first law — the first law only tells you the energy has to be accounted for.`],
-  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 2.4.2 (heat transfer modes), Eq. 2.31 (Fourier) and Eq. 2.34 (Newton's law of cooling), Table 2.1 (typical h)."],
-  takeaway:(v,r)=>`Fourier and Newton give the rate; the sign tells the direction. Here ${fmt(r.Qx)} W conducts down the gradient and ${fmt(r.QcMag)} W convects off the warm surface into the air.`
+  comments:(v,r)=>[`Sign bookkeeping: Ẇ_cv = ${fmt(r.W)} kW is negative because work is done <i>on</i> the control volume (electricity flows in). Substituting a negative Ẇ_cv into T₂ = T₁ − Ẇ_cv/(ṁc_p) gives a temperature <i>rise</i>, as it must.`,`Had the CV been drawn around the air only (inside the pipe wall), the same ${fmt(r.Wabs)} kW would enter as heat transfer Q̇_cv from the hot wall and Ẇ_cv would be zero. The answer is the same — only the labels change with the boundary.`,`ṁ was found at the inlet because p₁, T₁ and (AV)₁ are all known there. The exit volumetric flow is larger, (AV)₂ = ṁv₂ = ${fmt(r.mdot*r.R*r.T2K/v.p1)} m³/h, because v grows with T at the same pressure.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.4 (energy rate balance), Eq. 4.20a; Eq. 3.32 (ideal gas); Table A-20."],
+  takeaway:(v,r)=>`ṁ = p(AV)/(RT) at the inlet, then 0 = −Ẇ_cv + ṁc_p(T₁ − T₂): electrical work in raises the air by ${fmt(r.dT,3)} K.`,
+  flow:(v,r)=>({ title:"Air through the resistor-heated pipe", cap:"Air warms as it passes the resistor coil; the particles turn orange and grow slightly (v rises with T at constant p). The dashed control volume includes the resistor, so the electrical power crosses it as Ẇ_cv < 0.", w:360,h:220, cv:[80,60,200,90],
+    nodes:[{id:"pipe",x:100,y:80,w:160,h:50,kind:"box",label:"insulated pipe + resistor"}],
+    streams:[{pts:[[20,105],[100,105],[260,105],[340,105]],T:[0.25,0.75],size:[1,1.15],label:"air in"}],
+    arrows:[{x:180,y:36,dir:"in",kind:"W",label:"Ẇ_elec = "+fmt(r.Wabs)+" kW"}],
+    readout:[{label:"ṁ",val:fmt(r.mdot)+" kg/h"},{label:"T₁",val:fmt(v.T1)+" °C"},{label:"T₂",val:fmt(r.T2)+" °C"}] })
 },
+/* ------------------------------------------------------------------ 4.36 ------------------------------------------------------------------ */
 {
-  id:"energytable", topic:"First law", name:"Closed-System Energy Table", tag:"ΔE = Q − W = E₂ − E₁",
-  kind:"Closed system · energy balance", units:"SI",
-  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 2.56 (8th ed.). Numbers changed.",
-  /* each row gives three of Q, W, E1, E2, dE; null = missing. Pattern of what is given follows the textbook table. */
-  original:{ aQ:50, aE1:-20, adE:70,  bW:20, bE2:50, bdE:30,  cW:-60, cE1:40, cE2:60,  dQ:-40, dE1:50, ddE:0,  eQ:50, eW:150, eE2:-80 },
-  randomize(){ const p=()=>pick(-100,150,10); return { aQ:p(), aE1:p(), adE:p(), bW:p(), bE2:p(), bdE:p(), cW:p(), cE1:p(), cE2:p(), dQ:p(), dE1:p(), ddE:pick(-60,60,10), eQ:p(), eW:p(), eE2:p() }; },
-  solve(v){ const a={Q:v.aQ,E1:v.aE1,dE:v.adE}; a.W=a.Q-a.dE; a.E2=a.E1+a.dE;
-    const b={W:v.bW,E2:v.bE2,dE:v.bdE}; b.Q=b.dE+b.W; b.E1=b.E2-b.dE;
-    const c={W:v.cW,E1:v.cE1,E2:v.cE2}; c.dE=c.E2-c.E1; c.Q=c.dE+c.W;
-    const d={Q:v.dQ,E1:v.dE1,dE:v.ddE}; d.W=d.Q-d.dE; d.E2=d.E1+d.dE;
-    const e={Q:v.eQ,W:v.eW,E2:v.eE2}; e.dE=e.Q-e.W; e.E1=e.E2-e.dE;
-    return {a,b,c,d,e}; },
-  statement:(v,r)=>{ const q=`<td class="q">?</td>`, c=(x)=>`<td>${x>0?"+":""}${fmt(x)}</td>`; return `Each line of the table below gives data, in kJ, for a process of a closed system. Determine the missing entries (ΔE is the change in the system's total energy, E₂ − E₁; Q is positive into the system and W is positive when done by the system).
-    <table class="ptable"><tr><th>Process</th><th>Q</th><th>W</th><th>E₁</th><th>E₂</th><th>ΔE</th></tr>
-    <tr><td>a</td>${c(v.aQ)}${q}${c(v.aE1)}${q}${c(v.adE)}</tr>
-    <tr><td>b</td>${q}${c(v.bW)}${q}${c(v.bE2)}${c(v.bdE)}</tr>
-    <tr><td>c</td>${q}${c(v.cW)}${c(v.cE1)}${c(v.cE2)}${q}</tr>
-    <tr><td>d</td>${c(v.dQ)}${q}${c(v.dE1)}${q}${c(v.ddE)}</tr>
-    <tr><td>e</td>${c(v.eQ)}${c(v.eW)}${q}${c(v.eE2)}${q}</tr></table>`; },
-  known:(v)=>[`(a) Q = ${fmt(v.aQ)} kJ, E₁ = ${fmt(v.aE1)} kJ, ΔE = ${fmt(v.adE)} kJ`,`(b) W = ${fmt(v.bW)} kJ, E₂ = ${fmt(v.bE2)} kJ, ΔE = ${fmt(v.bdE)} kJ`,`(c) W = ${fmt(v.cW)} kJ, E₁ = ${fmt(v.cE1)} kJ, E₂ = ${fmt(v.cE2)} kJ`,`(d) Q = ${fmt(v.dQ)} kJ, E₁ = ${fmt(v.dE1)} kJ, ΔE = ${fmt(v.ddE)} kJ`,`(e) Q = ${fmt(v.eQ)} kJ, W = ${fmt(v.eW)} kJ, E₂ = ${fmt(v.eE2)} kJ`],
-  find:["(a) W and E₂","(b) Q and E₁","(c) Q and ΔE","(d) W and E₂","(e) E₁ and ΔE — all in kJ"],
-  assumptions:()=>["Each line is a closed system undergoing one process","E is the total energy (internal + kinetic + potential); no split between them is needed","Sign convention: Q > 0 into the system, W > 0 done by the system"],
-  properties:()=>[{title:"No table lookups needed",fixed:"The energy balance alone fixes every missing entry.",items:[]}],
-  answers:(v,r)=>{ const s=60; return [
-    {label:"(a) W",unit:"kJ",val:r.a.W,scale:s},{label:"(a) E₂",unit:"kJ",val:r.a.E2,scale:s},
-    {label:"(b) Q",unit:"kJ",val:r.b.Q,scale:s},{label:"(b) E₁",unit:"kJ",val:r.b.E1,scale:s},
-    {label:"(c) Q",unit:"kJ",val:r.c.Q,scale:s},{label:"(c) ΔE",unit:"kJ",val:r.c.dE,scale:s},
-    {label:"(d) W",unit:"kJ",val:r.d.W,scale:s},{label:"(d) E₂",unit:"kJ",val:r.d.E2,scale:s},
-    {label:"(e) E₁",unit:"kJ",val:r.e.E1,scale:s},{label:"(e) ΔE",unit:"kJ",val:r.e.dE,scale:s} ]; },
-  analysis(v,r){ const k=(x)=>`${fmt(x)}\\ \\text{kJ}`; const sg=(x)=>x<0?`(${fmt(x)})`:fmt(x); return [
-    {t:"Two forms of the energy balance for a closed system", eq:T`\Delta E=Q-W\qquad\text{and}\qquad \Delta E=E_2-E_1`, note:"Every row must satisfy both. Whichever quantity is missing, solve the appropriate form for it — two equations, two unknowns per row."},
-    {t:"Process a: given Q, E₁, ΔE", eq:T`W=Q-\Delta E=${k(v.aQ)}-${sg(v.adE)}\ \text{kJ}=${k(r.a.W)};\qquad E_2=E_1+\Delta E=${sg(v.aE1)}+${sg(v.adE)}=${k(r.a.E2)}`, box:T`W_a=${k(r.a.W)},\quad E_{2,a}=${k(r.a.E2)}`, note:r.a.W<0?"W is negative: work is done ON the system in process a.":"W is positive: the system does work on its surroundings in process a."},
-    {t:"Process b: given W, E₂, ΔE", eq:T`Q=\Delta E+W=${sg(v.bdE)}+${sg(v.bW)}=${k(r.b.Q)};\qquad E_1=E_2-\Delta E=${sg(v.bE2)}-${sg(v.bdE)}=${k(r.b.E1)}`, box:T`Q_b=${k(r.b.Q)},\quad E_{1,b}=${k(r.b.E1)}`},
-    {t:"Process c: given W, E₁, E₂", eq:T`\Delta E=E_2-E_1=${sg(v.cE2)}-${sg(v.cE1)}=${k(r.c.dE)};\qquad Q=\Delta E+W=${sg(r.c.dE)}+${sg(v.cW)}=${k(r.c.Q)}`, box:T`Q_c=${k(r.c.Q)},\quad \Delta E_c=${k(r.c.dE)}`, note:"Here ΔE must come from the end states first; only then can Q be found from the balance."},
-    {t:"Process d: given Q, E₁, ΔE", eq:T`W=Q-\Delta E=${sg(v.dQ)}-${sg(v.ddE)}=${k(r.d.W)};\qquad E_2=E_1+\Delta E=${sg(v.dE1)}+${sg(v.ddE)}=${k(r.d.E2)}`, box:T`W_d=${k(r.d.W)},\quad E_{2,d}=${k(r.d.E2)}`, note:v.ddE===0?"ΔE = 0 does not mean nothing happened: the heat removed is exactly balanced by work done on the system.":""},
-    {t:"Process e: given Q, W, E₂", eq:T`\Delta E=Q-W=${sg(v.eQ)}-${sg(v.eW)}=${k(r.e.dE)};\qquad E_1=E_2-\Delta E=${sg(v.eE2)}-${sg(r.e.dE)}=${k(r.e.E1)}`, box:T`E_{1,e}=${k(r.e.E1)},\quad \Delta E_e=${k(r.e.dE)}`}
-  ]; },
-  comments:(v,r)=>[`E₁ and E₂ can be negative because total energy is measured from an arbitrary datum; only the difference ΔE has physical meaning. Q and W are not properties and have no datum — their signs say which way energy crossed the boundary.`,`Reading the signs: Q < 0 is heat lost to the surroundings, W < 0 is work done on the system (a compression or a paddle wheel). ${(()=>{ const neg=["a","b","c","d","e"].filter((n,i)=>[r.a.W,v.bW,v.cW,r.d.W,v.eW][i]<0); return neg.length?`Work is done on the system in process${neg.length>1?"es":""} ${neg.join(", ")}.`:"In every row here the system does work on its surroundings."; })()}`,`The same bookkeeping works with any consistent energy unit (kJ, Btu, ft·lbf) as long as every entry in a row uses the same one.`],
-  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 2.5 (energy balance for closed systems), Eq. 2.35a."],
-  takeaway:(v,r)=>`Ten unknowns, one law: ΔE = Q − W = E₂ − E₁ closes every row, and the signs of Q and W carry the physics.`
-},
-{
-  id:"threecycle", topic:"Cycles", name:"Three-Process Cycle: Heat, Work & Energy", tag:"Q for each process, W_cycle sign",
-  kind:"Closed system · thermodynamic cycle", units:"SI",
-  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 2.77 (8th ed.). Numbers changed.",
-  original:{ p1:1, V1:1.5, W12:-104, U1:512, U2:690, Q23:-150, W31:50 },
-  randomize(){ const p1=pick(1,3,0.5), V1=pick(0.5,2.5,0.25); const rr=pick(1.5,3,0.25); const W12=-Math.round(p1*100*V1*Math.log(rr)); const V2=V1*Math.exp(W12/(p1*100*V1)); const U1=pick(300,600,10); const U2=U1+pick(100,250,10); const Q23=-pick(80,200,10); const W31=Math.max(1,Math.round(pick(0.55,0.95,0.05)*p1*100*(V1-V2))); return { p1, V1, W12, U1, U2, Q23, W31 }; },
-  solve(v){ const dU12=v.U2-v.U1; const Q12=dU12+v.W12; const W23=0; const U3=v.U2+v.Q23-W23; const dU31=v.U1-U3; const Q31=dU31+v.W31; const Wcyc=v.W12+W23+v.W31; const Qcyc=Q12+v.Q23+Q31;
-    /* p–V diagram: V2 from W12 = p1V1 ln(V2/V1); p2 from p1V1 = p2V2; 3–1 linear in p–V so W31 = (p3+p1)/2 (V1−V3) */
-    const p1k=v.p1*100; const V2=v.V1*Math.exp(v.W12/(p1k*v.V1)); const p2=v.p1*v.V1/V2; const V3=V2; const p3=(2*v.W31/(v.V1-V3)-p1k)/100;
-    return {dU12,Q12,W23,U3,dU31,Q31,Wcyc,Qcyc,power:Wcyc>0,V2,p2,V3,p3}; },
-  statement:(v)=>`A gas in a piston–cylinder assembly undergoes a thermodynamic cycle of three processes in series, starting at state 1 where p₁ = ${N(v.p1,"bar")} and V₁ = ${N(v.V1,"m³")}. Process 1–2: compression with pV = constant, W₁₂ = ${N(v.W12,"kJ")}, U₁ = ${N(v.U1,"kJ")}, U₂ = ${N(v.U2,"kJ")}. Process 2–3: constant volume, W₂₃ = 0, Q₂₃ = ${N(v.Q23,"kJ")}. Process 3–1: expansion with pressure varying linearly with volume, W₃₁ = ${N(v.W31,"kJ")}. Kinetic and potential energy changes are negligible. (a) Determine Q₁₂, Q₃₁ and U₃, each in kJ. (b) Find the net work of the cycle and decide whether this can be a power cycle.`,
-  known:(v)=>[`Gas, closed system, cycle 1–2–3–1; p₁ = ${fmt(v.p1)} bar, V₁ = ${fmt(v.V1)} m³`,`1–2: pV = const, W₁₂ = ${fmt(v.W12)} kJ, U₁ = ${fmt(v.U1)} kJ, U₂ = ${fmt(v.U2)} kJ`,`2–3: V = const, W₂₃ = 0, Q₂₃ = ${fmt(v.Q23)} kJ`,`3–1: linear p–V expansion, W₃₁ = ${fmt(v.W31)} kJ`,`ΔKE = ΔPE = 0 for every process`],
-  find:["Q₁₂, in kJ","Q₃₁, in kJ","U₃, in kJ","W_cycle, in kJ — power cycle or not?"],
-  assumptions:()=>["The gas is a closed system","Kinetic and potential energy changes are negligible, so ΔE = ΔU","Each process is quasi-equilibrium (the p–V path is defined and W = ∫p dV)","The gas returns to state 1, so the three processes form a cycle"],
-  properties:()=>[{title:"No table lookups needed",fixed:"Internal energies are given directly; the energy balance supplies the rest.",items:[]}],
-  answers:(v,r)=>[{label:"Q₁₂",unit:"kJ",val:r.Q12,scale:100},{label:"Q₃₁",unit:"kJ",val:r.Q31,scale:100},{label:"U₃",unit:"kJ",val:r.U3},{label:"W_cycle",unit:"kJ",val:r.Wcyc,scale:100}],
+  id:"nozzle_air", topic:"Single devices", name:"Insulated Nozzle: Exit Temperature and Area", tag:"Medium · h₁ + V₁²/2 = h₂ + V₂²/2, Table A-22",
+  kind:"Control volume · nozzle · ideal gas with Table A-22", units:"SI",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.36 (8th ed.). Numbers changed; nitrogen (Table A-23) replaced by air (Table A-22).",
+  original:{ mdot:3, V1:20, T1:340, p1:400, p2:100, V2:478.8 },
+  randomize(){ for(let k=0;k<60;k++){ const v={ mdot:pick(1,6,0.5), V1:pick(10,60,5), T1:pick(320,480,10), p1:choice([300,350,400,500,600]), p2:100, V2:pick(300,520,10) }; const A1=PROPS.air("T",v.T1,"SI"); const h2=A1.h-KE(v.V1,v.V2); const A2=PROPS.air("h",h2,"SI"); if(!A2.error&&A2.T>210) return v; } return {mdot:3,V1:20,T1:340,p1:400,p2:100,V2:478.8}; },
+  solve(v){ const g=GAS("SI"); const R=PROPS.RU.SI/g.M; const A1=PROPS.air("T",v.T1,"SI"); const dke=KE(v.V1,v.V2); const h2=A1.h-dke; const A2=PROPS.air("h",h2,"SI"); const T2=A2.T; const v2=R*T2/v.p2; const area=v.mdot*v2/v.V2; return {R,A1,h1:A1.h,dke,h2,A2,T2,v2,area,areacm:area*1e4,dT:v.T1-T2}; },
+  statement:(v)=>`Air, modeled as an ideal gas, flows at ${N(v.mdot,"kg/s")} through a well-insulated horizontal nozzle at steady state. It enters at ${N(v.V1,"m/s")}, ${N(v.T1,"K")}, ${N(v.p1,"kPa")} and leaves at ${N(v.p2,"kPa")} with a velocity of ${N(v.V2,"m/s")}. Using Table A-22 for the enthalpy of air, determine (a) the exit temperature, in K, and (b) the exit area, in m².`,
+  known:(v)=>[`Air through an insulated nozzle, steady state, ṁ = ${fmt(v.mdot)} kg/s`,`Inlet: V₁ = ${fmt(v.V1)} m/s, T₁ = ${fmt(v.T1)} K, p₁ = ${fmt(v.p1)} kPa`,`Exit: p₂ = ${fmt(v.p2)} kPa, V₂ = ${fmt(v.V2)} m/s`],
+  find:["(a) T₂, in K","(b) A₂, in m²"],
+  assumptions:()=>["The control volume around the nozzle is at steady state","Ẇ_cv = 0 (a nozzle has no shaft) and Q̇_cv = 0 (well insulated)","Horizontal: Δpe = 0. Kinetic energy is NOT negligible — it is the whole point of a nozzle","Air is an ideal gas; h = h(T) from Table A-22"],
+  properties:(v,r)=>[
+    {title:"State 1",fixed:`T₁ = ${fmt(v.T1)} K`,phase:"ideal gas",items:[{sym:"h₁",val:r.h1,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A1,"h","h₁")]}]},
+    {title:"State 2",fixed:`h₂ = ${fmt(r.h2)} kJ/kg (from the energy balance)`,phase:"ideal gas",items:[{sym:"T₂ (inverse lookup on h)",val:r.T2,unit:"K",table:"A-22",how:r.A2.how.concat([PROPS.airHow(r.A2,"T","T₂")])},{sym:"v₂ = RT₂/p₂",val:r.v2,unit:"m³/kg",table:"",how:[`v₂ = (${fmt(r.R)} kJ/kg·K)(${fmt(r.T2)} K)/(${fmt(v.p2)} kPa) = ${fmt(r.v2)} m³/kg`]}],note:"Enter Table A-22 with h and read T backwards — interpolate between the two rows that bracket h₂."}],
+  answers:(v,r)=>[{label:"(a) T₂",unit:"K",val:r.T2},{label:"(b) A₂",unit:"m²",val:r.area}],
   analysis(v,r){ return [
-    {t:"Energy balance for each process (ΔKE = ΔPE = 0)", eq:T`\Delta U=Q-W\;\Rightarrow\;Q=\Delta U+W`, note:"Same equation three times; the trick is knowing which term is given for each leg."},
-    {t:"(a) Process 1–2: Q₁₂", eq:T`Q_{12}=(U_2-U_1)+W_{12}=(${fmt(v.U2)}-${fmt(v.U1)})\ \text{kJ}+(${fmt(v.W12)}\ \text{kJ})=${fmt(r.Q12)}\ \text{kJ}`, box:T`Q_{12}=${fmt(r.Q12)}\ \text{kJ}`, note:r.Q12>0?"Positive: heat is added even though the gas is being compressed — the internal energy rises by more than the work put in.":"Negative: the compression work raises U by less than the work supplied, so the difference leaves as heat."},
-    {t:"Process 2–3: U₃ (constant volume, no work)", eq:T`U_3=U_2+Q_{23}-W_{23}=${fmt(v.U2)}\ \text{kJ}+(${fmt(v.Q23)}\ \text{kJ})-0=${fmt(r.U3)}\ \text{kJ}`, box:T`U_3=${fmt(r.U3)}\ \text{kJ}`, note:"With W₂₃ = 0 all the heat removed comes straight out of the internal energy."},
-    {t:"Process 3–1: Q₃₁", eq:T`Q_{31}=(U_1-U_3)+W_{31}=(${fmt(v.U1)}-${fmt(r.U3)})\ \text{kJ}+${fmt(v.W31)}\ \text{kJ}=${fmt(r.Q31)}\ \text{kJ}`, box:T`Q_{31}=${fmt(r.Q31)}\ \text{kJ}`},
-    {t:"(b) Net work of the cycle", eq:T`W_{cycle}=W_{12}+W_{23}+W_{31}=(${fmt(v.W12)})+0+(${fmt(v.W31)})=${fmt(r.Wcyc)}\ \text{kJ}`, box:T`W_{cycle}=${fmt(r.Wcyc)}\ \text{kJ}`, note:`Check: Q_cycle = ${fmt(r.Q12)} + (${fmt(v.Q23)}) + ${fmt(r.Q31)} = ${fmt(r.Qcyc)} kJ = W_cycle, as it must for any cycle (ΔU_cycle = 0).`},
-    {t:"Power cycle?", eq:r.power?T`W_{cycle}>0\;\Rightarrow\;\text{net work out: this can be a power cycle}`:T`W_{cycle}<0\;\Rightarrow\;\text{net work IN: this cannot be a power cycle}`, note:r.power?"A power cycle delivers net work to its surroundings.":"A power cycle must deliver net work; here the surroundings supply net work, so at best it is a refrigeration or heat-pump cycle (traversed counter-clockwise on p–V)."},
-    {t:"p–V states for the sketch", eq:T`V_2=V_1\exp\!\left(\frac{W_{12}}{p_1V_1}\right)=${fmt(r.V2)}\ \text{m}^3,\quad p_2=\frac{p_1V_1}{V_2}=${fmt(r.p2)}\ \text{bar},\quad p_3=\frac{2W_{31}}{V_1-V_3}-p_1=${fmt(r.p3)}\ \text{bar}`, note:"p₁V₁ = (1 bar = 100 kPa) × V₁ gives kJ directly. For the straight line 3–1 the work is the trapezoid area (p₃ + p₁)(V₁ − V₃)/2."}
+    {t:"(a) Energy rate balance for the nozzle", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}^{\,0}+\dot m\Big[(h_1-h_2)+\tfrac{V_1^2-V_2^2}{2}+g(z_1-z_2)^{\,0}\Big]\ \Rightarrow\ h_2=h_1-\frac{V_2^2-V_1^2}{2}`, note:"ṁ cancels. The gain in kinetic energy comes entirely out of the enthalpy, so the gas cools as it speeds up."},
+    {t:"Kinetic energy change, converted to kJ/kg", eq:T`\frac{V_2^2-V_1^2}{2}=\frac{(${fmt(v.V2)})^2-(${fmt(v.V1)})^2}{2}\ \tfrac{\text{m}^2}{\text{s}^2}\left|\tfrac{1\ \text{N}}{1\ \text{kg·m/s}^2}\right|\left|\tfrac{1\ \text{kJ}}{10^3\ \text{N·m}}\right|=${fmt(r.dke)}\ \text{kJ/kg}`, note:"1 kJ/kg = 1000 m²/s². Forgetting the 10³ is the classic nozzle mistake."},
+    {t:"Exit enthalpy and Table A-22 backwards", eq:T`h_2=${fmt(r.h1)}-${fmt(r.dke)}=${fmt(r.h2)}\ \text{kJ/kg}\quad\Rightarrow\quad T_2=${fmt(r.T2)}\ \text{K}`, box:T`T_2=${fmt(r.T2)}\ \text{K}`, note:`h₁ = ${fmt(r.h1)} kJ/kg at ${fmt(v.T1)} K (Table A-22). The temperature drops ${fmt(r.dT,3)} K.`},
+    {t:"(b) Mass rate balance at the exit", eq:T`\dot m=\frac{A_2V_2}{v_2}\ \Rightarrow\ A_2=\frac{\dot m\,v_2}{V_2}=\frac{\dot m RT_2}{V_2p_2}`},
+    {t:"Plug in", eq:T`A_2=\frac{(${fmt(v.mdot)}\ \text{kg/s})\left(\tfrac{8.314}{28.97}\ \tfrac{\text{kJ}}{\text{kg·K}}\right)(${fmt(r.T2)}\ \text{K})}{(${fmt(v.V2)}\ \text{m/s})(${fmt(v.p2)}\ \text{kPa})}\left|\tfrac{10^3\ \text{N·m}}{1\ \text{kJ}}\right|\left|\tfrac{1\ \text{kPa}}{10^3\ \text{N/m}^2}\right|=${fmt(r.area)}\ \text{m}^2`, box:T`A_2=${fmt(r.area)}\ \text{m}^2\ (${fmt(r.areacm,3)}\ \text{cm}^2)`}
   ]; },
-  comments:(v,r)=>[`The sign of W_cycle decides everything: W_cycle = ${fmt(r.Wcyc)} kJ ${r.power?"> 0 means net work out — a power cycle":"< 0 means the surroundings must push "+fmt(-r.Wcyc)+" kJ of net work into the gas each cycle — that is what a refrigerator or heat pump needs, not an engine"}. On the p–V diagram the loop is traversed ${r.power?"clockwise":"counter-clockwise"}, and its enclosed area is |W_cycle|.`,`Q_cycle = W_cycle is the cycle version of the first law. Here Q₁₂ = ${fmt(r.Q12)} kJ, Q₂₃ = ${fmt(v.Q23)} kJ and Q₃₁ = ${fmt(r.Q31)} kJ; the net (${fmt(r.Qcyc)} kJ) equals the net work, which is a good check on the arithmetic.`,`Note W₁₂ was given, so no integral was needed. If only the p–V relation had been given, W₁₂ = p₁V₁ ln(V₂/V₁) — the value used here to place state 2 at V₂ = ${fmt(r.V2)} m³.`],
-  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 2.5 (energy balance) and Sec. 2.6 (energy analysis of cycles), Eqs. 2.35 and 2.40."],
-  takeaway:(v,r)=>`ΔU = Q − W on every leg, and around the loop ΔU = 0, so Q_cycle = W_cycle = ${fmt(r.Wcyc)} kJ — the sign says ${r.power?"engine":"refrigerator, not engine"}.`,
-  diagram:(v,r)=>({ x:"v", y:"P", fluid:null, units:"SI", logx:false, xlab:"V (m³)", ylab:"p (bar)", title:"p–V diagram",
-    states:[{P:v.p1,v:v.V1,label:"1"},{P:r.p2,v:r.V2,label:"2"},{P:r.p3,v:r.V3,label:"3"}],
-    paths:[{a:0,b:1,kind:"polytropic",n:1,label:"pV = c",heat:r.Q12>0?1:-1},{a:1,b:2,kind:"isochoric",label:"V = c",heat:-1},{a:2,b:0,kind:"line",label:"linear p–V",heat:r.Q31>0?1:-1}],
-    cap:`1–2 compression up the hyperbola (W₁₂ < 0), 2–3 straight down at constant volume (heat out), 3–1 straight-line expansion back to 1. Loop runs counter-clockwise: net work in.` }),
-  anim:(v,r)=>({type:"piston"})
+  comments:(v,r)=>[`A nozzle converts enthalpy into kinetic energy: ${fmt(r.dke)} kJ/kg of KE was bought with a ${fmt(r.dT,3)} K temperature drop. Constant c_p would give ΔT ≈ ${fmt(r.dke/1.005,3)} K — close, because the temperatures are moderate; Table A-22 is exact.`,`The exit area is small (${fmt(r.areacm,3)} cm²) because V₂ is large; the inlet area, ṁv₁/V₁ = ${fmt(v.mdot*r.R*v.T1/v.p1/v.V1)} m², is much larger — the nozzle converges.`,`The original textbook problem uses nitrogen with molar enthalpies from Table A-23; the method is identical with air and Table A-22, which is the table carried in this course.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.6 (nozzles and diffusers), Eq. 4.20a; Table A-22."],
+  takeaway:(v,r)=>`Nozzle: h₂ = h₁ − (V₂² − V₁²)/2 with the 10³ conversion, read T₂ backwards from Table A-22, then A₂ = ṁRT₂/(V₂p₂).`,
+  flow:(v,r)=>({ title:"Flow through the converging nozzle", cap:"Particles accelerate through the nozzle (exit segment runs faster), cool (orange → blue-green) and spread out: v rises because p drops more than T. Q̇ = Ẇ = 0 for the dashed CV.", w:360,h:220, cv:[110,50,140,120],
+    nodes:[{id:"n",x:120,y:60,w:120,h:100,kind:"nozzle",label:"nozzle (insulated)"}],
+    streams:[{pts:[[20,110],[180,110]],T:[0.8,0.55],size:[1,1.1],speed:0.6,rate:1.3,label:"air, V₁"},{pts:[[180,110],[340,110]],T:[0.55,0.35],size:[1.1,1.3],speed:2.2,rate:0.7,label:""}],
+    arrows:[],
+    readout:[{label:"V₁",val:fmt(v.V1)+" m/s"},{label:"V₂",val:fmt(v.V2)+" m/s"},{label:"T₁",val:fmt(v.T1)+" K"},{label:"T₂",val:fmt(r.T2)+" K"}] })
 },
+/* ------------------------------------------------------------------ class example 1 (≈ 4.46) ------------------------------------------------------------------ */
 {
-  id:"fridgecop", topic:"Cycles", name:"Refrigeration Cycle from its COP", tag:"β = Q_in / W_cycle",
-  kind:"Thermodynamic cycle · refrigerator", units:"SI",
-  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 2.89 (8th ed.). Numbers changed.",
-  original:{ beta:1.8, Qout:250 },
-  randomize(){ return { beta:pick(1.2,4.5,0.1), Qout:pick(120,900,10) }; },
-  solve(v){ const Qin=v.Qout*v.beta/(v.beta+1); const Wnet=v.Qout-Qin; const Wcyc=-Wnet; return {Qin,Wnet,Wcyc,ratio:v.beta/(v.beta+1)}; },
-  statement:(v)=>`A refrigeration cycle operating between a cold body and a hot body (as in Fig. 2.17b of the text) has a coefficient of performance β = ${N(v.beta)}. During one cycle the energy rejected by heat transfer to the hot body is Q_out = ${N(v.Qout,"kJ")}. Determine (a) the energy removed from the cold body by heat transfer, Q_in, and (b) the net work of the cycle, W_cycle, each in kJ, using the sign convention that work done <i>by</i> the system is positive.`,
-  known:(v)=>[`Refrigeration cycle, coefficient of performance β = ${fmt(v.beta)}`,`Heat rejected to the hot body per cycle Q_out = ${fmt(v.Qout)} kJ`],
-  find:["Q_in (heat drawn from the cold body), in kJ","W_cycle (work by the system, sign convention), in kJ"],
-  assumptions:()=>["The system executes a thermodynamic cycle, so ΔE_cycle = 0","Only two heat interactions: Q_in from the cold body and Q_out to the hot body (both taken as magnitudes)","Work enters the cycle from the surroundings (a refrigerator must be driven)"],
-  properties:()=>[{title:"No table lookups needed",fixed:"The cycle energy balance and the definition of β are all that is required.",items:[]}],
-  answers:(v,r)=>[{label:"Q_in",unit:"kJ",val:r.Qin},{label:"W_cycle (by the system)",unit:"kJ",val:r.Wcyc}],
+  id:"turbine_inlet", topic:"Single devices", name:"Steam Turbine: Find the Inlet Pressure", tag:"Medium · Ẇ, KE terms, Table A-4 searched at T₁",
+  kind:"Control volume · turbine · steam tables", units:"SI",
+  credit:"Class example (Dr. Walck), 2026 lecture notes, Ch. 4 Example 1 — cf. Moran &amp; Shapiro Problem 4.46 (8th ed.).",
+  original:{ W:23, mdot:40, T1:360, V1:35, p2:0.06, V2:120 },
+  randomize(){ for(let k=0;k<80;k++){ const v={ W:pick(12,40,1), mdot:pick(25,70,1), T1:pick(300,480,20), V1:pick(20,80,5), p2:choice([0.06,0.08,0.1]), V2:pick(90,200,10) }; const h2=PROPS.sat("water","P",v.p2,"SI").hg; const h1=v.W*1000/v.mdot+h2+KE(v.V1,v.V2); const S1=PROPS.state("water",{T:v.T1,h:h1},"SI"); if(!S1.error&&S1.phase==="superheated vapor"&&isFinite(S1.P)&&S1.P>=1.5&&S1.P<=100) return v; } return {W:23,mdot:40,T1:360,V1:35,p2:0.06,V2:120}; },
+  solve(v){ const S2=PROPS.sat("water","P",v.p2,"SI"); const h2=S2.hg; const dke=KE(v.V1,v.V2); const Wk=v.W*1000; const wm=Wk/v.mdot; const h1=wm+h2+dke; const S1=PROPS.state("water",{T:v.T1,h:h1},"SI"); const ST1=PROPS.sat("water","T",v.T1,"SI");
+    /* the two Table A-4 pressure blocks whose h at T1 bracket h1 (h falls as p rises along an isotherm) */
+    const pts=[]; TABLES.SI.water.sup.forEach(b=>{ const q=PROPS.interpRows(b.rows,"T",v.T1,["h"]); if(q&&q.row.h!==null) pts.push({P:b.P,h:q.row.h}); }); let br={pLo:S1.P,hLo:h1,pHi:S1.P,hHi:h1}; for(let k=1;k<pts.length;k++){ if(pts[k-1].h>=h1&&pts[k].h<=h1){ br={pLo:pts[k-1].P,hLo:pts[k-1].h,pHi:pts[k].P,hHi:pts[k].h}; break; } }
+    return {S2,h2,T2:S2.T,dke,Wk,wm,h1,S1,ST1,hfT1:ST1.hf,hgT1:ST1.hg,br,p1:S1.P,v1:S1.v,v2:S2.vg,h1h2:h1-h2}; },
+  statement:(v)=>`A well-insulated steam turbine operating at steady-state conditions develops ${N(v.W,"MW")} of power for a steam flow rate of ${N(v.mdot,"kg/s")}. The steam enters at ${N(v.T1,"°C")} with a velocity of ${N(v.V1,"m/s")} and exits as saturated vapor at ${N(v.p2,"bar")} with a velocity of ${N(v.V2,"m/s")}. Find the inlet specific enthalpy, in kJ/kg, and the inlet pressure required to sustain this process, in bar.`,
+  known:(v)=>[`Well-insulated turbine at steady state: the system is doing the work, Ẇ = +${fmt(v.W)} MW = ${fmt(v.W*1000)} kJ/s`,`ṁ = ${fmt(v.mdot)} kg/s (S.S. → ṁ_in = ṁ_out)`,`Inlet 1: T₁ = ${fmt(v.T1)} °C, V₁ = ${fmt(v.V1)} m/s, p₁ = ?`,`Exit 2: saturated vapor at p₂ = ${fmt(v.p2)} bar, V₂ = ${fmt(v.V2)} m/s`],
+  find:["h₁, in kJ/kg","p₁ required to sustain the process, in bar"],
+  assumptions:()=>["Steady state → dE_cv/dt = 0 and ṁ_in = ṁ_out","Well insulated → Q̇ ≅ 0","No heights or sizes given → ΔPE = 0 (kinetic energy is kept: both velocities are given)","The turbine does work on the surroundings: Ẇ is positive","Steam properties from Tables A-2, A-3 and A-4"],
+  properties:(v,r)=>[
+    {title:"State 2 (H₂O)",fixed:`p₂ = ${fmt(v.p2)} bar, saturated vapor → h₂ = h_g @ p₂`,phase:"saturated vapor",items:[{sym:"h₂ = h_g(p₂)",val:r.h2,unit:"kJ/kg",table:"A-3",how:[PROPS.satHow(r.S2,"hg","h_g")]},{sym:"v_g(p₂)",val:r.v2,unit:"m³/kg",table:"A-3",how:[PROPS.satHow(r.S2,"vg","v_g")]},{sym:"T₂ = T_sat",val:r.T2,unit:"°C",table:"A-3",how:[PROPS.satHow(r.S2,"T","T_sat")]}]},
+    {title:"State 1 (H₂O)",fixed:`T₁ = ${fmt(v.T1)} °C, p₁ = ?, V₁ = ${fmt(v.V1)} m/s — to establish state 1 we need two intensive properties; h₁ will be the second`,phase:r.S1.phase,items:[{sym:"h_f(T₁)",val:r.hfT1,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.ST1,"hf","h_f")]},{sym:"h_g(T₁)",val:r.hgT1,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.ST1,"hg","h_g")]},{sym:`h at T₁ in the ${PROPS.f4(r.br.pLo)} bar block`,val:r.br.hLo,unit:"kJ/kg",table:"A-4"},{sym:`h at T₁ in the ${PROPS.f4(r.br.pHi)} bar block`,val:r.br.hHi,unit:"kJ/kg",table:"A-4"},{sym:"p₁",val:r.p1,unit:"bar",table:"A-4",how:r.S1.how}],note:`h₁ = ${fmt(r.h1)} > h_g(T₁): superheated region. In Table A-4 at ${fmt(v.T1)} °C, h = ${PROPS.f4(r.br.hLo)} (${PROPS.f4(r.br.pLo)} bar) and ${PROPS.f4(r.br.hHi)} (${PROPS.f4(r.br.pHi)} bar) bracket h₁.`}],
+  answers:(v,r)=>[{label:"h₁",unit:"kJ/kg",val:r.h1},{label:"p₁",unit:"bar",val:r.p1}],
   analysis(v,r){ return [
-    {t:"Definition of the coefficient of performance for a refrigerator", eq:T`\beta=\frac{Q_{in}}{W_{cycle,in}}=\frac{Q_{in}}{Q_{out}-Q_{in}}`, note:"The 'benefit' is the heat pulled out of the cold space; the 'cost' is the net work supplied. For a cycle, W_net,in = Q_out − Q_in."},
-    {t:"(a) Solve for Q_in", eq:T`\beta=\frac{Q_{in}}{Q_{out}-Q_{in}}\;\Rightarrow\;\beta Q_{out}-\beta Q_{in}=Q_{in}\;\Rightarrow\;Q_{in}=\frac{\beta}{\beta+1}Q_{out}`},
-    {t:"Plug in", eq:T`Q_{in}=\frac{${fmt(v.beta)}}{${fmt(v.beta)}+1}(${fmt(v.Qout)}\ \text{kJ})=${fmt(r.Qin)}\ \text{kJ}`, box:T`Q_{in}=${fmt(r.Qin)}\ \text{kJ}`},
-    {t:"(b) Cycle energy balance: work supplied", eq:T`W_{cycle,in}=Q_{out}-Q_{in}=${fmt(v.Qout)}\ \text{kJ}-${fmt(r.Qin)}\ \text{kJ}=${fmt(r.Wnet)}\ \text{kJ}`, note:"For any cycle ΔE = 0, so the net heat out must equal the net work in."},
-    {t:"Sign convention: work BY the system is positive", eq:T`W_{cycle}=Q_{in}-Q_{out}=${fmt(r.Qin)}\ \text{kJ}-${fmt(v.Qout)}\ \text{kJ}=${fmt(r.Wcyc)}\ \text{kJ}`, box:T`W_{cycle}=${fmt(r.Wcyc)}\ \text{kJ}`, note:`Negative: ${fmt(r.Wnet)} kJ of work is done ON the refrigerant each cycle by the compressor motor.`}
+    {t:"The system is doing the work (+)", eq:T`\dot W_T=${fmt(v.W)}\ \text{MW}=${fmt(v.W*1000)}\times\tfrac{\text{kJ}}{\text{s}}\quad(+)`, note:"Recall: turbines generate power as a result of gas or liquid passing through rotating blades. Work done BY the control volume is positive in the energy balance."},
+    {t:"Knowns that simplify the balance", eq:T`\text{S.S.}\ \Rightarrow\ \frac{dE_{cv}}{dt}=0\ \text{and}\ \dot m_{in}=\dot m_{out};\qquad \text{well insulated}\ \Rightarrow\ \dot Q\cong0;\qquad \text{no height given}\ \Rightarrow\ \Delta PE=0`},
+    {t:"First law for the control volume: energy in − energy out", eq:T`\frac{dE_{cv}}{dt}^{\,0}=\dot Q^{\,0}-\dot W+\sum\dot m_{in}e_{in}-\sum\dot m_{out}e_{out}\ \Rightarrow\ \dot W=\dot m_{in}\Big(h+\tfrac{V^2}{2}\Big)_{in}-\dot m_{out}\Big(h+\tfrac{V^2}{2}\Big)_{out}`, note:"Each stream carries enthalpy plus kinetic energy across the boundary (potential energy dropped)."},
+    {t:"With ṁ_in = ṁ_out = ṁ", eq:T`\dot W=\dot m\Big[(h_1-h_2)+\Big(\tfrac{V_1^2}{2}-\tfrac{V_2^2}{2}\Big)\Big]\ \Rightarrow\ ${fmt(v.W*1000)}\ \tfrac{\text{kJ}}{\text{s}}=${fmt(v.mdot)}\ \tfrac{\text{kg}}{\text{s}}\Big[(h_1-h_2)+\Big(\tfrac{${fmt(v.V1)}^2}{2}-\tfrac{${fmt(v.V2)}^2}{2}\Big)\Big]`, note:"If I find h₁, I can use it to find the pressure at 1: T₁ and h₁ are the two intensive properties that establish state 1."},
+    {t:"State 2: saturated vapor → h₂ = h_g @ p₂ (Table A-3)", eq:T`h_2=h_g(${fmt(v.p2)}\ \text{bar})=${fmt(r.h2)}\ \tfrac{\text{kJ}}{\text{kg}},\qquad v_g=${fmt(r.v2)}\ \tfrac{\text{m}^3}{\text{kg}},\qquad T_2=T_{sat}=${fmt(r.T2)}^\circ\text{C}`},
+    {t:"Unit check on the velocity term: m²/s² ≠ kJ/kg", eq:T`\Big(\tfrac{${fmt(v.V1)}^2}{2}-\tfrac{${fmt(v.V2)}^2}{2}\Big)\tfrac{\text{m}^2}{\text{s}^2}\left|\tfrac{1\ \text{N}}{1\ \text{kg·m/s}^2}\right|\left|\tfrac{1\ \text{kJ}}{10^3\ \text{N·m}}\right|=${fmt(-r.dke)}\ \tfrac{\text{kJ}}{\text{kg}}`, note:"1 kJ/kg = 1000 m²/s². The kinetic-energy term must be converted before it can be added to an enthalpy in kJ/kg."},
+    {t:"Divide by ṁ and solve for h₁", eq:T`\frac{${fmt(v.W*1000)}\ \text{kJ/s}}{${fmt(v.mdot)}\ \text{kg/s}}=${fmt(r.wm)}=h_1-${fmt(r.h2)}+(${fmt(-r.dke)})\ \Rightarrow\ ${fmt(r.wm+r.h2)}=h_1-${fmt(r.dke)}`, box:T`h_1=${fmt(r.h1)}\ \tfrac{\text{kJ}}{\text{kg}}`, note:"Go back to state 1 with this second property."},
+    {t:"Hmm — what region are we in? Check h_f and h_g at T₁ (Table A-2)", eq:T`T_1=${fmt(v.T1)}^\circ\text{C}:\quad h_f=${fmt(r.hfT1)}\ \tfrac{\text{kJ}}{\text{kg}},\quad h_g=${fmt(r.hgT1)}\ \tfrac{\text{kJ}}{\text{kg}};\qquad h_1=${fmt(r.h1)}>h_g\ \Rightarrow\ \text{superheated region!}`, note:"Below h_f it would be compressed liquid, between h_f and h_g a mixture at p_sat(T₁). Above h_g the state is superheated, so Table A-4 is the right table."},
+    {t:`Go to Table A-4 using h₁ = ${fmt(r.h1)} and T₁ = ${fmt(v.T1)} °C`, eq:T`\begin{array}{c|c} h\ (\text{kJ/kg}) & p\ (\text{bar})\\\hline ${fmt(r.br.hLo)} & ${fmt(r.br.pLo)}\\ ${fmt(r.h1)} & \approx${fmt(r.p1)}\ \leftarrow p_1\\ ${fmt(r.br.hHi)} & ${fmt(r.br.pHi)}\end{array}`, box:T`p_1\approx${fmt(r.p1)}\ \text{bar}`, note:`Read the h column at ${fmt(v.T1)} °C in successive pressure blocks: ${fmt(r.br.hLo)} at ${fmt(r.br.pLo)} bar and ${fmt(r.br.hHi)} at ${fmt(r.br.pHi)} bar bracket h₁; interpolate in p.`}
   ]; },
-  comments:(v,r)=>[`Why the sign? The first law for a cycle is W_cycle = Q_cycle = Q_in − Q_out with W positive when done <i>by</i> the system. A refrigerator rejects more heat than it absorbs (Q_out > Q_in), so W_cycle = Q_in − Q_out comes out negative (−${fmt(r.Wnet)} kJ, as in the class key). The textbook's Fig. 2.17b instead labels the arrow W_cycle = Q_out − Q_in as a positive input. Both say the same thing: ${fmt(r.Wnet)} kJ of work flows in.`,`β = ${fmt(v.beta)} means every kJ of electrical work moves ${fmt(v.beta)} kJ out of the cold space. β can exceed 1 without violating anything: work is not being 'created', it is being used to pump heat uphill from cold to hot.`,`The hot body receives Q_out = Q_in + W_in: the heat dumped by the condenser coils is always larger than the heat removed from the food — that is why the back of a fridge is warm.`],
-  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 2.6.2 (refrigeration and heat pump cycles), Eqs. 2.43 and 2.45, Fig. 2.17b."],
-  takeaway:(v,r)=>`Q_in = ${fmt(r.Qin)} kJ comes out of the cold box, ${fmt(r.Wnet)} kJ of work goes in, and their sum ${fmt(v.Qout)} kJ lands in the room — W_cycle is negative only because we count work by the system as positive.`
+  comments:(v,r)=>[`Food for thought: without insulation you would have losses (Q̇ < 0), so the same p₁ and T₁ would deliver less power — you would need to increase the mass flow to maintain p₁ and Ẇ_out. In the balance, a negative Q̇ adds to the ṁ(h₁ − h₂) the turbine must extract.`,`The kinetic-energy term (${fmt(r.dke)} kJ/kg) is ${fmt(100*r.dke/r.wm,2)}% of the work term (${fmt(r.wm)} kJ/kg); it was kept because both velocities were given, but for most turbines it can be dropped.`,`Along the ${fmt(v.T1)} °C isotherm of Table A-4, h changes by only ${fmt(Math.abs(r.br.hLo-r.br.hHi),3)} kJ/kg between ${fmt(r.br.pLo)} and ${fmt(r.br.pHi)} bar, so a small error in h₁ moves p₁ noticeably — carry four significant figures in h.`,`Specific volume drops from v_g = ${fmt(r.v2)} m³/kg at the exit back to v₁ = ${fmt(r.v1)} m³/kg at the inlet: the exhaust is a huge, low-pressure vapor, which is why turbine exhaust casings are so much larger than the inlet piping.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.7 (turbines), Eq. 4.20a; Tables A-2, A-3 and A-4.","Class notes, ES 305 Ch. 4 Example 1 (Dr. Walck, 2026): Applying the 1st law of thermodynamics."],
+  takeaway:(v,r)=>`S.S., insulated, no heights: Ẇ = ṁ[(h₁ − h₂) + (V₁² − V₂²)/2] with the m²/s² → kJ/kg conversion gives h₁ = ${fmt(r.h1)} kJ/kg; h₁ > h_g(T₁) puts state 1 in the superheated region, and Table A-4 at T₁ gives p₁ ≈ ${fmt(r.p1)} bar.`,
+  flow:(v,r)=>({ title:"Steam expanding through the turbine", cap:"Hot, dense superheated steam enters (small orange particles); low-pressure saturated vapor leaves (large, cooler particles). The shaft power Ẇ_cv leaves the dashed control volume.", w:360,h:220, cv:[100,40,160,140],
+    nodes:[{id:"t",x:120,y:55,w:120,h:110,kind:"turbine",label:"turbine, Q̇ = 0"}],
+    streams:[{pts:[[20,80],[125,80],[235,110],[340,110]],T:[1,0.35],size:[0.7,1.7],label:"steam, "+fmt(v.T1)+" °C"}],
+    arrows:[{x:300,y:40,dir:"out",kind:"W",label:"Ẇ = "+fmt(v.W)+" MW"}],
+    readout:[{label:"ṁ",val:fmt(v.mdot)+" kg/s"},{label:"h₁",val:fmt(r.h1)+" kJ/kg"},{label:"p₁",val:fmt(r.p1)+" bar"},{label:"exit",val:"sat. vapor, "+fmt(v.p2)+" bar"}] })
+},
+/* ------------------------------------------------------------------ class example (2026): Δh of air, variable vs constant c_p ------------------------------------------------------------------ */
+{
+  id:"air_dh_cp", topic:"Single devices", name:"Air Compression: Δh with Variable vs Constant c_p", tag:"Easy · Table A-22 vs c_p(T_avg) from Table A-20, compressor work",
+  kind:"Control volume · compressor · ideal-gas enthalpy", units:"SI",
+  credit:"Class example (Dr. Walck), 2026 lecture notes — air undergoing a compression process.",
+  original:{ T1:300, p1:1, T2:1500, p2:10, mdot:1 },
+  randomize(){ return { T1:pick(280,360,10), p1:choice([1,1.2,1.5]), T2:pick(700,1500,50), p2:choice([6,8,10,12,15]), mdot:pick(0.5,5,0.5) }; },
+  solve(v){ const A1=PROPS.air("T",v.T1,"SI"), A2=PROPS.air("T",v.T2,"SI"); const dh=A2.h-A1.h; const Tavg=(v.T1+v.T2)/2; const C=cpAir(Tavg); const dhc=C.cp*(v.T2-v.T1); const err=100*(dhc-dh)/dh; const W=-v.mdot*dh; const dh300=1.005*(v.T2-v.T1); return {A1,A2,h1:A1.h,h2:A2.h,dh,Tavg,C,cp:C.cp,dhc,err,W,Wabs:-W,dh300,err300:100*(dh300-dh)/dh}; },
+  statement:(v)=>`Air enters an adiabatic compressor at ${N(v.T1,"K")}, ${N(v.p1,"bar")} and leaves at ${N(v.T2,"K")}, ${N(v.p2,"bar")}; the mass flow rate is ${N(v.mdot,"kg/s")}. Kinetic and potential energy effects are negligible. Find the change in specific enthalpy of the air, in kJ/kg, (a) using the variable-specific-heat data of Table A-22 and (b) assuming a constant c_p evaluated at the average temperature (Table A-20). Then (c) determine the compressor power, in kW, using the Table A-22 result.`,
+  known:(v)=>[`Air (ideal gas), ṁ = ${fmt(v.mdot)} kg/s`,`State 1: T₁ = ${fmt(v.T1)} K, p₁ = ${fmt(v.p1)} bar`,`State 2: T₂ = ${fmt(v.T2)} K, p₂ = ${fmt(v.p2)} bar`,`Adiabatic compressor, ΔKE = ΔPE = 0`],
+  find:["(a) Δh = h₂ − h₁ from Table A-22, in kJ/kg","(b) Δh = c_p(T₂ − T₁) with c_p at T_avg (Table A-20), in kJ/kg","(c) Ẇ_cv, in kW"],
+  assumptions:()=>["Air is an ideal gas: h = h(T) only, so the pressures do not enter Δh","Steady state; the compressor is adiabatic (Q̇ = 0); ΔKE = ΔPE = 0","(b) c_p is treated as constant at its value at T_avg = (T₁ + T₂)/2"],
+  properties:(v,r)=>[
+    {title:"Air, Table A-22 (variable specific heats)",fixed:`T₁ = ${fmt(v.T1)} K, T₂ = ${fmt(v.T2)} K — in ideal gases, look at temperatures!`,phase:"ideal gas",items:[{sym:"h₁",val:r.h1,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A1,"h","h₁")]},{sym:"h₂",val:r.h2,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A2,"h","h₂")]}]},
+    {title:"Air, Table A-20 (constant specific heat)",fixed:`T_avg = (${fmt(v.T1)} + ${fmt(v.T2)})/2 = ${fmt(r.Tavg)} K`,phase:"ideal gas",items:[{sym:"c_p(T_avg)",val:r.cp,unit:"kJ/kg·K",table:"A-20",how:r.C.how}],note:"Use the average temperature for an initial calculation; c_p of air rises from 1.005 at 300 K to 1.142 at 1000 K."}],
+  answers:(v,r)=>[{label:"(a) Δh (Table A-22)",unit:"kJ/kg",val:r.dh},{label:"(b) Δh (constant c_p)",unit:"kJ/kg",val:r.dhc},{label:"(c) Ẇ_cv",unit:"kW",val:r.W}],
+  analysis(v,r){ return [
+    {t:"(a) Variable specific heats → Table A-22 with the known temperatures", eq:T`h_1=h(${fmt(v.T1)}\ \text{K})=${fmt(r.h1)}\ \tfrac{\text{kJ}}{\text{kg}},\qquad h_2=h(${fmt(v.T2)}\ \text{K})=${fmt(r.h2)}\ \tfrac{\text{kJ}}{\text{kg}}`, note:"In an ideal gas h depends on T alone, so p₁ and p₂ are not needed to read the table."},
+    {t:"Enthalpy change", eq:T`\Delta h=h_2-h_1=${fmt(r.h2)}-${fmt(r.h1)}=${fmt(r.dh)}\ \tfrac{\text{kJ}}{\text{kg}}`, box:T`\Delta h_{A\text{-}22}=${fmt(r.dh)}\ \text{kJ/kg}`},
+    {t:"(b) Constant specific heat: Δh = c_p(T₂ − T₁) with c_p from Table A-20", eq:T`T_{avg}=\frac{${fmt(v.T1)}+${fmt(v.T2)}}{2}=${fmt(r.Tavg)}\ \text{K}\ \Rightarrow\ c_p=${fmt(r.cp)}\ \tfrac{\text{kJ}}{\text{kg·K}}`, note:"Use the average temperature for the initial calculation; the value at 300 K (1.005) would understate Δh because c_p grows with T."},
+    {t:"Plug in", eq:T`\Delta h=${fmt(r.cp)}\,(${fmt(v.T2)}-${fmt(v.T1)})=${fmt(r.dhc)}\ \tfrac{\text{kJ}}{\text{kg}}`, box:T`\Delta h_{c_p}=${fmt(r.dhc)}\ \text{kJ/kg}`, note:`${fmt(r.dh)} vs ${fmt(r.dhc)} kJ/kg — a ${fmt(Math.abs(r.err),2)}% difference: assuming constant c is totally valid here.`},
+    {t:"(c) Compressor power from the energy rate balance", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}+\dot m\,(h_1-h_2)\ \Rightarrow\ \dot W_{cv}=\dot m\,(h_1-h_2)=(${fmt(v.mdot)})(${fmt(r.h1)}-${fmt(r.h2)})=${fmt(r.W)}\ \text{kW}`, box:T`\dot W_{cv}=${fmt(r.W)}\ \text{kW}`, note:`Negative: ${fmt(r.Wabs)} kW of power must be supplied to the compressor.`}
+  ]; },
+  comments:(v,r)=>[`Table A-22 integrates the real c_p(T) for you; the constant-c_p shortcut works because c_p of air varies slowly and the average-temperature value captures most of the change. Using c_p = 1.005 kJ/kg·K (the 300 K value) instead would give ${fmt(r.dh300)} kJ/kg, ${fmt(Math.abs(r.err300),2)}% ${r.err300<0?"low":"high"} — the choice of temperature for c_p matters more than the constant-c_p assumption itself.`,`Because h = h(T) for an ideal gas, the ten-fold pressure rise never appeared in Δh. Pressure would matter for v (= RT/p) and therefore for the exit velocity or duct area, not for the enthalpy.`,`The same two routes apply to Δu with c_v and the u column of Table A-22; c_p − c_v = R holds at every temperature.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 3.13 (ideal-gas Δh: Eqs. 3.43 and 3.50); Tables A-20 and A-22.","Class notes, ES 305 Ch. 4 (Dr. Walck, 2026): air undergoing a compression process."],
+  takeaway:(v,r)=>`For an ideal gas Δh = h₂ − h₁ from Table A-22 (${fmt(r.dh)} kJ/kg) or c_p(T_avg)(T₂ − T₁) (${fmt(r.dhc)} kJ/kg): within ${fmt(Math.abs(r.err),2)}%, so constant c_p at the average temperature is a valid shortcut.`,
+  flow:(v,r)=>({ title:"Air through the adiabatic compressor", cap:"Air enters cool at low pressure (large blue particles) and leaves hot and dense (small orange). Only shaft work crosses the dashed CV — no heat.", w:360,h:220, cv:[105,45,150,130],
+    nodes:[{id:"c",x:120,y:60,w:120,h:100,kind:"compressor",label:"compressor, Q̇ = 0"}],
+    streams:[{pts:[[20,110],[125,110],[235,110],[340,110]],T:[0.15,1],size:[1.6,0.6],label:"air, "+fmt(v.T1)+" K"}],
+    arrows:[{x:180,y:30,dir:"in",kind:"W",label:"Ẇ_in = "+fmt(r.Wabs)+" kW"}],
+    readout:[{label:"Δh (A-22)",val:fmt(r.dh)+" kJ/kg"},{label:"Δh (c_p)",val:fmt(r.dhc)+" kJ/kg"},{label:"T₂",val:fmt(v.T2)+" K"}] })
+},
+/* ------------------------------------------------------------------ 4.61 ------------------------------------------------------------------ */
+{
+  id:"compressor_r134a", topic:"Single devices", name:"Water-Jacketed R-134a Compressor", tag:"Medium · Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁), Table A-12",
+  kind:"Control volume · compressor · refrigerant tables", units:"SI",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.61 (8th ed.). Numbers changed.",
+  original:{ T1:-10, p1:1.4, mdot:4.2, W:-150, T2:50, p2:12 },
+  randomize(){ for(let k=0;k<80;k++){ const v={ T1:pick(-10,20,10), p1:choice([1.4,1.8,2]), mdot:pick(1.5,6,0.1), W:-pick(60,220,5), T2:pick(50,90,10), p2:choice([8,9,10,12]) }; const S1=PROPS.state("r134a",{T:v.T1,P:v.p1},"SI"), S2=PROPS.state("r134a",{T:v.T2,P:v.p2},"SI"); if(S1.error||S2.error||S1.phase!=="superheated vapor"||S2.phase!=="superheated vapor") continue; const Q=v.W+v.mdot*(S2.h-S1.h); if(Q<-3&&Q>-0.4*Math.abs(v.W)) return v; } return {T1:-10,p1:1.4,mdot:4.2,W:-150,T2:50,p2:12}; },
+  solve(v){ const S1=PROPS.state("r134a",{T:v.T1,P:v.p1},"SI"); const S2=PROPS.state("r134a",{T:v.T2,P:v.p2},"SI"); const dh=S2.h-S1.h; const Q=v.W+v.mdot*dh; return {S1,S2,h1:S1.h,h2:S2.h,dh,Q,Qabs:-Q,Wabs:-v.W,frac:-Q/(-v.W)*100,Tsat1:PROPS.sat("r134a","P",v.p1,"SI").T,Tsat2:PROPS.sat("r134a","P",v.p2,"SI").T}; },
+  statement:(v)=>`Refrigerant 134a enters a water-jacketed compressor operating at steady state at ${N(v.T1,"°C")}, ${N(v.p1,"bar")} with a mass flow rate of ${N(v.mdot,"kg/s")} and exits at ${N(v.T2,"°C")}, ${N(v.p2,"bar")}. The power input to the compressor is ${N(-v.W,"kW")}. Neglecting kinetic and potential energy effects, determine the rate of heat transfer from the refrigerant to the cooling water circulating through the jacket, in kW.`,
+  known:(v)=>[`R-134a compressor, steady state, ṁ = ${fmt(v.mdot)} kg/s`,`Inlet: T₁ = ${fmt(v.T1)} °C, p₁ = ${fmt(v.p1)} bar`,`Exit: T₂ = ${fmt(v.T2)} °C, p₂ = ${fmt(v.p2)} bar`,`Power input ${fmt(-v.W)} kW, i.e. Ẇ_cv = ${fmt(v.W)} kW`],
+  find:["Q̇_cv (heat transfer to the cooling water), in kW"],
+  assumptions:()=>["The control volume encloses the refrigerant side of the compressor only, at steady state","Kinetic and potential energy effects are negligible","Ẇ_cv is the shaft power, negative because work is done on the refrigerant","Property data from Table A-12 (both states are superheated vapor)"],
+  properties:(v,r)=>[
+    {title:"State 1",fixed:`T₁ = ${fmt(v.T1)} °C, p₁ = ${fmt(v.p1)} bar`,phase:r.S1.phase,items:[{sym:"T_sat(p₁)",val:r.Tsat1,unit:"°C",table:"A-11"},{sym:"h₁",val:r.h1,unit:"kJ/kg",table:r.S1.table,how:r.S1.how}],note:"T₁ > T_sat(p₁): superheated vapor, read the p₁ block of Table A-12."},
+    {title:"State 2",fixed:`T₂ = ${fmt(v.T2)} °C, p₂ = ${fmt(v.p2)} bar`,phase:r.S2.phase,items:[{sym:"T_sat(p₂)",val:r.Tsat2,unit:"°C",table:"A-11"},{sym:"h₂",val:r.h2,unit:"kJ/kg",table:r.S2.table,how:r.S2.how}]}],
+  answers:(v,r)=>[{label:"Q̇_cv",unit:"kW",val:r.Q}],
+  analysis(v,r){ return [
+    {t:"Mass and energy rate balances at steady state", eq:T`\dot m_1=\dot m_2=\dot m;\qquad 0=\dot Q_{cv}-\dot W_{cv}+\dot m\Big[(h_1-h_2)+\tfrac{V_1^2-V_2^2}{2}^{\,0}+g(z_1-z_2)^{\,0}\Big]`},
+    {t:"Solve for the heat transfer", eq:T`\dot Q_{cv}=\dot W_{cv}+\dot m\,(h_2-h_1)`, note:"Both terms on the right are known once the two states are fixed. Unlike the textbook's adiabatic compressors, this one is cooled, so Q̇_cv ≠ 0."},
+    {t:"Enthalpies from Table A-12", eq:T`h_1=${fmt(r.h1)}\ \tfrac{\text{kJ}}{\text{kg}}\ (${fmt(v.p1)}\ \text{bar},\ ${fmt(v.T1)}^\circ\text{C}),\qquad h_2=${fmt(r.h2)}\ \tfrac{\text{kJ}}{\text{kg}}\ (${fmt(v.p2)}\ \text{bar},\ ${fmt(v.T2)}^\circ\text{C})`, note:"Both are superheated: check T against T_sat at each pressure (Table A-11) before opening A-12."},
+    {t:"Plug in", eq:T`\dot Q_{cv}=(${fmt(v.W)}\ \text{kW})+\left(${fmt(v.mdot)}\ \tfrac{\text{kg}}{\text{s}}\right)(${fmt(r.h2)}-${fmt(r.h1)})\tfrac{\text{kJ}}{\text{kg}}\left|\tfrac{1\ \text{kW}}{1\ \text{kJ/s}}\right|=${fmt(r.Q)}\ \text{kW}`, box:T`\dot Q_{cv}=${fmt(r.Q)}\ \text{kW}`, note:`Negative: ${fmt(r.Qabs)} kW leaves the refrigerant and goes into the cooling water.`}
+  ]; },
+  comments:(v,r)=>[`Energy audit: ${fmt(r.Wabs)} kW of shaft work goes in; ${fmt(v.mdot*r.dh)} kW of it raises the enthalpy of the refrigerant (ṁΔh) and the remaining ${fmt(r.Qabs)} kW (${fmt(r.frac,2)}% of the input) is carried off by the jacket water.`,`Sign convention matters twice here: Ẇ_cv = ${fmt(v.W)} kW because the surroundings do work on the CV, and Q̇_cv = ${fmt(r.Q)} kW because heat leaves it. The question asks for the heat transfer <i>to</i> the water, which is the magnitude ${fmt(r.Qabs)} kW.`,`If the jacket were removed (adiabatic compressor with the same power), the exit enthalpy would be h₁ + Ẇ/ṁ = ${fmt(r.h1+r.Wabs/v.mdot)} kJ/kg and the exit temperature would be higher than ${fmt(v.T2)} °C — cooling lets a compressor run cooler for the same pressure rise.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.8 (compressors and pumps), Eq. 4.20a; Tables A-11 and A-12."],
+  takeaway:(v,r)=>`Compressor with cooling: Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁) = ${fmt(r.Q)} kW — negative means the jacket water receives ${fmt(r.Qabs)} kW.`,
+  flow:(v,r)=>({ title:"Refrigerant through the cooled compressor", cap:"Low-pressure vapor (large blue particles) is squeezed into hot, dense vapor (small orange particles). Shaft work enters; some heat leaves through the water jacket.", w:360,h:220, cv:[105,45,150,130],
+    nodes:[{id:"c",x:120,y:60,w:120,h:100,kind:"compressor",label:"compressor + water jacket"}],
+    streams:[{pts:[[20,110],[125,110],[235,110],[340,110]],T:[0.2,0.9],size:[1.5,0.7],label:"R-134a, "+fmt(v.T1)+" °C"}],
+    arrows:[{x:180,y:30,dir:"in",kind:"W",label:"Ẇ_in = "+fmt(r.Wabs)+" kW"},{x:250,y:185,dir:"out",kind:"Q",label:"Q̇ to water"}],
+    readout:[{label:"h₁",val:fmt(r.h1)+" kJ/kg"},{label:"h₂",val:fmt(r.h2)+" kJ/kg"},{label:"Q̇_cv",val:fmt(r.Q)+" kW"}] })
+},
+/* ------------------------------------------------------------------ 4.84 ------------------------------------------------------------------ */
+{
+  id:"mixing_air", topic:"Single devices", name:"Mixing Chamber: Outside Air Meets Return Air", tag:"Medium · ṁ₁h₁ + ṁ₂h₂ = ṁ₃h₃, duct diameter",
+  kind:"Control volume · mixing chamber · ideal gas", units:"EN",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.84 (8th ed.). Numbers changed.",
+  original:{ T1:90, AV1:2000, T2:75, D2:4, V2:400, V3:500 },
+  randomize(){ return { T1:pick(82,100,1), AV1:pick(1200,3500,100), T2:pick(65,78,1), D2:pick(2.5,5,0.5), V2:pick(300,600,20), V3:pick(350,700,25) }; },
+  solve(v){ const g=GAS("EN"); const p=14.7; const R=1545/g.M; /* ft·lbf/lb·°R */ const T1R=v.T1+459.67, T2R=v.T2+459.67; const m1=p*144*v.AV1/(R*T1R); const A2=Math.PI*v.D2*v.D2/4; const m2=p*144*A2*v.V2/(R*T2R); const m3=m1+m2; const T3R=(m1*T1R+m2*T2R)/m3; const T3=T3R-459.67; const A3=m3*R*T3R/(p*144*v.V3); const D3=Math.sqrt(4*A3/Math.PI); return {p,R,T1R,T2R,m1,A2,m2,m3,T3R,T3,A3,D3,cp:g.cp}; },
+  statement:(v)=>`In the ducting ahead of the cooling coils of an air-conditioning system, outside air at ${N(v.T1,"°F")} with a volumetric flow rate of ${N(v.AV1,"ft³/min")} mixes at steady state with return air at ${N(v.T2,"°F")} flowing at ${N(v.V2,"ft/min")} through a duct ${N(v.D2,"ft")} in diameter. The mixed stream leaves at ${N(v.V3,"ft/min")}. Stray heat transfer and kinetic and potential energy effects are negligible, and the pressure is 1 atm throughout. Modeling the air as an ideal gas with c_p = 0.24 Btu/lb·°R, determine (a) the temperature of the mixed air, in °F, and (b) the diameter of the mixed-air duct, in ft.`,
+  known:(v)=>[`Stream 1 (outside air): T₁ = ${fmt(v.T1)} °F, (AV)₁ = ${fmt(v.AV1)} ft³/min`,`Stream 2 (return air): T₂ = ${fmt(v.T2)} °F, D₂ = ${fmt(v.D2)} ft, V₂ = ${fmt(v.V2)} ft/min`,`Stream 3 (mixed): V₃ = ${fmt(v.V3)} ft/min, T₃ = ?, D₃ = ?`,`p = 1 atm = 14.7 lbf/in² everywhere; c_p = 0.24 Btu/lb·°R`],
+  find:["(a) T₃, in °F","(b) D₃, in ft"],
+  assumptions:()=>["The control volume around the mixing section is at steady state","Q̇_cv = 0 (stray heat transfer negligible) and Ẇ_cv = 0","Kinetic and potential energy effects are negligible","Air is an ideal gas with constant c_p, so h = c_pT + const; the constant cancels in the balance","Constant pressure, 1 atm"],
+  properties:(v,r)=>[{title:"Air (ideal gas)",fixed:`p = 14.7 lbf/in², c_p = 0.24 Btu/lb·°R`,phase:"ideal gas",items:[{sym:"R = 1545/28.97",val:r.R,unit:"ft·lbf/lb·°R",table:"A-1E",how:["R̄ = 1545 ft·lbf/lbmol·°R divided by M = 28.97 lb/lbmol."]},{sym:"T₁, T₂ (absolute)",val:`${fmt(r.T1R,5)}, ${fmt(r.T2R,5)}`,unit:"°R",table:"",how:["°R = °F + 459.67"]}]}],
+  answers:(v,r)=>[{label:"(a) T₃",unit:"°F",val:r.T3},{label:"(b) D₃",unit:"ft",val:r.D3}],
+  analysis(v,r){ return [
+    {t:"Mass rate balance", eq:T`\dot m_3=\dot m_1+\dot m_2,\qquad \dot m=\frac{AV}{v}=\frac{p\,(AV)}{RT}`, note:"Ideal gas: v = RT/p. Every stream is at 1 atm, so the density differences come only from temperature."},
+    {t:"Stream 1", eq:T`\dot m_1=\frac{p(AV)_1}{RT_1}=\frac{\left(14.7\ \tfrac{\text{lbf}}{\text{in}^2}\right)\left(\tfrac{144\ \text{in}^2}{\text{ft}^2}\right)(${fmt(v.AV1)}\ \tfrac{\text{ft}^3}{\text{min}})}{\left(\tfrac{1545}{28.97}\ \tfrac{\text{ft·lbf}}{\text{lb·°R}}\right)(${fmt(r.T1R,5)}\ ^\circ\text{R})}=${fmt(r.m1)}\ \text{lb/min}`},
+    {t:"Stream 2 (area from the diameter)", eq:T`\dot m_2=\frac{p\,A_2V_2}{RT_2}=\frac{(14.7)(144)\left(\tfrac{\pi(${fmt(v.D2)})^2}{4}\ \text{ft}^2\right)(${fmt(v.V2)}\ \tfrac{\text{ft}}{\text{min}})}{\left(\tfrac{1545}{28.97}\right)(${fmt(r.T2R,5)})}=${fmt(r.m2)}\ \text{lb/min}`, note:`A₂ = ${fmt(r.A2)} ft². Total ṁ₃ = ${fmt(r.m3)} lb/min.`},
+    {t:"(a) Energy rate balance, two inlets and one exit", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}^{\,0}+\dot m_1h_1+\dot m_2h_2-(\dot m_1+\dot m_2)h_3\ \Rightarrow\ 0=\dot m_1c_p(T_1-T_3)+\dot m_2c_p(T_2-T_3)`, note:"With h = c_pT the reference value of h cancels. c_p then divides out too — the mixed temperature is a mass-weighted average."},
+    {t:"Mixed temperature", eq:T`T_3=\frac{\dot m_1T_1+\dot m_2T_2}{\dot m_1+\dot m_2}=\frac{(${fmt(r.m1)})(${fmt(r.T1R,5)})+(${fmt(r.m2)})(${fmt(r.T2R,5)})}{${fmt(r.m3)}}=${fmt(r.T3R,5)}^\circ\text{R}`, box:T`T_3=${fmt(r.T3)}^\circ\text{F}`},
+    {t:"(b) Exit duct diameter from the mass balance", eq:T`\dot m_3=\frac{A_3V_3}{v_3}=\frac{p\,(\pi D_3^2/4)V_3}{RT_3}\ \Rightarrow\ D_3=\sqrt{\frac{4\,\dot m_3RT_3}{\pi\,p\,V_3}}=\sqrt{\frac{4(${fmt(r.m3)})\left(\tfrac{1545}{28.97}\right)(${fmt(r.T3R,5)})}{\pi(14.7)(144)(${fmt(v.V3)})}}=${fmt(r.D3)}\ \text{ft}`, box:T`D_3=${fmt(r.D3)}\ \text{ft}`}
+  ]; },
+  comments:(v,r)=>[`T₃ = ${fmt(r.T3)} °F sits between ${fmt(v.T2)} and ${fmt(v.T1)} °F, closer to the stream with the larger mass flow (return air, ${fmt(r.m2)} lb/min vs. ${fmt(r.m1)} lb/min). A mixing chamber can never produce a temperature outside the range of its inlets.`,`Because pressure is uniform and the gas is ideal, c_p and the enthalpy datum both drop out and T₃ is a mass-weighted mean. With property tables (steam, refrigerant) you would have to weight the enthalpies instead.`,`Notice that the exit area is not the sum of the inlet areas: ṁ, not AV, is conserved, and V₃ was specified independently. With V₃ = ${fmt(v.V3)} ft/min the duct comes out ${fmt(r.D3)} ft across.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.9 (heat exchangers and mixing), Eqs. 4.18 and 4.6; Table A-1E."],
+  takeaway:(v,r)=>`Mixing: ṁ₃ = ṁ₁ + ṁ₂ and ṁ₁h₁ + ṁ₂h₂ = ṁ₃h₃; for an ideal gas at one pressure that is just a mass-weighted average of T — ${fmt(r.T3)} °F here.`,
+  flow:(v,r)=>({ title:"Two air streams merging in the duct", cap:"Warm outside air (orange) and cool return air (blue) enter the dashed mixing section; one stream at the mass-weighted temperature leaves. Q̇ = Ẇ = 0.", w:360,h:220, cv:[90,40,170,150],
+    nodes:[{id:"m",x:110,y:60,w:130,h:110,kind:"mixer",label:"mixing section"}],
+    streams:[{pts:[[20,80],[110,80],[175,115]],T:[0.85,0.8],size:[1,1],rate:0.8,label:"outside air "+fmt(v.T1)+" °F"},{pts:[[20,150],[110,150],[175,115]],T:[0.3,0.35],size:[0.95,0.95],rate:1.4,label:"return air "+fmt(v.T2)+" °F"},{pts:[[175,115],[240,115],[340,115]],T:[0.5,0.5],size:[0.97,0.97],rate:1.6,label:""}],
+    arrows:[],
+    readout:[{label:"ṁ₁",val:fmt(r.m1)+" lb/min"},{label:"ṁ₂",val:fmt(r.m2)+" lb/min"},{label:"T₃",val:fmt(r.T3)+" °F"},{label:"D₃",val:fmt(r.D3)+" ft"}] })
+},
+/* ------------------------------------------------------------------ 4.78 ------------------------------------------------------------------ */
+{
+  id:"condenser_river", topic:"Single devices", name:"Power-Plant Condenser Cooled by a River", tag:"Medium · ṁ_steam h_fg = ṁ_river (h₄ − h₃), Table A-2 backwards",
+  kind:"Control volume · heat exchanger · steam tables", units:"SI",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.78 (8th ed.). Numbers changed.",
+  original:{ mdot:2e5, P:0.1, AV:2e5, T3:15 },
+  randomize(){ return { mdot:pick(1e5,5e5,1e4), P:choice([0.06,0.08,0.1,0.2]), AV:pick(8e4,5e5,1e4), T3:pick(8,25,1) }; },
+  solve(v){ const S=PROPS.sat("water","P",v.P,"SI"); const S3=PROPS.sat("water","T",v.T3,"SI"); const v3=S3.vf, h3=S3.hf; const m3=v.AV/v3; const Qc=v.mdot*S.hfg; const h4=h3+Qc/m3; const I=satInv("water","hf",h4,"SI"); const T4=I.T; return {S,S3,hfg:S.hfg,Tsat:S.T,v3,h3,m3,Qc,QcMW:Qc/3600/1000,h4,I,T4,dT:T4-v.T3,ratio:m3/v.mdot}; },
+  statement:(v)=>`A proposed condenser for an industrial steam plant would use river water to condense ${N(v.mdot,"kg/h")} of steam from saturated vapor to saturated liquid at ${N(v.P,"bar")}. Upstream of the plant the river flows at ${N(v.AV,"m³/h")} with a temperature of ${N(v.T3,"°C")}. Assuming steady state and neglecting kinetic and potential energy effects, determine the mass flow rate of the river, in kg/h, and the temperature rise of the river water downstream of the plant, in °C. Comment on the result.`,
+  known:(v)=>[`Steam side (1 → 2): ṁ_s = ${fmt(v.mdot)} kg/h, sat. vapor → sat. liquid at p = ${fmt(v.P)} bar`,`River side (3 → 4): (AV)₃ = ${fmt(v.AV)} m³/h at T₃ = ${fmt(v.T3)} °C`,`The two streams do not mix`],
+  find:["ṁ_river, in kg/h","ΔT = T₄ − T₃ of the river, in °C"],
+  assumptions:()=>["The control volume enclosing the condenser (both streams) is at steady state","Ẇ_cv = 0; no net heat transfer with the surroundings (all the heat leaves the steam and enters the river inside the CV)","Kinetic and potential energy effects are negligible","At 3 and 4 the river water is liquid: v ≈ v_f(T), h ≈ h_f(T)"],
+  properties:(v,r)=>[
+    {title:"Steam, states 1 → 2",fixed:`p = ${fmt(v.P)} bar, x₁ = 1 → x₂ = 0`,phase:"saturated",items:[{sym:"T_sat",val:r.Tsat,unit:"°C",table:"A-3",how:[PROPS.satHow(r.S,"T","T_sat")]},{sym:"h₁ − h₂ = h_fg",val:r.hfg,unit:"kJ/kg",table:"A-3",how:[PROPS.satHow(r.S,"hfg","h_fg")]}]},
+    {title:"River, state 3",fixed:`T₃ = ${fmt(v.T3)} °C, liquid`,phase:"compressed liquid ≈ sat. liquid",items:[{sym:"v₃ ≈ v_f(T₃)",val:r.v3,unit:"m³/kg",table:"A-2",how:[PROPS.satHow(r.S3,"vf","v_f")]},{sym:"h₃ ≈ h_f(T₃)",val:r.h3,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.S3,"hf","h_f")]}]},
+    {title:"River, state 4",fixed:`h₄ = ${fmt(r.h4,6)} kJ/kg (from the balance)`,phase:"liquid",items:[{sym:"T₄ from h_f(T₄) = h₄",val:r.T4,unit:"°C",table:"A-2",how:r.I.how}],note:"Read Table A-2 backwards: find the temperature whose h_f equals h₄."}],
+  answers:(v,r)=>[{label:"ṁ_river",unit:"kg/h",val:r.m3},{label:"ΔT (river)",unit:"°C",val:r.dT,scale:1}],
+  analysis(v,r){ return [
+    {t:"River mass flow rate", eq:T`\dot m_3=\frac{(AV)_3}{v_3}=\frac{${fmt(v.AV)}\ \text{m}^3\text{/h}}{${fmt(r.v3)}\ \text{m}^3\text{/kg}}=${fmt(r.m3)}\ \text{kg/h}`, box:T`\dot m_{river}=${fmt(r.m3)}\ \text{kg/h}`, note:`v_f at ${fmt(v.T3)} °C from Table A-2 — liquid water is nearly incompressible, so v ≈ v_f(T) regardless of the pressure.`},
+    {t:"Energy rate balance for the whole condenser (two streams)", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}^{\,0}+\dot m_1\Big[h_1-h_2+\tfrac{V_1^2-V_2^2}{2}^{\,0}+g(z_1-z_2)^{\,0}\Big]+\dot m_3\Big[h_3-h_4+\tfrac{V_3^2-V_4^2}{2}^{\,0}+g(z_3-z_4)^{\,0}\Big]`, note:"Drawing the boundary around both streams makes Q̇_cv = 0: the heat transfer is internal to the CV."},
+    {t:"Solve for the river exit enthalpy", eq:T`h_4=h_3+\frac{\dot m_1}{\dot m_3}(h_1-h_2)=h_3+\frac{\dot m_1}{\dot m_3}h_{fg}`, note:"Saturated vapor → saturated liquid at constant pressure: h₁ − h₂ = h_fg at that pressure."},
+    {t:"Plug in", eq:T`h_4=${fmt(r.h3)}+\left(\frac{${fmt(v.mdot)}}{${fmt(r.m3)}}\right)(${fmt(r.hfg)})=${fmt(r.h4,6)}\ \text{kJ/kg}`, note:`h_fg(${fmt(v.P)} bar) = ${fmt(r.hfg)} kJ/kg (Table A-3); h₃ = h_f(${fmt(v.T3)} °C) = ${fmt(r.h3)} kJ/kg (Table A-2).`},
+    {t:"Temperature rise by inverse lookup in Table A-2", eq:T`h_f(T_4)=${fmt(r.h4,6)}\ \tfrac{\text{kJ}}{\text{kg}}\ \Rightarrow\ T_4=${fmt(r.T4)}^\circ\text{C},\qquad \Delta T=T_4-T_3=${fmt(r.dT,3)}^\circ\text{C}`, box:T`\Delta T=${fmt(r.dT,3)}^\circ\text{C}`, note:"h_f rises about 4.18 kJ/kg per °C, so ΔT ≈ (h₄ − h₃)/4.18 — the inverse table lookup confirms it."}
+  ]; },
+  comments:(v,r)=>[`The river carries ${fmt(r.ratio,3)}× the mass flow of the steam, and each kg of condensing steam releases h_fg = ${fmt(r.hfg)} kJ — about ${fmt(r.hfg/4.18/r.ratio,2)} °C of warming per kg of river water. The rejected heat is ${fmt(r.QcMW,3)} MW.`,`A rise of ${fmt(r.dT,3)} °C sounds small, but thermal pollution limits are often only 1–3 °C: warm water holds less dissolved oxygen and stresses aquatic life. This is why plants on small rivers use cooling towers instead of once-through cooling.`,`Nothing about the plant's pressure or turbine entered — only the condenser duty ṁ_s h_fg. Lowering the condenser pressure (colder river) raises h_fg slightly but improves plant efficiency far more.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.9 (heat exchangers), Eq. 4.18; Sec. 2.6.2 (environmental note); Tables A-2 and A-3."],
+  takeaway:(v,r)=>`Draw the CV around both streams so Q̇ = 0, then ṁ_s h_fg = ṁ_river (h₄ − h₃): the river warms ${fmt(r.dT,3)} °C while swallowing ${fmt(r.QcMW,3)} MW.`,
+  flow:(v,r)=>({ title:"Condenser: steam gives up h_fg to the river", cap:"Top stream: saturated steam (large orange particles) condenses to liquid (small, cooler). Bottom stream: river water warms only slightly because its mass flow is so much larger. The dashed CV encloses both streams.", w:360,h:220, cv:[90,40,180,150],
+    nodes:[{id:"hx",x:110,y:60,w:140,h:110,kind:"condenser",label:"condenser"}],
+    streams:[{pts:[[20,85],[110,85],[250,85],[340,85]],T:[0.9,0.55],size:[1.8,0.6],rate:0.6,label:"steam in"},{pts:[[340,145],[250,145],[110,145],[20,145]],T:[0.1,0.18],size:[0.7,0.7],rate:2.2,label:""}],
+    arrows:[],
+    readout:[{label:"ṁ_steam",val:fmt(v.mdot)+" kg/h"},{label:"ṁ_river",val:fmt(r.m3)+" kg/h"},{label:"river in",val:fmt(v.T3)+" °C"},{label:"river out",val:fmt(r.T4)+" °C"}] })
+},
+/* ------------------------------------------------------------------ class example 3 / HW 4 (4.79) ------------------------------------------------------------------ */
+{
+  id:"solar_collector", topic:"Single devices", name:"Solar Collector: Gallons of Hot Water per Hour", tag:"Easy · ṁ = Q̇/(h₂ − h₁), Table A-2E, gal/h",
+  kind:"Control volume · heat exchanger · English units", units:"EN",
+  credit:"Class example (Dr. Walck), HW 4 key — Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.79 (8th ed.).",
+  original:{ A:24, q:200, loss:25, T1:90, T2:120 },
+  randomize(){ return { A:pick(16,48,2), q:pick(150,320,10), loss:pick(10,40,5), T1:pick(60,100,5), T2:pick(110,160,5) }; },
+  solve(v){ const S1=PROPS.sat("water","T",v.T1,"EN"), S2=PROPS.sat("water","T",v.T2,"EN"); const Qin=v.q*v.A; const Q=(1-v.loss/100)*Qin; const h1=S1.hf, h2=S2.hf; const mdot=Q/(h2-h1); const v2=S2.vf; const AV=mdot*v2; const gph=AV*7.48; return {S1,S2,Qin,Q,h1,h2,mdot,v2,AV,gph,gpm:gph/60,eff:1-v.loss/100}; },
+  statement:(v)=>`A flat-plate solar collector with a surface area of ${N(v.A,"ft²")} is built into a roof. It receives solar energy at ${N(v.q,"Btu/h·ft²")} of collector surface; ${N(v.loss,"%")} of the incoming energy is lost to the surroundings and the rest heats domestic water flowing through the collector from ${N(v.T1,"°F")} to ${N(v.T2,"°F")} with negligible pressure drop. Neglecting kinetic and potential energy effects, determine at steady state the mass flow rate of water, in lb/h, and the volume of ${N(v.T2,"°F")} water the collector delivers per hour, in gallons.`,
+  known:(v)=>[`Collector area A = ${fmt(v.A)} ft², solar flux ${fmt(v.q)} Btu/h·ft²`,`${fmt(v.loss)}% of the incoming energy is lost; the rest goes into the water`,`Water in at T₁ = ${fmt(v.T1)} °F, out at T₂ = ${fmt(v.T2)} °F, Δp ≈ 0`],
+  find:["ṁ, in lb/h","Volumetric flow of hot water, in gal/h"],
+  assumptions:()=>["The control volume around the water in the collector is at steady state","Ẇ_cv = 0; ΔKE = ΔPE = 0; Δp ≈ 0","Q̇_cv is the absorbed fraction of the solar input: (1 − loss)(flux)(area)","Liquid water: v ≈ v_f(T), h ≈ h_f(T) (Table A-2E)"],
+  properties:(v,r)=>[
+    {title:"State 1 (water in)",fixed:`T₁ = ${fmt(v.T1)} °F, liquid`,phase:"compressed liquid ≈ sat. liquid",items:[{sym:"h₁ ≈ h_f(T₁)",val:r.h1,unit:"Btu/lb",table:"A-2E",how:[PROPS.satHow(r.S1,"hf","h_f")]}]},
+    {title:"State 2 (water out)",fixed:`T₂ = ${fmt(v.T2)} °F, liquid`,phase:"compressed liquid ≈ sat. liquid",items:[{sym:"h₂ ≈ h_f(T₂)",val:r.h2,unit:"Btu/lb",table:"A-2E",how:[PROPS.satHow(r.S2,"hf","h_f")]},{sym:"v₂ ≈ v_f(T₂)",val:r.v2,unit:"ft³/lb",table:"A-2E",how:[PROPS.satHow(r.S2,"vf","v_f")]}]}],
+  answers:(v,r)=>[{label:"ṁ",unit:"lb/h",val:r.mdot},{label:"(AV)₂",unit:"gal/h",val:r.gph}],
+  analysis(v,r){ return [
+    {t:"Energy rate balance, reduced", eq:T`\frac{dE_{cv}}{dt}^{\,0}=\dot Q_{cv}-\dot W_{cv}^{\,0}+\dot m\Big[(h_1-h_2)+\tfrac{V_1^2-V_2^2}{2}^{\,0}+g(z_1-z_2)^{\,0}\Big]\ \Rightarrow\ \dot m=\frac{\dot Q_{cv}}{h_2-h_1}`, note:"Steady state, no shaft work, KE and PE dropped. The heat absorbed goes entirely into raising the enthalpy of the water stream."},
+    {t:"Heat transfer to the water", eq:T`\dot Q_{cv}=(1-${fmt(v.loss/100)})\left(${fmt(v.q)}\ \tfrac{\text{Btu}}{\text{h·ft}^2}\right)(${fmt(v.A)}\ \text{ft}^2)=${fmt(r.Q)}\ \text{Btu/h}`, note:`Only ${fmt(100*r.eff,3)}% of the ${fmt(r.Qin)} Btu/h striking the panel reaches the water.`},
+    {t:"Enthalpies of liquid water (Table A-2E)", eq:T`h_1\approx h_f(${fmt(v.T1)}^\circ\text{F})=${fmt(r.h1)}\ \tfrac{\text{Btu}}{\text{lb}},\qquad h_2\approx h_f(${fmt(v.T2)}^\circ\text{F})=${fmt(r.h2)}\ \tfrac{\text{Btu}}{\text{lb}}`},
+    {t:"Mass flow rate", eq:T`\dot m=\frac{${fmt(r.Q)}\ \text{Btu/h}}{(${fmt(r.h2)}-${fmt(r.h1)})\ \text{Btu/lb}}=${fmt(r.mdot)}\ \text{lb/h}`, box:T`\dot m=${fmt(r.mdot)}\ \text{lb/h}`},
+    {t:"Volumetric flow of the hot water", eq:T`(AV)_2=\dot m\,v_2=\left(${fmt(r.mdot)}\ \tfrac{\text{lb}}{\text{h}}\right)\left(${fmt(r.v2)}\ \tfrac{\text{ft}^3}{\text{lb}}\right)=${fmt(r.AV)}\ \tfrac{\text{ft}^3}{\text{h}}`, note:"Use v at the exit temperature — the question asks for the volume of hot water delivered."},
+    {t:"Convert to gallons", eq:T`(AV)_2=${fmt(r.AV)}\ \tfrac{\text{ft}^3}{\text{h}}\left|\tfrac{7.48\ \text{gal}}{1\ \text{ft}^3}\right|=${fmt(r.gph)}\ \text{gal/h}`, box:T`(AV)_2=${fmt(r.gph)}\ \text{gal/h}`}
+  ]; },
+  comments:(v,r)=>[`${fmt(r.gph)} gal/h is ${fmt(r.gpm,3)} gal/min — a trickle. Solar water heating works because the tank stores the day's output, not because the instantaneous flow is large.`,`Using h ≈ h_f(T) for the liquid ignores the pressure term v_f(p − p_sat); at household pressures that is a few hundredths of a Btu/lb against a Δh of ${fmt(r.h2-r.h1)} Btu/lb — negligible. Equivalently, ṁ ≈ Q̇/(c_pΔT) with c_p ≈ 1.0 Btu/lb·°F gives ${fmt(r.Q/(v.T2-v.T1))} lb/h.`,`If the (small) kinetic energy of the flow were included, a bit of the ${fmt(r.Q)} Btu/h would go into KE instead of enthalpy and the delivered volume would be slightly less (the class key's comment).`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 8th ed., Eq. 4.15 and Table A-2E.","Class notes, ES 305 HW 4 key (Dr. Walck)."],
+  takeaway:(v,r)=>`Steady flow with heat only: ṁ = Q̇/(h₂ − h₁) with h ≈ h_f(T) from Table A-2E, then (AV) = ṁv_f × 7.48 gal/ft³ = ${fmt(r.gph)} gal/h.`,
+  flow:(v,r)=>({ title:"Water warming through the collector", cap:"Cool water enters the collector tube (blue) and leaves warmer (orange). The absorbed solar heat enters the dashed CV; the lost fraction never gets in.", w:360,h:220, cv:[95,70,170,80],
+    nodes:[{id:"col",x:110,y:85,w:140,h:50,kind:"box",label:"solar collector, "+fmt(v.A)+" ft²"}],
+    streams:[{pts:[[20,110],[110,110],[250,110],[340,110]],T:[0.3,0.75],size:[1,1.02],rate:0.9,label:"water "+fmt(v.T1)+" °F"}],
+    arrows:[{x:150,y:40,dir:"in",kind:"Q",label:"Q̇ = "+fmt(r.Q)+" Btu/h"},{x:230,y:40,dir:"out",kind:"Q",label:fmt(v.loss)+"% lost"}],
+    readout:[{label:"ṁ",val:fmt(r.mdot)+" lb/h"},{label:"out",val:fmt(v.T2)+" °F"},{label:"(AV)₂",val:fmt(r.gph)+" gal/h"}] })
+},
+/* ------------------------------------------------------------------ class example 2 ------------------------------------------------------------------ */
+{
+  id:"throttle_hx", topic:"Systems of devices", name:"Throttling Valve + Evaporator with R-134a", tag:"Medium · h₂ = h₁, then Σṁh in = Σṁh out, p–h diagram",
+  kind:"Control volume · throttle and heat exchanger in series", units:"SI",
+  credit:"Class example (Dr. Walck), Ch. 4 Ex. 2.",
+  original:{ T1:36, mR:0.26, T2:-8, T4:20, T5:10 },
+  randomize(){ const T4=pick(14,30,1); return { T1:pick(24,44,2), mR:pick(0.1,0.6,0.02), T2:pick(-16,0,2), T4, T5:T4-pick(4,12,1) }; },
+  solve(v){ const S1=PROPS.sat("r134a","T",v.T1,"SI"), S2=PROPS.sat("r134a","T",v.T2,"SI"); const S4=PROPS.sat("water","T",v.T4,"SI"), S5=PROPS.sat("water","T",v.T5,"SI"); const h1=S1.hf, p1=S1.P, h2=h1, p2=S2.P, h3=S2.hg; const x2=(h2-S2.hf)/S2.hfg; const h4=S4.hf, h5=S5.hf; const Qe=v.mR*(h3-h2); const mw=Qe/(h4-h5); const v2=S2.vf+x2*(S2.vg-S2.vf); return {S1,S2,S4,S5,h1,p1,h2,p2,p2kPa:p2*100,h3,x2,h4,h5,Qe,mw,v1:S1.vf,v2,v3:S2.vg}; },
+  statement:(v)=>`In a refrigeration circuit, saturated liquid Refrigerant 134a at ${N(v.T1,"°C")} flows at ${N(v.mR,"kg/s")} through a throttling valve and leaves it at ${N(v.T2,"°C")}. The refrigerant then passes through a heat exchanger, where it evaporates and exits as saturated vapor. On the other side of the exchanger, liquid water enters at ${N(v.T4,"°C")} and leaves as liquid at ${N(v.T5,"°C")}. The components are well insulated, pressure drops across the exchanger are negligible, and kinetic and potential energy effects can be ignored. (a) Sketch the refrigerant process on a p–h diagram. (b) Determine the pressure at the valve outlet, in kPa. (c) Determine the mass flow rate of the water, in kg/s.`,
+  known:(v)=>[`R-134a: state 1 sat. liquid at T₁ = ${fmt(v.T1)} °C, ṁ_R = ${fmt(v.mR)} kg/s`,`Throttled to T₂ = ${fmt(v.T2)} °C (state 2), then evaporated to sat. vapor (state 3) at p₃ = p₂`,`Water: in at T₄ = ${fmt(v.T4)} °C, out at T₅ = ${fmt(v.T5)} °C, liquid throughout`,`All components insulated; ΔKE = ΔPE = 0; Δp across the HX ≈ 0`],
+  find:["(a) p–h diagram of the refrigerant circuit","(b) p₂, in kPa","(c) ṁ_water, in kg/s"],
+  assumptions:()=>["Each control volume is at steady state","Well-insulated components: Q̇_cv = 0 for the valve and for the whole heat exchanger","Ẇ_cv = 0 (no shafts)","Kinetic and potential energy effects are negligible","Throttling: h₂ = h₁; no pressure drop in the exchanger: p₃ = p₂","Liquid water: h ≈ h_f(T)"],
+  properties:(v,r)=>[
+    {title:"State 1 (R-134a)",fixed:`T₁ = ${fmt(v.T1)} °C, saturated liquid`,phase:"saturated liquid",items:[{sym:"p₁ = p_sat(T₁)",val:r.p1,unit:"bar",table:"A-10",how:[PROPS.satHow(r.S1,"P","p_sat")]},{sym:"h₁ = h_f(T₁)",val:r.h1,unit:"kJ/kg",table:"A-10",how:[PROPS.satHow(r.S1,"hf","h_f")]}]},
+    {title:"State 2 (R-134a)",fixed:`T₂ = ${fmt(v.T2)} °C, h₂ = h₁ = ${fmt(r.h1)} kJ/kg`,phase:"liquid–vapor mixture",items:[{sym:"p₂ = p_sat(T₂)",val:r.p2,unit:"bar",table:"A-10",how:[PROPS.satHow(r.S2,"P","p_sat")]},{sym:"h_f, h_g at T₂",val:`${PROPS.f4(r.S2.hf)}, ${PROPS.f4(r.S2.hg)}`,unit:"kJ/kg",table:"A-10",how:[PROPS.satHow(r.S2,"hf","h_f"),PROPS.satHow(r.S2,"hg","h_g")]},{sym:"x₂ = (h₂ − h_f)/h_fg",val:r.x2,unit:"",table:"A-10",how:[`x₂ = (${PROPS.f4(r.h2)} − ${PROPS.f4(r.S2.hf)})/${PROPS.f4(r.S2.hfg)} = ${r.x2.toFixed(4)}`]}],note:"h_f < h₂ < h_g at T₂: the throttled refrigerant is a mixture, so p₂ is the saturation pressure at T₂."},
+    {title:"State 3 (R-134a)",fixed:`p₃ = p₂, saturated vapor`,phase:"saturated vapor",items:[{sym:"h₃ = h_g(T₂)",val:r.h3,unit:"kJ/kg",table:"A-10",how:[PROPS.satHow(r.S2,"hg","h_g")]}]},
+    {title:"States 4, 5 (water)",fixed:`T₄ = ${fmt(v.T4)} °C, T₅ = ${fmt(v.T5)} °C, liquid`,phase:"compressed liquid ≈ sat. liquid",items:[{sym:"h₄ ≈ h_f(T₄)",val:r.h4,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.S4,"hf","h_f")]},{sym:"h₅ ≈ h_f(T₅)",val:r.h5,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.S5,"hf","h_f")]}]}],
+  answers:(v,r)=>[{label:"(b) p₂",unit:"kPa",val:r.p2kPa},{label:"(c) ṁ_water",unit:"kg/s",val:r.mw}],
+  analysis(v,r){ return [
+    {t:"(b) Throttling valve: energy balance", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}^{\,0}+\dot m_R\Big[(h_1-h_2)+\tfrac{V_1^2-V_2^2}{2}^{\,0}+g(z_1-z_2)^{\,0}\Big]\ \Rightarrow\ h_2=h_1`, note:"A throttle is isenthalpic. State 1 is saturated liquid, so h₁ = h_f(T₁)."},
+    {t:"State 2 is a mixture, so p₂ = p_sat(T₂)", eq:T`h_1=h_f(${fmt(v.T1)}^\circ\text{C})=${fmt(r.h1)}\ \tfrac{\text{kJ}}{\text{kg}};\quad\text{at }T_2=${fmt(v.T2)}^\circ\text{C}:\ h_f=${fmt(r.S2.hf)}<h_2<h_g=${fmt(r.S2.hg)}\ \Rightarrow\ p_2=${fmt(r.p2)}\ \text{bar}`, box:T`p_2=${fmt(r.p2kPa)}\ \text{kPa}`, note:`Quality after the valve x₂ = ${fmt(r.x2,3)}: flashing some liquid to vapor is what drops the temperature from ${fmt(v.T1)} to ${fmt(v.T2)} °C.`},
+    {t:"(a) p–h sketch", eq:T`1\to2:\ \text{vertical drop at constant }h\ (\text{into the dome});\qquad 2\to3:\ \text{horizontal at }p_2\ \text{to the saturated-vapor line}`, note:"See the diagram below: the throttle is a vertical line, the evaporator a horizontal one inside the dome."},
+    {t:"(c) Heat exchanger: energy balance for the whole box", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}^{\,0}+\sum_i\dot m_ih_i-\sum_e\dot m_eh_e\ \Rightarrow\ \dot m_Rh_2+\dot m_wh_4=\dot m_Rh_3+\dot m_wh_5`, note:"Mass balances: ṁ₂ = ṁ₃ = ṁ_R and ṁ₄ = ṁ₅ = ṁ_w. With both streams inside the CV, Q̇_cv = 0."},
+    {t:"Solve for the water flow", eq:T`\dot m_w=\dot m_R\frac{h_3-h_2}{h_4-h_5}=(${fmt(v.mR)}\ \tfrac{\text{kg}}{\text{s}})\frac{${fmt(r.h3)}-${fmt(r.h2)}}{${fmt(r.h4)}-${fmt(r.h5)}}=${fmt(r.mw)}\ \text{kg/s}`, box:T`\dot m_w=${fmt(r.mw)}\ \text{kg/s}`, note:`The refrigerant absorbs Q̇ = ṁ_R(h₃ − h₂) = ${fmt(r.Qe)} kW, which the water gives up as it cools from ${fmt(v.T4)} to ${fmt(v.T5)} °C.`}
+  ]; },
+  comments:(v,r)=>[`Two control volumes, two different lessons: the valve gives h₂ = h₁ (which, with T₂, fixes p₂); the exchanger gives the ṁh bookkeeping. Neither needs Q̇ because the boundaries were drawn to exclude it.`,`The water flow is ${fmt(r.mw/v.mR,3)}× the refrigerant flow: evaporating R-134a absorbs h_fg ≈ ${fmt(r.h3-r.S2.hf)} kJ/kg, while cooling liquid water ${fmt(v.T4-v.T5)} °C releases only ${fmt(r.h4-r.h5)} kJ/kg.`,`On the p–h diagram, 1→2 is the vertical throttling line and 2→3 the horizontal evaporation at ${fmt(r.p2)} bar. This is the low-pressure half of a vapor-compression refrigeration cycle — the compressor and condenser would close the loop.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.10 (throttling), Eq. 4.22; Sec. 4.9 (heat exchangers), Eq. 4.18; Tables A-2 and A-10.","Class notes, ES 305 Ch. 4 Example 2."],
+  takeaway:(v,r)=>`Throttle: h₂ = h₁ and a mixture at T₂ means p₂ = p_sat(T₂) = ${fmt(r.p2kPa)} kPa. Exchanger: ṁ_R(h₃ − h₂) = ṁ_w(h₄ − h₅) gives ṁ_w = ${fmt(r.mw)} kg/s.`,
+  diagram:(v,r)=>({ x:"h", y:"P", fluid:"r134a", units:"SI", dome:true, title:"p–h diagram of the refrigerant", states:[{P:r.p1,h:r.h1,v:r.v1,T:v.T1,label:"1"},{P:r.p2,h:r.h2,v:r.v2,T:v.T2,label:"2"},{P:r.p2,h:r.h3,v:r.v3,T:v.T2,label:"3"}], paths:[{a:0,b:1,kind:"line",label:"h = const",heat:0},{a:1,b:2,kind:"isobaric",label:"evaporator",heat:1}],
+    cap:`1 sits on the saturated-liquid line at ${fmt(r.p1)} bar; the throttle drops straight down to 2 inside the dome at ${fmt(r.p2)} bar; the evaporator runs horizontally to the saturated-vapor line at 3.` }),
+  flow:(v,r)=>({ title:"Throttle then evaporator", cap:"Warm liquid refrigerant (small orange) flashes through the valve into a cold mixture (larger, blue), then boils to vapor in the exchanger (largest). Water (bottom) enters cool and leaves colder. Both dashed CVs are insulated.", w:360,h:220, cv:[60,50,250,120],
+    nodes:[{id:"tv",x:80,y:65,w:50,h:40,kind:"throttle",label:"valve"},{id:"hx",x:170,y:60,w:120,h:100,kind:"hx",label:"heat exchanger"}],
+    streams:[{pts:[[15,85],[80,85],[130,85]],T:[0.75,0.2],size:[0.6,1.2],rate:1,label:"R-134a, sat. liq."},{pts:[[130,85],[170,85],[290,85],[345,85]],T:[0.2,0.22],size:[1.2,1.8],rate:0.9,label:""},{pts:[[345,140],[290,140],[170,140],[15,140]],T:[0.45,0.3],size:[0.8,0.8],rate:1.5,label:""}],
+    arrows:[],
+    readout:[{label:"p₂",val:fmt(r.p2kPa)+" kPa"},{label:"x₂",val:fmt(r.x2,3)},{label:"ṁ_R",val:fmt(v.mR)+" kg/s"},{label:"ṁ_w",val:fmt(r.mw)+" kg/s"}] })
+},
+/* ------------------------------------------------------------------ 4.107 ------------------------------------------------------------------ */
+{
+  id:"ac_system", topic:"Systems of devices", name:"Residential Air Conditioner: Four Components", tag:"Hard · evaporator, compressor, throttle; β = Q̇_in/Ẇ",
+  kind:"Control volume · refrigeration system · R-134a (EN)", units:"EN",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.107 (8th ed.). Numbers changed; Refrigerant 22 replaced by R-134a.",
+  original:{ p1:40, p2:160, T2:140, T3:95, Qin:600, W:200 },
+  randomize(){ for(let k=0;k<80;k++){ const v={ p1:choice([30,40,50,60]), p2:choice([140,160,180,200]), T2:pick(120,190,10), T3:pick(75,100,5), Qin:pick(300,900,50), W:pick(120,320,10) }; const Ts2=PROPS.sat("r134a","P",v.p2,"EN").T; if(v.T2<Ts2+8||v.T3>Ts2-4) continue; const S2=PROPS.state("r134a",{P:v.p2,T:v.T2},"EN"); if(S2.error||S2.phase!=="superheated vapor") continue; const S1=PROPS.sat("r134a","P",v.p1,"EN"), S3=PROPS.sat("r134a","T",v.T3,"EN"); const m=v.Qin/(S1.hg-S3.hf); const Qc=-v.W+m*(S2.h-S1.hg); if(Qc<0&&Qc>-0.5*v.W) return v; } return {p1:40,p2:160,T2:140,T3:95,Qin:600,W:200}; },
+  solve(v){ const S1=PROPS.sat("r134a","P",v.p1,"EN"); const S2=PROPS.state("r134a",{P:v.p2,T:v.T2},"EN"); const S3=PROPS.sat("r134a","T",v.T3,"EN"); const Ssat2=PROPS.sat("r134a","P",v.p2,"EN"); const h1=S1.hg, h2=S2.h, h3=S3.hf, h4=h3; const x4=(h4-S1.hf)/S1.hfg; const mdot=v.Qin/(h1-h4); const Qc=-v.W+mdot*(h2-h1); const beta=v.Qin/v.W; const Qcond=mdot*(h3-h2); return {S1,S2,S3,Ssat2,h1,h2,h3,h4,x4,mdot,Qc,Qcabs:-Qc,beta,Qcond,T1:S1.T,Tsat2:Ssat2.T,Wcv:-v.W}; },
+  statement:(v)=>`A residential air conditioner circulates Refrigerant 134a through an evaporator, a compressor, a condenser and an expansion valve at steady state. Saturated vapor leaves the evaporator at ${N(v.p1,"lbf/in²")} (state 1). The compressor delivers it at ${N(v.p2,"lbf/in²")}, ${N(v.T2,"°F")} (state 2) with a power input of ${N(v.W,"Btu/min")}. Liquid leaves the condenser at ${N(v.T3,"°F")} (state 3) and is throttled back to the evaporator pressure (state 4). The evaporator removes ${N(v.Qin,"Btu/min")} from the room air. Neglecting kinetic and potential energy effects, determine (a) the mass flow rate of refrigerant, in lb/min, (b) the rate of heat transfer between the compressor and its surroundings, in Btu/min, and (c) the coefficient of performance.`,
+  known:(v)=>[`State 1: sat. vapor at p₁ = ${fmt(v.p1)} lbf/in² (evaporator exit)`,`State 2: p₂ = ${fmt(v.p2)} lbf/in², T₂ = ${fmt(v.T2)} °F (compressor exit); compressor power in ${fmt(v.W)} Btu/min`,`State 3: liquid at T₃ = ${fmt(v.T3)} °F (condenser exit); state 4: throttled to p₁`,`Evaporator: Q̇_in = ${fmt(v.Qin)} Btu/min from the room air`],
+  find:["(a) ṁ, in lb/min","(b) Q̇_cv for the compressor, in Btu/min","(c) β = Q̇_in/Ẇ_in"],
+  assumptions:()=>["Control volumes at steady state enclose the compressor and the refrigerant side of the evaporator","Kinetic and potential energy effects are negligible; Ẇ_cv = 0 for the evaporator","The expansion valve is a throttling process: h₄ = h₃","At state 3 the liquid is subcooled: h₃ ≈ h_f(T₃)"],
+  properties:(v,r)=>[
+    {title:"State 1",fixed:`p₁ = ${fmt(v.p1)} lbf/in², sat. vapor`,phase:"saturated vapor",items:[{sym:"T₁ = T_sat",val:r.T1,unit:"°F",table:"A-11E",how:[PROPS.satHow(r.S1,"T","T_sat")]},{sym:"h₁ = h_g",val:r.h1,unit:"Btu/lb",table:"A-11E",how:[PROPS.satHow(r.S1,"hg","h_g")]}]},
+    {title:"State 2",fixed:`p₂ = ${fmt(v.p2)} lbf/in², T₂ = ${fmt(v.T2)} °F`,phase:r.S2.phase,items:[{sym:"T_sat(p₂)",val:r.Tsat2,unit:"°F",table:"A-11E"},{sym:"h₂",val:r.h2,unit:"Btu/lb",table:r.S2.table,how:r.S2.how}],note:"T₂ > T_sat(p₂): superheated, Table A-12E."},
+    {title:"State 3",fixed:`T₃ = ${fmt(v.T3)} °F, p₃ = p₂ (liquid)`,phase:"compressed liquid ≈ sat. liquid",items:[{sym:"h₃ ≈ h_f(T₃)",val:r.h3,unit:"Btu/lb",table:"A-10E",how:[PROPS.satHow(r.S3,"hf","h_f")]}],note:`T₃ < T_sat(p₂) = ${fmt(r.Tsat2)} °F, so the liquid is subcooled; use h_f at its temperature.`},
+    {title:"State 4",fixed:`p₄ = p₁, h₄ = h₃`,phase:"liquid–vapor mixture",items:[{sym:"h_f, h_fg at p₁",val:`${PROPS.f4(r.S1.hf)}, ${PROPS.f4(r.S1.hfg)}`,unit:"Btu/lb",table:"A-11E"},{sym:"x₄ = (h₄ − h_f)/h_fg",val:r.x4,unit:"",table:"A-11E",how:[`x₄ = (${PROPS.f4(r.h4)} − ${PROPS.f4(r.S1.hf)})/${PROPS.f4(r.S1.hfg)} = ${r.x4.toFixed(4)}`]}]}],
+  answers:(v,r)=>[{label:"(a) ṁ",unit:"lb/min",val:r.mdot},{label:"(b) Q̇_cv (compressor)",unit:"Btu/min",val:r.Qc},{label:"(c) β",unit:"—",val:r.beta}],
+  analysis(v,r){ return [
+    {t:"(a) Evaporator: energy balance on the refrigerant side", eq:T`0=\dot Q_{in}-\dot W_{cv}^{\,0}+\dot m\,(h_4-h_1)\ \Rightarrow\ \dot m=\frac{\dot Q_{in}}{h_1-h_4}`, note:"The refrigerant enters as a cold mixture (4) and leaves as saturated vapor (1); the heat it absorbs is what cools the house."},
+    {t:"h₄ from the throttling valve", eq:T`h_4=h_3\approx h_f(${fmt(v.T3)}^\circ\text{F})=${fmt(r.h3)}\ \text{Btu/lb}`, note:"Subcooled liquid: h depends almost only on T, so use h_f at T₃ (Table A-10E). The valve is isenthalpic."},
+    {t:"Mass flow rate", eq:T`\dot m=\frac{${fmt(v.Qin)}\ \text{Btu/min}}{(${fmt(r.h1)}-${fmt(r.h4)})\ \text{Btu/lb}}=${fmt(r.mdot)}\ \text{lb/min}`, box:T`\dot m=${fmt(r.mdot)}\ \text{lb/min}`, note:`h₁ = h_g(${fmt(v.p1)} lbf/in²) = ${fmt(r.h1)} Btu/lb (Table A-11E).`},
+    {t:"(b) Compressor: energy balance", eq:T`0=\dot Q_{cv}-\dot W_{cv}+\dot m\,(h_1-h_2)\ \Rightarrow\ \dot Q_{cv}=\dot W_{cv}+\dot m\,(h_2-h_1)`, note:`Ẇ_cv = −${fmt(v.W)} Btu/min (power IN). h₂ = ${fmt(r.h2)} Btu/lb from Table A-12E at ${fmt(v.p2)} lbf/in², ${fmt(v.T2)} °F.`},
+    {t:"Plug in", eq:T`\dot Q_{cv}=(-${fmt(v.W)})+(${fmt(r.mdot)}\ \tfrac{\text{lb}}{\text{min}})(${fmt(r.h2)}-${fmt(r.h1)})\tfrac{\text{Btu}}{\text{lb}}=${fmt(r.Qc)}\ \text{Btu/min}`, box:T`\dot Q_{cv}=${fmt(r.Qc)}\ \text{Btu/min}`, note:`Negative: the compressor casing loses ${fmt(r.Qcabs)} Btu/min to the surroundings.`},
+    {t:"(c) Coefficient of performance", eq:T`\beta=\frac{\dot Q_{in}}{|\dot W_{comp}|}=\frac{${fmt(v.Qin)}\ \text{Btu/min}}{${fmt(v.W)}\ \text{Btu/min}}=${fmt(r.beta)}`, box:T`\beta=${fmt(r.beta)}`, note:"Benefit over cost: heat removed from the house per unit of compressor work (Sec. 2.6.3)."}
+  ]; },
+  comments:(v,r)=>[`Energy audit of the loop: Q̇_in = ${fmt(v.Qin)} Btu/min enters at the evaporator, Ẇ = ${fmt(v.W)} Btu/min at the compressor; ${fmt(r.Qcabs)} Btu/min leaks from the compressor and the condenser rejects ṁ(h₂ − h₃) = ${fmt(-r.Qcond)} Btu/min outdoors. Check: ${fmt(v.Qin)} + ${fmt(v.W)} = ${fmt(v.Qin+v.W)} ≈ ${fmt(r.Qcabs-r.Qcond)} Btu/min.`,`The valve does no work and exchanges no heat, yet it is essential: it drops the pressure so the refrigerant boils at T₁ = ${fmt(r.T1)} °F, cold enough to absorb heat from 75 °F room air. After the valve x₄ = ${fmt(r.x4,3)} — about ${fmt(100*r.x4,2)}% of the liquid flashes to vapor.`,`β = ${fmt(r.beta)} means each Btu of electrical work moves ${fmt(r.beta)} Btu of heat out of the house. In hp, the compressor draws ${fmt(v.W*60/2545)} hp (1 hp = 2545 Btu/h).`,`The textbook version uses Refrigerant 22 (Tables A-7E to A-9E); R-134a and Tables A-10E to A-12E are used here because those are the tables in the ES 305 set.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.8 (compressors), Sec. 4.10 (throttling), Sec. 2.6.3 (COP); Tables A-10E, A-11E, A-12E."],
+  takeaway:(v,r)=>`Pick one control volume per question: the evaporator gives ṁ = Q̇_in/(h₁ − h₄) with h₄ = h₃ from the throttle; the compressor gives Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁); β needs no tables at all.`,
+  flow:(v,r)=>({ title:"Vapor-compression loop", cap:"Clockwise from the bottom: cold mixture boils in the evaporator (Q̇_in), the compressor squeezes the vapor hot and dense (Ẇ in, a little Q̇ out), the condenser rejects heat and liquefies it, and the valve flashes it back to a cold mixture.", w:360,h:220, cv:[40,30,290,170],
+    nodes:[{id:"ev",x:110,y:150,w:130,h:40,kind:"hx",label:"evaporator"},{id:"cp",x:262,y:75,w:60,h:70,kind:"compressor",label:""},{id:"cd",x:110,y:20,w:130,h:40,kind:"condenser",label:"condenser"},{id:"tv",x:35,y:85,w:40,h:40,kind:"throttle",label:"valve"}],
+    streams:[{pts:[[55,125],[55,170],[110,170],[240,170],[292,170],[292,145]],T:[0.15,0.25],size:[1.3,1.6],label:""},{pts:[[292,145],[292,75],[292,40],[240,40]],T:[0.25,1],size:[1.6,0.8],label:""},{pts:[[240,40],[110,40],[55,40],[55,85]],T:[1,0.6],size:[0.8,0.5],label:""},{pts:[[55,85],[55,125]],T:[0.6,0.15],size:[0.5,1.3],speed:1.5,label:""}],
+    arrows:[{x:175,y:205,dir:"in",kind:"Q",label:"Q̇_in = "+fmt(v.Qin)+" Btu/min"},{x:340,y:110,dir:"in",kind:"W",label:"Ẇ compressor"},{x:175,y:-2,dir:"out",kind:"Q",label:"Q̇_out"}],
+    readout:[{label:"ṁ",val:fmt(r.mdot)+" lb/min"},{label:"Q̇_comp",val:fmt(r.Qc)+" Btu/min"},{label:"β",val:fmt(r.beta)}] })
+},
+/* ------------------------------------------------------------------ 4.100 ------------------------------------------------------------------ */
+{
+  id:"two_compressors", topic:"Systems of devices", name:"Two-Stage Compression with an Intercooler", tag:"Hard · Table A-22 for air, Table A-2 for water, three CVs",
+  kind:"Control volume · compressors + heat exchanger", units:"SI",
+  credit:"Adapted from Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, Problem 4.100 (8th ed.). Numbers changed.",
+  original:{ T1:300, mdot:0.6, p2:3, T2:600, T3:450, p4:9, T4:800, T5:20, T6:30 },
+  randomize(){ const T5=pick(12,28,1); return { T1:pick(280,320,5), mdot:pick(0.3,1.5,0.05), p2:choice([2.5,3,3.5,4]), T2:pick(520,660,10), T3:pick(380,480,10), p4:choice([8,9,10,12]), T4:pick(720,900,10), T5, T6:T5+pick(6,18,1) }; },
+  solve(v){ const A1=PROPS.air("T",v.T1,"SI"), A2=PROPS.air("T",v.T2,"SI"), A3=PROPS.air("T",v.T3,"SI"), A4=PROPS.air("T",v.T4,"SI"); const S5=PROPS.sat("water","T",v.T5,"SI"), S6=PROPS.sat("water","T",v.T6,"SI"); const WA=v.mdot*(A1.h-A2.h), WB=v.mdot*(A3.h-A4.h); const Wtot=WA+WB; const Qhx=v.mdot*(A2.h-A3.h); const mw=Qhx/(S6.hf-S5.hf); return {A1,A2,A3,A4,S5,S6,h1:A1.h,h2:A2.h,h3:A3.h,h4:A4.h,h5:S5.hf,h6:S6.hf,WA,WB,Wtot,Wabs:-Wtot,Qhx,mw,Wdirect:v.mdot*(A1.h-A4.h)}; },
+  statement:(v)=>`Air at ${N(1,"bar")}, ${N(v.T1,"K")} enters compressor A at ${N(v.mdot,"kg/s")} and leaves at ${N(v.p2,"bar")}, ${N(v.T2,"K")}. It then passes through a heat exchanger, exiting at the same pressure and ${N(v.T3,"K")}, and enters compressor B, which discharges it at ${N(v.p4,"bar")}, ${N(v.T4,"K")}. The other side of the exchanger carries liquid water at ${N(1,"bar")}, entering at ${N(v.T5,"°C")} and leaving at ${N(v.T6,"°C")}. Heat transfer to the surroundings and all kinetic and potential energy effects are negligible; the air is an ideal gas (Table A-22). Determine (a) the total power required by the two compressors, in kW, and (b) the mass flow rate of the cooling water, in kg/s.`,
+  known:(v)=>[`Air, ṁ = ${fmt(v.mdot)} kg/s: 1 bar, ${fmt(v.T1)} K → (A) → ${fmt(v.p2)} bar, ${fmt(v.T2)} K → (HX) → ${fmt(v.p2)} bar, ${fmt(v.T3)} K → (B) → ${fmt(v.p4)} bar, ${fmt(v.T4)} K`,`Water at 1 bar: T₅ = ${fmt(v.T5)} °C in, T₆ = ${fmt(v.T6)} °C out`,`No heat loss from any component; ΔKE = ΔPE = 0`],
+  find:["(a) Ẇ_total = Ẇ_A + Ẇ_B, in kW","(b) ṁ_water, in kg/s"],
+  assumptions:()=>["Three control volumes at steady state: compressor A, the heat exchanger (both streams), compressor B","Q̇_cv = 0 for each (no heat transfer with the surroundings); Ẇ_cv = 0 for the exchanger","Kinetic and potential energy effects are negligible","Air is an ideal gas; h from Table A-22. Liquid water: h ≈ h_f(T)"],
+  properties:(v,r)=>[
+    {title:"Air, states 1–4",fixed:`T = ${fmt(v.T1)}, ${fmt(v.T2)}, ${fmt(v.T3)}, ${fmt(v.T4)} K`,phase:"ideal gas",items:[{sym:"h₁",val:r.h1,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A1,"h","h₁")]},{sym:"h₂",val:r.h2,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A2,"h","h₂")]},{sym:"h₃",val:r.h3,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A3,"h","h₃")]},{sym:"h₄",val:r.h4,unit:"kJ/kg",table:"A-22",how:[PROPS.airHow(r.A4,"h","h₄")]}],note:"For an ideal gas h depends on T only, so the pressures are not needed for the enthalpies."},
+    {title:"Water, states 5–6",fixed:`T₅ = ${fmt(v.T5)} °C, T₆ = ${fmt(v.T6)} °C, liquid at 1 bar`,phase:"compressed liquid ≈ sat. liquid",items:[{sym:"h₅ ≈ h_f(T₅)",val:r.h5,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.S5,"hf","h_f")]},{sym:"h₆ ≈ h_f(T₆)",val:r.h6,unit:"kJ/kg",table:"A-2",how:[PROPS.satHow(r.S6,"hf","h_f")]}]}],
+  answers:(v,r)=>[{label:"(a) Ẇ_total",unit:"kW",val:r.Wtot},{label:"(b) ṁ_water",unit:"kg/s",val:r.mw}],
+  analysis(v,r){ return [
+    {t:"Mass balance for the air", eq:T`\dot m_1=\dot m_2=\dot m_3=\dot m_4=\dot m=${fmt(v.mdot)}\ \text{kg/s}`, note:"One air stream threads all three devices; the water stream is separate (no mixing in the exchanger)."},
+    {t:"(a) Compressor A", eq:T`0=\dot Q_{cvA}^{\,0}-\dot W_{cvA}+\dot m\,(h_1-h_2)\ \Rightarrow\ \dot W_{cvA}=\dot m\,(h_1-h_2)=(${fmt(v.mdot)})(${fmt(r.h1)}-${fmt(r.h2)})=${fmt(r.WA)}\ \text{kW}`, note:"Negative: power flows into the compressor."},
+    {t:"Compressor B", eq:T`\dot W_{cvB}=\dot m\,(h_3-h_4)=(${fmt(v.mdot)}\ \tfrac{\text{kg}}{\text{s}})(${fmt(r.h3)}-${fmt(r.h4)})\tfrac{\text{kJ}}{\text{kg}}=${fmt(r.WB)}\ \text{kW}`},
+    {t:"Total power", eq:T`\dot W_{total}=\dot W_{cvA}+\dot W_{cvB}=(${fmt(r.WA)})+(${fmt(r.WB)})=${fmt(r.Wtot)}\ \text{kW}`, box:T`\dot W_{total}=${fmt(r.Wtot)}\ \text{kW}`, note:`${fmt(r.Wabs)} kW must be supplied to the two compressors.`},
+    {t:"(b) Heat exchanger: energy balance with both streams inside", eq:T`0=\dot Q_{cv}^{\,0}-\dot W_{cv}^{\,0}+\dot m\,h_2+\dot m_wh_5-\dot m\,h_3-\dot m_wh_6\ \Rightarrow\ \dot m_w=\frac{\dot m\,(h_2-h_3)}{h_6-h_5}`},
+    {t:"Plug in", eq:T`\dot m_w=\frac{(${fmt(v.mdot)}\ \tfrac{\text{kg}}{\text{s}})(${fmt(r.h2)}-${fmt(r.h3)})\tfrac{\text{kJ}}{\text{kg}}}{(${fmt(r.h6)}-${fmt(r.h5)})\ \tfrac{\text{kJ}}{\text{kg}}}=${fmt(r.mw)}\ \text{kg/s}`, box:T`\dot m_w=${fmt(r.mw)}\ \text{kg/s}`, note:`The intercooler removes ṁ(h₂ − h₃) = ${fmt(r.Qhx)} kW from the air.`}
+  ]; },
+  comments:(v,r)=>[`Why intercool? Compressing the same air from 1 to ${fmt(v.p4)} bar in one adiabatic stage would end far hotter; cooling between stages lowers the inlet enthalpy of stage B and reduces its work. The exchanger itself costs no shaft power — only ${fmt(r.mw)} kg/s of water.`,`The water flow is ${fmt(r.mw/v.mdot,3)}× the air flow even though it warms only ${fmt(v.T6-v.T5)} °C: liquid water's c_p (4.18 kJ/kg·K) is four times air's, but the air cools by ${fmt(v.T2-v.T3)} K.`,`Drawing the boundary around the whole exchanger is what makes Q̇_cv = 0. Drawing it around the air side only would give Q̇ = ṁ(h₃ − h₂) = ${fmt(-r.Qhx)} kW — same physics, different label.`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.8 (compressors) and Sec. 4.9 (heat exchangers), Eqs. 4.20a and 4.18; Tables A-2 and A-22."],
+  takeaway:(v,r)=>`One balance per device: Ẇ = ṁ(h_in − h_out) for each compressor (Table A-22), and ṁ_air(h₂ − h₃) = ṁ_w(h₆ − h₅) for the intercooler (Table A-2).`,
+  flow:(v,r)=>({ title:"Compressor A → intercooler → compressor B", cap:"Air heats and densifies in each compressor (orange, smaller), cools in the exchanger (blue-green), and is compressed again. Water (bottom) warms slightly. Each dashed box is a separate control volume with Q̇ = 0.", w:360,h:220, cv:[25,45,310,120],
+    nodes:[{id:"A",x:35,y:60,w:70,h:70,kind:"compressor",label:"comp. A"},{id:"hx",x:140,y:55,w:90,h:100,kind:"hx",label:"intercooler"},{id:"B",x:265,y:60,w:70,h:70,kind:"compressor",label:"comp. B"}],
+    streams:[{pts:[[5,95],[40,95],[100,95]],T:[0.3,0.75],size:[1.3,0.9],label:""},{pts:[[100,95],[140,95],[230,95],[270,95]],T:[0.75,0.5],size:[0.9,0.8],label:""},{pts:[[270,95],[330,95],[358,95]],T:[0.5,1],size:[0.8,0.5],label:""},{pts:[[250,140],[230,140],[140,140],[110,140]],T:[0.15,0.25],size:[0.7,0.7],rate:1.6,label:""}],
+    arrows:[{x:70,y:30,dir:"in",kind:"W",label:"Ẇ_A"},{x:300,y:30,dir:"in",kind:"W",label:"Ẇ_B"}],
+    readout:[{label:"Ẇ_A",val:fmt(r.WA)+" kW"},{label:"Ẇ_B",val:fmt(r.WB)+" kW"},{label:"ṁ_w",val:fmt(r.mw)+" kg/s"}] })
+},
+/* ------------------------------------------------------------------ class example 3 ------------------------------------------------------------------ */
+{
+  id:"rankine_otec", topic:"Systems of devices", name:"Simple Steam Power Plant: η_th and Condenser Cooling Water", tag:"Hard · four CVs, η = (Ẇ_t + Ẇ_p)/Q̇_in, Tables A-3, A-4, A-5",
+  kind:"Control volume · Rankine cycle · steam tables", units:"SI",
+  credit:"Class example (Dr. Walck), Ch. 4 Example 3 (Rankine / OTEC).",
+  original:{ mdot:60, p1:30, T1:400, p2:0.5, x2:0.95, T4:82, dT:15 },
+  randomize(){ for(let k=0;k<60;k++){ const p2=choice([0.5,0.7,1,1.5]); const T3=PROPS.sat("water","P",p2,"SI").T; const v={ mdot:pick(30,120,5), p1:choice([20,30,40,60]), T1:pick(360,540,20), p2, x2:pick(0.86,0.98,0.01), T4:Math.round(T3+pick(1,4,0.5)), dT:pick(8,20,1) }; const S1=PROPS.state("water",{P:v.p1,T:v.T1},"SI"), S4=PROPS.state("water",{P:v.p1,T:v.T4},"SI"); if(!S1.error&&S1.phase==="superheated vapor"&&!S4.error&&isFinite(S4.h)) return v; } return {mdot:60,p1:30,T1:400,p2:0.5,x2:0.95,T4:82,dT:15}; },
+  solve(v){ const cp=4.2; const S1=PROPS.state("water",{P:v.p1,T:v.T1},"SI"); const S2=PROPS.state("water",{P:v.p2,x:v.x2},"SI"); const S3=PROPS.sat("water","P",v.p2,"SI"); const S4=PROPS.state("water",{P:v.p1,T:v.T4},"SI"); const h1=S1.h,h2=S2.h,h3=S3.hf,h4=S4.h; const WT=v.mdot*(h1-h2), WP=v.mdot*(h3-h4), Qin=v.mdot*(h1-h4), Qout=v.mdot*(h2-h3); const Wnet=WT+WP; const eta=Wnet/Qin*100; const mcw=Qout/(cp*v.dT); return {cp,S1,S2,S3,S4,h1,h2,h3,h4,T3:S3.T,WT,WP,Qin,Qout,Wnet,eta,mcw,v1:S1.v,v2:S2.v,v3:S3.vf,v4:S4.v,WTMW:WT/1000,QinMW:Qin/1000}; },
+  statement:(v)=>`A simple steam power plant operates at steady state with ${N(v.mdot,"kg/s")} of water circulating through its four components. Steam leaves the boiler at ${N(v.p1,"bar")}, ${N(v.T1,"°C")} (state 1) and exits the turbine at ${N(v.p2,"bar")} with a quality of ${N(v.x2)} (state 2). Saturated liquid leaves the condenser (state 3) and the pump discharges it at ${N(v.p1,"bar")}, ${N(v.T4,"°C")} (state 4). Cooling water flowing through the condenser rises ${N(v.dT,"°C")} in temperature (c_p = 4.2 kJ/kg·K). Heat transfer from the turbine, pump and piping is negligible, as are kinetic and potential energy effects. Determine (a) the thermal efficiency of the cycle, in %, and (b) the mass flow rate of the condenser cooling water, in kg/s.`,
+  known:(v)=>[`Water, ṁ = ${fmt(v.mdot)} kg/s through boiler → turbine → condenser → pump`,`1: p₁ = ${fmt(v.p1)} bar, T₁ = ${fmt(v.T1)} °C · 2: p₂ = ${fmt(v.p2)} bar, x₂ = ${fmt(v.x2)}`,`3: sat. liquid at p₂ · 4: p₄ = ${fmt(v.p1)} bar, T₄ = ${fmt(v.T4)} °C`,`Cooling water: ΔT = T₆ − T₅ = ${fmt(v.dT)} °C, c_p = 4.2 kJ/kg·K`],
+  find:["(a) η_th, in %","(b) ṁ_cw, in kg/s"],
+  assumptions:()=>["Each component is a control volume at steady state","Turbine and pump are well insulated (Q̇ = 0); boiler and condenser have no shaft work (Ẇ = 0)","Kinetic and potential energy effects are negligible; Δp in the boiler and condenser ≈ 0","The condenser CV encloses both streams, so Q̇_cv = 0 for it; cooling water is liquid with constant c_p"],
+  properties:(v,r)=>[
+    {title:"State 1",fixed:`p₁ = ${fmt(v.p1)} bar, T₁ = ${fmt(v.T1)} °C`,phase:r.S1.phase,items:[{sym:"h₁",val:r.h1,unit:"kJ/kg",table:r.S1.table,how:r.S1.how}]},
+    {title:"State 2",fixed:`p₂ = ${fmt(v.p2)} bar, x₂ = ${fmt(v.x2)}`,phase:r.S2.phase,items:[{sym:"h_f, h_g at p₂",val:`${PROPS.f4(r.S2.sat.hf)}, ${PROPS.f4(r.S2.sat.hg)}`,unit:"kJ/kg",table:"A-3",how:[PROPS.satHow(r.S2.sat,"hf","h_f"),PROPS.satHow(r.S2.sat,"hg","h_g")]},{sym:"h₂ = h_f + x₂(h_g − h_f)",val:r.h2,unit:"kJ/kg",table:"A-3",how:[r.S2.how[3]]}]},
+    {title:"State 3",fixed:`p₃ = ${fmt(v.p2)} bar, sat. liquid`,phase:"saturated liquid",items:[{sym:"T₃ = T_sat",val:r.T3,unit:"°C",table:"A-3",how:[PROPS.satHow(r.S3,"T","T_sat")]},{sym:"h₃ = h_f",val:r.h3,unit:"kJ/kg",table:"A-3",how:[PROPS.satHow(r.S3,"hf","h_f")]}]},
+    {title:"State 4",fixed:`p₄ = ${fmt(v.p1)} bar, T₄ = ${fmt(v.T4)} °C`,phase:r.S4.phase,items:[{sym:"h₄",val:r.h4,unit:"kJ/kg",table:r.S4.table,how:r.S4.how}],note:"T₄ < T_sat(p₄): compressed liquid. Table A-5 where it covers the pressure; otherwise h ≈ h_f(T) + v_f(p − p_sat)."}],
+  answers:(v,r)=>[{label:"(a) η_th",unit:"%",val:r.eta},{label:"(b) ṁ_cw",unit:"kg/s",val:r.mcw}],
+  analysis(v,r){ return [
+    {t:"General energy rate balance, reduced for every component", eq:T`\frac{dE_{cv}}{dt}^{\,0}=\dot Q_{cv}-\dot W_{cv}+\sum_i\dot m\Big(h+\tfrac{V^2}{2}^{\,0}+gz^{\,0}\Big)_i-\sum_e\dot m\Big(h+\tfrac{V^2}{2}^{\,0}+gz^{\,0}\Big)_e`, note:"Steady state, no KE/PE. Then for each CV keep only the term that device has."},
+    {t:"(a) Thermal efficiency", eq:T`\eta_{th}=\frac{\dot W_{cycle}}{\dot Q_{in}}=\frac{\dot W_T+\dot W_P}{\dot Q_{in}}=\frac{\dot m(h_1-h_2)+\dot m(h_3-h_4)}{\dot m(h_1-h_4)}`, note:"Turbine: Ẇ_T = ṁ(h₁ − h₂) > 0. Pump: Ẇ_P = ṁ(h₃ − h₄) < 0. Boiler: Q̇_in = ṁ(h₁ − h₄). ṁ cancels."},
+    {t:"Component rates", eq:T`\dot W_T=${fmt(v.mdot)}(${fmt(r.h1)}-${fmt(r.h2)})=${fmt(r.WT)}\ \text{kW},\quad \dot W_P=${fmt(v.mdot)}(${fmt(r.h3)}-${fmt(r.h4)})=${fmt(r.WP)}\ \text{kW},\quad \dot Q_{in}=${fmt(v.mdot)}(${fmt(r.h1)}-${fmt(r.h4)})=${fmt(r.Qin)}\ \text{kW}`},
+    {t:"Efficiency", eq:T`\eta_{th}=\frac{(${fmt(r.h1)}-${fmt(r.h2)})+(${fmt(r.h3)}-${fmt(r.h4)})}{${fmt(r.h1)}-${fmt(r.h4)}}\times100=${fmt(r.eta,3)}\%`, box:T`\eta_{th}=${fmt(r.eta,3)}\%`},
+    {t:"(b) Condenser with both streams inside the CV", eq:T`\sum_i\dot mh=\sum_e\dot mh\ \Rightarrow\ \dot m_2h_2+\dot m_5h_5=\dot m_3h_3+\dot m_6h_6\ \Rightarrow\ \dot m_{sw}(h_2-h_3)=\dot m_{cw}(h_6-h_5)`, note:"ṁ₂ = ṁ₃ = ṁ (steam side), ṁ₅ = ṁ₆ = ṁ_cw (water side)."},
+    {t:"Cooling-water flow with h₆ − h₅ = c_p ΔT", eq:T`\dot m_{cw}=\frac{\dot m(h_2-h_3)}{c_p(T_6-T_5)}=\frac{(${fmt(v.mdot)}\ \tfrac{\text{kg}}{\text{s}})(${fmt(r.h2)}-${fmt(r.h3)})\tfrac{\text{kJ}}{\text{kg}}}{\left(4.2\ \tfrac{\text{kJ}}{\text{kg·K}}\right)(${fmt(v.dT)}\ \text{K})}=${fmt(r.mcw)}\ \text{kg/s}`, box:T`\dot m_{cw}=${fmt(r.mcw)}\ \text{kg/s}`}
+  ]; },
+  comments:(v,r)=>[`Only ${fmt(r.eta,3)}% of the ${fmt(r.QinMW,3)} MW boiler input comes out as net work; the rest, Q̇_out = ${fmt(r.Qout/1000,3)} MW, leaves in the condenser. That is why the cooling water flow (${fmt(r.mcw)} kg/s) is ${fmt(r.mcw/v.mdot,3)}× the steam flow.`,`The pump work (${fmt(-r.WP)} kW) is tiny next to the turbine output (${fmt(r.WTMW,3)} MW) because liquid water has a small specific volume — the back-work ratio is ${fmt(100*(-r.WP)/r.WT,2)}%. Using h₄ ≈ h₃ would change η by only ${fmt(Math.abs(r.eta-(r.WT)/(v.mdot*(r.h1-r.h3))*100),2)} percentage points.`,`OTEC (ocean thermal energy conversion) runs the same Rankine layout between 27 °C surface water and 5 °C deep water using ammonia or R-134a instead of steam; with such a small ΔT the efficiency is only a few percent, and enormous cooling-water flows are needed — the same lesson as part (b).`],
+  references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.11 (system analysis), Eqs. 4.18 and 4.20a; Sec. 2.6.1 (η); Tables A-3, A-4, A-5.","Class notes, ES 305 Ch. 4 Example 3."],
+  takeaway:(v,r)=>`Four devices, four reduced balances: η_th = [(h₁ − h₂) + (h₃ − h₄)]/(h₁ − h₄) = ${fmt(r.eta,3)}%, and the condenser's Σṁh in = Σṁh out gives ṁ_cw = ${fmt(r.mcw)} kg/s.`,
+  diagram:(v,r)=>({ x:"v", y:"T", fluid:"water", units:"SI", dome:true, title:"T–v diagram of the cycle", states:[{P:v.p1,v:r.v1,T:v.T1,label:"1"},{P:v.p2,v:r.v2,T:r.T3,label:"2"},{P:v.p2,v:r.v3,T:r.T3,label:"3"},{P:v.p1,v:r.v4,T:v.T4,label:"4"}], paths:[{a:0,b:1,kind:"line",label:"turbine",heat:0},{a:1,b:2,kind:"isobaric",label:"condenser",heat:-1},{a:2,b:3,kind:"line",label:"pump",heat:0},{a:3,b:0,kind:"isobaric",label:"boiler",heat:1}],
+    cap:"1 superheated at the boiler pressure; 2 wet steam at the condenser pressure; 3 saturated liquid; 4 compressed liquid. The boiler isobar 4→1 crosses the dome; the condenser isobar 2→3 runs inside it." }),
+  flow:(v,r)=>({ title:"Rankine cycle: boiler, turbine, condenser, pump", cap:"Clockwise from the top left: the boiler heats liquid to superheated steam (orange, large), the turbine expands it (cooler, larger), the condenser turns it back into liquid (small blue) and the pump returns it to the boiler. Cooling water passes under the condenser.", w:360,h:220, cv:[40,25,300,175],
+    nodes:[{id:"b",x:45,y:35,w:110,h:45,kind:"boiler",label:"boiler"},{id:"t",x:230,y:35,w:90,h:75,kind:"turbine",label:"turbine"},{id:"c",x:150,y:135,w:120,h:45,kind:"condenser",label:"condenser"},{id:"p",x:50,y:125,w:50,h:50,kind:"pump",label:"pump"}],
+    streams:[{pts:[[100,57],[155,57],[235,57]],T:[0.9,1],size:[1,1],label:""},{pts:[[235,57],[300,95],[300,157],[270,157]],T:[1,0.35],size:[1,1.6],label:""},{pts:[[270,157],[150,157],[100,157],[75,150]],T:[0.35,0.2],size:[1.6,0.5],label:""},{pts:[[75,150],[75,120],[75,57],[100,57]],T:[0.2,0.25],size:[0.5,0.55],label:""},{pts:[[150,197],[270,197]],T:[0.05,0.3],size:[0.7,0.7],rate:1.6,label:""}],
+    arrows:[{x:100,y:8,dir:"in",kind:"Q",label:"Q̇_in"},{x:340,y:60,dir:"out",kind:"W",label:"Ẇ_T"},{x:22,y:150,dir:"in",kind:"W",label:"Ẇ_P"}],
+    readout:[{label:"η_th",val:fmt(r.eta,3)+" %"},{label:"Ẇ_T",val:fmt(r.WTMW,3)+" MW"},{label:"ṁ_cw",val:fmt(r.mcw)+" kg/s"}] })
 }
 ];
 
@@ -822,58 +1114,110 @@ D.tidy=function(svg){
   }catch(e){}
 };
 
+/* Schematics for the Chapter 4 page. Every drawing shows the dashed control-volume boundary (class "h") and labels it. */
+const TURB=(x,y,w,h)=>D.poly([[x,y+h*0.25],[x+w,y],[x+w,y+h],[x,y+h*0.75]],"body2",true);
+const COMP=(x,y,w,h)=>D.poly([[x,y],[x+w,y+h*0.25],[x+w,y+h*0.75],[x,y+h]],"body2",true);
+const NOZ=(x,y,w,h)=>D.poly([[x,y],[x+w,y+h*0.3],[x+w,y+h*0.7],[x,y+h]],"body2",true);
+const HXB=(x,y,w,h)=>D.rect(x,y,w,h,"body2")+D.path(`M${x+8},${y+h*0.3} h${w-16} v${h*0.2} h-${w-16} v${h*0.2} h${w-16}`,"h2");
+const VALVE=(x,y,s)=>D.poly([[x-s,y-s*0.7],[x+s,y+s*0.7],[x+s,y-s*0.7],[x-s,y+s*0.7]],"body2",true)+D.line(x,y-s*0.7,x,y-s*1.6,"s");
+const CV=(x,y,w,h,label,lx,ly)=>D.rect(x,y,w,h,"h")+(label?D.text(lx===undefined?x+w/2:lx,ly===undefined?y+h+12:ly,label,"middle","tm"):"");
+const PIPE=(x1,y1,x2,y2,label,lx,ly,la)=>D.arrow(x1,y1,x2,y2,"v",label||"",lx,ly,la||"middle");
 const DIAG={
-  threeproc:(v,r)=>{ const x=110, top=30, bot=200, w=100, py=70; return D.svg(
-    D.line(x-w/2,top,x-w/2,bot,"s")+D.line(x+w/2,top,x+w/2,bot,"s")+D.line(x-w/2,bot,x+w/2,bot,"s")
-    +D.rect(x-w/2+3,py+12,w-6,bot-py-15,"gas")+D.rect(x-w/2+2,py,w-4,12,"body")+D.rect(x-5,14,10,56,"body2")
-    +D.path(`M${x-w/2-6},${py+8} L${x-w/2-6},${bot+6} L${x+w/2+6},${bot+6} L${x+w/2+6},${py+8} Z`,"h")+D.text(x,bot+20,"system: air","middle","tm")
-    +D.text(x,py+60,"air","middle","t")
-    +LG(190,30,[[`1: p₁ = ${nf(v.p1)} psi, V₁ = ${nf(v.V1)} ft³`],[`1→2: pV = const to ${nf(v.p2)} psi`],["2→3: V = const to p₃ = p₁"],["3→1: p = const, expansion"],["find V₂ and W for each"]])); },
-  condconv:(v,r)=>{ /* left: plane wall (conduction); right: hot surface in air (convection) */
-    const wx=60, wy=50, ww=60, wh=120; const sx=250, sy=150;
-    return D.svg(
-    D.text(wx+ww/2,30,"(a) plane wall","middle","t")
-    +D.rect(wx,wy,ww,wh,"wall")
-    +D.text(wx-6,wy+30,`T₁ = ${nf(v.T1)} K`,"end","tm")+D.text(wx+ww+6,wy+wh-30,`T₂ = ${nf(v.T2)} K`,"start","tm")
-    +D.dim(wx,wy+wh+14,wx+ww,wy+wh+14,`ℓ = ${nf(v.L)} m`,0)
-    +D.arrow(wx+ww/2-24,wy+wh/2+16,wx+ww/2+24,wy+wh/2+16,"f")+D.text(wx+ww/2,wy+wh/2-10,"Q_x ?","middle","tf")
-    +D.arrow(wx-30,wy+wh+40,wx+10,wy+wh+40,"s","x",wx+16,wy+wh+40,"start")
-    +D.text(wx+ww/2,wy+wh+62,`κ = ${nf(v.k)} W/m·K, A = ${nf(v.A)} m²`,"middle","tm")
-    +D.path(`M${wx-4},${wy-4} L${wx+ww+4},${wy-4} L${wx+ww+4},${wy+wh+4} L${wx-4},${wy+wh+4} Z`,"h")
-    /* convection */
-    +D.text(sx+50,30,"(b) surface in air","middle","t")
-    +D.rect(sx-10,sy,120,22,"body")+D.text(sx+50,sy+11,`T_b = ${nf(v.Tb)} K`,"middle","t")
-    +D.rect(sx-10,sy+22,120,20,"body2")
-    +[0,1,2].map(i=>D.arrow(sx-30,sy-60+i*22,sx+0,sy-60+i*22,"v")).join("")+D.text(sx+8,sy-38,`air, T_f = ${nf(v.Tf)} K`,"start","tv")
-    +D.text(sx+8,sy-18,`h = ${nf(v.h)} W/m²·K`,"start","tm")
-    +D.arrow(sx+70,sy-6,sx+70,sy-46,"f","Q_c ?",sx+78,sy-26,"start")
-    +D.text(sx+50,sy+58,`A = ${nf(v.Ac)} m²`,"middle","tm")
-    +D.path(`M${sx-16},${sy-6} L${sx+116},${sy-6} L${sx+116},${sy+48} L${sx-16},${sy+48} Z`,"h")+D.text(sx+50,sy+76,"system: surface","middle","tm")
-    ); },
-  energytable:(v,r)=>{ const x=180, y=110, w=150, h=90; return D.svg(
-    D.rect(x-w/2,y-h/2,w,h,"gas")+D.path(`M${x-w/2-8},${y-h/2-8} L${x+w/2+8},${y-h/2-8} L${x+w/2+8},${y+h/2+8} L${x-w/2-8},${y+h/2+8} Z`,"h")
-    +D.text(x,y-12,"closed system","middle","t")+D.text(x,y+8,"E₁ → E₂","middle","tm")+D.text(x,y+26,"ΔE = Q − W","middle","tm")
-    +D.arrow(x-w/2-70,y,x-w/2-12,y,"f","Q (in +)",x-w/2-42,y-14)
-    +D.arrow(x+w/2+12,y,x+w/2+70,y,"v","W (by +)",x+w/2+42,y-14)
-    +D.text(x,y+h/2+28,"surroundings","middle","tm")
-    +D.text(x,30,"same boundary for each process a–e","middle","tm")); },
-  threecycle:(v,r)=>{ const x=100, top=30, bot=200, w=100, py=70; return D.svg(
-    D.line(x-w/2,top,x-w/2,bot,"s")+D.line(x+w/2,top,x+w/2,bot,"s")+D.line(x-w/2,bot,x+w/2,bot,"s")
-    +D.rect(x-w/2+3,py+12,w-6,bot-py-15,"gas")+D.rect(x-w/2+2,py,w-4,12,"body")+D.rect(x-5,14,10,56,"body2")
-    +D.path(`M${x-w/2-6},${py+8} L${x-w/2-6},${bot+6} L${x+w/2+6},${bot+6} L${x+w/2+6},${py+8} Z`,"h")+D.text(x,bot+20,"system: gas","middle","tm")
-    +D.text(x,py+60,"gas","middle","t")
-    +D.arrow(x-w/2-30,bot-30,x-w/2-4,bot-30,"f","Q",x-w/2-18,bot-44)+D.arrow(x,py-14,x,py-52,"v","W",x+10,py-34,"start")
-    +LG(170,28,[[`1: p₁ = ${nf(v.p1)} bar, V₁ = ${nf(v.V1)} m³`],[`1→2: pV = c, W₁₂ = ${nf(v.W12)} kJ`],[`U₁ = ${nf(v.U1)} kJ, U₂ = ${nf(v.U2)} kJ`],[`2→3: V = c, Q₂₃ = ${nf(v.Q23)} kJ`],[`3→1: linear p–V, W₃₁ = ${nf(v.W31)} kJ`],["find Q₁₂, Q₃₁, U₃, W_cycle"]])); },
-  fridgecop:(v,r)=>{ const x=150; return D.svg(
-    /* hot body on top, cold body at the bottom, system in between */
-    `<ellipse class="hot" cx="${x}" cy="26" rx="70" ry="18"/>`+D.text(x,26,"hot body","middle","t")
-    +`<ellipse class="cold" cx="${x}" cy="200" rx="70" ry="18"/>`+D.text(x,200,"cold body","middle","t")
-    +D.rect(x-45,90,90,48,"body2")+D.text(x,108,"system","middle","t")+D.text(x,125,"(refrigerant)","middle","tm")
-    +D.path(`M${x-53},82 L${x+53},82 L${x+53},146 L${x-53},146 Z`,"h")
-    +D.arrow(x,180,x,150,"f",`Q_in ?`,x+8,166,"start")
-    +D.arrow(x,80,x,48,"f",`Q_out = ${nf(v.Qout)} kJ`,x+8,64,"start")
-    +D.arrow(x+125,114,x+58,114,"v","W_cycle ?",x+92,100)
-    +D.text(x+92,132,`β = ${nf(v.beta)}`,"middle","tm")); }
+  air_massflow:(v,r)=>D.svg(D.text(180,18,"Exit of a gas turbine","middle","t")
+    +TURB(70,50,110,110)+D.text(125,105,"turbine","middle","t")+D.arrow(125,30,125,50,"v")+D.text(150,36,"hot gas in","start","tm")
+    +PIPE(180,105,300,105,"")+CV(200,80,70,50,"CV: exit plane",235,150)
+    +LG(200,180,[[`p = ${nf(v.p)} kPa, T = ${nf(v.T)} °C`],[`(AV) = ${nf(v.AV)} L/s → ṁ = ?`]])),
+  resistor_pipe:(v,r)=>D.svg(D.text(180,18,"Insulated pipe with an electrical resistor","middle","t")
+    +D.rect(80,90,200,40,"body2")+D.rect(70,80,220,8,"wall")+D.rect(70,132,220,8,"wall")+D.text(180,110,"air →","middle","t")
+    +[0,1,2,3,4,5,6,7,8,9].map(i=>D.path(`M${95+i*17},90 q4,-8 8,0`,"spr")+D.path(`M${95+i*17},130 q4,8 8,0`,"spr")).join("")
+    +D.arrow(20,110,80,110,"v",`1: ${nf(v.T1)} °C, ${nf(v.p1)} kPa`,50,60,"middle")+D.text(50,74,`(AV)₁ = ${nf(v.AV)} m³/h`,"middle","tm")
+    +D.arrow(280,110,340,110,"v","2: T₂ = ?",310,150)
+    +D.line(300,60,300,80,"s")+D.line(310,60,310,80,"s")+D.text(322,66,`${nf(v.volt)} V, ${nf(v.amp)} A`,"start","tf")+D.text(322,82,"+  −","start","tm")
+    +CV(60,70,240,80,"CV: air + resistor (insulated)",180,172)),
+  nozzle_air:(v,r)=>D.svg(D.text(180,18,"Insulated nozzle, horizontal","middle","t")
+    +NOZ(110,55,140,110)+D.text(180,110,"nozzle","middle","t")
+    +D.arrow(20,110,110,110,"v")+LG(20,40,[[`1: ${nf(v.T1)} K, ${nf(v.p1)} kPa`],[`V₁ = ${nf(v.V1)} m/s`],[`ṁ = ${nf(v.mdot)} kg/s`]])
+    +D.arrow(250,110,340,110,"v")+LG(258,150,[[`2: p₂ = ${nf(v.p2)} kPa`],[`V₂ = ${nf(v.V2)} m/s`],["T₂ = ?, A₂ = ?"]])
+    +CV(100,45,160,130,"CV: nozzle (Q̇ = Ẇ = 0)",180,195)),
+  turbine_inlet:(v,r)=>D.svg(D.text(180,18,"Well-insulated steam turbine","middle","t")
+    +TURB(110,50,130,120)+D.text(175,110,"T","middle","t")
+    +D.arrow(40,80,112,80,"v")+LG(14,36,[[`1: T₁ = ${nf(v.T1)} °C, p₁ = ?`],[`V₁ = ${nf(v.V1)} m/s, ṁ = ${nf(v.mdot)} kg/s`]])
+    +D.arrow(240,140,320,140,"v")+LG(232,170,[[`2: sat. vapor, ${nf(v.p2)} bar`],[`V₂ = ${nf(v.V2)} m/s`]])
+    +D.arrow(240,100,320,100,"f",`Ẇ = ${nf(v.W)} MW`,280,84)
+    +CV(100,42,150,138,"CV: turbine",175,198)),
+  air_dh_cp:(v,r)=>D.svg(D.text(180,18,"Adiabatic air compressor","middle","t")
+    +COMP(120,50,120,120)+D.text(180,110,"C","middle","t")
+    +D.arrow(30,90,120,90,"v")+LG(14,46,[[`1: ${nf(v.T1)} K, ${nf(v.p1)} bar`],[`ṁ = ${nf(v.mdot)} kg/s`]])
+    +D.arrow(240,110,330,110,"v")+LG(250,140,[[`2: ${nf(v.T2)} K`],[`${nf(v.p2)} bar`]])
+    +D.arrow(320,50,250,50,"f","Ẇ_in",290,36)
+    +CV(110,42,140,136,"CV: compressor (Q̇ = 0)",180,194)
+    +LG(14,150,[["find Δh two ways:"],["Table A-22 vs c_p(T_avg)"]])),
+  compressor_r134a:(v,r)=>D.svg(D.text(180,18,"Water-jacketed compressor","middle","t")
+    +COMP(120,50,120,120)+D.text(180,110,"C","middle","t")
+    +D.rect(100,70,20,80,"water")+D.text(110,60,"jacket","middle","tm")+D.arrow(60,80,100,80,"v","water in",70,66,"start")+D.arrow(100,140,60,140,"v","water out",70,156,"start")
+    +D.arrow(180,20,180,50,"v")+D.text(190,36,`1: ${nf(v.T1)} °C, ${nf(v.p1)} bar, ${nf(v.mdot)} kg/s`,"start","tm")
+    +D.arrow(240,110,320,110,"v")+LG(250,130,[[`2: ${nf(v.T2)} °C`],[`${nf(v.p2)} bar`]])
+    +D.arrow(320,60,250,60,"f",`Ẇ_in = ${nf(-v.W)} kW`,290,46)
+    +D.arrow(110,110,80,110,"f","Q̇_cv ?",60,120)
+    +CV(112,44,136,132,"CV: refrigerant side only",180,192)),
+  mixing_air:(v,r)=>D.svg(D.text(180,18,"Mixing section of the supply duct","middle","t")
+    +D.rect(60,90,220,40,"body2")+D.rect(80,40,40,50,"body2")+D.rect(80,130,40,50,"body2")
+    +D.arrow(100,26,100,52,"v")+LG(126,40,[[`1: outside air ${nf(v.T1)} °F`],[`(AV)₁ = ${nf(v.AV1)} ft³/min`]])
+    +D.arrow(100,196,100,170,"v")+LG(126,172,[[`2: return air ${nf(v.T2)} °F`],[`D₂ = ${nf(v.D2)} ft, V₂ = ${nf(v.V2)} ft/min`]])
+    +D.arrow(280,110,340,110,"v")+LG(232,95,[[`3: V₃ = ${nf(v.V3)} ft/min`],["T₃ = ?, D₃ = ?"]])
+    +D.text(170,110,"p = 1 atm","middle","t")
+    +CV(50,30,240,160,"CV: mixing chamber",170,206)),
+  condenser_river:(v,r)=>D.svg(D.text(180,18,"Condenser cooled by river water","middle","t")
+    +HXB(110,60,140,90)+D.text(180,105,"condenser","middle","t")
+    +D.arrow(30,80,110,80,"v")+D.text(30,64,`1: sat. vapor ${nf(v.P)} bar`,"start","tm")+D.text(30,50,`ṁ = ${nf(v.mdot)} kg/h`,"start","tm")
+    +D.arrow(250,80,330,80,"v")+D.text(258,64,"2: sat. liquid","start","tm")
+    +D.arrow(330,130,250,130,"v")+D.text(258,150,`3: river ${nf(v.T3)} °C`,"start","tm")+D.text(258,164,`(AV) = ${nf(v.AV)} m³/h`,"start","tm")
+    +D.arrow(110,130,30,130,"v")+D.text(30,150,"4: river, T₄ = ?","start","tm")
+    +CV(100,50,160,110,"CV: both streams (Q̇_cv = 0)",180,182)),
+  solar_collector:(v,r)=>D.svg(D.text(180,18,"Solar collector on a roof","middle","t")
+    +D.path("M40,170 L180,60 L320,170","s")+D.rect(100,95,70,16,"body2",-38,135,103)+D.text(135,140,"collector","middle","tm")
+    +D.circ(60,50,14,"hot")+[[-20,-8],[-10,4],[0,14],[8,24]].map(([dx,dy])=>D.arrow(76+dx,44+dy,110+dx,66+dy,"f")).join("")
+    +D.text(60,80,`${nf(v.q)} Btu/h·ft²`,"middle","tf")+D.text(60,94,`A = ${nf(v.A)} ft²`,"middle","tm")
+    +D.arrow(110,84,90,70,"v",`${nf(v.loss)}% lost`,84,58,"end")
+    +D.arrow(200,110,240,110,"v",`2: ${nf(v.T2)} °F out`,262,110,"start")+D.arrow(240,150,200,140,"v",`1: ${nf(v.T1)} °F in`,262,150,"start")
+    +CV(90,80,120,70,"CV: water in the collector",150,196)),
+  throttle_hx:(v,r)=>D.svg(D.text(180,16,"Throttling valve and heat exchanger","middle","t")
+    +VALVE(90,80,14)+D.text(90,116,"valve","middle","tm")+HXB(170,50,120,100)+D.text(230,100,"HX","middle","t")
+    +D.arrow(20,80,76,80,"v")+D.text(20,52,`1: sat. liquid, ${nf(v.T1)} °C`,"start","tm")+D.text(20,66,`ṁ_R = ${nf(v.mR)} kg/s`,"start","tm")
+    +D.arrow(104,80,170,80,"v")+D.text(137,64,`2: ${nf(v.T2)} °C`,"middle","tm")
+    +D.arrow(290,80,345,80,"v")+D.text(300,64,"3: sat. vapor","start","tm")
+    +D.arrow(345,130,290,130,"v")+D.text(300,148,`4: water ${nf(v.T4)} °C`,"start","tm")
+    +D.arrow(170,130,110,130,"v")+D.text(112,148,`5: ${nf(v.T5)} °C`,"start","tm")
+    +CV(70,40,230,120,"CVs: valve (h₂ = h₁) and exchanger (Σṁh)",185,180)),
+  ac_system:(v,r)=>D.svg(D.text(180,16,"Vapor-compression air conditioner","middle","t")
+    +HXB(110,28,140,34)+D.text(180,45,"condenser","middle","t")+HXB(110,150,140,34)+D.text(180,167,"evaporator","middle","t")
+    +D.circ(300,105,26,"body2")+D.text(300,105,"C","middle","t")+VALVE(60,105,12)
+    +D.arrow(60,62,60,93,"v")+D.arrow(60,117,60,150,"v")+D.arrow(250,167,300,167,"v")+D.line(300,167,300,131,"s")+D.arrow(300,79,300,45,"v")+D.arrow(300,45,250,45,"v")+D.line(110,45,60,45,"s")+D.line(60,45,60,62,"s")+D.line(110,167,60,167,"s")+D.line(60,167,60,150,"s")
+    +D.text(72,84,`3: ${nf(v.T3)} °F liquid`,"start","tm")+D.text(72,132,"4: h₄ = h₃","start","tm")
+    +D.text(258,150,`1: sat. vap. ${nf(v.p1)} psi`,"start","tm")+D.text(258,66,`2: ${nf(v.p2)} psi, ${nf(v.T2)} °F`,"start","tm")
+    +D.arrow(350,105,326,105,"f",`Ẇ = ${nf(v.W)} Btu/min`,338,132,"middle")
+    +D.arrow(180,212,180,184,"f",`Q̇_in = ${nf(v.Qin)} Btu/min`,180,200,"middle")
+    +D.arrow(180,28,180,6,"f","Q̇_out",196,14,"start")
+    +D.rect(100,140,160,54,"h")+D.rect(268,70,64,70,"h")+D.text(300,150,"CV: compressor","middle","tm")),
+  two_compressors:(v,r)=>D.svg(D.text(180,16,"Two compressors with an intercooler","middle","t")
+    +COMP(30,50,70,80)+D.text(65,90,"A","middle","t")+COMP(260,50,70,80)+D.text(295,90,"B","middle","t")+HXB(140,55,90,100)+D.text(185,105,"HX","middle","t")
+    +D.arrow(65,20,65,50,"v")+D.text(80,26,`1: 1 bar, ${nf(v.T1)} K, ${nf(v.mdot)} kg/s`,"start","tm")
+    +D.arrow(100,90,140,90,"v")+D.text(120,74,`2: ${nf(v.p2)} bar, ${nf(v.T2)} K`,"middle","tm")
+    +D.arrow(230,90,260,90,"v")+D.text(245,74,`3: ${nf(v.T3)} K`,"middle","tm")
+    +D.arrow(295,50,295,20,"v")+D.text(310,26,`4: ${nf(v.p4)} bar, ${nf(v.T4)} K`,"start","tm")
+    +D.arrow(250,135,230,135,"v",`5: water ${nf(v.T5)} °C`,262,150,"start")+D.arrow(140,135,110,135,"v",`6: ${nf(v.T6)} °C`,108,150,"end")
+    +D.arrow(10,60,30,66,"f","Ẇ_A",6,50,"start")+D.arrow(350,60,330,66,"f","Ẇ_B",352,50,"end")
+    +D.rect(22,42,86,96,"h")+D.rect(130,45,110,120,"h")+D.rect(252,42,86,96,"h")+D.text(180,190,"three CVs: A, exchanger (both streams), B","middle","tm")),
+  rankine_otec:(v,r)=>D.svg(D.text(180,16,"Simple steam power plant","middle","t")
+    +HXB(50,32,100,36)+D.text(100,50,"boiler","middle","t")+TURB(235,32,80,70)+D.text(275,67,"T","middle","t")
+    +HXB(150,140,110,36)+D.text(205,158,"condenser","middle","t")+D.circ(70,150,22,"body2")+D.text(70,150,"P","middle","t")
+    +D.arrow(150,50,235,50,"v")+D.text(192,36,`1: ${nf(v.p1)} bar, ${nf(v.T1)} °C`,"middle","tm")
+    +D.line(300,102,300,158,"s")+D.arrow(300,158,260,158,"v")+D.text(304,120,`2: ${nf(v.p2)} bar`,"start","tm")+D.text(304,134,`x₂ = ${nf(v.x2)}`,"start","tm")
+    +D.arrow(150,158,92,158,"v")+D.text(121,146,"3: sat. liq.","middle","tm")
+    +D.line(70,128,70,68,"s")+D.arrow(70,68,70,68,"v")+D.text(74,100,`4: ${nf(v.p1)} bar, ${nf(v.T4)} °C`,"start","tm")
+    +D.arrow(320,60,350,60,"f","Ẇ_T",336,46)+D.arrow(20,150,44,150,"f","Ẇ_P",28,136)+D.arrow(100,10,100,32,"f","Q̇_in",116,18,"start")
+    +D.arrow(160,200,250,200,"v",`cooling water, ΔT = ${nf(v.dT)} °C`,205,214)+D.text(205,190,`ṁ = ${nf(v.mdot)} kg/s`,"middle","tm")
+    +D.rect(40,24,120,52,"h")+D.rect(226,24,98,86,"h")+D.rect(140,132,130,52,"h")+D.rect(42,122,56,56,"h")+D.text(40,196,"CVs: one per component","start","tm"))
 };
 
 /* ===================== MINI-MATLAB (scalar + small matrix) =====================
@@ -1201,191 +1545,483 @@ const SENSE=(()=>{
   return (val,unit,label)=>{ try{ return sense(val,unit,label||""); }catch(e){ return ""; } };
 })();
 
+const f6=(x)=>fmt(x,6);
 const MAT={
-threeproc:{
-  out:["V2","W12","W23","W31"],
-  code:(v,r)=>`% Three processes in series: boundary work from the p-V path
+air_massflow:{
+  out:["v","mdot"],
+  code:(v,r)=>`% Mass flow rate of air from the volumetric flow rate (ideal gas)
 clc; clear;
 
 % ---- Given ----
-p1 = ${v.p1};     % lbf/in^2
-V1 = ${v.V1};     % ft^3
-p2 = ${v.p2};     % lbf/in^2
-p3 = p1;          % lbf/in^2 (process 2-3 ends at p1)
+p  = ${v.p};        % kPa, exit pressure
+T  = ${v.T};        % degC, exit temperature
+AV = ${v.AV};       % L/s, volumetric flow rate
+M  = 28.97;         % kg/kmol, molar mass of air (Table A-1)
+Rbar = 8.314;       % kJ/(kmol*K), universal gas constant
 
-% ---- Unit factors ----
-in2_per_ft2 = 144;       % in^2 per ft^2
-ftlbf_per_Btu = 778.17;  % ft*lbf per Btu
+% ---- Specific volume from pv = RT ----
+R  = Rbar/M;                        % kJ/(kg*K)
+TK = {{T + 273.15 || The ideal-gas law needs absolute temperature.}};   % K
+v  = {{R*TK/p || v = RT/p; kJ/(kg*K)*K/kPa = m^3/kg.}};                 % m^3/kg
 
-% ---- (a) State 2 from pV = constant ----
-V2 = {{V1*p1/p2 || p1*V1 = p2*V2 along the hyperbola.}};        % ft^3
-V3 = V2;                  % constant-volume process 2-3
+% ---- Mass flow rate: mdot = AV/v ----
+AV_m3 = AV/1000;                    % m^3/s  (1 L = 1e-3 m^3)
+mdot  = {{AV_m3/v || Volumetric flow divided by specific volume gives mass flow.}};   % kg/s
 
-% ---- (b) Work for each process, in Btu ----
-W12 = {{p1*in2_per_ft2*V1*log(V2/V1)/ftlbf_per_Btu || Integral of c/V dV = p1*V1*ln(V2/V1); convert lbf/in^2*ft^3 to Btu.}};   % Btu (negative: compression)
-W23 = {{0 || dV = 0, so no boundary work.}};                                             % Btu
-W31 = {{p1*in2_per_ft2*(V1 - V3)/ftlbf_per_Btu || Constant pressure: W = p*(V_final - V_initial).}};     % Btu
-
-W_cycle = W12 + W23 + W31;
-fprintf('V2 = %.4f ft^3\\n', V2);
-fprintf('W12 = %.1f Btu, W23 = %.1f Btu, W31 = %.1f Btu\\n', W12, W23, W31);
-fprintf('Net work for the loop = %.1f Btu\\n', W_cycle);`,
+fprintf('v = %.4f m^3/kg\\n', v);
+fprintf('mdot = %.3f kg/s\\n', mdot);`,
   hints:(v,r)=>[
-    "Sketch the p–V diagram first: 1–2 slides up a hyperbola to higher pressure, 2–3 drops straight down at fixed V, 3–1 runs horizontally back to state 1. Work is the area under each path.",
-    "Key equations: V₂ = V₁p₁/p₂; W₁₂ = p₁V₁ ln(V₂/V₁); W₂₃ = 0; W₃₁ = p₁(V₁ − V₂). Convert lbf/in²·ft³ → ft·lbf with 144, then → Btu with 778.17.",
-    `V₂ = ${fmt(v.V1)}(${fmt(v.p1)}/${fmt(v.p2)}) = ${fmt(r.V2)} ft³. Then W₁₂ = ${fmt(v.p1)}(144)(${fmt(v.V1)}) ln(${fmt(r.V2)}/${fmt(v.V1)})/778.17.`],
-  sense:(v,r)=>[`the air is squeezed to ${fmt(100*r.V2/v.V1,2)}% of its starting volume`, null, "exactly zero — no volume change, no boundary work", `${fmt(Math.abs(r.W31/r.W12)*100,2)}% of the compression work comes back on the expansion`]
+    "You are given volume per second, but the energy balance always wants mass per second. The bridge is the specific volume at the exit state: ṁ = (AV)/v. Since air is an ideal gas, v comes from pv = RT — in absolute temperature.",
+    "Key equations: v = RT/p with R = R̄/M = 8.314/28.97 kJ/kg·K; ṁ = (AV)/v with (AV) converted from L/s to m³/s.",
+    `T = ${fmt(v.T)} + 273.15 = ${fmt(r.TK)} K, so v = (0.2870)(${fmt(r.TK)})/${fmt(v.p)} = ${fmt(r.vv)} m³/kg. Then ṁ = (${fmt(v.AV)}×10⁻³)/${fmt(r.vv)}.`],
+  sense:(v,r)=>[`hot exhaust about ${fmt(1.2*r.vv,2)}× lighter than room air`, `${fmt(r.mdot*3600/1000,3)} tonnes of air per hour`]
 },
-condconv:{
-  out:["Q_x","Q_c"],
-  code:(v,r)=>`% Heat transfer rates: Fourier's law (conduction) and Newton's law of cooling (convection)
-clc; clear;
-
-% ---- (a) Conduction through a plane wall ----
-kappa = ${v.k};      % W/(m*K), thermal conductivity
-A     = ${v.A};      % m^2, wall face area
-L     = ${v.L};      % m, wall thickness
-T1    = ${v.T1};     % K, temperature of face 1 (x = 0)
-T2    = ${v.T2};     % K, temperature of face 2 (x = L)
-
-dTdx = {{(T2 - T1)/L || Steady state with constant kappa: the profile is a straight line from T1 to T2.}};   % K/m
-Q_x  = {{-kappa*A*dTdx || Fourier's law; the minus sign sends heat down the gradient.}};                        % W, positive in +x
-
-% ---- (b) Convection from a surface into air ----
-h    = ${v.h};       % W/(m^2*K), convection coefficient
-A_c  = ${v.Ac};      % m^2, surface area
-T_b  = ${v.Tb};      % K, surface temperature
-T_f  = ${v.Tf};      % K, air temperature
-
-% Textbook: rate LEAVING the surface is h*A*(T_b - T_f).
-% First-law convention (energy INTO the surface positive) adds a minus sign.
-Q_c  = {{-h*A_c*(T_b - T_f) || Newton's law of cooling, with the sign flipped so that heat into the surface is positive.}};   % W
-
-fprintf('(a) Conduction  Q_x = %.3f W  (positive: flows from the %g K face toward the %g K face)\\n', Q_x, T1, T2);
-fprintf('(b) Convection  Q_c = %.3f W  (negative: %.3f W leaves the surface into the air)\\n', Q_c, -Q_c);`,
-  hints:(v,r)=>[
-    "Two independent rate laws, one each. For the wall you need the temperature gradient dT/dx, not just ΔT; for the surface you need the temperature difference between it and the fluid. Decide what sign convention you are reporting in before you write numbers.",
-    "Key equations: Q̇_x = −κA (dT/dx) with dT/dx = (T₂ − T₁)/ℓ; Q̇_c = −hA(T_b − T_f) for heat into the surface (the textbook's hA(T_b − T_f) is the rate out).",
-    `dT/dx = (${fmt(v.T2)} − ${fmt(v.T1)})/${fmt(v.L)} = ${fmt(r.dTdx)} K/m, so Q̇_x = −(${fmt(v.k)})(${fmt(v.A)})(${fmt(r.dTdx)}). For (b): Q̇_c = −(${fmt(v.h)})(${fmt(v.Ac)})(${fmt(v.Tb)} − ${fmt(v.Tf)}).`],
-  sense:(v,r)=>[`about ${fmt(r.Qx/5,2)} phone chargers' worth of heat creeping through the wall`, `${fmt(r.QcMag,3)} W leaving the surface — ${fmt(r.QcMag/Math.max(r.Qx,1e-9),2)}× the conduction rate in (a)`]
-},
-energytable:{
-  out:["W_a","E2_a","Q_b","E1_b","Q_c","dE_c","W_d","E2_d","E1_e","dE_e"],
-  code:(v,r)=>`% Closed-system energy table: dE = Q - W and dE = E2 - E1 for each process
-clc; clear;
-
-% ---- Process a: given Q, E1, dE ----
-Q_a  = ${v.aQ};   % kJ
-E1_a = ${v.aE1};  % kJ
-dE_a = ${v.adE};  % kJ
-W_a  = {{Q_a - dE_a || Rearrange dE = Q - W for W.}};       % kJ
-E2_a = {{E1_a + dE_a || dE = E2 - E1.}};                     % kJ
-
-% ---- Process b: given W, E2, dE ----
-W_b  = ${v.bW};   % kJ
-E2_b = ${v.bE2};  % kJ
-dE_b = ${v.bdE};  % kJ
-Q_b  = {{dE_b + W_b || Rearrange dE = Q - W for Q.}};       % kJ
-E1_b = {{E2_b - dE_b || dE = E2 - E1, solved for E1.}};      % kJ
-
-% ---- Process c: given W, E1, E2 ----
-W_c  = ${v.cW};   % kJ
-E1_c = ${v.cE1};  % kJ
-E2_c = ${v.cE2};  % kJ
-dE_c = {{E2_c - E1_c || The end states fix dE directly.}};   % kJ
-Q_c  = {{dE_c + W_c || Then the balance gives Q.}};          % kJ
-
-% ---- Process d: given Q, E1, dE ----
-Q_d  = ${v.dQ};   % kJ
-E1_d = ${v.dE1};  % kJ
-dE_d = ${v.ddE};  % kJ
-W_d  = {{Q_d - dE_d || Same as row a: W = Q - dE.}};        % kJ
-E2_d = E1_d + dE_d;                                          % kJ
-
-% ---- Process e: given Q, W, E2 ----
-Q_e  = ${v.eQ};   % kJ
-W_e  = ${v.eW};   % kJ
-E2_e = ${v.eE2};  % kJ
-dE_e = Q_e - W_e;                                            % kJ, from the balance
-E1_e = {{E2_e - dE_e || Walk back from E2 by dE.}};          % kJ
-
-fprintf('Process   Q      W      E1     E2     dE   (kJ)\\n');
-fprintf('   a   %6.0f %6.0f %6.0f %6.0f %6.0f\\n', Q_a, W_a, E1_a, E2_a, dE_a);
-fprintf('   b   %6.0f %6.0f %6.0f %6.0f %6.0f\\n', Q_b, W_b, E1_b, E2_b, dE_b);
-fprintf('   c   %6.0f %6.0f %6.0f %6.0f %6.0f\\n', Q_c, W_c, E1_c, E2_c, dE_c);
-fprintf('   d   %6.0f %6.0f %6.0f %6.0f %6.0f\\n', Q_d, W_d, E1_d, E2_d, dE_d);
-fprintf('   e   %6.0f %6.0f %6.0f %6.0f %6.0f\\n', Q_e, W_e, E1_e, E2_e, dE_e);`,
-  hints:(v,r)=>[
-    "Every row is the same closed system balance. Two relations hold at once — ΔE = Q − W (what crossed the boundary) and ΔE = E₂ − E₁ (what changed inside) — and each row gives you enough to use them one after the other. Watch the signs on negative entries.",
-    "Key equations: W = Q − ΔE, Q = ΔE + W, E₂ = E₁ + ΔE, E₁ = E₂ − ΔE. In row c get ΔE from the states first; in row e get ΔE from Q − W first.",
-    `Row a: W = ${fmt(v.aQ)} − (${fmt(v.adE)}) and E₂ = (${fmt(v.aE1)}) + (${fmt(v.adE)}). Row c: ΔE = (${fmt(v.cE2)}) − (${fmt(v.cE1)}) = ${fmt(r.c.dE)} kJ, then Q = ${fmt(r.c.dE)} + (${fmt(v.cW)}).`],
-  sense:(v,r)=>[r.a.W<0?"negative: work is done on the system in (a)":"positive: the system does work in (a)", "a total-energy level — only differences mean anything", r.b.Q<0?"negative: heat leaves the system in (b)":"positive: heat enters the system in (b)", "a total-energy level — only differences mean anything", r.c.Q<0?"negative: heat leaves the system in (c)":"positive: heat enters the system in (c)", r.c.dE===0?"zero: the system ends with the energy it started with":r.c.dE<0?"the system lost energy in (c)":"the system gained energy in (c)", r.d.W<0?"negative: work is done on the system in (d)":"positive: the system does work in (d)", "a total-energy level — only differences mean anything", "a total-energy level — only differences mean anything", r.e.dE<0?"the system lost energy in (e)":"the system gained energy in (e)"]
-},
-threecycle:{
-  out:["Q12","Q31","U3","W_cycle"],
-  code:(v,r)=>`% Three-process cycle: heat transfer for each process and the net work of the cycle
+resistor_pipe:{
+  out:["mdot","T2"],
+  code:(v,r)=>`% Air heated by an electrical resistor in an insulated pipe
 clc; clear;
 
 % ---- Given ----
-p1  = ${v.p1};     % bar
-V1  = ${v.V1};     % m^3
-W12 = ${v.W12};    % kJ, compression 1-2 with pV = const (negative: work on the gas)
-U1  = ${v.U1};     % kJ
-U2  = ${v.U2};     % kJ
-W23 = 0;           % kJ, constant volume
-Q23 = ${v.Q23};    % kJ
-W31 = ${v.W31};    % kJ, expansion 3-1
+T1   = ${v.T1};      % degC, inlet temperature
+p1   = ${v.p1};      % kPa, inlet pressure
+AV1  = ${v.AV};      % m^3/h, inlet volumetric flow rate
+volt = ${v.volt};    % V
+amp  = ${v.amp};     % A
+cp   = 1.005;        % kJ/(kg*K), Table A-20
+R    = 8.314/28.97;  % kJ/(kg*K), air
 
-% ---- Energy balance for each process, dKE = dPE = 0:  dU = Q - W ----
-Q12 = {{(U2 - U1) + W12 || Q = dU + W for process 1-2.}};                 % kJ
-U3  = {{U2 + Q23 - W23 || Solve the balance on 2-3 for U3 (no work).}};   % kJ
-Q31 = {{(U1 - U3) + W31 || Q = dU + W for process 3-1, ending back at state 1.}};   % kJ
+% ---- (a) mass flow rate from the inlet volumetric flow ----
+T1K  = T1 + 273.15;                        % K
+v1   = {{R*T1K/p1 || Ideal gas: v = RT/p at the inlet state.}};      % m^3/kg
+mdot = {{AV1/v1 || mdot = (AV)/v, in kg/h because AV is per hour.}};   % kg/h
 
-% ---- Net work of the cycle ----
-W_cycle = {{W12 + W23 + W31 || Add the work of the three legs.}};        % kJ
-Q_cycle = Q12 + Q23 + Q31;                                                 % kJ, must equal W_cycle
+% ---- (b) energy rate balance: 0 = -Wcv + mdot*cp*(T1 - T2) ----
+W_cv = {{-volt*amp/1000 || Electrical work done ON the CV is negative; V*A = W, divide by 1000 for kW.}};   % kW (negative: power in)
+mdot_s = mdot/3600;                        % kg/s
+T2K  = {{T1K - W_cv/(mdot_s*cp) || Solve the reduced energy balance for T2; Q = 0 (insulated), KE = PE = 0.}};   % K
+T2   = T2K - 273.15;                       % degC
 
-% ---- States for the p-V sketch ----
-V2 = V1*exp(W12/(p1*100*V1));   % m^3, from W12 = p1*V1*ln(V2/V1) (1 bar*m^3 = 100 kJ)
-p2 = p1*V1/V2;                  % bar
-p3 = 2*W31/(V1 - V2)/100 - p1;  % bar, straight line 3-1: W31 = (p3 + p1)/2*(V1 - V3)
-
-fprintf('Q12 = %.1f kJ,  U3 = %.1f kJ,  Q31 = %.1f kJ\\n', Q12, U3, Q31);
-fprintf('W_cycle = %.1f kJ  (check: Q_cycle = %.1f kJ)\\n', W_cycle, Q_cycle);
-fprintf('Sketch: V2 = %.3f m^3, p2 = %.3f bar, p3 = %.3f bar\\n', V2, p2, p3);
-fprintf('W_cycle < 0 : net work IN, so this cannot be a power cycle.\\n');`,
+fprintf('mdot = %.2f kg/h\\n', mdot);
+fprintf('T2 = %.1f degC  (rise of %.1f K)\\n', T2, T2K - T1K);`,
   hints:(v,r)=>[
-    "One equation, three times: ΔU = Q − W on each leg (no KE or PE changes). Work through the cycle in order — 1–2 gives Q₁₂ straight away, 2–3 has no work so it hands you U₃, and then 3–1 closes the loop back to U₁. The sign of the net work answers the power-cycle question.",
-    "Key equations: Q₁₂ = (U₂ − U₁) + W₁₂; U₃ = U₂ + Q₂₃ (W₂₃ = 0); Q₃₁ = (U₁ − U₃) + W₃₁; W_cycle = ΣW = ΣQ.",
-    `Q₁₂ = (${fmt(v.U2)} − ${fmt(v.U1)}) + (${fmt(v.W12)}) kJ; U₃ = ${fmt(v.U2)} + (${fmt(v.Q23)}) kJ. Then Q₃₁ uses U₁ − U₃ with W₃₁ = ${fmt(v.W31)} kJ.`],
-  sense:(v,r)=>[r.Q12>0?`heat added during the compression — ${fmt(100*r.Q12/Math.abs(v.W12),2)}% of the work put in`:`heat rejected during the compression — ${fmt(100*(-r.Q12)/Math.abs(v.W12),2)}% of the work put in`, r.Q31>0?"heat added on the expansion leg":"heat rejected on the expansion leg", `${fmt(100*r.U3/v.U1,3)}% of U₁ — the lowest energy state of the cycle`, `negative: the surroundings push ${fmt(-r.Wcyc)} kJ in per cycle — a refrigerator-type loop, not an engine`]
+    "Two separate jobs. First the mass balance gives ṁ from the inlet volumetric flow and the ideal-gas v₁. Then the energy balance with Q̇ = 0 (insulated) and ΔKE = ΔPE = 0 leaves only the electrical work and ṁc_pΔT. Decide the sign of Ẇ_cv before plugging in.",
+    "Key equations: ṁ = p₁(AV)₁/(RT₁); Ẇ_cv = −(volt)(amp); 0 = −Ẇ_cv + ṁc_p(T₁ − T₂) ⇒ T₂ = T₁ − Ẇ_cv/(ṁc_p). Watch kg/h vs kg/s.",
+    `ṁ = (${fmt(v.p1)})(${fmt(v.AV)})/[(0.2870)(${fmt(r.T1K)})] = ${fmt(r.mdot)} kg/h; Ẇ_cv = −(${fmt(v.volt)})(${fmt(v.amp)})/1000 = ${fmt(r.W)} kW. Then T₂ = ${fmt(r.T1K)} − (${fmt(r.W)})/[(${fmt(r.mdot)}/3600)(1.005)].`],
+  sense:(v,r)=>[`about ${fmt(r.mdot/1.2,3)} m³ of room air per hour`, `a ${fmt(r.dT,3)} K rise — ${r.dT>50?"hair-dryer hot":"warm, not scalding"}`]
 },
-fridgecop:{
-  out:["Q_in","W_cycle"],
-  code:(v,r)=>`% Refrigeration cycle: heat from the cold body and net work from the coefficient of performance
+nozzle_air:{
+  out:["T2","A2"],
+  code:(v,r)=>`% Insulated nozzle: exit temperature (Table A-22) and exit area
 clc; clear;
 
 % ---- Given ----
-beta  = ${v.beta};     % coefficient of performance, Q_in/W_in
-Q_out = ${v.Qout};     % kJ, heat rejected to the hot body per cycle
+mdot = ${v.mdot};    % kg/s
+V1   = ${v.V1};      % m/s, inlet velocity
+T1   = ${v.T1};      % K, inlet temperature
+p1   = ${v.p1};      % kPa
+p2   = ${v.p2};      % kPa, exit pressure
+V2   = ${v.V2};      % m/s, exit velocity
+R    = 8.314/28.97;  % kJ/(kg*K), air
 
-% ---- beta = Q_in/(Q_out - Q_in)  ->  solve for Q_in ----
-Q_in = {{beta*Q_out/(beta + 1) || Substitute W_in = Q_out - Q_in into beta = Q_in/W_in and solve for Q_in.}};   % kJ
+% ---- Table A-22 (air) ----
+h1   = ${f6(r.h1)};     % kJ/kg, Table A-22 at T1 = ${v.T1} K
+T_lo = ${f6(r.A2.lo.T)};  h_lo = ${f6(r.A2.lo.h)};   % Table A-22 row just below h2
+T_hi = ${f6(r.A2.hi.T)};  h_hi = ${f6(r.A2.hi.h)};   % Table A-22 row just above h2
 
-% ---- Cycle energy balance: net work supplied ----
-W_in = {{Q_out - Q_in || For a cycle dE = 0, so the net heat out equals the net work in.}};    % kJ, work INTO the refrigerant
+% ---- (a) energy balance: h1 + V1^2/2 = h2 + V2^2/2 ----
+dKE = {{(V2^2 - V1^2)/2/1000 || Kinetic energy change in m^2/s^2, then divide by 1000 to get kJ/kg.}};   % kJ/kg
+h2  = {{h1 - dKE || The enthalpy drop pays for the kinetic energy gain (Q = W = 0).}};                     % kJ/kg
+T2  = {{T_lo + (h2 - h_lo)/(h_hi - h_lo)*(T_hi - T_lo) || Inverse interpolation in Table A-22: find T from h.}};   % K
 
-% ---- Sign convention: work done BY the system is positive ----
-W_cycle = {{Q_in - Q_out || W_cycle = Q_cycle = Q_in - Q_out (negative for a refrigerator).}};   % kJ
+% ---- (b) mass balance at the exit: mdot = A2*V2/v2 ----
+v2  = R*T2/p2;                       % m^3/kg (ideal gas)
+A2  = {{mdot*v2/V2 || A = mdot*v/V from mdot = AV/v.}};   % m^2
 
-fprintf('Heat removed from the cold body  Q_in    = %.1f kJ\\n', Q_in);
-fprintf('Work supplied to the cycle       W_in    = %.1f kJ\\n', W_in);
-fprintf('W_cycle (by-the-system convention) = %.1f kJ  (negative: work goes in)\\n', W_cycle);`,
+fprintf('T2 = %.1f K\\n', T2);
+fprintf('A2 = %.5f m^2 (%.2f cm^2)\\n', A2, A2*1e4);`,
   hints:(v,r)=>[
-    "A refrigerator is a cycle, so ΔE = 0 and the net work equals the net heat. β compares the useful effect (heat pulled from the cold body) with the work you pay for — write β in terms of Q_in and Q_out only, and the single unknown Q_in drops out.",
-    "Key equations: β = Q_in / W_in with W_in = Q_out − Q_in, so Q_in = β Q_out/(β + 1). Then W_cycle = Q_in − Q_out (negative: work done on the system).",
-    `Q_in = ${fmt(v.beta)}(${fmt(v.Qout)})/(${fmt(v.beta)} + 1) = ${fmt(r.Qin)} kJ, so W_in = ${fmt(v.Qout)} − ${fmt(r.Qin)} kJ, and W_cycle is minus that.`],
-  sense:(v,r)=>[`${fmt(100*r.ratio,3)}% of what is dumped into the room came out of the cold box`, `negative: the compressor puts ${fmt(r.Wnet,3)} kJ in — about ${fmt(r.Wnet/3600,2)} kWh of electricity`]
+    "A nozzle is the one device where kinetic energy is NOT dropped — it is the product. With Q̇ = Ẇ = 0 the energy balance is just h + V²/2 = constant. Enthalpy of air comes from Table A-22; you read it forwards for h₁ and backwards for T₂.",
+    "Key equations: h₂ = h₁ − (V₂² − V₁²)/2 with 1 kJ/kg = 1000 m²/s²; T₂ by interpolating Table A-22 on h; A₂ = ṁv₂/V₂ with v₂ = RT₂/p₂.",
+    `h₁(${fmt(v.T1)} K) = ${fmt(r.h1)} kJ/kg; ΔKE = (${fmt(v.V2)}² − ${fmt(v.V1)}²)/2/1000 = ${fmt(r.dke)} kJ/kg, so h₂ = ${fmt(r.h2)} kJ/kg. Bracket that between the ${fmt(r.A2.lo.T)} K and ${fmt(r.A2.hi.T)} K rows.`],
+  sense:(v,r)=>[`${fmt(r.T2-273.15,3)} °C — the air cooled ${fmt(r.dT,3)} K just by speeding up`, `about the area of a ${fmt(Math.sqrt(4*r.area/Math.PI)*100,2)} cm diameter hole`]
+},
+turbine_inlet:{
+  out:["h1","p1"],
+  code:(v,r)=>`% Steam turbine: inlet enthalpy from the 1st law, then p1 from Table A-4 at T1
+clc; clear;
+
+% ---- Given ----
+W_T  = ${v.W};       % MW, power developed (the system does the work: +)
+mdot = ${v.mdot};    % kg/s
+T1   = ${v.T1};      % degC, inlet temperature
+V1   = ${v.V1};      % m/s
+p2   = ${v.p2};      % bar, exit (saturated vapor)
+V2   = ${v.V2};      % m/s
+
+% ---- Table A-3 at p2: saturated vapor -> h2 = hg ----
+h2 = ${f6(r.h2)};      % kJ/kg, hg at ${v.p2} bar
+% ---- Table A-2 at T1: to decide the region of state 1 ----
+hf_T1 = ${f6(r.hfT1)};   % kJ/kg, hf at ${v.T1} degC
+hg_T1 = ${f6(r.hgT1)};   % kJ/kg, hg at ${v.T1} degC
+% ---- Table A-4, row T = ${v.T1} degC in the two pressure blocks that bracket h1 ----
+p_a = ${f6(r.br.pLo)};   h_a = ${f6(r.br.hLo)};   % bar, kJ/kg
+p_b = ${f6(r.br.pHi)};   h_b = ${f6(r.br.hHi)};   % bar, kJ/kg
+
+% ---- S.S.: dE/dt = 0, m_in = m_out; insulated: Q = 0; no heights: PE = 0 ----
+% W = mdot*[(h1 - h2) + (V1^2 - V2^2)/2]
+W_kW = W_T*1000;                                   % kJ/s
+dKE  = {{(V1^2 - V2^2)/2/1000 || m^2/s^2 is NOT kJ/kg: divide by 1000 (1 kJ/kg = 1000 m^2/s^2).}};   % kJ/kg
+h1   = {{W_kW/mdot + h2 - dKE || Divide the balance by mdot and solve for h1.}};                       % kJ/kg
+
+% ---- What region are we in? h1 > hg(T1) -> superheated -> Table A-4 ----
+region_check = h1 - hg_T1;                         % positive: superheated vapor
+p1 = {{p_a + (h1 - h_a)/(h_b - h_a)*(p_b - p_a) || Interpolate in p between the two blocks at fixed T1.}};   % bar
+
+fprintf('h1 = %.1f kJ/kg (hg at T1 = %.1f, so superheated)\\n', h1, hg_T1);
+fprintf('p1 = %.1f bar\\n', p1);`,
+  hints:(v,r)=>[
+    "The system is doing the work, so Ẇ is positive. Steady state kills dE/dt and gives ṁ_in = ṁ_out; well insulated kills Q̇; no heights kills PE. Keep the velocity terms. The unknown is at the inlet, so solve the balance for h₁ — then T₁ and h₁ are the two intensive properties that fix state 1.",
+    "Key equations: Ẇ = ṁ[(h₁ − h₂) + (V₁² − V₂²)/2], with the m²/s² term ÷ 1000 to get kJ/kg; h₂ = h_g(p₂) from A-3; check h₁ against h_f, h_g at T₁ (A-2) → superheated → Table A-4 at T₁, interpolate in p.",
+    `${fmt(v.W*1000)}/${fmt(v.mdot)} = ${fmt(r.wm)} kJ/kg = h₁ − ${fmt(r.h2)} + (${fmt(-r.dke)}). Then compare h₁ with h_g(${fmt(v.T1)} °C) = ${fmt(r.hgT1)} and look along the ${fmt(v.T1)} °C rows of A-4: ${fmt(r.br.hLo)} at ${fmt(r.br.pLo)} bar, ${fmt(r.br.hHi)} at ${fmt(r.br.pHi)} bar.`],
+  sense:(v,r)=>[`${fmt(r.wm,3)} kJ/kg of it becomes shaft work`, `about ${fmt(r.p1/1.013,2)} atm at the inlet`]
+},
+air_dh_cp:{
+  out:["dh_A22","dh_cp","W_cv"],
+  code:(v,r)=>`% Air compression: delta-h with variable (Table A-22) vs constant (Table A-20) specific heat
+clc; clear;
+
+% ---- Given ----
+T1   = ${v.T1};      % K
+p1   = ${v.p1};      % bar (not needed for h of an ideal gas)
+T2   = ${v.T2};      % K
+p2   = ${v.p2};      % bar
+mdot = ${v.mdot};    % kg/s
+
+% ---- (a) Table A-22: in ideal gases, look at temperatures ----
+h1 = ${f6(r.h1)};      % kJ/kg, Table A-22 at ${v.T1} K
+h2 = ${f6(r.h2)};      % kJ/kg, Table A-22 at ${v.T2} K
+dh_A22 = {{h2 - h1 || Ideal gas: h = h(T) only; read both rows of Table A-22.}};   % kJ/kg
+
+% ---- (b) constant cp at the average temperature (Table A-20) ----
+T_avg = {{(T1 + T2)/2 || Use the average temperature for the initial calculation.}};   % K
+cp    = ${f6(r.cp)};   % kJ/(kg*K), Table A-20 at ${fmt(r.Tavg)} K
+dh_cp = {{cp*(T2 - T1) || dh = cp*dT when cp is treated as constant.}};                % kJ/kg
+pct   = 100*(dh_cp - dh_A22)/dh_A22;                                                  % percent difference
+
+% ---- (c) compressor power: 0 = -W_cv + mdot*(h1 - h2) ----
+W_cv = {{mdot*(h1 - h2) || Adiabatic, KE = PE = 0: W_cv = mdot*(h_in - h_out), negative for a compressor.}};   % kW
+
+fprintf('dh (Table A-22) = %.2f kJ/kg\\n', dh_A22);
+fprintf('dh (cp at %.0f K) = %.2f kJ/kg  (%.2f %% off)\\n', T_avg, dh_cp, pct);
+fprintf('W_cv = %.1f kW (negative: power in)\\n', W_cv);`,
+  hints:(v,r)=>[
+    "For an ideal gas h depends on temperature only, so the pressures are a distraction. Route (a): read h at each temperature in Table A-22 and subtract. Route (b): c_p is not truly constant, so pick it at the average temperature from Table A-20 and multiply by ΔT. Compare.",
+    "Key equations: Δh = h(T₂) − h(T₁) [A-22]; Δh ≈ c_p(T_avg)(T₂ − T₁) [A-20]; Ẇ_cv = ṁ(h₁ − h₂) for an adiabatic compressor.",
+    `A-22: h(${fmt(v.T1)} K) = ${fmt(r.h1)}, h(${fmt(v.T2)} K) = ${fmt(r.h2)} kJ/kg. T_avg = ${fmt(r.Tavg)} K → c_p = ${fmt(r.cp)} kJ/kg·K, so Δh ≈ ${fmt(r.cp)}(${fmt(v.T2)} − ${fmt(v.T1)}).`],
+  sense:(v,r)=>[`enough energy to lift each kg of air ${fmt(r.dh*1000/9.81/1000,3)} km`, `${fmt(Math.abs(r.err),2)}% ${r.err>0?"above":"below"} the table value — constant c_p is fine here`, `${fmt(r.Wabs/0.746,3)} hp of motor`]
+},
+compressor_r134a:{
+  out:["Q_cv"],
+  code:(v,r)=>`% Water-jacketed R-134a compressor: heat transfer to the cooling water
+clc; clear;
+
+% ---- Given ----
+T1   = ${v.T1};      % degC
+p1   = ${v.p1};      % bar
+mdot = ${v.mdot};    % kg/s
+W_cv = ${v.W};       % kW, shaft power (negative: work done on the refrigerant)
+T2   = ${v.T2};      % degC
+p2   = ${v.p2};      % bar
+
+% ---- Table A-12 (superheated R-134a) ----
+h1 = ${f6(r.h1)};      % kJ/kg, Table A-12 at ${v.p1} bar, ${v.T1} degC
+h2 = ${f6(r.h2)};      % kJ/kg, Table A-12 at ${v.p2} bar, ${v.T2} degC
+
+% ---- Energy rate balance, steady state, KE = PE = 0 ----
+% 0 = Q_cv - W_cv + mdot*(h1 - h2)
+dH   = {{mdot*(h2 - h1) || Rate of enthalpy rise of the refrigerant stream, kW.}};                          % kW
+Q_cv = {{W_cv + dH || Solve the reduced energy balance for Q_cv; keep the sign of W_cv.}};                    % kW
+share = {{-Q_cv/(-W_cv) || Fraction of the shaft power that leaves through the jacket.}};                   % fraction
+
+fprintf('Q_cv = %.2f kW  (negative: %.2f kW goes to the cooling water)\\n', Q_cv, -Q_cv);
+fprintf('Share of shaft work removed by the jacket: %.1f %%\\n', 100*share);`,
+  hints:(v,r)=>[
+    "This compressor is cooled, so Q̇_cv is NOT zero — it is the unknown. One inlet, one exit, steady state, no KE/PE: the balance has only Q̇, Ẇ and ṁΔh. Both states are superheated vapor (check T against T_sat at each pressure), so both enthalpies come straight from Table A-12.",
+    "Key equation: Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁), with Ẇ_cv negative because power is put into the compressor.",
+    `h₁ = ${fmt(r.h1)} kJ/kg, h₂ = ${fmt(r.h2)} kJ/kg. Q̇_cv = (${fmt(v.W)}) + (${fmt(v.mdot)})(${fmt(r.h2)} − ${fmt(r.h1)}).`],
+  sense:(v,r)=>[`${fmt(r.frac,2)}% of the shaft power ends up in the jacket water`]
+},
+mixing_air:{
+  out:["T3","D3"],
+  code:(v,r)=>`% Mixing chamber: outside air + return air (ideal gas, English units)
+clc; clear;
+
+% ---- Given ----
+T1  = ${v.T1};       % degF, outside air
+AV1 = ${v.AV1};      % ft^3/min
+T2  = ${v.T2};       % degF, return air
+D2  = ${v.D2};       % ft, return duct diameter
+V2  = ${v.V2};       % ft/min
+V3  = ${v.V3};       % ft/min, mixed stream
+p   = 14.7;          % lbf/in^2 (1 atm everywhere)
+cp  = 0.24;          % Btu/(lb*degR)
+R   = 1545/28.97;    % ft*lbf/(lb*degR), air
+
+% ---- Absolute temperatures ----
+T1R = T1 + 459.67;   % degR
+T2R = T2 + 459.67;   % degR
+
+% ---- Mass flow rates from mdot = p*(AV)/(R*T) ----
+m1 = {{p*144*AV1/(R*T1R) || Ideal gas: mdot = p(AV)/(RT); 144 converts lbf/in^2 to lbf/ft^2.}};             % lb/min
+A2 = pi*D2^2/4;                                                                                            % ft^2
+m2 = {{p*144*A2*V2/(R*T2R) || Same idea with AV = A2*V2.}};                                               % lb/min
+m3 = m1 + m2;                                                                                              % lb/min
+
+% ---- (a) energy balance: m1*cp*T1 + m2*cp*T2 = m3*cp*T3 ----
+T3R = {{(m1*T1R + m2*T2R)/m3 || With h = cp*T and one pressure, T3 is the mass-weighted average.}};       % degR
+T3  = T3R - 459.67;                                                                                        % degF
+
+% ---- (b) exit duct diameter from m3 = p*A3*V3/(R*T3) ----
+A3 = {{m3*R*T3R/(p*144*V3) || Solve the exit mass balance for the area.}};                                 % ft^2
+D3 = sqrt(4*A3/pi);                                                                                        % ft
+
+fprintf('m1 = %.1f lb/min, m2 = %.1f lb/min, m3 = %.1f lb/min\\n', m1, m2, m3);
+fprintf('T3 = %.1f degF\\n', T3);
+fprintf('D3 = %.2f ft\\n', D3);`,
+  hints:(v,r)=>[
+    "Two inlets, one exit. Mass is conserved (ṁ₃ = ṁ₁ + ṁ₂) but volume is not, so convert every stream to lb/min first using the ideal-gas v = RT/p — with absolute temperature and p in lbf/ft². The energy balance with h = c_pT then makes T₃ a mass-weighted average.",
+    "Key equations: ṁ = p(AV)/(RT) with R = 1545/28.97 ft·lbf/lb·°R and p = 14.7×144 lbf/ft²; T₃ = (ṁ₁T₁ + ṁ₂T₂)/(ṁ₁ + ṁ₂); D₃ = √[4ṁ₃RT₃/(π p V₃)].",
+    `ṁ₁ = (14.7)(144)(${fmt(v.AV1)})/[(53.33)(${fmt(r.T1R,5)})] = ${fmt(r.m1)} lb/min; ṁ₂ uses A₂ = π(${fmt(v.D2)})²/4 = ${fmt(r.A2)} ft² and V₂ = ${fmt(v.V2)} ft/min.`],
+  sense:(v,r)=>[`${fmt(r.T3)} °F — weighted toward the ${r.m2>r.m1?"return":"outside"} air, which carries more mass`, `a duct you could ${r.D3>3?"stand up in":"crawl through"}`]
+},
+condenser_river:{
+  out:["m_river","dT"],
+  code:(v,r)=>`% Steam condenser cooled by river water: river temperature rise
+clc; clear;
+
+% ---- Given ----
+m_s = ${v.mdot};     % kg/h, steam condensed (sat. vapor -> sat. liquid)
+p   = ${v.P};        % bar, condenser pressure
+AV  = ${v.AV};       % m^3/h, river volumetric flow
+T3  = ${v.T3};       % degC, river temperature upstream
+
+% ---- Table values ----
+hfg = ${f6(r.hfg)};    % kJ/kg, Table A-3 at ${v.P} bar
+vf3 = ${f6(r.v3)};     % m^3/kg, Table A-2 at ${v.T3} degC (liquid: v ~ vf)
+hf3 = ${f6(r.h3)};     % kJ/kg, Table A-2 at ${v.T3} degC (liquid: h ~ hf)
+T_lo = ${f6(r.I.lo.T)};  hf_lo = ${f6(r.I.lo.hf)};   % Table A-2 row below h4
+T_hi = ${f6(r.I.hi.T)};  hf_hi = ${f6(r.I.hi.hf)};   % Table A-2 row above h4
+
+% ---- River mass flow ----
+m_river = {{AV/vf3 || mdot = (AV)/v with v ~ vf(T) for liquid water.}};   % kg/h
+
+% ---- Energy balance on the whole condenser (Q = W = 0): m_s*(h1 - h2) = m_river*(h4 - h3) ----
+h4 = {{hf3 + m_s*hfg/m_river || h1 - h2 = hfg for sat. vapor -> sat. liquid at constant p.}};   % kJ/kg
+T4 = {{T_lo + (h4 - hf_lo)/(hf_hi - hf_lo)*(T_hi - T_lo) || Read Table A-2 backwards: T at which hf = h4.}};   % degC
+dT = T4 - T3;                                                              % degC
+
+Q_MW = m_s*hfg/3600/1000;   % MW rejected to the river
+fprintf('m_river = %.4g kg/h\\n', m_river);
+fprintf('River rise dT = %.2f degC (%.1f MW rejected)\\n', dT, Q_MW);`,
+  hints:(v,r)=>[
+    "Put the boundary around BOTH streams so no heat crosses it. Then the energy balance is just Σṁh in = Σṁh out. The steam side gives up exactly h_fg per kg; the river side is liquid, so h ≈ h_f(T) and v ≈ v_f(T). The last step is a backwards read of Table A-2.",
+    "Key equations: ṁ_river = (AV)/v_f(T₃); h₄ = h₃ + (ṁ_s/ṁ_river)h_fg; find T₄ from h_f(T₄) = h₄ by interpolation; ΔT = T₄ − T₃.",
+    `ṁ_river = ${fmt(v.AV)}/${fmt(r.v3)} = ${fmt(r.m3)} kg/h; h₄ = ${fmt(r.h3)} + (${fmt(v.mdot)}/${fmt(r.m3)})(${fmt(r.hfg)}). Then locate h₄ between the h_f rows near ${fmt(v.T3)} °C.`],
+  sense:(v,r)=>[`${fmt(r.ratio,3)} kg of river water per kg of steam`, `${r.dT>2?"a rise regulators would notice":"a rise smaller than the daily swing of the river"}`]
+},
+solar_collector:{
+  out:["mdot","gph"],
+  code:(v,r)=>`% Solar collector: mass flow and gallons per hour of hot water
+clc; clear;
+
+% ---- Given ----
+A    = ${v.A};       % ft^2, collector area
+q    = ${v.q};       % Btu/(h*ft^2), solar flux
+loss = ${v.loss}/100;   % fraction lost to the surroundings
+T1   = ${v.T1};      % degF, water in
+T2   = ${v.T2};      % degF, water out
+
+% ---- Table A-2E (liquid water: h ~ hf(T), v ~ vf(T)) ----
+h1 = ${f6(r.h1)};      % Btu/lb, hf at ${v.T1} degF
+h2 = ${f6(r.h2)};      % Btu/lb, hf at ${v.T2} degF
+v2 = ${f6(r.v2)};      % ft^3/lb, vf at ${v.T2} degF
+
+% ---- Heat absorbed by the water ----
+Q = {{(1 - loss)*q*A || Only the un-lost fraction of the solar input reaches the water.}};   % Btu/h
+
+% ---- Energy balance: 0 = Q + mdot*(h1 - h2) ----
+mdot = {{Q/(h2 - h1) || Steady state, W = 0, KE = PE = 0: the heat raises the enthalpy of the stream.}};   % lb/h
+
+% ---- Volumetric flow of hot water ----
+AV  = {{mdot*v2 || (AV) = mdot*v, using v at the delivery temperature.}};   % ft^3/h
+gph = AV*7.48;                                                            % gal/h (1 ft^3 = 7.48 gal)
+
+fprintf('Q absorbed = %.0f Btu/h\\n', Q);
+fprintf('mdot = %.1f lb/h\\n', mdot);
+fprintf('Hot water delivered = %.2f gal/h (%.3f gal/min)\\n', gph, gph/60);`,
+  hints:(v,r)=>[
+    "The collector is a heat exchanger with one stream: heat in, no work, no KE/PE. Only the absorbed fraction of the sunlight counts. Liquid water enthalpy is h_f at its temperature (Table A-2E). The last twist is converting mass flow back to volume — at the exit temperature — and then to gallons.",
+    "Key equations: Q̇ = (1 − loss)(q)(A); ṁ = Q̇/(h₂ − h₁) with h ≈ h_f(T); (AV) = ṁv_f(T₂); 1 ft³ = 7.48 gal.",
+    `Q̇ = (${fmt(1-v.loss/100)})(${fmt(v.q)})(${fmt(v.A)}) = ${fmt(r.Q)} Btu/h; h_f(${fmt(v.T1)} °F) = ${fmt(r.h1)}, h_f(${fmt(v.T2)} °F) = ${fmt(r.h2)} Btu/lb. Then ṁ = ${fmt(r.Q)}/(${fmt(r.h2)} − ${fmt(r.h1)}).`],
+  sense:(v,r)=>[`about ${fmt(r.mdot/8.33,3)} gallons of water per hour by mass`, `a ${fmt(r.gpm,2)} gal/min trickle — a shower uses ~2 gal/min`]
+},
+throttle_hx:{
+  out:["p2_kPa","m_w"],
+  code:(v,r)=>`% Throttling valve + evaporator with R-134a; water on the other side
+clc; clear;
+
+% ---- Given ----
+T1  = ${v.T1};       % degC, sat. liquid R-134a into the valve
+m_R = ${v.mR};       % kg/s, refrigerant
+T2  = ${v.T2};       % degC, after the valve (mixture)
+T4  = ${v.T4};       % degC, water in
+T5  = ${v.T5};       % degC, water out
+
+% ---- Table A-10 (sat. R-134a by temperature) ----
+h1   = ${f6(r.h1)};    % kJ/kg, hf at ${v.T1} degC
+psat2 = ${f6(r.p2)};   % bar, psat at ${v.T2} degC
+hf2  = ${f6(r.S2.hf)};   % kJ/kg, hf at ${v.T2} degC
+hg2  = ${f6(r.S2.hg)};   % kJ/kg, hg at ${v.T2} degC
+% ---- Table A-2 (liquid water: h ~ hf(T)) ----
+h4 = ${f6(r.h4)};      % kJ/kg, hf at ${v.T4} degC
+h5 = ${f6(r.h5)};      % kJ/kg, hf at ${v.T5} degC
+
+% ---- Valve: throttling process ----
+h2 = {{h1 || Q = W = 0, KE = PE = 0 across the valve: h2 = h1.}};   % kJ/kg
+x2 = (h2 - hf2)/(hg2 - hf2);                                       % quality after the valve
+p2 = {{psat2 || hf < h2 < hg at T2, so state 2 is a mixture and p2 = psat(T2).}};   % bar
+p2_kPa = p2*100;                                                   % kPa
+
+% ---- Heat exchanger (both streams inside, Q = W = 0): m_R*h2 + m_w*h4 = m_R*h3 + m_w*h5 ----
+h3  = hg2;                                                         % kJ/kg, sat. vapor leaves at p3 = p2
+m_w = {{m_R*(h3 - h2)/(h4 - h5) || Solve the two-stream energy balance for the water flow.}};   % kg/s
+
+fprintf('p2 = %.1f kPa (x2 = %.3f)\\n', p2_kPa, x2);
+fprintf('m_water = %.3f kg/s\\n', m_w);`,
+  hints:(v,r)=>[
+    "Two control volumes. The valve is a throttle: h₂ = h₁ = h_f(T₁). Because h₂ lies between h_f and h_g at T₂, state 2 is a mixture and its pressure is simply p_sat(T₂). For the exchanger, put both streams inside the boundary so Q̇ = 0 and write Σṁh in = Σṁh out.",
+    "Key equations: h₂ = h₁; p₂ = p_sat(T₂) from Table A-10; ṁ_R(h₃ − h₂) = ṁ_w(h₄ − h₅) with h₃ = h_g(T₂) and h₄, h₅ = h_f of water at T₄, T₅.",
+    `h₁ = h_f(${fmt(v.T1)} °C) = ${fmt(r.h1)} kJ/kg = h₂; at ${fmt(v.T2)} °C, p_sat = ${fmt(r.p2)} bar and h_g = ${fmt(r.h3)} kJ/kg. Water: h₄ = ${fmt(r.h4)}, h₅ = ${fmt(r.h5)} kJ/kg. ṁ_w = ${fmt(v.mR)}(${fmt(r.h3)} − ${fmt(r.h2)})/(${fmt(r.h4)} − ${fmt(r.h5)}).`],
+  sense:(v,r)=>[`about ${fmt(r.p2/1.013,2)} atm — the refrigerant boils at ${fmt(v.T2)} °C there`, `${fmt(r.mw/v.mR,2)}× the refrigerant flow, chilled by ${fmt(v.T4-v.T5)} °C`]
+},
+ac_system:{
+  out:["mdot","Q_comp","beta"],
+  code:(v,r)=>`% Residential air conditioner: evaporator, compressor, throttle (R-134a, English units)
+clc; clear;
+
+% ---- Given ----
+p1   = ${v.p1};      % lbf/in^2, evaporator exit (sat. vapor)
+p2   = ${v.p2};      % lbf/in^2, compressor exit
+T2   = ${v.T2};      % degF
+T3   = ${v.T3};      % degF, liquid leaving the condenser
+Q_in = ${v.Qin};     % Btu/min, heat removed from the room air
+W_in = ${v.W};       % Btu/min, compressor power input
+
+% ---- Table values ----
+h1 = ${f6(r.h1)};      % Btu/lb, hg at ${v.p1} lbf/in^2 (Table A-11E)
+h2 = ${f6(r.h2)};      % Btu/lb, Table A-12E at ${v.p2} lbf/in^2, ${v.T2} degF (superheated)
+h3 = ${f6(r.h3)};      % Btu/lb, hf at ${v.T3} degF (Table A-10E; subcooled liquid ~ hf(T))
+hf1 = ${f6(r.S1.hf)};  hfg1 = ${f6(r.S1.hfg)};   % Btu/lb, Table A-11E at ${v.p1} lbf/in^2
+
+% ---- Expansion valve: throttling ----
+h4 = {{h3 || Throttle: h4 = h3.}};                 % Btu/lb
+x4 = (h4 - hf1)/hfg1;                              % quality entering the evaporator
+
+% ---- (a) Evaporator, refrigerant side: 0 = Q_in + mdot*(h4 - h1) ----
+mdot = {{Q_in/(h1 - h4) || Heat absorbed per lb is h1 - h4.}};   % lb/min
+
+% ---- (b) Compressor: 0 = Q_cv - W_cv + mdot*(h1 - h2), with W_cv = -W_in ----
+W_cv   = -W_in;                                                  % Btu/min (work done on the CV)
+Q_comp = {{W_cv + mdot*(h2 - h1) || Solve the compressor energy balance for Q_cv.}};   % Btu/min
+
+% ---- (c) Coefficient of performance ----
+beta = {{Q_in/W_in || beta = benefit/cost = heat removed / work supplied.}};
+
+fprintf('mdot = %.2f lb/min (x4 = %.3f)\\n', mdot, x4);
+fprintf('Q_comp = %.1f Btu/min (negative: heat lost from the compressor)\\n', Q_comp);
+fprintf('beta = %.2f\\n', beta);`,
+  hints:(v,r)=>[
+    "Three questions, three separate control volumes. The evaporator (refrigerant side) links Q̇_in to ṁ — but you need h₄, which comes from the valve (h₄ = h₃ ≈ h_f at T₃). The compressor balance then yields its heat loss. β needs no properties at all.",
+    "Key equations: ṁ = Q̇_in/(h₁ − h₄), h₄ = h₃; Q̇_comp = Ẇ_cv + ṁ(h₂ − h₁) with Ẇ_cv = −Ẇ_in; β = Q̇_in/Ẇ_in.",
+    `h₁ = h_g(${fmt(v.p1)} psi) = ${fmt(r.h1)} Btu/lb, h₄ = h_f(${fmt(v.T3)} °F) = ${fmt(r.h3)} Btu/lb → ṁ = ${fmt(v.Qin)}/(${fmt(r.h1)} − ${fmt(r.h3)}). Then Q̇_comp = −${fmt(v.W)} + ṁ(${fmt(r.h2)} − ${fmt(r.h1)}).`],
+  sense:(v,r)=>[`${fmt(r.mdot*60,3)} lb of refrigerant per hour around the loop`, `${fmt(r.Qcabs/v.W*100,2)}% of the compressor power leaks out as heat`, `each Btu of work moves ${fmt(r.beta,3)} Btu out of the house`]
+},
+two_compressors:{
+  out:["W_total","m_w"],
+  code:(v,r)=>`% Two-stage air compression with an intercooler (Table A-22 for air, A-2 for water)
+clc; clear;
+
+% ---- Given ----
+mdot = ${v.mdot};    % kg/s, air
+T1 = ${v.T1};  T2 = ${v.T2};  T3 = ${v.T3};  T4 = ${v.T4};   % K
+T5 = ${v.T5};  T6 = ${v.T6};                                 % degC, cooling water in/out
+
+% ---- Table A-22 (air) ----
+h1 = ${f6(r.h1)};      % kJ/kg at ${v.T1} K
+h2 = ${f6(r.h2)};      % kJ/kg at ${v.T2} K
+h3 = ${f6(r.h3)};      % kJ/kg at ${v.T3} K
+h4 = ${f6(r.h4)};      % kJ/kg at ${v.T4} K
+% ---- Table A-2 (liquid water: h ~ hf(T)) ----
+h5 = ${f6(r.h5)};      % kJ/kg, hf at ${v.T5} degC
+h6 = ${f6(r.h6)};      % kJ/kg, hf at ${v.T6} degC
+
+% ---- (a) Compressors (Q = 0, KE = PE = 0): W_cv = mdot*(h_in - h_out) ----
+W_A = {{mdot*(h1 - h2) || Energy balance for compressor A; negative = power in.}};   % kW
+W_B = {{mdot*(h3 - h4) || Same for compressor B.}};                                 % kW
+W_total = W_A + W_B;                                                               % kW
+
+% ---- (b) Intercooler, both streams inside (Q = W = 0): mdot*h2 + m_w*h5 = mdot*h3 + m_w*h6 ----
+Q_hx = mdot*(h2 - h3);                                                             % kW removed from the air
+m_w  = {{Q_hx/(h6 - h5) || Solve the two-stream balance for the water flow.}};      % kg/s
+
+fprintf('W_A = %.1f kW, W_B = %.1f kW, W_total = %.1f kW (power in)\\n', W_A, W_B, W_total);
+fprintf('m_water = %.3f kg/s\\n', m_w);`,
+  hints:(v,r)=>[
+    "Treat each device as its own steady-state control volume. The compressors are adiabatic with no KE/PE, so each one is just Ẇ = ṁ(h_in − h_out); air enthalpies come from Table A-22 by temperature alone. The exchanger with both streams inside has Q̇ = Ẇ = 0, so Σṁh in = Σṁh out.",
+    "Key equations: Ẇ_A = ṁ(h₁ − h₂), Ẇ_B = ṁ(h₃ − h₄), Ẇ_total = Ẇ_A + Ẇ_B; ṁ_w = ṁ(h₂ − h₃)/(h₆ − h₅) with h₅, h₆ = h_f(T) from Table A-2.",
+    `A-22: h₁ = ${fmt(r.h1)}, h₂ = ${fmt(r.h2)}, h₃ = ${fmt(r.h3)}, h₄ = ${fmt(r.h4)} kJ/kg. Ẇ_A = ${fmt(v.mdot)}(${fmt(r.h1)} − ${fmt(r.h2)}); water: h₆ − h₅ = ${fmt(r.h6)} − ${fmt(r.h5)} kJ/kg.`],
+  sense:(v,r)=>[`${fmt(r.Wabs/0.746,3)} hp of motors driving the two stages`, `${fmt(r.mw*60,3)} L of cooling water per minute`]
+},
+rankine_otec:{
+  out:["eta","m_cw"],
+  code:(v,r)=>`% Simple steam power plant: thermal efficiency and condenser cooling water
+clc; clear;
+
+% ---- Given ----
+mdot = ${v.mdot};    % kg/s, steam
+dT   = ${v.dT};      % degC, cooling-water temperature rise
+cp   = 4.2;          % kJ/(kg*K), liquid water
+
+% ---- Table values ----
+h1 = ${f6(r.h1)};      % kJ/kg, Table A-4 at ${v.p1} bar, ${v.T1} degC (superheated)
+hf2 = ${f6(r.S2.sat.hf)};  hg2 = ${f6(r.S2.sat.hg)};   % kJ/kg, Table A-3 at ${v.p2} bar
+x2 = ${v.x2};                                            % quality at the turbine exit
+h3 = ${f6(r.h3)};      % kJ/kg, hf at ${v.p2} bar (sat. liquid, Table A-3)
+h4 = ${f6(r.h4)};      % kJ/kg, ${r.S4.table==="A-5"?"Table A-5 at "+v.p1+" bar, "+v.T4+" degC (compressed liquid)":"compressed liquid at "+v.p1+" bar, "+v.T4+" degC: hf(T) + vf*(p - psat)"}
+
+% ---- State 2: mixture ----
+h2 = {{hf2 + x2*(hg2 - hf2) || h = hf + x*(hg - hf).}};   % kJ/kg
+
+% ---- Component energy balances (steady, KE = PE = 0) ----
+W_T  = {{mdot*(h1 - h2) || Turbine: Q = 0, so W = mdot*(h_in - h_out) > 0.}};   % kW
+W_P  = {{mdot*(h3 - h4) || Pump: Q = 0, so W = mdot*(h_in - h_out) < 0.}};      % kW
+Q_in = {{mdot*(h1 - h4) || Boiler: W = 0, so Q = mdot*(h_out - h_in).}};        % kW
+Q_out = mdot*(h2 - h3);                                                          % kW rejected in the condenser
+
+% ---- (a) thermal efficiency ----
+eta = {{(W_T + W_P)/Q_in*100 || eta = net work / heat in, in percent.}};        % %
+
+% ---- (b) condenser: mdot*(h2 - h3) = m_cw*cp*dT ----
+m_cw = {{Q_out/(cp*dT) || Two-stream balance with h6 - h5 = cp*dT for the cooling water.}};   % kg/s
+
+fprintf('W_T = %.0f kW, W_P = %.0f kW, Q_in = %.0f kW\\n', W_T, W_P, Q_in);
+fprintf('eta_th = %.1f %%\\n', eta);
+fprintf('m_cw = %.0f kg/s\\n', m_cw);`,
+  hints:(v,r)=>[
+    "Four devices, four reduced balances — the general equation is the same each time, only different terms survive. Turbine and pump: work only. Boiler and condenser: heat only. Fix all four states first (superheat table, quality, sat. liquid, compressed liquid). Then η is a ratio of enthalpy differences; ṁ cancels.",
+    "Key equations: Ẇ_T = ṁ(h₁ − h₂); Ẇ_P = ṁ(h₃ − h₄); Q̇_in = ṁ(h₁ − h₄); η = (Ẇ_T + Ẇ_P)/Q̇_in; condenser: ṁ(h₂ − h₃) = ṁ_cw c_p ΔT.",
+    `h₁ = ${fmt(r.h1)}, h₂ = ${fmt(r.S2.sat.hf)} + ${fmt(v.x2)}(${fmt(r.S2.sat.hg)} − ${fmt(r.S2.sat.hf)}) = ${fmt(r.h2)}, h₃ = ${fmt(r.h3)}, h₄ = ${fmt(r.h4)} kJ/kg. η = [(${fmt(r.h1)} − ${fmt(r.h2)}) + (${fmt(r.h3)} − ${fmt(r.h4)})]/(${fmt(r.h1)} − ${fmt(r.h4)}).`],
+  sense:(v,r)=>[`${fmt(100-r.eta,3)}% of the boiler heat is thrown into the condenser`, `${fmt(r.mcw/v.mdot,3)} kg of cooling water per kg of steam`]
 }
 };
 
