@@ -1113,7 +1113,7 @@ SCEN.push(
            T`\text{Burn (0 to }${fmt(v.tb)}\text{ s): }\ \sum F_y=T-mg=ma\;\Rightarrow\;${fmt(v.T)}-${fmt(W)}=(${PKsci(m,3)})\,a`,
            T`\text{Coast: }\ \sum F_y=-mg=ma\;\Rightarrow\;a=-32.2\ \text{ft/s}^2,\ \text{starting from }(h_b,v_b)`],
       note:"Straight-line motion with constant forces: one vertical axis, origin fixed at the pad, up positive for the whole flight. Newton gives the acceleration of each stage; kinematics does the rest, and the end state of the burn is the start state of the coast.",
-      link:{file:"Particle_Kinetics_Cartesian.html",pid:"rocket"} }; }
+      link:{file:"Particle_Kinetics_Newton.html",pid:"rocket"} }; }
 },
 
 /* ================= 2. Box on an incline with friction and a horizontal push ================= */
@@ -1168,7 +1168,7 @@ SCEN.push(
            T`\sum F_x=ma_x:\quad ${fmt(W)}\sin${fmt(v.th)}^\circ-${fmt(v.F)}\cos${fmt(v.th)}^\circ-${fmt(v.mu)}\,N=${fmt(v.m)}\,a`,
            T`\text{then}\quad v=v_0+at=0+a\,(${fmt(v.t)})`],
       note:"Straight-line sliding with constant forces: Cartesian axes rotated to the incline so the acceleration lives on x alone and ΣF_y = 0 hands you N. Origin fixed at the release point (x₀ = v₀ = 0). The horizontal push both opposes the slide and presses the box into the slope — that is why N ≠ mg cos θ.",
-      link:{file:"Particle_Kinetics_Cartesian.html",pid:"box"} }; }
+      link:{file:"Particle_Kinetics_Newton.html",pid:"box"} }; }
 },
 
 /* ================= 3. Collar and spring, 2-D geometry ================= */
@@ -1222,7 +1222,7 @@ SCEN.push(
       eqs:[T`\delta_1=\sqrt{${fmt(v.L)}^2+${fmt(v.h)}^2}-${fmt(v.L)}=${fmt(d)}\ \text{m},\qquad \delta_2=0,\qquad y_1=${fmt(v.h)},\ y_2=0`,
            T`T_1+V_1=T_2+V_2:\quad 0+\tfrac12(${fmt(v.k)})(${fmt(d)})^2+${fmt(v.m)}(9.81)(${fmt(v.h)})=\tfrac12(${fmt(v.m)})v_2^2+0+0`],
       note:"Two positions, a speed, and only conservative forces doing work: work–energy (energy conservation). Datum at P₂ so both potentials vanish there; the spring stretch comes from the L–h right triangle, and the smooth rod's normal force drops out because it is perpendicular to the motion.",
-      link:{file:"Particle_Kinetics_Cartesian.html",pid:"collar2d"} }; }
+      link:{file:"Particle_Kinetics_Work_Energy.html",pid:"collar2d"} }; }
 },
 
 /* ================= 4. Airplane takeoff with linearly increasing thrust ================= */
@@ -1272,7 +1272,7 @@ SCEN.push(
       eqs:[T`F(t)=${fmt(F0)}+\frac{${fmt(v.F2*1000)}-${fmt(F0)}}{${fmt(v.T)}}\,t=${fmt(F0)}+${fmt(k)}\,t\ \text{N}`,
            T`\int_0^{${fmt(v.T)}}F(t)\,dt=m(v_2-0)=${fmt(v.m)}\,v_2,\qquad \int_0^{t}F(t)\,dt=${fmt(v.m)}(${fmt(v.vt)})\ \text{for part (b)}`],
       note:"Force as a function of time and a speed at a given time: impulse–momentum along the runway, one axis, fixed origin at the start of the roll. Newton would give the same thing after integrating a(t); with the force linear in t the impulse is a triangle-plus-rectangle area, and part (b) becomes a quadratic in t.",
-      link:{file:"Particle_Kinetics_Cartesian.html",pid:"plane"} }; }
+      link:{file:"Particle_Kinetics_Impulse_Momentum.html",pid:"plane"} }; }
 },
 
 /* ================= 5. Train cars couple on level track ================= */
@@ -1325,7 +1325,7 @@ SCEN.push(
       eqs:[T`m_A=\frac{${fmt(v.WA)}}{32.2}=${fmt(mA)}\ \text{slug},\qquad m_B=\frac{${fmt(v.WB)}}{32.2}=${fmt(mB)}\ \text{slug}`,
            T`\sum F_x^{ext}=0\ \Rightarrow\ m_Av_A+m_Bv_B=(m_A+m_B)v':\quad ${fmt(mA)}(${fmt(v.vA)})+${fmt(mB)}(${fmt(v.vB)})=${fmt(mA+mB)}\,v'`],
       note:"An impact between two bodies with no external horizontal force: conserve linear momentum for the two-car system along the track, in a ground-fixed frame. The coupling force is internal and drops out; kinetic energy is not conserved (e = 0), so work–energy must not be used across the impact. The common velocity is the mass-center velocity.",
-      link:{file:"Particle_Kinetics_Cartesian.html",pid:"train"} }; }
+      link:{file:"Particle_Kinetics_Impulse_Momentum.html",pid:"train"} }; }
 },
 
 /* ================= 6. Conical pendulum on a vertical pole ================= */
@@ -1382,7 +1382,7 @@ SCEN.push(
            T`\sum F_b=0:\quad T\cos${fmt(v.th)}^\circ-${fmt(v.m)}(32.2)=0`,
            T`\sum F_n=m\frac{v^2}{\rho}:\quad T\sin${fmt(v.th)}^\circ=${fmt(v.m)}\,\frac{v^2}{${fmt(rho)}}`],
       note:"Known horizontal circle at constant speed: n–t–b riding on the ball, ê_n horizontal toward the pole's axis (the center of curvature is C, not the attachment point), ê_b vertical. Newton's law in the binormal direction gives T, in the normal direction gives v. The mass cancels when you combine them.",
-      link:{file:"Particle_Kinetics_Normal_Tangential.html",pid:"pole"} }; }
+      link:{file:"Particle_Kinetics_Newton.html",pid:"pole"} }; }
 },
 
 /* ================= 7. Banked off-ramp with friction ================= */
@@ -1436,7 +1436,7 @@ SCEN.push(
       eqs:[T`\sum F_n=m\frac{v^2}{\rho}:\quad N\sin${fmt(v.beta)}^\circ+${fmt(v.mu)}N\cos${fmt(v.beta)}^\circ=m\frac{v^2}{${fmt(v.rho)}}`,
            T`\sum F_b=0:\quad N\cos${fmt(v.beta)}^\circ-${fmt(v.mu)}N\sin${fmt(v.beta)}^\circ-m(9.81)=0`],
       note:"Known horizontal circle at constant speed: n–t–b riding on the car with ê_n horizontal toward the center of the curve and ê_b vertical — not along and perpendicular to the pavement, because the acceleration is horizontal. Impending slip fixes friction at μ_s N pointing down the bank; dividing the two Newton equations removes N and the unknown mass.",
-      link:{file:"Particle_Kinetics_Normal_Tangential.html",pid:"ramp"} }; }
+      link:{file:"Particle_Kinetics_Newton.html",pid:"ramp"} }; }
 },
 
 /* ================= 8. Stunt driver: vertical loop ================= */
@@ -1491,7 +1491,7 @@ SCEN.push(
       eqs:[T`\text{1. Work–energy, bottom}\to\text{apex:}\quad -${fmt(v.m)}(9.81)(${fmt(2*v.R)})=\tfrac12(${fmt(v.m)})\big(v_a^2-${fmt(v.v0)}^2\big)`,
            T`\text{2. Newton in n–t at the apex (}\hat e_n\text{ down):}\quad N+${fmt(v.m)}(9.81)=${fmt(v.m)}\,\frac{v_a^2}{${fmt(v.R)}}`],
       note:"Two principles in sequence. First work–energy between the bottom and the apex (only gravity does work; N is perpendicular to the path) to get the speed at the top. Then Newton's law in n–t at the apex, frame on the car with ê_n pointing down toward the center, where N and the weight together supply mv²/R.",
-      link:{file:"Particle_Kinetics_Normal_Tangential.html",pid:"loop"} }; }
+      link:{file:"Particle_Kinetics_Work_Energy.html",pid:"loop"} }; }
 },
 
 /* ================= 9. Roller coaster brakes: tangential impulse ================= */
@@ -1547,7 +1547,7 @@ SCEN.push(
       eqs:[T`\int F_t\,dt=m(v_2-v_1):\quad -${fmt(v.J)}=${fmt(v.m)}\,(v_2-${fmt(v.v1)})`,
            T`F_{t,avg}=\frac{J_t}{\Delta t}=\frac{-${fmt(v.J)}}{${fmt(v.t)}}`],
       note:"A given impulse over a given time on a curved track: impulse–momentum in the tangential direction, with the n–t frame riding on the car. Only the tangential component changes the speed, so the track's curvature, the normal force and the section length never appear.",
-      link:{file:"Particle_Kinetics_Normal_Tangential.html",pid:"coaster"} }; }
+      link:{file:"Particle_Kinetics_Impulse_Momentum.html",pid:"coaster"} }; }
 },
 
 /* ================= 10. Collar on a smooth rotating bar ================= */
@@ -1602,7 +1602,7 @@ SCEN.push(
            T`\sum F_r=m(\ddot r-r\dot\theta^2)=0\;\Rightarrow\;\ddot r=\omega^2 r=${fmt(w2)}\,r`,
            T`\ddot r=v_r\frac{dv_r}{dr}:\quad \int_{${fmt(v.r1)}}^{${fmt(v.r2)}}${fmt(w2)}\,r\,dr=\int_{${fmt(v.vr1)}}^{v_r}v_r\,dv_r`],
       note:"Both r and θ change and the bar turns about a fixed pin: polar coordinates with the origin at O, ê_r along the bar. The smooth bar gives ΣF_r = 0, which is Newton's law in the radial direction — not r̈ = 0 but r̈ = rω². The chain rule removes time and gives v_r at r₂ by integration. A rotating frame with the Coriolis term is an equivalent route.",
-      link:{file:"Particle_Kinetics_Polar.html",pid:"smoothbar"} }; }
+      link:{file:"Particle_Kinetics_Newton.html",pid:"smoothbar"} }; }
 },
 
 /* ================= 11. Moon's circular orbit ================= */
@@ -1658,7 +1658,7 @@ SCEN.push(
            T`\sum F_r=m(\ddot r-r\dot\theta^2):\quad -\frac{(3.986\times10^{14})\,m}{(${PKsci(r,4)})^2}=m\big(0-${PKsci(r,4)}\,\dot\theta^2\big)`,
            T`v=r\dot\theta,\qquad T_{orbit}=\frac{2\pi r}{v}`],
       note:"A central force (gravity toward Earth's center) and a circular path: polar coordinates with the origin at Earth's center, ê_r outward through the Moon. Newton's law in the radial direction with r̈ = 0 gives θ̇, hence v = rθ̇ and the period. The Moon's mass cancels; n–t with a_n = v²/r would give the same equation.",
-      link:{file:"Particle_Kinetics_Polar.html",pid:"moon"} }; }
+      link:{file:"Particle_Kinetics_Newton.html",pid:"moon"} }; }
 }
 );
 

@@ -1073,7 +1073,7 @@ D.tidy=function(svg){
 /* Schematics for the Chapter 3 page. Every drawing shows the dashed system boundary (class "h") and labels it. */
 const CYL=(x,top,bot,w,py,fill="gas",horiz=false)=>D.line(x-w/2,top,x-w/2,bot,"s")+D.line(x+w/2,top,x+w/2,bot,"s")+D.line(x-w/2,bot,x+w/2,bot,"s")
   +D.rect(x-w/2+3,py+12,w-6,bot-py-15,fill)+D.rect(x-w/2+2,py,w-4,12,"body")+D.rect(x-5,Math.max(4,py-56),10,py-Math.max(4,py-56)+2,"body2")
-  +D.path(`M${x-w/2-6},${py+8} L${x-w/2-6},${bot+6} L${x+w/2+6},${bot+6} L${x+w/2+6},${py+8} Z`,"h");
+  +D.path(`M${x-w/2+7},${py+16} L${x-w/2+7},${bot-4} L${x+w/2-7},${bot-4} L${x+w/2-7},${py+16} Z`,"h");
 const TANK=(x,y,w,h,fill="gas",label="")=>D.rect(x-w/2,y-h/2,w,h,"body2")+D.rect(x-w/2+4,y-h/2+4,w-8,h-8,fill)+D.path(`M${x-w/2-7},${y-h/2-7} L${x+w/2+7},${y-h/2-7} L${x+w/2+7},${y+h/2+7} L${x-w/2-7},${y+h/2+7} Z`,"h")+(label?D.text(x,y+h/2+22,label,"middle","tm"):"");
 /* small T–v sketch with the dome, used by the state-location problems: pts = [{x:0..1 across the box, y:0..1 up, label}] */
 const TV=(x0,y0,w,h,pts,xl="v",yl="T")=>{ const dome=`M${x0+w*0.08},${y0+h} Q${x0+w*0.2},${y0+h*0.35} ${x0+w*0.42},${y0+h*0.12} Q${x0+w*0.62},${y0+h*0.3} ${x0+w*0.95},${y0+h}`; return D.line(x0,y0,x0,y0+h,"s")+D.line(x0,y0+h,x0+w,y0+h,"s")+D.path(dome,"h2")+D.text(x0+w+8,y0+h,xl,"start","tm")+D.text(x0-8,y0,yl,"end","tm")+pts.map(p=>D.dot(x0+p.x*w,y0+h-p.y*h,3.5,"dotf")+D.text(x0+p.x*w+7,y0+h-p.y*h-8,p.label,"start","tv")).join(""); };

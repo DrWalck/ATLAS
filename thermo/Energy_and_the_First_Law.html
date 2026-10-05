@@ -827,7 +827,7 @@ const DIAG={
   threeproc:(v,r)=>{ const x=110, top=30, bot=200, w=100, py=70; return D.svg(
     D.line(x-w/2,top,x-w/2,bot,"s")+D.line(x+w/2,top,x+w/2,bot,"s")+D.line(x-w/2,bot,x+w/2,bot,"s")
     +D.rect(x-w/2+3,py+12,w-6,bot-py-15,"gas")+D.rect(x-w/2+2,py,w-4,12,"body")+D.rect(x-5,14,10,56,"body2")
-    +D.path(`M${x-w/2-6},${py+8} L${x-w/2-6},${bot+6} L${x+w/2+6},${bot+6} L${x+w/2+6},${py+8} Z`,"h")+D.text(x,bot+20,"system: air","middle","tm")
+    +D.path(`M${x-w/2+7},${py+16} L${x-w/2+7},${bot-4} L${x+w/2-7},${bot-4} L${x+w/2-7},${py+16} Z`,"h")+D.text(x,bot+20,"system: air","middle","tm")
     +D.text(x,py+60,"air","middle","t")
     +LG(190,30,[[`1: p₁ = ${nf(v.p1)} psi, V₁ = ${nf(v.V1)} ft³`],[`1→2: pV = const to ${nf(v.p2)} psi`],["2→3: V = const to p₃ = p₁"],["3→1: p = const, expansion"],["find V₂ and W for each"]])); },
   condconv:(v,r)=>{ /* left: plane wall (conduction); right: hot surface in air (convection) */
@@ -861,7 +861,7 @@ const DIAG={
   threecycle:(v,r)=>{ const x=100, top=30, bot=200, w=100, py=70; return D.svg(
     D.line(x-w/2,top,x-w/2,bot,"s")+D.line(x+w/2,top,x+w/2,bot,"s")+D.line(x-w/2,bot,x+w/2,bot,"s")
     +D.rect(x-w/2+3,py+12,w-6,bot-py-15,"gas")+D.rect(x-w/2+2,py,w-4,12,"body")+D.rect(x-5,14,10,56,"body2")
-    +D.path(`M${x-w/2-6},${py+8} L${x-w/2-6},${bot+6} L${x+w/2+6},${bot+6} L${x+w/2+6},${py+8} Z`,"h")+D.text(x,bot+20,"system: gas","middle","tm")
+    +D.path(`M${x-w/2+7},${py+16} L${x-w/2+7},${bot-4} L${x+w/2-7},${bot-4} L${x+w/2-7},${py+16} Z`,"h")+D.text(x,bot+20,"system: gas","middle","tm")
     +D.text(x,py+60,"gas","middle","t")
     +D.arrow(x-w/2-30,bot-30,x-w/2-4,bot-30,"f","Q",x-w/2-18,bot-44)+D.arrow(x,py-14,x,py-52,"v","W",x+10,py-34,"start")
     +LG(170,28,[[`1: p₁ = ${nf(v.p1)} bar, V₁ = ${nf(v.V1)} m³`],[`1→2: pV = c, W₁₂ = ${nf(v.W12)} kJ`],[`U₁ = ${nf(v.U1)} kJ, U₂ = ${nf(v.U2)} kJ`],[`2→3: V = c, Q₂₃ = ${nf(v.Q23)} kJ`],[`3→1: linear p–V, W₃₁ = ${nf(v.W31)} kJ`],["find Q₁₂, Q₃₁, U₃, W_cycle"]])); },

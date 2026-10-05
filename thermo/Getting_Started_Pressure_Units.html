@@ -758,7 +758,7 @@ const DIAG={
     D.line(x-w/2,top,x-w/2,bot,"s")+D.line(x+w/2,top,x+w/2,bot,"s")+D.line(x-w/2,bot,x+w/2,bot,"s")
     +D.rect(x-w/2+3,py+12,w-6,bot-py-15,"gas")+D.rect(x-w/2+2,py,w-4,12,"body")+D.rect(x-6,20,12,80,"body2")
     +D.poly([[x-w/2+4,py+40],[x-w/2+4,py+30],[x-w/2+30,py+30],[x-w/2+30,py+50],[x-w/2+56,py+50],[x-w/2+56,py+30],[x-w/2+82,py+30],[x-w/2+82,py+40]],"spr")+D.text(x,py+72,"resistor","middle","tm")
-    +D.path(`M${x-w/2-6},${py+8} L${x-w/2-6},${bot+6} L${x+w/2+6},${bot+6} L${x+w/2+6},${py+8} Z`,"h")+D.text(x+w/2+10,py+4,"system: air","start","tm")
+    +D.path(`M${x-w/2+7},${py+16} L${x-w/2+7},${bot-4} L${x+w/2-7},${bot-4} L${x+w/2-7},${py+16} Z`,"h")+D.text(x+w/2+8,bot-8,"system: air (inside cylinder)","start","tm")
     +D.arrow(x-30,top-14,x-30,py-4,"f",`p_atm = ${nf(v.patm)} psi`,x-36,top-6,"end")+D.arrow(x+30,top-14,x+30,py-4,"f")
     +D.text(x,py+6,`m_p = ${nf(v.mp)} lbm`,"middle","t")+D.text(x,py+24,`A_p = ${nf(v.A)} ft²`,"middle","tm")
     +D.arrow(x,py+64,x,py+20,"v","p_air ?",x+8,py+52,"start")+D.text(20,210,`g = ${nf(v.g)} ft/s²`,"start","tm")); },
