@@ -75,7 +75,7 @@ sub{font-size:.72em;line-height:0;vertical-align:-.25em}
     <div>
       <a class="kicker" href="../">&larr; ATLAS · Thermodynamics</a>
       <h1>Thermo Practice</h1>
-      <p>Pick a chapter. Every problem gets new numbers each time and is solved the ES 305 way: Known, Find, Schematic, Assumptions, Properties, Analysis. The property tables are built in.</p>
+      <p>Pick a chapter. Every problem gets new numbers each time and is solved the ES 305 way: Known, Find, Schematic, Assumptions, Properties, Analysis. The property tables (water, R-134a, ammonia, propane, R-22, R-410A, ideal gases) are built in.</p>
       <ul class="how">
         <li><b>1</b> Work it on paper</li>
         <li><b>2</b> Check your answer</li>
@@ -156,8 +156,8 @@ const TOPICS = [
       ["Heat Transfer to R-134a in a Rigid Tank", "Medium · Q/m = u₂ − u₁, v = const"],
       ["Steam Cooled Against Stops: Two Processes", "Hard · isobaric then isochoric, Q and W each leg"],
       ["Air Heated at Constant Pressure (Ideal Gas, k const)", "Easy · W = pΔV, Q = W + mΔu, c_v = R/(k−1)"],
-      ["Electric Heating of Gas in an Insulated Tank", "Medium · W_elec, Table A-22, T₂ by inverse lookup"],
-      ["Three-Process Air Power Cycle (Table A-22E)", "Hard · V = c, adiabatic, p = c; η_th"]
+      ["Electric Heating of Gas in an Insulated Tank", "Medium · W_elec, Table G-3, T₂ by inverse lookup"],
+      ["Three-Process Air Power Cycle (Table G-3E)", "Hard · V = c, adiabatic, p = c; η_th"]
     ]
   }
 ,
@@ -168,17 +168,17 @@ const TOPICS = [
     problems: [
       ["Mass Flow Rate from a Volumetric Flow Rate", "Easy · ṁ = AV/v, ideal gas v = RT/p"],
       ["Air Heated by a Resistor in an Insulated Pipe", "Easy · ṁ from (AV), Ẇ_cv = −VI, c_p ΔT"],
-      ["Insulated Nozzle: Exit Temperature and Area", "Medium · h₁ + V₁²/2 = h₂ + V₂²/2, Table A-22"],
-      ["Steam Turbine: Find the Inlet Pressure", "Medium · Ẇ, KE terms, Table A-4 searched at T₁"],
-      ["Air Compression: Δh with Variable vs Constant c_p", "Easy · Table A-22 vs c_p(T_avg) from Table A-20, compressor work"],
-      ["Water-Jacketed R-134a Compressor", "Medium · Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁), Table A-12"],
+      ["Insulated Nozzle: Exit Temperature and Area", "Medium · h₁ + V₁²/2 = h₂ + V₂²/2, Table G-3"],
+      ["Steam Turbine: Find the Inlet Pressure", "Medium · Ẇ, KE terms, Table W-3 searched at T₁"],
+      ["Air Compression: Δh with Variable vs Constant c_p", "Easy · Table G-3 vs c_p(T_avg) from Table G-2, compressor work"],
+      ["Water-Jacketed R-134a Compressor", "Medium · Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁), Table R134a-3"],
       ["Mixing Chamber: Outside Air Meets Return Air", "Medium · ṁ₁h₁ + ṁ₂h₂ = ṁ₃h₃, duct diameter"],
-      ["Power-Plant Condenser Cooled by a River", "Medium · ṁ_steam h_fg = ṁ_river (h₄ − h₃), Table A-2 backwards"],
-      ["Solar Collector: Gallons of Hot Water per Hour", "Easy · ṁ = Q̇/(h₂ − h₁), Table A-2E, gal/h"],
+      ["Power-Plant Condenser Cooled by a River", "Medium · ṁ_steam h_fg = ṁ_river (h₄ − h₃), Table W-1 backwards"],
+      ["Solar Collector: Gallons of Hot Water per Hour", "Easy · ṁ = Q̇/(h₂ − h₁), Table W-1E, gal/h"],
       ["Throttling Valve + Evaporator with R-134a", "Medium · h₂ = h₁, then Σṁh in = Σṁh out, p–h diagram"],
       ["Residential Air Conditioner: Four Components", "Hard · evaporator, compressor, throttle; β = Q̇_in/Ẇ"],
-      ["Two-Stage Compression with an Intercooler", "Hard · Table A-22 for air, Table A-2 for water, three CVs"],
-      ["Simple Steam Power Plant: η_th and Condenser Cooling Water", "Hard · four CVs, η = (Ẇ_t + Ẇ_p)/Q̇_in, Tables A-3, A-4, A-5"]
+      ["Two-Stage Compression with an Intercooler", "Hard · Table G-3 for air, Table W-1 for water, three CVs"],
+      ["Simple Steam Power Plant: η_th and Condenser Cooling Water", "Hard · four CVs, η = (Ẇ_t + Ẇ_p)/Q̇_in, Tables W-2, W-3, W-4"]
     ]
   },
   {
