@@ -97,7 +97,7 @@ sub{font-size:.72em;line-height:0;vertical-align:-.25em}
 function fixSubs(root){
   if(!root) return;
   const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*)?|[θαωρμ∞])/g;
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
   nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
@@ -151,21 +151,34 @@ const TOPICS = [
     ]
   },
   {
-    file: "Particle_Kinematics_Polar_Relative_Motion.html",
+    file: "Particle_Kinematics_Polar.html",
     group: "Particle kinematics",
-    title: "Polar Coordinates & Relative Motion",
+    title: "Polar Coordinates",
     problems: [
       ["Simple Collar", "r(t), θ(t)"],
       ["Sliding Collar Arc", "r = b cos θ"],
       ["Cam & Roller Follower", "polar → x–y"],
       ["Bar with Spring", "a_r(r)"],
       ["Survey Boat Spiral", "r = bθ"],
-      ["Intersection", "relative"],
-      ["Trains", "relative, curved"],
-      ["Carrier & Jet", "relative velocity"],
       ["Fire-Truck Ladder", "ṙ, θ̇ const"]
     ]
   },
+  {
+    file: "Relative_Motion_Particles.html",
+    group: "Particle kinematics",
+    title: "Relative Motion: Particles",
+    problems: [
+      ["Intersection", "Cartesian"],
+      ["Carrier & Jet", "Cartesian"],
+      ["Trains", "n–t"],
+      ["Speedboats on Curves", "n–t"],
+      ["Radar Tracking an Aircraft", "Polar"],
+      ["Crane Boom and Trolley", "Polar"],
+      ["Ball in a Turntable Groove", "Rotating frame"],
+      ["Sailor on a Turning Ship", "Rotating frame"]
+    ]
+  },
+
   {
     file: "Particle_Kinetics_Cartesian.html",
     group: "Particle kinetics",
@@ -245,7 +258,7 @@ const TOPICS = [
   {
     file: "Sliding_Contacts_Moving_Frames.html",
     group: "Rigid-body kinematics",
-    title: "Sliding Contacts & Moving Frames",
+    title: "Relative Motion: Rigid Bodies (Sliding Contacts & Moving Frames)",
     problems: [
       ["Collar on a Rotating Arm", "Coriolis"],
       ["Pin in a Rotating Slot", "sliding contact"],
@@ -316,7 +329,8 @@ const LOOK = {
   "setup/":                                       ["#7cff6b","setup"],
   "Particle_Kinematics_Cartesian.html":           ["#22d3ee","cart"],
   "Particle_Kinematics_Normal_Tangential.html":   ["#22d3ee","nt"],
-  "Particle_Kinematics_Polar_Relative_Motion.html":["#22d3ee","polar"],
+  "Particle_Kinematics_Polar.html":["#22d3ee","polar"],
+  "Relative_Motion_Particles.html":          ["#22d3ee","rel"],
   "Particle_Kinetics_Cartesian.html":             ["#ff8a3d","force"],
   "Particle_Kinetics_Normal_Tangential.html":     ["#ff8a3d","loop"],
   "Particle_Kinetics_Polar.html":                 ["#ff8a3d","orbit"],
@@ -328,6 +342,7 @@ const LOOK = {
   "Impacts.html":                                 ["#ffd23f","impact"]
 };
 const ICON = {
+  rel:   '<circle cx="12" cy="34" r="4"/><circle cx="36" cy="14" r="4"/><path d="M12 30 36 18" stroke-dasharray="3 3"/><path d="M12 34h14m0 0-4-3m4 3-4 3M36 14v14m0 0-3-4m3 4 3-4"/>',
   setup: '<path d="M8 40V8M8 40h32"/><path d="M8 40 30 14m0 0-6 1.5M30 14l-1.5 6"/><circle cx="8" cy="40" r="3" fill="currentColor"/><path d="M22 32a6 6 0 1 0 12 0a6 6 0 1 0-12 0" opacity=".6"/>',
   cart:  '<path d="M6 42V6M6 42h36" opacity=".55"/><path d="M6 40C14 8 28 8 40 36"/><circle cx="14" cy="21" r="3.2" fill="currentColor"/><path d="M14 21l8-7m0 0-4 .3m4-.3-.6 4"/>',
   nt:    '<path d="M4 40C18 40 22 12 44 10"/><circle cx="21" cy="28" r="3.2" fill="currentColor"/><path d="M21 28l9-11m0 0-4.4 1m4.4-1-.6 4.5M21 28l-9-6m0 0 2.2 3.8M12 22l4.3-.6"/>',

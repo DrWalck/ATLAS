@@ -411,6 +411,7 @@ ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,
 .ptable td.q{color:#ff8be6;font-weight:700}
 .diag .hot{fill:rgba(255,138,61,.28);stroke:#ff8a3d;stroke-width:1.4}
 .diag .cold{fill:rgba(34,211,238,.22);stroke:#22d3ee;stroke-width:1.4}
+.diag .warm{fill:rgba(255,210,63,.22);stroke:#ffd23f;stroke-width:1.4}
 /* ---------- tables tool ---------- */
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .tabbtn{all:unset;cursor:pointer;font:600 .78rem var(--display);letter-spacing:.05em;text-transform:uppercase;padding:7px 11px;border-radius:8px;border:1px solid #2c4274;background:var(--surface-3);color:var(--ink)}
@@ -672,7 +673,7 @@ const PROBLEMS = [
 function fixSubs(root){
   if(!root) return;
   const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*)?|[θαωρμ∞])/g;
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
   nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
@@ -686,7 +687,7 @@ function fixSubs(root){
 const D = (()=>{
   const r1=(n)=>Math.round(n*10)/10;
   const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
-  const lab=(s)=>esc(s).replace(/_([A-Za-z0-9θαωρμ′]+(?:\/[A-Z][A-Za-z]*)?)/g,(m,b)=>`<tspan dy="0.32em" font-size="0.72em">${b}</tspan><tspan dy="-0.32em"> </tspan>`);
+  const lab=(s)=>esc(s).replace(/_([A-Za-z0-9θαωρμ′]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?)/g,(m,b)=>`<tspan dy="0.32em" font-size="0.72em">${b}</tspan><tspan dy="-0.32em"> </tspan>`);
   const defs=`<defs>${["s","v","f"].map(k=>`<marker id="ah-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="m${k}" d="M0,0 L10,5 L0,10 z"/></marker>`).join("")}<linearGradient id="gBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5" stop-opacity=".85"/><stop offset="1" stop-color="#0e7490" stop-opacity=".75"/></linearGradient><linearGradient id="gBody2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#334a7d" stop-opacity=".9"/><stop offset="1" stop-color="#1a2748" stop-opacity=".9"/></linearGradient><filter id="glow" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="800"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
   const D={
     W:360, H:220,

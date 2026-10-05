@@ -411,6 +411,7 @@ ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,
 .ptable td.q{color:#ff8be6;font-weight:700}
 .diag .hot{fill:rgba(255,138,61,.28);stroke:#ff8a3d;stroke-width:1.4}
 .diag .cold{fill:rgba(34,211,238,.22);stroke:#22d3ee;stroke-width:1.4}
+.diag .warm{fill:rgba(255,210,63,.22);stroke:#ffd23f;stroke-width:1.4}
 /* ---------- tables tool ---------- */
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .tabbtn{all:unset;cursor:pointer;font:600 .78rem var(--display);letter-spacing:.05em;text-transform:uppercase;padding:7px 11px;border-radius:8px;border:1px solid #2c4274;background:var(--surface-3);color:var(--ink)}
@@ -504,7 +505,7 @@ function N(x, unit="", sig=4){ return `<span class="num">${fmt(x,sig)}${unit?"&n
 function fixSubs(root){
   if(!root) return;
   const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*)?|[θαωρμ∞])/g;
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
   nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });

@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rigid Body Kinetics · Dynamics Practice</title>
+<title>Particle Kinematics: Polar Coordinates · Dynamics Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -62,8 +62,6 @@ nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);displ
 .topic button[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent)}
 .topic .pname{font-weight:600}
 .topic .ptag{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
-.topic button{grid-template-columns:1fr;gap:1px}
-.topic .ptag{white-space:normal}
 .soon{font-size:.85rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
 
 .concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
@@ -353,25 +351,25 @@ ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,
 /* keep symbols like ma, Iα, a_t in their real case */
 .eyebrow,.topic h2{text-transform:none;letter-spacing:.06em;font-size:.86rem}
 .final .ans .k,.cgrid h4{text-transform:none;letter-spacing:.05em}
-:root:root:root{--zone:#ff4fd8}
+:root:root:root{--zone:#22d3ee}
 /* GAME-CSS-END */
 </style>
 </head><body>
 
 <div class="wrap">
   <header class="top">
-    <div><a class="back" href="./">&larr; All topics</a><h1>Rigid Body Kinetics</h1></div>
+    <div><a class="back" href="./">&larr; All topics</a><h1>Particle Kinematics: Polar Coordinates</h1></div>
     <p>Every problem gets fresh numbers each time you press <b>New numbers</b>. Work it on paper, check your answer, then open the worked solution.</p>
   </header>
   <details class="concepts" id="concepts">
-    <summary>Key equations: rigid-body kinetics</summary>
+    <summary>Key equations: polar coordinates &amp; relative motion</summary>
     <div class="cgrid">
-      <div><h4>Newton–Euler</h4><div class="ceq" data-tex="\sum\vec F=m\vec a_G,\qquad \sum M_G=I_G\alpha"></div><p>Fixed pivot O: ΣM_O = I_Oα. Accelerating point P: ΣM_P = I_Gα + (r_G/P × ma_G).</p></div>
-      <div><h4>Kinematics you'll need</h4><div class="ceq" data-tex="\vec a_B=\vec a_A+\vec\alpha\times\vec r_{B/A}-\omega^2\vec r_{B/A}"></div><p>Solve velocities first (instantaneous centers help), then accelerations.</p></div>
-      <div><h4>Moments of inertia</h4><div class="ceq" data-tex="\text{rod: }\tfrac1{12}mL^2\ (\text{center}),\ \tfrac13mL^2\ (\text{end});\quad \text{disk: }\tfrac12mr^2;\quad \text{sphere: }\tfrac25mr^2"></div><p>Parallel axis: I = I_G + md².</p></div>
-      <div><h4>Work &amp; energy</h4><div class="ceq" data-tex="T=\tfrac12mv_G^2+\tfrac12I_G\omega^2\quad(\text{or }\tfrac12I_O\omega^2\text{ about a fixed pin})"></div><p>T₁ + ΣU₁→₂ = T₂. Normal forces at smooth pins and rolling contacts do no work.</p></div>
-      <div><h4>Impulse &amp; momentum</h4><div class="ceq" data-tex="\int\sum\vec F\,dt=m\Delta\vec v_G,\qquad \int\sum M_G\,dt=I_G\Delta\omega"></div></div>
-      <div><h4>Conservation of angular momentum</h4><p>With no external moment about a point (like the system's center of mass in space), I₁ω₁ = I₂ω₂ about that point.</p></div>
+      <div><h4>When to use polar</h4><p>Motion is described from a <b>fixed point O</b>: a rotating arm, a collar on a rod, a cam, a spiral. The frame is still inertial; only the basis vectors ê_r and ê_θ rotate.</p><div class="ceq" data-tex="\dot{\hat e}_r=\dot\theta\,\hat e_\theta,\qquad \dot{\hat e}_\theta=-\dot\theta\,\hat e_r"></div></div>
+      <div><h4>Velocity</h4><div class="ceq" data-tex="\vec v=\dot r\,\hat e_r+r\dot\theta\,\hat e_\theta"></div><p>v_r = ṙ (radial), v_θ = rθ̇ = rω (transverse).</p></div>
+      <div><h4>Acceleration</h4><div class="ceq" data-tex="\vec a=(\ddot r-r\dot\theta^2)\,\hat e_r+(r\ddot\theta+2\dot r\dot\theta)\,\hat e_\theta"></div><p>−rθ̇² is centripetal; 2ṙθ̇ is the Coriolis term. It is a real kinematic acceleration here, not a fictitious force.</p></div>
+      <div><h4>Caution</h4><p>ṙ and r̈ are not the speed and a_r is not dv/dt. a_r = r̈ − rθ̇² includes the centripetal part.</p></div>
+      <div><h4>Relative motion</h4><div class="ceq" data-tex="\vec r_B=\vec r_A+\vec r_{B/A},\quad \vec v_B=\vec v_A+\vec v_{B/A},\quad \vec a_B=\vec a_A+\vec a_{B/A}"></div><p>Find each object's motion in fixed axes first, then subtract.</p></div>
+      <div><h4>Newton's 2nd law in polar</h4><div class="ceq" data-tex="\textstyle\sum F_r=m(\ddot r-r\dot\theta^2),\quad \sum F_\theta=m(r\ddot\theta+2\dot r\dot\theta)"></div></div>
     </div>
   </details>
   <div class="layout">
@@ -402,360 +400,182 @@ function N(x, unit="", sig=4){ return `<span class="num">${fmt(x,sig)}${unit?"&n
      randomize() -> new givens, solve(v) -> computed values,
      statement, given, find, method, answers, steps, plot, takeaway
    ===================================================================== */
-const P = (x,s=4)=> x<0 ? `(${fx(x,s)})` : fx(x,s);
+const P = (x,s=4)=> x<0 ? `(${fmt(x,s)})` : fmt(x,s);   // wrap negatives in parentheses inside equations
 const D2R = Math.PI/180;
-const SUP = {"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
-function big(x){ return x!==0 && (Math.abs(x)>=1e6 || Math.abs(x)<1e-3); }
-function parts(x,s){ let e=Math.floor(Math.log10(Math.abs(x))), m=Number((x/Math.pow(10,e)).toPrecision(s)); if(Math.abs(m)>=10){m/=10;e++;} return [m,e]; }
-function sci(x,s=4){ if(!big(x)) return fmt(x,s); const [m,e]=parts(x,s); return `${m} × 10${String(e).split("").map(c=>SUP[c]).join("")}`; }   // plain text
-function fx(x,s=4){ if(!big(x)) return fmt(x,s); const [m,e]=parts(x,s); return `${m}\\times10^{${e}}`; }                                           // TeX
-function Ns(x,unit="",s=4){ return `<span class="num">${sci(x,s)}${unit?"&nbsp;"+unit:""}</span>`; }
-function resample(gen, ok){ for(let i=0;i<200;i++){ const v=gen(); if(ok(v)) return v; } return gen(); }
-
-
-const R1="Newton–Euler (ΣF = ma, ΣM = Iα)", R2="Work & Energy", R3="Impulse & Momentum";
-const g0=9.81;
-function solveLin(A,b){ const n=b.length, M=A.map((r,i)=>[...r,b[i]]); for(let c=0;c<n;c++){ let p=c; for(let r=c+1;r<n;r++) if(Math.abs(M[r][c])>Math.abs(M[p][c])) p=r; [M[c],M[p]]=[M[p],M[c]]; for(let r=0;r<n;r++){ if(r===c) continue; const f=M[r][c]/M[c][c]; for(let k=c;k<=n;k++) M[r][k]-=f*M[c][k]; } } return M.map((r,i)=>r[n]/r[i]); }
-const ccw=(x)=> x>=0 ? "CCW" : "CW";
+const polarPath = (fn, a0, a1, n=160)=>{ const pts=[]; for(let i=0;i<=n;i++){ const th=a0+(a1-a0)*i/n, r=fn(th); pts.push([r*Math.cos(th), r*Math.sin(th)]); } return pts; };
 
 const PROBLEMS = [
-
-/* ================= NEWTON–EULER ================= */
 {
-  id:"armfixed", topic:R1, name:"Robotic Arm (Fixed Base)", tag:"pure rotation about B",
-  kind:"Rigid-body kinetics: fixed-axis rotation",
-  original:{ m:12, IG:3, rG:0.3, th:40, w:2 },
-  randomize(){ return { m:pick(5,20,1), IG:pick(1,5,0.5), rG:pick(0.2,0.5,0.05), th:pick(20,70,5), w:pick(1,4,0.5) }; },
-  solve(v){ const th=v.th*D2R, c=Math.cos(th), s=Math.sin(th), W=v.m*g0, ax=-v.w*v.w*v.rG*c, ay=-v.w*v.w*v.rG*s, MB=W*v.rG*c, Bx=v.m*ax, By=v.m*ay+W; return {c,s,W,ax,ay,MB,Bx,By}; },
-  statement:(v)=>`Arm BC (mass ${N(v.m,"kg")}, I_G = ${N(v.IG,"kg·m²")}) is pinned at B, which is fixed. Its center of mass G is ${N(v.rG,"m")} from B, and at the instant shown BC is at ${N(v.th,"°")} above the horizontal, rotating counterclockwise at ω = ${N(v.w,"rad/s")} with α = 0. Find the couple M_B the motor at B applies and the pin reactions B_x and B_y.`,
-  given:(v)=>[["m_BC",`${fmt(v.m)} kg`],["I_G",`${fmt(v.IG)} kg·m²`],["r_G/B",`${fmt(v.rG)} m at ${fmt(v.th)}°`],["ω, α",`${fmt(v.w)} rad/s, 0`]],
-  find:["M_B (CCW +)","B_x","B_y"],
-  method:"BC rotates about the fixed pin B, so a_G = α × r_G/B − ω² r_G/B. Use ΣM_B = I_B α (α = 0) for the couple, and ΣF = ma_G for the pin reactions.",
+  id:"collar", topic:"Polar Coordinates", name:"Simple Collar", tag:"r(t), θ(t)",
+  kind:"Polar kinematics",
+  original:{ r0:1, c:0.2, k:2, t:2 },
+  randomize(){ return { r0:pick(0.5,2,0.5), c:pick(0.1,0.5,0.1), k:pick(1,4,0.5), t:pick(1,4,0.5) }; },
+  solve(v){ const r=v.r0+v.c*v.t*v.t, rd=2*v.c*v.t, rdd=2*v.c, th=v.k*v.t, w=v.k, al=0;
+    const vr=rd, vt=r*w, ar=rdd-r*w*w, at=r*al+2*rd*w; return {r,rd,rdd,th,w,al,vr,vt,ar,at,V:Math.hypot(vr,vt),A:Math.hypot(ar,at)}; },
+  statement:(v)=>`Collar A slides along a rod that rotates about a fixed pin O. Its position is r = ${N(v.r0)} + ${N(v.c)}t² m and the rod's angle is θ = ${N(v.k)}t rad, with t in seconds. Find the velocity and acceleration of the collar at t = ${N(v.t,"s")}.`,
+  given:(v)=>[["r(t)",`${fmt(v.r0)} + ${fmt(v.c)}t² m`],["θ(t)",`${fmt(v.k)}t rad`],["t",`${fmt(v.t)} s`]],
+  find:["v_r and v_θ","a_r and a_θ"],
+  method:"Circular motion with a changing radius, viewed from the fixed pin O, so use polar coordinates. Differentiate r(t) and θ(t), then plug into the polar velocity and acceleration equations.",
   answers:(v,r)=>[
-    {label:"M_B (CCW positive)", unit:"N·m", val:r.MB},
-    {label:"B_x", unit:"N", val:r.Bx, scale:Math.hypot(r.Bx,r.By)},
-    {label:"B_y", unit:"N", val:r.By}],
+    {label:"v_r", unit:"m/s", val:r.vr, scale:r.V},
+    {label:"v_θ", unit:"m/s", val:r.vt, scale:r.V},
+    {label:"a_r", unit:"m/s²", val:r.ar, scale:r.A},
+    {label:"a_θ", unit:"m/s²", val:r.at, scale:r.A}],
   steps(v,r){ return [
-    {t:"Acceleration of G (α = 0)", eq:T`\vec a_G=-\omega^2\vec r_{G/B}=-(${fmt(v.w)})^2\big(${fmt(v.rG)}\cos${fmt(v.th)}^\circ\,\hat i+${fmt(v.rG)}\sin${fmt(v.th)}^\circ\,\hat j\big)=${fmt(r.ax)}\,\hat i${sgn(r.ay)}\,\hat j\ \text{m/s}^2`},
-    {t:"Moment about the fixed pin B", eq:T`\sum M_B=I_B\alpha=0\;\Rightarrow\;M_B-W(${fmt(v.rG)}\cos${fmt(v.th)}^\circ)=0\;\Rightarrow\;M_B=${fmt(r.W)}(${fmt(v.rG*r.c)})=${fmt(r.MB)}\ \text{N·m}`},
-    {t:"ΣF_x = ma_x", eq:T`B_x=ma_x=${fmt(v.m)}(${fmt(r.ax)})=${fmt(r.Bx)}\ \text{N}`},
-    {t:"ΣF_y = ma_y", eq:T`B_y-W=ma_y\;\Rightarrow\;B_y=${fmt(v.m)}(${fmt(r.ay)})+${fmt(r.W)}=${fmt(r.By)}\ \text{N}`}
+    {t:"Radial terms at t", eq:T`r=${fmt(v.r0)}+${fmt(v.c)}t^2=${fmt(r.r)}\ \text{m},\quad \dot r=${fmt(2*v.c)}t=${fmt(r.rd)}\ \text{m/s},\quad \ddot r=${fmt(r.rdd)}\ \text{m/s}^2`},
+    {t:"Angular terms at t", eq:T`\theta=${fmt(v.k)}t=${fmt(r.th)}\ \text{rad},\quad \dot\theta=\omega=${fmt(r.w)}\ \text{rad/s},\quad \ddot\theta=\alpha=0`},
+    {t:"Velocity", eq:T`\vec v=\dot r\,\hat e_r+r\dot\theta\,\hat e_\theta=${fmt(r.rd)}\,\hat e_r+(${fmt(r.r)})(${fmt(r.w)})\,\hat e_\theta=${fmt(r.vr)}\,\hat e_r+${fmt(r.vt)}\,\hat e_\theta\ \text{m/s}`},
+    {t:"Acceleration equation", eq:T`\vec a=(\ddot r-r\dot\theta^2)\,\hat e_r+(r\ddot\theta+2\dot r\dot\theta)\,\hat e_\theta`},
+    {t:"Plug in", eq:T`\vec a=\big(${fmt(r.rdd)}-${fmt(r.r)}(${fmt(r.w)})^2\big)\hat e_r+\big(${fmt(r.r)}(0)+2(${fmt(r.rd)})(${fmt(r.w)})\big)\hat e_\theta=${fmt(r.ar)}\,\hat e_r${sgn(r.at)}\,\hat e_\theta\ \text{m/s}^2`}
   ];},
-  takeaway:"With α = 0 the motor only has to hold up the weight's moment; the centripetal acceleration passes through B and creates no moment about it. Positive M_B means counterclockwise.",
-  plot(v,r){ const th=v.th*D2R, L=v.rG*2, G=[v.rG*Math.cos(th),v.rG*Math.sin(th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts:[[0,0],[L*Math.cos(th),L*Math.sin(th)]]},{pts:[G,[G[0]+r.ax*0.08,G[1]+r.ay*0.08]],alt:true}], mark:G, mark2:[0,0], equal:true, cap:"Arm BC to scale (B at the origin). Orange shows the direction of a_G, pointing toward B."}; }
+  takeaway:"Here a_θ comes entirely from the Coriolis term 2ṙθ̇, because θ̈ = 0. The collar still has transverse acceleration since it moves outward along a rotating rod.",
+  plot(v,r){ const pts=[]; for(let i=0;i<=160;i++){const t=v.t*i/160, rr=v.r0+v.c*t*t; pts.push([rr*Math.cos(v.k*t), rr*Math.sin(v.k*t)]);} const M=[r.r*Math.cos(r.th), r.r*Math.sin(r.th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts},{pts:[[0,0],M],alt:true}], mark:M, equal:true, cap:"Path of the collar from t = 0 (to scale). Orange is the rod at the instant asked; the dot is the collar."}; }
 },
 
 {
-  id:"armmoving", topic:R1, name:"Robotic Arm (Moving Base)", tag:"general plane motion",
-  kind:"Rigid-body kinetics: general plane motion",
-  original:{ m:12, IG:3, rG:0.3, th:40, wBC:2, aBC:-4, LAB:0.7, wAB:-2 },
-  randomize(){ return { m:pick(5,20,1), IG:pick(1,5,0.5), rG:pick(0.2,0.5,0.05), th:pick(20,70,5), wBC:pick(1,4,0.5), aBC:pick(-6,6,1), LAB:pick(0.5,1,0.1), wAB:pick(-3,3,0.5) }; },
-  solve(v){ const th=v.th*D2R, c=Math.cos(th), s=Math.sin(th), rx=v.rG*c, ry=v.rG*s, W=v.m*g0, aBx=-v.wAB*v.wAB*v.LAB;
-    const ax=aBx - v.aBC*ry - v.wBC*v.wBC*rx, ay= v.aBC*rx - v.wBC*v.wBC*ry;
-    const MB=W*rx + v.IG*v.aBC + v.m*(rx*ay-ry*ax), Bx=v.m*ax, By=v.m*ay+W; return {rx,ry,W,aBx,ax,ay,MB,Bx,By}; },
-  statement:(v)=>`Now arm AB (length ${N(v.LAB,"m")}, horizontal) rotates about A with ω_AB = ${N(v.wAB,"rad/s")} and α_AB = 0, carrying pin B. Arm BC (mass ${N(v.m,"kg")}, I_G = ${N(v.IG,"kg·m²")}, G ${N(v.rG,"m")} from B at ${N(v.th,"°")}) has ω_BC = ${N(v.wBC,"rad/s")} and α_BC = ${N(v.aBC,"rad/s²")} (CCW positive). Find the couple M_B on BC and the pin reactions at B.`,
-  given:(v)=>[["AB",`${fmt(v.LAB)} m, ω = ${fmt(v.wAB)} rad/s, α = 0`],["m_BC, I_G",`${fmt(v.m)} kg, ${fmt(v.IG)} kg·m²`],["r_G/B",`${fmt(v.rG)} m at ${fmt(v.th)}°`],["ω_BC, α_BC",`${fmt(v.wBC)} rad/s, ${fmt(v.aBC)} rad/s²`]],
-  find:["M_B (CCW +)","B_x","B_y"],
-  method:"B is no longer fixed, so BC is in general plane motion. Find a_B from bar AB, then a_G = a_B + α × r_G/B − ω² r_G/B. Sum moments about B, which is accelerating, so include the ma_G term: ΣM_B = I_Gα + (r_G/B × m a_G).",
+  id:"arc", topic:"Polar Coordinates", name:"Sliding Collar Arc", tag:"r(θ) = b cos θ",
+  kind:"Polar kinematics",
+  original:{ b:2, th:25, w:4 },
+  randomize(){ return { b:pick(1,3,0.5), th:pick(10,75,5), w:pick(2,6,0.5) }; },
+  solve(v){ const th=v.th*D2R, c=Math.cos(th), s=Math.sin(th), r=v.b*c, rd=-v.b*v.w*s, rdd=-v.b*v.w*v.w*c;
+    const vr=rd, vt=r*v.w, ar=rdd-r*v.w*v.w, at=2*rd*v.w; return {r,rd,rdd,vr,vt,ar,at,V:Math.hypot(vr,vt),A:Math.hypot(ar,at)}; },
+  statement:(v)=>`Collar A slides along a semicircular arc whose shape, measured from the fixed point O, is r = ${N(v.b)} cos θ m. At the instant θ = ${N(v.th,"°")}, the line OA rotates at θ̇ = ${N(v.w,"rad/s")} with θ̈ = 0. Find the velocity and acceleration of A.`,
+  given:(v)=>[["Path",`r = ${fmt(v.b)} cos θ m`],["θ",`${fmt(v.th)}°`],["θ̇ = ω",`${fmt(v.w)} rad/s`],["θ̈ = α","0"]],
+  find:["v_r and v_θ","a_r and a_θ"],
+  method:"The motion is circular but viewed from O, which is not the center of the arc, so use polar coordinates. r depends on θ, so use the chain rule to get ṙ and r̈.",
   answers:(v,r)=>[
-    {label:"M_B (CCW positive)", unit:"N·m", val:r.MB},
-    {label:"B_x", unit:"N", val:r.Bx, scale:Math.hypot(r.Bx,r.By)},
-    {label:"B_y", unit:"N", val:r.By}],
+    {label:"v_r", unit:"m/s", val:r.vr, scale:r.V},
+    {label:"v_θ", unit:"m/s", val:r.vt, scale:r.V},
+    {label:"a_r", unit:"m/s²", val:r.ar, scale:r.A},
+    {label:"a_θ", unit:"m/s²", val:r.at, scale:r.A}],
   steps(v,r){ return [
-    {t:"Acceleration of B (from AB, α_AB = 0)", eq:T`\vec a_B=-\omega_{AB}^2\vec r_{B/A}=-(${fmt(v.wAB)})^2(${fmt(v.LAB)})\,\hat i=${fmt(r.aBx)}\,\hat i\ \text{m/s}^2`},
-    {t:"Acceleration of G", eq:T`\vec a_G=\vec a_B+\alpha_{BC}\hat k\times\vec r_{G/B}-\omega_{BC}^2\vec r_{G/B},\quad \vec r_{G/B}=${fmt(r.rx)}\,\hat i+${fmt(r.ry)}\,\hat j`},
-    {t:"Evaluate", eq:T`\vec a_G=${fmt(r.ax)}\,\hat i${sgn(r.ay)}\,\hat j\ \text{m/s}^2`},
-    {t:"Moments about B (B accelerates)", eq:T`M_B-W(${fmt(r.rx)})=I_G\alpha_{BC}+m(r_xa_{Gy}-r_ya_{Gx})=${fmt(v.IG)}(${fmt(v.aBC)})+${fmt(v.m)}\big(${fmt(r.rx)}${P(r.ay)}-${fmt(r.ry)}${P(r.ax)}\big)`},
-    {t:"Solve for M_B", eq:T`M_B=${fmt(r.W*r.rx)}+${P(v.IG*v.aBC)}+${P(v.m*(r.rx*r.ay-r.ry*r.ax))}=${fmt(r.MB)}\ \text{N·m}`},
-    {t:"Pin reactions", eq:T`B_x=ma_{Gx}=${fmt(r.Bx)}\ \text{N},\qquad B_y=ma_{Gy}+W=${fmt(r.By)}\ \text{N}`}
+    {t:"Position", eq:T`r=${fmt(v.b)}\cos ${fmt(v.th)}^\circ=${fmt(r.r)}\ \text{m}`},
+    {t:"ṙ by the chain rule", eq:T`\dot r=\frac{d}{dt}(${fmt(v.b)}\cos\theta)=-${fmt(v.b)}\dot\theta\sin\theta=-${fmt(v.b)}(${fmt(v.w)})\sin ${fmt(v.th)}^\circ=${fmt(r.rd)}\ \text{m/s}`},
+    {t:"Velocity", eq:T`\vec v=\dot r\,\hat e_r+r\omega\,\hat e_\theta=${fmt(r.vr)}\,\hat e_r+(${fmt(r.r)})(${fmt(v.w)})\,\hat e_\theta=${fmt(r.vr)}\,\hat e_r+${fmt(r.vt)}\,\hat e_\theta\ \text{m/s}`},
+    {t:"r̈ (θ̈ = 0)", eq:T`\ddot r=-${fmt(v.b)}\dot\theta^2\cos\theta-${fmt(v.b)}\ddot\theta\sin\theta=-${fmt(v.b)}(${fmt(v.w)})^2\cos ${fmt(v.th)}^\circ=${fmt(r.rdd)}\ \text{m/s}^2`},
+    {t:"Acceleration", eq:T`\vec a=\big(${P(r.rdd)}-${fmt(r.r)}(${fmt(v.w)})^2\big)\hat e_r+\big(${fmt(r.r)}(0)+2${P(r.rd)}(${fmt(v.w)})\big)\hat e_\theta=${fmt(r.ar)}\,\hat e_r${sgn(r.at)}\,\hat e_\theta\ \text{m/s}^2`}
   ];},
-  takeaway:"Compare with the fixed-base arm: the same bar in the same position needs a different couple once B accelerates and α ≠ 0. Summing moments about an accelerating point needs the r × ma_G term.",
-  plot(v,r){ const th=v.th*D2R, L=v.rG*2; return {xl:"x (m)", yl:"y (m)", series:[{pts:[[-v.LAB,0],[0,0]],alt:true},{pts:[[0,0],[L*Math.cos(th),L*Math.sin(th)]]}], mark:[r.rx,r.ry], mark2:[0,0], equal:true, cap:"Arm AB (orange) and BC (blue) to scale, with B at the origin. The blue dot is G."}; }
+  takeaway:(v,r)=>`Check: the speed |v| = ${fmt(r.V)} m/s equals bθ̇ = ${fmt(v.b*v.w)} m/s at every angle. The arc is a circle of diameter b, and A goes around its center at 2θ̇.`,
+  plot(v,r){ const pts=polarPath(t=>v.b*Math.cos(t), -Math.PI/2, Math.PI/2); const th=v.th*D2R, M=[r.r*Math.cos(th), r.r*Math.sin(th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts},{pts:[[0,0],M],alt:true}], mark:M, equal:true, cap:"The arc r = b cos θ is a circle through O (to scale). Orange is the line OA; the dot is the collar."}; }
 },
 
 {
-  id:"barcollar", topic:R1, name:"Bar & Collar in a Horizontal Plane", tag:"coupled bodies",
-  kind:"Rigid body + particle",
-  original:{ mb:2, L:2, mc:6, r:1.2, w:0.4, vr:0.5, Ic:0.2 },
-  randomize(){ const L=pick(1.5,3,0.5); return { mb:pick(1,4,0.5), L, mc:pick(2,10,1), r:pick(0.5,L-0.3,0.1), w:pick(0.2,2,0.2), vr:pick(0.2,1.5,0.1), Ic:pick(0.1,0.5,0.1) }; },
-  solve(v){ const IO=v.mb*v.L*v.L/3, a1=-2*v.mc*v.r*v.vr*v.w/(IO+v.mc*v.r*v.r), N1=IO*a1/v.r, a2=-2*v.mc*v.r*v.vr*v.w/(IO+v.mc*v.r*v.r+v.Ic); return {IO,a1,N1,a2}; },
-  statement:(v)=>`A ${N(v.mb,"kg")} slender bar of length ${N(v.L,"m")} rotates freely about a vertical axis at O in a horizontal plane (no applied torque). A ${N(v.mc,"kg")} collar slides along it without friction. At the instant r = ${N(v.r,"m")}, ω = ${N(v.w,"rad/s")} and the collar moves outward at ṙ = ${N(v.vr,"m/s")}. Find the bar's angular acceleration (a) treating the collar as a particle and (b) treating it as a rigid body with I = ${N(v.Ic,"kg·m²")} about its own center.`,
-  given:(v)=>[["Bar",`${fmt(v.mb)} kg, ${fmt(v.L)} m, pinned at O`],["Collar",`${fmt(v.mc)} kg at r = ${fmt(v.r)} m`],["ω, ṙ",`${fmt(v.w)} rad/s, ${fmt(v.vr)} m/s`],["I_collar (part b)",`${fmt(v.Ic)} kg·m²`]],
-  find:["α (collar as particle)","Normal force N","α (collar as rigid body)"],
-  method:"Two bodies. Bar: ΣM_O = I_O α with the collar's normal force N at r. Collar: ΣF_θ = m(rα + 2ṙω) in polar coordinates, with the equal and opposite N. The collar turns with the bar, so in part (b) it also exerts a couple I_c α on the bar.",
+  id:"cam", topic:"Polar Coordinates", name:"Cam & Roller Follower", tag:"r(θ), polar → x–y",
+  kind:"Polar kinematics",
+  original:{ p:0.15, e:0.5, th:135, w:4 },
+  randomize(){ return { p:pick(0.10,0.30,0.05), e:pick(0.2,0.7,0.1), th:pick(30,330,15), w:pick(2,8,1) }; },
+  solve(v){ const th=v.th*D2R, c=Math.cos(th), s=Math.sin(th), Dn=1+v.e*c, r=v.p/Dn;
+    const drdth=v.p*v.e*s/(Dn*Dn), d2=2*v.p*v.e*v.e*s*s/Math.pow(Dn,3)+v.p*v.e*c/(Dn*Dn);
+    const rd=drdth*v.w, rdd=d2*v.w*v.w, vr=rd, vt=r*v.w, ar=rdd-r*v.w*v.w, at=2*rd*v.w;
+    const vx=vr*c-vt*s, vy=vr*s+vt*c, ax=ar*c-at*s, ay=ar*s+at*c;
+    return {c,s,Dn,r,drdth,d2,rd,rdd,vr,vt,ar,at,vx,vy,ax,ay,V:Math.hypot(vr,vt),A:Math.hypot(ar,at)}; },
+  statement:(v)=>`A slotted arm rotates about O at a constant θ̇ = ${N(v.w,"rad/s")} and drives a roller follower around a fixed cam whose profile is r = ${N(v.p)}(1 + ${N(v.e)} cos θ)⁻¹ m. Find the velocity and acceleration of the roller when θ = ${N(v.th,"°")}, in polar and in Cartesian components.`,
+  given:(v)=>[["Cam profile",`r = ${fmt(v.p)}/(1 + ${fmt(v.e)} cos θ) m`],["θ",`${fmt(v.th)}°`],["θ̇ = ω",`${fmt(v.w)} rad/s (constant)`],["θ̈ = α","0"]],
+  find:["v_r, v_θ and v_x, v_y","a_r, a_θ and a_x, a_y"],
+  method:"The arm rotates about O and the roller's distance from O is set by the cam, so use polar coordinates. Differentiate r(θ) with the chain rule, then convert with ê_r = cos θ î + sin θ ĵ and ê_θ = −sin θ î + cos θ ĵ.",
   answers:(v,r)=>[
-    {label:"α (particle)", unit:"rad/s²", val:r.a1},
-    {label:"N on bar (+θ direction)", unit:"N", val:r.N1},
-    {label:"α (rigid collar)", unit:"rad/s²", val:r.a2}],
+    {label:"v_r", unit:"m/s", val:r.vr, scale:r.V},
+    {label:"v_θ", unit:"m/s", val:r.vt, scale:r.V},
+    {label:"v_x", unit:"m/s", val:r.vx, scale:r.V},
+    {label:"v_y", unit:"m/s", val:r.vy, scale:r.V},
+    {label:"a_r", unit:"m/s²", val:r.ar, scale:r.A},
+    {label:"a_θ", unit:"m/s²", val:r.at, scale:r.A},
+    {label:"a_x", unit:"m/s²", val:r.ax, scale:r.A},
+    {label:"a_y", unit:"m/s²", val:r.ay, scale:r.A}],
   steps(v,r){ return [
-    {t:"Bar: moment about O", eq:T`N r=I_O\alpha=\tfrac13 m_bL^2\alpha\;\Rightarrow\;${fmt(v.r)}N=${fmt(r.IO)}\,\alpha\;\Rightarrow\;N=${fmt(r.IO/v.r)}\,\alpha\quad(1)`},
-    {t:"Collar: transverse direction (it feels −N)", eq:T`-N=m_c(r\alpha+2\dot r\omega)=${fmt(v.mc)}\big(${fmt(v.r)}\alpha+2(${fmt(v.vr)})(${fmt(v.w)})\big)\quad(2)`},
-    {t:"(a) Combine (1) and (2)", eq:T`-${fmt(r.IO/v.r)}\alpha=${fmt(v.mc*v.r)}\alpha+${fmt(2*v.mc*v.vr*v.w)}\;\Rightarrow\;\alpha=${fmt(r.a1)}\ \text{rad/s}^2,\quad N=${fmt(r.N1)}\ \text{N}`},
-    {t:"(b) Add the collar's couple", eq:T`Nr-I_c\alpha=I_O\alpha\;\Rightarrow\;N=\frac{${fmt(r.IO)}+${fmt(v.Ic)}}{${fmt(v.r)}}\alpha,\quad\text{with (2)}\;\Rightarrow\;\alpha=${fmt(r.a2)}\ \text{rad/s}^2`},
-    {t:"Check with angular momentum", eq:T`H_O=(I_O+m_cr^2+I_c)\omega=\text{const}\;\Rightarrow\;\alpha=\frac{-2m_cr\dot r\omega}{I_O+m_cr^2+I_c}=${fmt(r.a2)}\ \text{rad/s}^2\ \checkmark`}
+    {t:"Position", eq:T`r=\frac{${fmt(v.p)}}{1+${fmt(v.e)}\cos ${fmt(v.th)}^\circ}=\frac{${fmt(v.p)}}{${fmt(r.Dn)}}=${fmt(r.r)}\ \text{m}`},
+    {t:"ṙ by the chain rule", eq:T`\dot r=${fmt(v.p)}(1+${fmt(v.e)}\cos\theta)^{-2}(${fmt(v.e)}\sin\theta)\,\dot\theta=${fmt(r.drdth)}(${fmt(v.w)})=${fmt(r.rd)}\ \text{m/s}`},
+    {t:"Velocity (polar)", eq:T`\vec v=\dot r\,\hat e_r+r\omega\,\hat e_\theta=${fmt(r.vr)}\,\hat e_r+${fmt(r.vt)}\,\hat e_\theta\ \text{m/s}`},
+    {t:"Velocity (Cartesian)", eq:T`\vec v=${fmt(r.vr)}(\cos\theta\,\hat i+\sin\theta\,\hat j)+${fmt(r.vt)}(-\sin\theta\,\hat i+\cos\theta\,\hat j)=${fmt(r.vx)}\,\hat i${sgn(r.vy)}\,\hat j\ \text{m/s}`},
+    {t:"r̈ (θ̈ = 0)", eq:T`\ddot r=\Big[\frac{2(${fmt(v.p)})(${fmt(v.e)}\sin\theta)^2}{(1+${fmt(v.e)}\cos\theta)^3}+\frac{${fmt(v.p)}(${fmt(v.e)}\cos\theta)}{(1+${fmt(v.e)}\cos\theta)^2}\Big]\dot\theta^2=${fmt(r.d2)}(${fmt(v.w)})^2=${fmt(r.rdd)}\ \text{m/s}^2`},
+    {t:"Acceleration (polar)", eq:T`\vec a=\big(${P(r.rdd)}-${fmt(r.r)}(${fmt(v.w)})^2\big)\hat e_r+\big(0+2${P(r.rd)}(${fmt(v.w)})\big)\hat e_\theta=${fmt(r.ar)}\,\hat e_r${sgn(r.at)}\,\hat e_\theta\ \text{m/s}^2`},
+    {t:"Acceleration (Cartesian)", eq:T`a_x=a_r\cos\theta-a_\theta\sin\theta=${fmt(r.ax)},\quad a_y=a_r\sin\theta+a_\theta\cos\theta=${fmt(r.ay)}\ \text{m/s}^2`}
   ];},
-  takeaway:"α is negative: as the collar moves out, the system's moment of inertia grows, so the bar slows down (like a skater extending their arms). Including the collar's own inertia makes the deceleration slightly smaller.",
-  plot(v,r){ return {xl:"x (m)", yl:"y (m)", series:[{pts:[[0,0],[v.L,0]]}], mark:[v.r,0], mark2:[0,0], equal:true, cap:"Top view: bar from O (orange dot) with the collar (blue dot)."}; }
+  takeaway:"Polar coordinates make the derivatives easy because r is given as a function of θ. Converting to x–y at the end is just a change of basis vectors at that angle.",
+  plot(v,r){ const pts=polarPath(t=>v.p/(1+v.e*Math.cos(t)), 0, 2*Math.PI, 200); const th=v.th*D2R, M=[r.r*Math.cos(th), r.r*Math.sin(th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts},{pts:[[0,0],M],alt:true}], mark:M, equal:true, cap:"Cam profile to scale, with O at the origin. Orange is the slotted arm; the dot is the roller."}; }
 },
 
 {
-  id:"twolink", topic:R1, name:"Two-Link Slender Bars", tag:"5 × 5 system",
-  kind:"Rigid-body kinetics: connected bodies",
-  original:{ mAB:10, mBC:12, F:150, LAB:0.4, h:0.4, b:0.2 },
-  randomize(){ return resample(()=>({ mAB:pick(5,15,1), mBC:pick(5,15,1), F:pick(50,300,10), LAB:pick(0.3,0.6,0.1), h:pick(0.3,0.6,0.1), b:pick(0.1,0.3,0.05) }), v=>this.solve(v).N>5); },
-  solve(v){ const IA=v.mAB*v.LAB*v.LAB/3, IG=v.mBC*(v.b*v.b+v.h*v.h)/12, WA=v.mAB*g0, WB=v.mBC*g0, h2=v.h/2, b2=v.b/2;
-    // unknowns: Bx By N aAB aBC
-    const A=[
-      [0, v.LAB, 0, -IA, 0],
-      [-1, 0, 0, 0, -v.mBC*h2],
-      [0, -1, 1, -v.mBC*v.LAB, -v.mBC*b2],
-      [h2, b2, b2, 0, -IG],
-      [0, 0, 0, v.LAB, v.b]];
-    const bb=[WA*v.LAB/2, v.F, WB, h2*v.F, 0];
-    const [Bx,By,Nn,aAB,aBC]=solveLin(A,bb); return {IA,IG,Bx,By,N:Nn,aAB,aBC}; },
-  statement:(v)=>`Bar AB (${N(v.mAB,"kg")}, length ${N(v.LAB,"m")}) is pinned at A and horizontal. Bar BC (${N(v.mBC,"kg")}) is pinned to it at B and runs down to C, which rests on a smooth floor ${N(v.h,"m")} below B and ${N(v.b,"m")} to the right of B. The system is released from rest with a horizontal force F = ${N(v.F,"N")} pushing C to the left. Find the angular accelerations of both bars.`,
-  given:(v)=>[["m_AB, L_AB",`${fmt(v.mAB)} kg, ${fmt(v.LAB)} m`],["m_BC",`${fmt(v.mBC)} kg`],["C relative to B",`${fmt(v.b)} m right, ${fmt(v.h)} m down`],["F at C",`${fmt(v.F)} N to the left`],["ω_AB = ω_BC","0"]],
-  find:["α_AB","α_BC","Pin force at B and N at C"],
-  method:"Two rigid bodies. AB rotates about A: take ΣM_A = I_Aα_AB (avoids A_x, A_y). BC is in plane motion: ΣF = ma_G and ΣM_G = I_Gα_BC. Kinematics links them: a_B = α_AB × r_B/A, and C must slide along the floor, so a_Cy = 0.",
+  id:"spring", topic:"Polar Coordinates", name:"Bar with Spring", tag:"a_r(r)",
+  kind:"Polar kinematics",
+  original:{ w:12, k:8, r1:1, vr1:2, r2:1.5 },
+  randomize(){ const r1=pick(0.5,1.5,0.25); return { w:pick(6,15,1), k:pick(4,20,2), r1, vr1:pick(1,4,0.5), r2:+(r1+pick(0.25,1,0.25)).toFixed(2) }; },
+  solve(v){ const C=v.w*v.w-v.k, vr=Math.sqrt(v.vr1*v.vr1+C*(v.r2*v.r2-v.r1*v.r1)), vt=v.r2*v.w; return {C,vr,vt,V:Math.hypot(vr,vt)}; },
+  statement:(v)=>`A bar rotates about a fixed pin at a constant ω = ${N(v.w,"rad/s")}. A collar attached to a spring slides along the bar, and the spring gives it a radial acceleration a_r = −${N(v.k)} r m/s². When r = ${N(v.r1,"m")}, the collar's radial speed is ṙ = ${N(v.vr1,"m/s")}. Find its velocity when r = ${N(v.r2,"m")}.`,
+  given:(v)=>[["ω",`${fmt(v.w)} rad/s (constant)`],["a_r",`−${fmt(v.k)}r m/s²`],["r₁, ṙ₁",`${fmt(v.r1)} m, ${fmt(v.vr1)} m/s`],["r₂",`${fmt(v.r2)} m`]],
+  find:["v_r at r₂","v_θ at r₂"],
+  method:"Circular motion with a varying radius, so use polar coordinates. a_r is given, so set it equal to r̈ − rω², solve for r̈ as a function of r, and use the chain rule r̈ = ṙ dṙ/dr to integrate.",
   answers:(v,r)=>[
-    {label:"α_AB (CCW +)", unit:"rad/s²", val:r.aAB},
-    {label:"α_BC (CCW +)", unit:"rad/s²", val:r.aBC},
-    {label:"N at C", unit:"N", val:r.N}],
-  steps(v,r){ const h2=v.h/2,b2=v.b/2; return [
-    {t:"AB: moment about A", eq:T`${fmt(v.LAB)}B_y-${fmt(v.mAB*g0*v.LAB/2)}=${fmt(r.IA)}\,\alpha_{AB}\quad(1)`,
-      note:"B_x, B_y are the forces on AB at B; BC feels −B_x, −B_y."},
-    {t:"Kinematics", eq:T`\vec a_B=${fmt(v.LAB)}\alpha_{AB}\hat j,\quad a_{Gx}=${fmt(h2)}\alpha_{BC},\quad a_{Gy}=${fmt(v.LAB)}\alpha_{AB}+${fmt(b2)}\alpha_{BC},\quad a_{Cy}=${fmt(v.LAB)}\alpha_{AB}+${fmt(v.b)}\alpha_{BC}=0\quad(2)`},
-    {t:"BC: ΣF_x and ΣF_y", eq:T`-B_x-${fmt(v.F)}=${fmt(v.mBC)}a_{Gx}\quad(3),\qquad N-B_y-${fmt(v.mBC*g0)}=${fmt(v.mBC)}a_{Gy}\quad(4)`},
-    {t:"BC: moment about G", eq:T`${fmt(h2)}B_x+${fmt(b2)}B_y+${fmt(b2)}N-${fmt(h2*v.F)}=${fmt(r.IG)}\,\alpha_{BC}\quad(5)`},
-    {t:"Solve the 5 × 5 system", eq:T`\alpha_{AB}=${fmt(r.aAB)},\quad \alpha_{BC}=${fmt(r.aBC)}\ \text{rad/s}^2,\quad B_x=${fmt(r.Bx)},\ B_y=${fmt(r.By)},\ N=${fmt(r.N)}\ \text{N}`}
-  ];},
-  takeaway:(v,r)=>`AB turns ${ccw(r.aAB)} and BC turns ${ccw(r.aBC)}. The floor constraint fixes their ratio: α_BC = −(L_AB/b) α_AB. N > 0 confirms C stays on the floor.`,
-  plot(v,r){ return {xl:"x (m)", yl:"y (m)", series:[{pts:[[0,0],[v.LAB,0]],alt:true},{pts:[[v.LAB,0],[v.LAB+v.b,-v.h]]}], mark:[v.LAB+v.b,-v.h], mark2:[0,0], equal:true, cap:"AB (orange) pinned at A (orange dot); BC (blue) ending at C on the floor (blue dot). To scale."}; }
-},
-
-{
-  id:"linkage", topic:R1, name:"Linkage with an Added Axial Force", tag:"IC, then 4 × 4",
-  kind:"Rigid-body kinetics: linkage",
-  original:{ w:10, m1:2, m2:3.6, h:0.4, c:0.7, d:0.4, e:0.7, F:20 },
-  randomize(){ return { w:pick(4,12,1), m1:pick(1,4,0.5), m2:pick(2,6,0.2), h:pick(0.3,0.6,0.05), c:pick(0.5,0.9,0.05), d:pick(0.3,0.5,0.05), e:pick(0.5,0.9,0.05), F:pick(10,50,5) }; },
-  solve(v){ const w1=v.w, w2=-v.w*v.c/v.d, a1=(w2*w2*v.d + v.w*v.w*v.c)/v.h, a2=-v.c*a1/v.d;
-    const aGx=a1*v.h/2 - v.w*v.w*v.c/2, aGy=a1*v.c/2 - v.w*v.w*v.h/2, IG=v.m1*(v.c*v.c+v.h*v.h)/12, g2=(v.e-v.d)/2, ID=v.m2*(v.d+v.e)**2/12+v.m2*g2*g2;
-    const Cy=(ID*a2+v.m2*g0*g2)/v.d;
-    // on BC: Bx+Cx = m1 aGx ; By+Cy - m1 g = m1 aGy ; (-c/2)By - (h/2)Bx + (c/2)Cy + (h/2)Cx = IG a1
-    const By=v.m1*aGy+v.m1*g0-Cy;
-    // Cx = m1 aGx - Bx ;  -(c/2)By -(h/2)Bx + (c/2)Cy + (h/2)(m1 aGx - Bx) = IG a1
-    const Bx=((-v.c/2)*By + (v.c/2)*Cy + (v.h/2)*v.m1*aGx - IG*a1)/v.h, Cx=v.m1*aGx-Bx;
-    return {w2,a1,a2,aGx,aGy,IG,g2,ID,Bx,By,Cx,Cy,BxF:Bx-v.F,vB:v.w*v.h,vC:v.w*v.c}; },
-  statement:(v)=>`Crank AB (vertical, ${N(v.h,"m")} long) rotates counterclockwise about A at a constant ${N(v.w,"rad/s")}. Link BC (${N(v.m1,"kg")}) connects B to C, which is ${N(v.c,"m")} to the right of A at A's level. Bar CDE (${N(v.m2,"kg")}, length ${N(v.d+v.e,"m")}) is horizontal and pinned at D, ${N(v.d,"m")} to the right of C. (a) Find the angular accelerations of BC and CDE and the pin forces on BC at B and C. (b) A horizontal force F = ${N(v.F,"N")} to the right is added at B while the motion stays the same. Find the new B_x.`,
-  given:(v)=>[["ω_AB, α_AB",`${fmt(v.w)} rad/s CCW, 0`],["AB (vertical)",`${fmt(v.h)} m`],["A → C (horizontal)",`${fmt(v.c)} m`],["C → D, D → E",`${fmt(v.d)} m, ${fmt(v.e)} m`],["m_BC, m_CDE",`${fmt(v.m1)} kg, ${fmt(v.m2)} kg`]],
-  find:["α_BC, α_CDE","B_x, B_y, C_x, C_y (forces on BC)","B_x with F added"],
-  method:"Step 1, kinematics: v_B is horizontal and v_C is vertical, so BC's instantaneous center is at A. Get ω_BC and ω_CDE, then match a_C from BC and from CDE to get α_BC and α_CDE. Step 2, kinetics: ΣF and ΣM_G on BC plus ΣM_D on CDE give 4 equations for B_x, B_y, C_x, C_y. (ΣM_A on AB only adds the unknown motor torque.)",
-  answers:(v,r)=>[
-    {label:"α_BC (CCW +)", unit:"rad/s²", val:r.a1},
-    {label:"α_CDE (CCW +)", unit:"rad/s²", val:r.a2},
-    {label:"B_x on BC", unit:"N", val:r.Bx},
-    {label:"B_y on BC", unit:"N", val:r.By},
-    {label:"C_x on BC", unit:"N", val:r.Cx},
-    {label:"C_y on BC", unit:"N", val:r.Cy},
-    {label:"B_x with F added", unit:"N", val:r.BxF}],
+    {label:"v_r at r₂", unit:"m/s", val:r.vr},
+    {label:"v_θ at r₂", unit:"m/s", val:r.vt}],
   steps(v,r){ return [
-    {t:"Velocities (IC of BC at A)", eq:T`v_B=${fmt(v.w)}(${fmt(v.h)})=${fmt(r.vB)}\ \text{m/s}\ (\leftarrow),\quad \omega_{BC}=\frac{v_B}{${fmt(v.h)}}=${fmt(v.w)},\quad v_C=\omega_{BC}(${fmt(v.c)})=${fmt(r.vC)}\ (\uparrow),\quad \omega_{CDE}=-\frac{v_C}{${fmt(v.d)}}=${fmt(r.w2)}\ \text{rad/s}`},
-    {t:"a_C from BC and from CDE", eq:T`\vec a_C=(${fmt(v.h)}\alpha_{BC}-${fmt(v.w*v.w*v.c)})\,\hat i+${fmt(v.c)}\alpha_{BC}\,\hat j=${fmt(r.w2*r.w2*v.d)}\,\hat i-${fmt(v.d)}\alpha_{CDE}\,\hat j`},
-    {t:"Match components", eq:T`\alpha_{BC}=\frac{${fmt(r.w2*r.w2*v.d)}+${fmt(v.w*v.w*v.c)}}{${fmt(v.h)}}=${fmt(r.a1)},\qquad \alpha_{CDE}=-\frac{${fmt(v.c)}}{${fmt(v.d)}}\alpha_{BC}=${fmt(r.a2)}\ \text{rad/s}^2`},
-    {t:"a_G of BC", eq:T`\vec a_G=\vec a_B+\alpha_{BC}\hat k\times\vec r_{G/B}-\omega_{BC}^2\vec r_{G/B}=${fmt(r.aGx)}\,\hat i+${fmt(r.aGy)}\,\hat j\ \text{m/s}^2`},
-    {t:"CDE: moment about D gives C_y", eq:T`${fmt(v.d)}\,C_y-${fmt(v.m2*g0)}(${fmt(r.g2)})=I_D\alpha_{CDE}=${fmt(r.ID)}(${fmt(r.a2)})\;\Rightarrow\;C_y=${fmt(r.Cy)}\ \text{N}`,
-      note:"CDE feels −C_x, −C_y at C. Its center of mass is (e − d)/2 to the right of D."},
-    {t:"BC: ΣF_y, ΣF_x, ΣM_G", eq:T`B_y=m a_{Gy}+mg-C_y=${fmt(r.By)},\quad B_x=${fmt(r.Bx)},\quad C_x=m a_{Gx}-B_x=${fmt(r.Cx)}\ \text{N}`},
-    {t:"(b) Add F at B", eq:T`B_x+F\ \text{appears together in both } \sum F_x \text{ and } \sum M_G\;\Rightarrow\;B_x'=B_x-F=${fmt(r.BxF)}\ \text{N}`,
-      note:"B_y, C_x, and C_y don't change: the pin at B simply absorbs the added force."}
+    {t:"Radial component of acceleration", eq:T`a_r=\ddot r-r\omega^2\;\Rightarrow\;-${fmt(v.k)}r=\ddot r-r(${fmt(v.w)})^2`},
+    {t:"Solve for r̈ as a function of r", eq:T`\ddot r=\frac{dv_r}{dt}=(${fmt(v.w*v.w)}-${fmt(v.k)})\,r=${fmt(r.C)}\,r`},
+    {t:"Chain rule to remove time", eq:T`\frac{dv_r}{dt}\cdot\frac{dr}{dr}=v_r\frac{dv_r}{dr}\;\Rightarrow\;\int_{${fmt(v.r1)}}^{${fmt(v.r2)}}${fmt(r.C)}\,r\,dr=\int_{${fmt(v.vr1)}}^{v_r}v_r\,dv_r`},
+    {t:"Integrate", eq:T`\frac{${fmt(r.C)}}{2}\big(${fmt(v.r2)}^2-${fmt(v.r1)}^2\big)=\frac{v_r^2}{2}-\frac{${fmt(v.vr1)}^2}{2}\;\Rightarrow\;v_r=${fmt(r.vr)}\ \text{m/s}`},
+    {t:"Transverse component", eq:T`v_\theta=r\omega=(${fmt(v.r2)})(${fmt(v.w)})=${fmt(r.vt)}\ \text{m/s}`},
+    {t:"Velocity", eq:T`\vec v=${fmt(r.vr)}\,\hat e_r+${fmt(r.vt)}\,\hat e_\theta\ \text{m/s}`}
   ];},
-  takeaway:"Kinematics first, kinetics second. Because F is applied at the same point as the pin force, the pin reaction changes by exactly F and nothing else in the system notices.",
-  plot(v,r){ return {xl:"x (m)", yl:"y (m)", series:[{pts:[[0,0],[0,v.h]],alt:true},{pts:[[0,v.h],[v.c,0]]},{pts:[[v.c,0],[v.c+v.d+v.e,0]],alt:true}], mark:[v.c+v.d,0], mark2:[0,0], equal:true, cap:"Linkage to scale: AB and CDE (orange), BC (blue). Orange dot A, blue dot D."}; }
+  takeaway:"a_r is not the same as dv_r/dt. The radial acceleration includes the centripetal term −rω², which is why the spring's pull and the rotation combine into r̈ = (ω² − k) r.",
+  plot(v,r){ const pts=[]; for(let i=0;i<=80;i++){const rr=v.r1+(v.r2-v.r1)*i/80; pts.push([rr, Math.sqrt(v.vr1*v.vr1+r.C*(rr*rr-v.r1*v.r1))]);} return {xl:"r (m)", yl:"v_r (m/s)", series:[{pts}], mark:[v.r2,r.vr], cap:"Radial speed as the collar slides out from r₁ to r₂. The dot marks r₂."}; }
 },
 
-/* ================= WORK & ENERGY ================= */
 {
-  id:"vspring", topic:R2, name:"Two Bars with a Vertical Spring", tag:"T₁ + U = T₂",
-  kind:"Rigid-body work & energy",
-  original:{ m:8, L:1, k:100, th:30 },
-  randomize(){ return resample(()=>({ m:pick(4,12,1), L:pick(0.5,1.5,0.1), k:pick(50,300,10), th:pick(15,45,5) }), v=>this.solve(v).U>0.5); },
-  solve(v){ const th=v.th*D2R, c=Math.cos(th), s=Math.sin(th), W=v.m*g0, UB=W*v.L/2*(1-c), UA=W*1.5*v.L*(1-c), sf=2*v.L*(1-c), Us=-0.5*v.k*sf*sf, U=UA+UB+Us;
-    const vg2=v.L*v.L*(c*c/4+9*s*s/4), Tc=0.5*v.m*vg2+0.5*(v.m*v.L*v.L/12)+0.5*(v.m*v.L*v.L/3), w=Math.sqrt(U/Tc); return {c,s,UA,UB,sf,Us,U,vg2,Tc,w,vG:Math.sqrt(vg2)*w}; },
-  statement:(v)=>`Two identical slender bars (each ${N(v.m,"kg")}, ${N(v.L,"m")} long) are pinned together. The lower bar is pinned to the ground at O; the upper bar's top end is attached to a massless collar on a vertical guide directly above O. A spring (k = ${N(v.k,"N/m")}) connects the collar to the ceiling and is unstretched when both bars are vertical. The system is released from rest in that vertical position. Find the angular velocity of the bars when each makes ${N(v.th,"°")} with the vertical.`,
-  given:(v)=>[["m, L (each bar)",`${fmt(v.m)} kg, ${fmt(v.L)} m`],["k",`${fmt(v.k)} N/m`],["Spring","unstretched at θ = 0"],["Start","rest, bars vertical"],["θ₂",`${fmt(v.th)}°`]],
-  find:["Total work U₁→₂","ω at θ₂"],
-  method:"Forces depend on position and you want ω, so use work–energy. By symmetry (isosceles triangle) both bars turn at the same rate ω. The lower bar rotates about O; the upper bar is in general plane motion, so it needs ½mv_G² + ½I_Gω².",
+  id:"boat", topic:"Polar Coordinates", name:"Survey Boat Spiral", tag:"r = bθ, speed known",
+  kind:"Polar kinematics",
+  original:{ kn:4, b:10, n:3 },
+  randomize(){ return { kn:pick(2,8,0.5), b:pick(5,20,1), n:pick(1,6,0.5) }; },
+  solve(v){ const sp=v.kn*1852/3600, th=v.n*Math.PI, r=v.b*th, w=sp/Math.sqrt(v.b*v.b+r*r); return {sp,th,r,w,vr:v.b*w,vt:r*w}; },
+  statement:(v)=>`An archaeology survey boat searches the sea floor by following the spiral path r = ${N(v.b)}θ m (θ in radians) at a constant speed of ${N(v.kn,"knots")}. Find the boat's angular rate θ̇ and its velocity components when θ = ${N(v.n)}π rad. (1 knot = 1852 m/h.)`,
+  given:(v)=>[["Path",`r = ${fmt(v.b)}θ m`],["Speed",`${fmt(v.kn)} knots`],["θ",`${fmt(v.n)}π rad`]],
+  find:["θ̇ at that point","v_r and v_θ"],
+  method:"The path is given as r(θ), so use polar coordinates. Write ṙ and rθ̇ in terms of θ̇, then use speed² = v_r² + v_θ² to solve for θ̇.",
   answers:(v,r)=>[
-    {label:"Total work U₁→₂", unit:"J", val:r.U},
-    {label:"ω", unit:"rad/s", val:r.w}],
+    {label:"θ̇", unit:"rad/s", val:r.w},
+    {label:"v_r", unit:"m/s", val:r.vr},
+    {label:"v_θ", unit:"m/s", val:r.vt}],
   steps(v,r){ return [
-    {t:"Work by gravity (both centers drop)", eq:T`U_{g,lower}=mg\tfrac{L}{2}(1-\cos\theta)=${fmt(r.UB)},\qquad U_{g,upper}=mg\tfrac{3L}{2}(1-\cos\theta)=${fmt(r.UA)}\ \text{J}`},
-    {t:"Work by the spring (collar drops, spring stretches)", eq:T`s=2L(1-\cos\theta)=${fmt(r.sf)}\ \text{m},\qquad U_s=-\tfrac12 ks^2=${fmt(r.Us)}\ \text{J}`},
-    {t:"Total work", eq:T`U_{1\to2}=${fmt(r.UB)}+${fmt(r.UA)}${sgn(r.Us)}=${fmt(r.U)}\ \text{J}`},
-    {t:"Velocity of the upper bar's center", eq:T`\vec v_{G}=\vec v_{joint}+\vec\omega_{upper}\times\vec r_{G/joint}\;\Rightarrow\;v_G^2=L^2\omega^2\Big(\tfrac{\cos^2\theta}{4}+\tfrac{9\sin^2\theta}{4}\Big)=${fmt(r.vg2)}\,\omega^2`,
-      note:"The two bars rotate in opposite directions with the same ω."},
-    {t:"Kinetic energy", eq:T`T_2=\tfrac12 mv_G^2+\tfrac12\big(\tfrac{1}{12}mL^2\big)\omega^2+\tfrac12\big(\tfrac13 mL^2\big)\omega^2=${fmt(r.Tc)}\,\omega^2`},
-    {t:"Work–energy", eq:T`0+${fmt(r.U)}=${fmt(r.Tc)}\,\omega^2\;\Rightarrow\;\omega=${fmt(r.w)}\ \text{rad/s}`}
+    {t:"Convert the speed", eq:T`v=${fmt(v.kn)}\ \text{knots}\cdot\frac{1852\ \text{m/h}}{1\ \text{knot}}\cdot\frac{1\ \text{h}}{3600\ \text{s}}=${fmt(r.sp)}\ \text{m/s}`},
+    {t:"Position at θ", eq:T`r=${fmt(v.b)}(${fmt(v.n)}\pi)=${fmt(r.r)}\ \text{m}`},
+    {t:"Velocity in terms of θ̇", eq:T`\dot r=\frac{d}{dt}(${fmt(v.b)}\theta)=${fmt(v.b)}\dot\theta\;\Rightarrow\;\vec v=${fmt(v.b)}\dot\theta\,\hat e_r+r\dot\theta\,\hat e_\theta`},
+    {t:"Use the known speed", eq:T`v^2=(${fmt(v.b)}\dot\theta)^2+(r\dot\theta)^2\;\Rightarrow\;${fmt(r.sp)}^2=\dot\theta^2\big(${fmt(v.b*v.b)}+${fmt(r.r*r.r,5)}\big)\;\Rightarrow\;\dot\theta=${fmt(r.w)}\ \text{rad/s}`},
+    {t:"Plug back in", eq:T`\vec v=${fmt(v.b)}(${fmt(r.w)})\,\hat e_r+${fmt(r.r)}(${fmt(r.w)})\,\hat e_\theta=${fmt(r.vr)}\,\hat e_r+${fmt(r.vt)}\,\hat e_\theta\ \text{m/s}`}
   ];},
-  takeaway:"The spring resists the collar moving down, so its work is negative. Check signs on every work term: gravity helps here, the spring doesn't.",
-  plot(v,r){ const th=v.th*D2R, J=[-v.L*Math.sin(th), v.L*Math.cos(th)], C=[0,2*v.L*Math.cos(th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts:[[0,0],J]},{pts:[J,C],alt:true},{pts:[[0,C[1]],[0,2*v.L*1.1]]}], mark:C, mark2:[0,0], equal:true, cap:"Position 2 to scale: lower bar from O (blue), upper bar to the collar (orange), spring above the collar."}; }
+  takeaway:"Keep θ̇ at full precision before plugging back in: rounding it to two significant figures changes v_θ noticeably because r is large. Far out on the spiral, almost all of the speed is transverse.",
+  plot(v,r){ const pts=polarPath(t=>v.b*t, 0, r.th, 240); const M=[r.r*Math.cos(r.th), r.r*Math.sin(r.th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts},{pts:[[0,0],M],alt:true}], mark:M, equal:true, cap:"Spiral search path from θ = 0 to the angle asked (to scale). The dot is the boat."}; }
 },
 
 {
-  id:"unkspring", topic:R2, name:"Unknown Spring Force", tag:"statics, then W–E",
-  kind:"Rigid-body work & energy",
-  original:{ m1:6, m2:3, mc:1, k:200, FA:100, th1:50, th2:30 },
-  randomize(){ return resample(()=>({ m1:pick(4,10,1), m2:pick(2,5,0.5), mc:pick(0.5,2,0.5), k:pick(100,400,50), FA:pick(50,200,10), th1:pick(45,60,5), th2:pick(25,40,5) }), v=>{const q=this.solve(v); return v.th1-v.th2>=10 && q.U>1;}); },
-  solve(v){ const t1=v.th1*D2R, t2=v.th2*D2R, W1=v.m1*g0, W2=v.m2*g0, By=(W1-W2/2)/2, Bx=(Math.cos(t1)/Math.sin(t1))*(W1/2+W2/4), Nn=W1-By, Fs=Bx, s0=Fs/v.k, sf=s0+2*(Math.cos(t2)-Math.cos(t1)), dS=Math.sin(t1)-Math.sin(t2);
-    const UBD=W2*0.5*dS, UABC=W1*dS, UF=v.FA*2*dS, Us=-0.5*v.k*(sf*sf-s0*s0), U=UBD+UABC+UF+Us, Tc=v.m2/6+v.m1/2+v.m1/6+2*v.mc*Math.sin(t2)**2, w=Math.sqrt(U/Tc); return {By,Bx,Nn,Fs,s0,sf,UBD,UABC,UF,Us,U,Tc,w}; },
-  statement:(v)=>`Bar ABC (${N(v.m1,"kg")}, 2 m) has its midpoint B pinned to bar BD (${N(v.m2,"kg")}, 1 m), which is pinned to the ground at D. End C is a ${N(v.mc,"kg")} slider on a smooth horizontal track at D's level, pushed toward D by a spring (k = ${N(v.k,"N/m")}). The system is in equilibrium at θ = ${N(v.th1,"°")} (both bars at θ to the horizontal). A downward force F_A = ${N(v.FA,"N")} is then applied at A. Find the spring force at equilibrium and ω of the bars when θ = ${N(v.th2,"°")}.`,
-  given:(v)=>[["m_ABC, m_BD, m_C",`${fmt(v.m1)}, ${fmt(v.m2)}, ${fmt(v.mc)} kg`],["Lengths","ABC = 2 m (B at middle), BD = 1 m"],["k",`${fmt(v.k)} N/m`],["F_A",`${fmt(v.FA)} N down at A`],["θ₁ → θ₂",`${fmt(v.th1)}° → ${fmt(v.th2)}°`]],
-  find:["Spring force at θ₁","Total work","ω at θ₂"],
-  method:"Step 1: the spring's initial compression is unknown, but the system is in equilibrium at θ₁, so use statics (ΣF = 0, ΣM = 0 on each bar) to find it. Step 2: forces depend on position and you want ω, so use work–energy from θ₁ to θ₂.",
+  id:"ladder", topic:"Polar Coordinates", name:"Fire-Truck Ladder", tag:"ṙ, θ̇ const",
+  kind:"Polar kinematics",
+  original:{ r0:18, th0:35, wdeg:3, rd:0.4 },
+  randomize(){ return { r0:pick(10,30,1), th0:pick(20,60,5), wdeg:pick(2,6,0.5), rd:pick(0.2,0.8,0.1) }; },
+  solve(v){ const w=v.wdeg*D2R, vr=v.rd, vt=v.r0*w, ar=-v.r0*w*w, at=2*v.rd*w; return {w,vr,vt,ar,at,V:Math.hypot(vr,vt),A:Math.hypot(ar,at)}; },
+  statement:(v)=>`The extension ladder on a fire truck pivots about a pin O on the truck bed. At the instant when the ladder is ${N(v.r0,"m")} long (pin to tip) and inclined at θ = ${N(v.th0,"°")} above the horizontal, it is being raised at a constant rate of ${N(v.wdeg,"°/s")} while extending at a constant ${N(v.rd,"m/s")}. Find the radial and transverse components and the magnitudes of the velocity and acceleration of the tip of the ladder.`,
+  given:(v)=>[["r, θ (this instant)",`${fmt(v.r0)} m, ${fmt(v.th0)}°`],["ṙ",`${fmt(v.rd)} m/s (constant, so r̈ = 0)`],["θ̇",`${fmt(v.wdeg)} °/s (constant, so θ̈ = 0)`]],
+  find:["v_r, v_θ, |v|","a_r, a_θ, |a|"],
+  method:"The tip moves along a rotating line of changing length from a fixed pin, so polar coordinates about O are natural. Both rates are constant: r̈ = 0 and θ̈ = 0, but the acceleration is not zero because of the centripetal (−rθ̇²) and Coriolis (2ṙθ̇) terms.",
   answers:(v,r)=>[
-    {label:"Spring force at θ₁", unit:"N", val:r.Fs},
-    {label:"Total work U₁→₂", unit:"J", val:r.U},
-    {label:"ω at θ₂", unit:"rad/s", val:r.w}],
-  steps(v,r){ const c1=`\\cos${fmt(v.th1)}^\\circ`, s1=`\\sin${fmt(v.th1)}^\\circ`; return [
-    {t:"Statics at θ₁: ABC (moments about C) and BD (moments about D)", eq:T`-B_y${c1}-B_x${s1}+W_{ABC}${c1}=0,\qquad -W_{BD}(0.5${c1})+B_x${s1}-B_y${c1}=0`},
-    {t:"Solve", eq:T`B_y=\frac{W_{ABC}-W_{BD}/2}{2}=${fmt(r.By)}\ \text{N},\qquad B_x=${fmt(r.Bx)}\ \text{N},\qquad N=${fmt(r.Nn)}\ \text{N}`},
-    {t:"Spring force and initial compression", eq:T`\sum F_x=0\;\Rightarrow\;F_s=B_x=${fmt(r.Fs)}\ \text{N},\qquad s_0=\frac{F_s}{k}=${fmt(r.s0)}\ \text{m}`},
-    {t:"Final compression (C moves away from D)", eq:T`s_f=s_0+2(\cos${fmt(v.th2)}^\circ-\cos${fmt(v.th1)}^\circ)=${fmt(r.sf)}\ \text{m}`},
-    {t:"Work of each force", eq:T`U_{BD}=${fmt(r.UBD)},\ U_{ABC}=${fmt(r.UABC)},\ U_{F_A}=${fmt(r.UF)},\ U_s=-\tfrac12k(s_f^2-s_0^2)=${fmt(r.Us)}\;\Rightarrow\;U=${fmt(r.U)}\ \text{J}`},
-    {t:"Kinetic energy at θ₂", eq:T`T=\tfrac12\big(\tfrac13m_{BD}L^2\big)\omega^2+\Big[\tfrac12m_{ABC}v_B^2+\tfrac12\big(\tfrac1{12}m_{ABC}(2L)^2\big)\omega^2\Big]+\tfrac12m_Cv_C^2,\quad v_B=L\omega,\ v_C=2L\sin\theta_2\,\omega`,
-      note:"BD rotates about D, so use I_D = mL²/3 (this already includes its translation). Both bars turn at the same rate by symmetry."},
-    {t:"Solve", eq:T`T=${fmt(r.Tc)}\,\omega^2=${fmt(r.U)}\;\Rightarrow\;\omega=${fmt(r.w)}\ \text{rad/s}`}
-  ];},
-  takeaway:"Using ½I_Gω² for BD without ½mv_G² (or using I_D) misses part of its kinetic energy. For a bar pinned at one end, ½I_Dω² covers both.",
-  plot(v,r){ const t=v.th2*D2R, B=[Math.cos(t),Math.sin(t)], C=[2*Math.cos(t),0], A=[0,2*Math.sin(t)]; return {xl:"x (m)", yl:"y (m)", series:[{pts:[[0,0],B],alt:true},{pts:[A,C]},{pts:[C,[C[0]+0.6,0]]}], mark:C, mark2:[0,0], equal:true, cap:"Position 2 to scale: BD (orange) from D (orange dot), ABC (blue) with the slider C (blue dot) and spring to the right."}; }
-},
-
-/* ================= IMPULSE & MOMENTUM ================= */
-{
-  id:"club", topic:R3, name:"Force of a Club on a Ball", tag:"linear + angular impulse",
-  kind:"Rigid-body impulse & momentum",
-  original:{ m:0.045, D:42, t:0.0006, v:36, d:2.5 },
-  randomize(){ return { m:pick(0.040,0.050,0.001), D:pick(40,45,1), t:pick(0.0003,0.001,0.0001), v:pick(30,70,1), d:pick(1,6,0.5) }; },
-  solve(v){ const r=v.D/2000, dd=v.d/1000, I=0.4*v.m*r*r, F=v.m*v.v/v.t, w=v.m*v.v*dd/I; return {r,dd,I,F,w}; },
-  statement:(v)=>`A golf ball (m = ${N(v.m,"kg")}, diameter ${N(v.D,"mm")}) is struck by a club. The contact lasts ${Ns(v.t,"s")}, the ball leaves at ${N(v.v,"m/s")}, and the club's force acts along a line ${N(v.d,"mm")} from the ball's center. Treating the ball as a solid sphere starting at rest, find the average contact force and the ball's angular velocity as it leaves.`,
-  given:(v)=>[["m",`${fmt(v.m)} kg`],["Diameter",`${fmt(v.D)} mm`],["Contact time",`${sci(v.t)} s`],["v_f",`${fmt(v.v)} m/s`],["Offset d",`${fmt(v.d)} mm`]],
-  find:["Average force F","Angular velocity ω_f"],
-  method:"Force, velocity, and time are involved, so use impulse and momentum. Linear impulse gives F; the same force times its offset d gives the angular impulse: Fdt = I_Gω.",
-  answers:(v,r)=>[
-    {label:"Average force F", unit:"N", val:r.F},
-    {label:"ω_f", unit:"rad/s", val:r.w}],
+    {label:"v_r", unit:"m/s", val:r.vr},
+    {label:"v_θ", unit:"m/s", val:r.vt},
+    {label:"|v|", unit:"m/s", val:r.V},
+    {label:"a_r", unit:"m/s²", val:r.ar, scale:r.A},
+    {label:"a_θ", unit:"m/s²", val:r.at, scale:r.A},
+    {label:"|a|", unit:"m/s²", val:r.A}],
   steps(v,r){ return [
-    {t:"Linear impulse", eq:T`F\,t=m v_f\;\Rightarrow\;F=\frac{${fmt(v.m)}(${fmt(v.v)})}{${fx(v.t)}}=${fmt(r.F)}\ \text{N}`},
-    {t:"Moment of inertia of a solid sphere", eq:T`I_G=\tfrac25 mr^2=\tfrac25(${fmt(v.m)})(${fmt(r.r)})^2=${fx(r.I)}\ \text{kg·m}^2`},
-    {t:"Angular impulse", eq:T`F\,d\,t=I_G\omega_f\;\Rightarrow\;\omega_f=\frac{m v_f d}{I_G}=\frac{${fmt(v.m)}(${fmt(v.v)})(${fmt(r.dd)})}{${fx(r.I)}}=${fmt(r.w)}\ \text{rad/s}`}
+    {t:"Convert the angular rate to rad/s", eq:T`\dot\theta=${fmt(v.wdeg)}\,\tfrac{^\circ}{\text{s}}\cdot\tfrac{\pi\ \text{rad}}{180^\circ}=${fmt(r.w)}\ \text{rad/s}`,
+      note:"The polar formulas need θ̇ in rad/s. The value of θ itself does not appear in v_r, v_θ, a_r or a_θ; it only tells you which way ê_r and ê_θ point."},
+    {t:"Derivatives at this instant", eq:T`r=${fmt(v.r0)}\ \text{m},\quad \dot r=${fmt(v.rd)}\ \text{m/s},\quad \ddot r=0,\qquad \dot\theta=${fmt(r.w)}\ \text{rad/s},\quad \ddot\theta=0`},
+    {t:"Velocity", eq:T`\vec v=\dot r\,\hat e_r+r\dot\theta\,\hat e_\theta=${fmt(v.rd)}\,\hat e_r+(${fmt(v.r0)})(${fmt(r.w)})\,\hat e_\theta=${fmt(r.vr)}\,\hat e_r+${fmt(r.vt)}\,\hat e_\theta\ \text{m/s}`},
+    {t:"Speed of the tip", eq:T`|\vec v|=\sqrt{${fmt(r.vr)}^2+${fmt(r.vt)}^2}=${fmt(r.V)}\ \text{m/s}`},
+    {t:"Acceleration equation with r̈ = 0 and θ̈ = 0", eq:T`\vec a=(\ddot r-r\dot\theta^2)\,\hat e_r+(r\ddot\theta+2\dot r\dot\theta)\,\hat e_\theta=(0-r\dot\theta^2)\,\hat e_r+(0+2\dot r\dot\theta)\,\hat e_\theta`},
+    {t:"Plug in", eq:T`a_r=-(${fmt(v.r0)})(${fmt(r.w)})^2=${fmt(r.ar)}\ \text{m/s}^2,\qquad a_\theta=2(${fmt(v.rd)})(${fmt(r.w)})=${fmt(r.at)}\ \text{m/s}^2`,
+      note:"a_r is the centripetal term (toward O); a_θ is the Coriolis-like term that appears whenever the tip moves outward along a line that is turning."},
+    {t:"Magnitude", eq:T`|\vec a|=\sqrt{(${fmt(r.ar)})^2+(${fmt(r.at)})^2}=${fmt(r.A)}\ \text{m/s}^2`}
   ];},
-  takeaway:(v,r)=>`The mass cancels: ω = v d / (0.4 r²). That's about ${fmt(r.w*60/(2*Math.PI),3)} rpm of spin from an offset of only ${fmt(v.d)} mm.`,
-  plot(v,r){ const pts=[]; for(let i=0;i<=80;i++){const d=6*i/80; pts.push([d, v.v*(d/1000)/(0.4*r.r*r.r)]);} return {xl:"offset d (mm)", yl:"ω (rad/s)", series:[{pts}], mark:[v.d,r.w], cap:"Spin vs. offset of the club's force line, for this ball speed."}; }
-},
-
-{
-  id:"threedisk", topic:R3, name:"Three Disks in Contact", tag:"5 × 5 impulse system",
-  kind:"Rigid-body angular impulse & momentum",
-  original:{ rA:0.2, rB:0.4, rC:0.3, mA:4, mB:16, mC:9, w0:50 },
-  randomize(){ return { rA:pick(0.1,0.3,0.05), rB:pick(0.3,0.6,0.05), rC:pick(0.1,0.4,0.05), mA:pick(2,8,1), mB:pick(8,20,1), mC:pick(3,12,1), w0:pick(20,80,5) }; },
-  solve(v){ const IA=0.5*v.mA*v.rA**2, IB=0.5*v.mB*v.rB**2, IC=0.5*v.mC*v.rC**2, den=v.rB*IA/v.rA + v.rB*IC*v.rA/(v.rC**2) + IB*v.rA/v.rB, wA=(v.rB*IA*v.w0/v.rA)/den, wB=-v.rA*wA/v.rB, wC=v.rA*wA/v.rC, J1=IA*(wA-v.w0)/v.rA, J2=-IC*wC/v.rC; return {IA,IB,IC,wA,wB,wC,J1,J2}; },
-  statement:(v)=>`Three uniform disks sit side by side on fixed axles, just touching: A (r = ${N(v.rA,"m")}, ${N(v.mA,"kg")}), B (r = ${N(v.rB,"m")}, ${N(v.mB,"kg")}), and C (r = ${N(v.rC,"m")}, ${N(v.mC,"kg")}). Disk A spins counterclockwise at ${N(v.w0,"rad/s")} and B and C are at rest when they are brought into contact. Friction at the contacts eventually stops the slipping. Find the final angular velocity of each disk.`,
-  given:(v)=>[["Disk A",`r = ${fmt(v.rA)} m, ${fmt(v.mA)} kg, ω₀ = ${fmt(v.w0)} rad/s CCW`],["Disk B",`r = ${fmt(v.rB)} m, ${fmt(v.mB)} kg, at rest`],["Disk C",`r = ${fmt(v.rC)} m, ${fmt(v.mC)} kg, at rest`],["Final state","no slip at either contact"]],
-  find:["ω_A","ω_B","ω_C"],
-  method:"The friction forces vary with time and you need angular velocities, so use angular impulse and momentum about each fixed axle: ∫ΣM dt = IΔω. Call the friction impulses J₁ (A–B) and J₂ (B–C). No slip at the end gives two kinematic equations: 5 equations, 5 unknowns.",
-  answers:(v,r)=>[
-    {label:"ω_A (CCW +)", unit:"rad/s", val:r.wA},
-    {label:"ω_B (CCW +)", unit:"rad/s", val:r.wB},
-    {label:"ω_C (CCW +)", unit:"rad/s", val:r.wC}],
-  steps(v,r){ return [
-    {t:"Moments of inertia (I = ½mr²)", eq:T`I_A=${fmt(r.IA)},\quad I_B=${fmt(r.IB)},\quad I_C=${fmt(r.IC)}\ \text{kg·m}^2`},
-    {t:"Angular impulse on each disk (CCW +)", eq:T`${fmt(v.rA)}J_1=I_A(\omega_A-${fmt(v.w0)}),\quad ${fmt(v.rB)}J_1-${fmt(v.rB)}J_2=I_B\omega_B,\quad -${fmt(v.rC)}J_2=I_C\omega_C`,
-      note:"J₁ is the impulse on A (upward at its right edge); B feels the opposite at its left edge, which gives the same sense of moment."},
-    {t:"No slip at the end", eq:T`r_A\omega_A+r_B\omega_B=0,\qquad r_B\omega_B+r_C\omega_C=0`},
-    {t:"Solve", eq:T`\omega_A=${fmt(r.wA)},\quad \omega_B=${fmt(r.wB)},\quad \omega_C=${fmt(r.wC)}\ \text{rad/s}`},
-    {t:"Check: contact speeds match", eq:T`r_A\omega_A=${fmt(v.rA*r.wA)},\quad r_B|\omega_B|=${fmt(Math.abs(v.rB*r.wB))},\quad r_C\omega_C=${fmt(v.rC*r.wC)}\ \text{m/s}\ \checkmark`}
-  ];},
-  takeaway:(v,r)=>`A and C end up turning ${ccw(r.wA)} and B turns ${ccw(r.wB)}. Angular momentum of the three disks is not conserved, because the axles also push on them.`,
-  plot(v,r){ const circ=(cx,R)=>{const p=[];for(let i=0;i<=80;i++){const a=2*Math.PI*i/80;p.push([cx+R*Math.cos(a),R*Math.sin(a)]);}return p;}; const xB=v.rA+v.rB, xC=xB+v.rB+v.rC; return {xl:"x (m)", yl:"y (m)", series:[{pts:circ(0,v.rA),alt:true},{pts:circ(xB,v.rB)},{pts:circ(xC,v.rC),alt:true}], equal:true, cap:"Disks A, B, and C to scale."}; }
-},
-
-{
-  id:"satellites", topic:R3, name:"Gravity Research Satellites", tag:"H_G conserved",
-  kind:"Conservation of angular momentum",
-  original:{ mA:250, IA:350, mB:50, IB:16, rpm:0.25, L0:12, Lf:18 },
-  randomize(){ const L0=pick(8,16,1); return { mA:pick(150,400,10), IA:pick(200,500,10), mB:pick(30,100,5), IB:pick(10,30,1), rpm:pick(0.1,1,0.05), L0, Lf:L0+pick(3,10,1) }; },
-  solve(v){ const M=v.mA+v.mB, xA0=v.mB*v.L0/M, xB0=v.mA*v.L0/M, xAf=v.mB*v.Lf/M, xBf=v.mA*v.Lf/M, I0=v.IA+v.mA*xA0**2+v.IB+v.mB*xB0**2, If=v.IA+v.mA*xAf**2+v.IB+v.mB*xBf**2, wf=v.rpm*I0/If; return {M,xA0,xB0,xAf,xBf,I0,If,wf}; },
-  statement:(v)=>`Two research satellites are connected by a tether. A has m = ${N(v.mA,"kg")} and I = ${N(v.IA,"kg·m²")}; B has m = ${N(v.mB,"kg")} and I = ${N(v.IB,"kg·m²")} (each about its own center of mass). The pair rotates about the system's center of mass at ${N(v.rpm,"rpm")} with the satellites ${N(v.L0,"m")} apart. The tether is let out until they are ${N(v.Lf,"m")} apart. Find the new rotation rate.`,
-  given:(v)=>[["A",`${fmt(v.mA)} kg, ${fmt(v.IA)} kg·m²`],["B",`${fmt(v.mB)} kg, ${fmt(v.IB)} kg·m²`],["ω₀",`${fmt(v.rpm)} rpm`],["Separation",`${fmt(v.L0)} m → ${fmt(v.Lf)} m`]],
-  find:["I about the system G (before)","I about the system G (after)","ω_f"],
-  method:"In space there is no external moment about the system's center of mass, so angular momentum about it is conserved: I₀ω₀ = I_fω_f. Locate the center of mass, then use the parallel-axis theorem for each satellite.",
-  answers:(v,r)=>[
-    {label:"I₀ about G", unit:"kg·m²", val:r.I0},
-    {label:"I_f about G", unit:"kg·m²", val:r.If},
-    {label:"ω_f", unit:"rpm", val:r.wf}],
-  steps(v,r){ return [
-    {t:"Center of mass (from A)", eq:T`x_{A0}=\frac{${fmt(v.mB)}(${fmt(v.L0)})}{${fmt(r.M)}}=${fmt(r.xA0)}\ \text{m},\ x_{B0}=${fmt(r.xB0)};\qquad x_{Af}=${fmt(r.xAf)},\ x_{Bf}=${fmt(r.xBf)}\ \text{m}`},
-    {t:"Moment of inertia before", eq:T`I_0=${fmt(v.IA)}+${fmt(v.mA)}(${fmt(r.xA0)})^2+${fmt(v.IB)}+${fmt(v.mB)}(${fmt(r.xB0)})^2=${fmt(r.I0)}\ \text{kg·m}^2`},
-    {t:"Moment of inertia after", eq:T`I_f=${fmt(v.IA)}+${fmt(v.mA)}(${fmt(r.xAf)})^2+${fmt(v.IB)}+${fmt(v.mB)}(${fmt(r.xBf)})^2=${fmt(r.If)}\ \text{kg·m}^2`},
-    {t:"Conservation of angular momentum", eq:T`I_0\omega_0=I_f\omega_f\;\Rightarrow\;\omega_f=${fmt(v.rpm)}\cdot\frac{${fmt(r.I0)}}{${fmt(r.If)}}=${fmt(r.wf)}\ \text{rpm}`}
-  ];},
-  takeaway:"Let the tether out and the system spins slower, like a skater extending their arms. rpm can stay in rpm here because it appears on both sides.",
-  plot(v,r){ const pts=[]; for(let i=0;i<=80;i++){const L=v.L0+(v.Lf+6-v.L0)*i/80, xA=v.mB*L/r.M, xB=v.mA*L/r.M, I=v.IA+v.mA*xA*xA+v.IB+v.mB*xB*xB; pts.push([L, v.rpm*r.I0/I]);} return {xl:"separation (m)", yl:"ω (rpm)", series:[{pts}], mark:[v.Lf,r.wf], mark2:[v.L0,v.rpm], xmin:v.L0, cap:"Rotation rate vs. separation as the tether is let out. Orange: start; blue: final separation."}; }
-},
-
-{
-  id:"satthruster", topic:R3, name:"Satellite Side Thruster", tag:"particle vs. rigid body",
-  kind:"Rigid-body impulse & momentum",
-  original:{ m:800, IG:600, F:50, dt:4, d:1.2 },
-  randomize(){ return { m:pick(200,2000,50), IG:pick(100,2000,50), F:pick(10,200,10), dt:pick(0.5,10,0.5), d:pick(0.2,2.5,0.1) }; },
-  solve(v){ const J=v.F*v.dt, vG=J/v.m, HG=J*v.d, w=HG/v.IG; return {J,vG,HG,w,rpm:w*60/(2*Math.PI)}; },
-  statement:(v)=>`A satellite (mass ${N(v.m,"kg")}, I_G = ${N(v.IG,"kg·m²")}) is at rest in space. A side thruster fires with a constant force of ${N(v.F,"N")} for ${N(v.dt,"s")}; its line of action is parallel to the satellite's x axis but passes ${N(v.d,"m")} from the center of mass G. Find the velocity of G after the burn, the angular velocity after the burn, and the angular momentum H_G, which stays constant once the thruster shuts off.`,
-  given:(v)=>[["m, I_G",`${fmt(v.m)} kg, ${fmt(v.IG)} kg·m²`],["Thrust F",`${fmt(v.F)} N for ${fmt(v.dt)} s`],["Offset d",`${fmt(v.d)} m from G`],["Start","at rest, no other forces"]],
-  find:["v_G after the burn","ω after the burn","H_G"],
-  method:"A force acting over a time interval: impulse and momentum. Linear impulse–momentum (ΣF Δt = m Δv_G) treats the satellite like a particle and gives v_G. Angular impulse–momentum about G (ΣM_G Δt = I_G Δω) is the rigid-body part: the thrust has a moment F d about G, so it also spins the satellite.",
-  answers:(v,r)=>[
-    {label:"v_G", unit:"m/s", val:r.vG},
-    {label:"ω", unit:"rad/s", val:r.w},
-    {label:"H_G", unit:"kg·m²/s", val:r.HG}],
-  steps(v,r){ return [
-    {t:"Linear impulse (constant force)", eq:T`\int F\,dt=F\,\Delta t=${fmt(v.F)}(${fmt(v.dt)})=${fmt(r.J)}\ \text{N·s}`},
-    {t:"Linear impulse–momentum: G moves like a particle", eq:T`F\,\Delta t=m v_G-0\;\Rightarrow\;v_G=\frac{${fmt(r.J)}}{${fmt(v.m)}}=${fmt(r.vG)}\ \text{m/s}`},
-    {t:"Angular impulse about G", eq:T`\int M_G\,dt=F\,d\,\Delta t=${fmt(v.F)}(${fmt(v.d)})(${fmt(v.dt)})=${fmt(r.HG)}\ \text{N·m·s}`},
-    {t:"Angular impulse–momentum about G", eq:T`F\,d\,\Delta t=I_G\omega-0\;\Rightarrow\;\omega=\frac{${fmt(r.HG)}}{${fmt(v.IG)}}=${fmt(r.w)}\ \text{rad/s}\ (${fmt(r.rpm)}\ \text{rpm})`},
-    {t:"Angular momentum afterwards", eq:T`H_G=I_G\omega=${fmt(v.IG)}(${fmt(r.w)})=${fmt(r.HG)}\ \text{kg·m}^2\text{/s}=\text{const}`,
-      note:"With the thruster off there is no moment about G, so H_G (and v_G) stay fixed: the satellite drifts and tumbles."}
-  ];},
-  takeaway:(v,r)=>`Same force through G would give the same Δv_G = ${fmt(r.vG,3)} m/s but no spin: the linear equation never sees the offset. A particle model captures the drift; only the rigid-body angular equation catches the ${fmt(r.rpm,3)} rpm tumble, which is why attitude thrusters are fired in pairs (a couple) when you want spin without drift.`,
-  plot(v,r){ const pts=[]; for(let i=0;i<=40;i++){const d=3*i/40; pts.push([d, v.F*v.dt*d/v.IG]);} return {xl:"offset d (m)", yl:"ω after burn (rad/s)", series:[{pts}], mark:[v.d,r.w], cap:"Spin produced by this burn vs. the thrust line's offset from G. The velocity of G does not depend on d at all."}; }
-},
-
-{
-  id:"pulleymass", topic:R1, name:"Pulley, Hanging Mass & Spring", tag:"Newton–Euler + W–E",
-  kind:"Rigid body + particle, then work–energy",
-  original:{ R:0.15, I:0.45, m:10, k:200, s:0.3 },
-  randomize(){ return resample(()=>({ R:pick(0.1,0.3,0.05), I:pick(0.1,1.5,0.05), m:pick(4,20,1), k:pick(50,400,10), s:pick(0.1,0.8,0.05) }), v=>v.s<0.9*v.m*g0/v.k); },
-  solve(v){ const W=v.m*g0, Fs=v.k*v.s, mr2=v.m*v.R*v.R, al=(W-Fs)*v.R/(v.I+mr2), a=v.R*al, Tn=v.I*al/v.R, U=W*v.s-0.5*v.k*v.s*v.s, Tc=0.5*v.m+0.5*v.I/(v.R*v.R), vel=Math.sqrt(U/Tc); return {W,Fs,mr2,al,a,T:Tn,U,Tc,v:vel,w:vel/v.R}; },
-  statement:(v)=>`A pulley of radius ${N(v.R,"m")} and moment of inertia ${N(v.I,"kg·m²")} about its frictionless axle carries a cord with a ${N(v.m,"kg")} block hanging from it. A spring (k = ${N(v.k,"N/m")}) connects the bottom of the block to the floor and is unstretched when the system is released from rest. Find the angular acceleration of the pulley and the cord tension at the instant the block has fallen ${N(v.s,"m")}, and the block's speed at that instant.`,
-  given:(v)=>[["Pulley",`R = ${fmt(v.R)} m, I = ${fmt(v.I)} kg·m²`],["Block",`${fmt(v.m)} kg`],["Spring",`k = ${fmt(v.k)} N/m, unstretched at release`],["Start","rest"],["Position",`s = ${fmt(v.s)} m below release`]],
-  find:["α at s","Tension T at s","Speed v at s"],
-  method:"Two bodies. Block: ΣF = ma with the weight, the tension, and the spring force ks (now stretched). Pulley: ΣM_O = Iα with the tension at radius R. The cord does not slip, so a = Rα. For the speed, forces depend on position and you want v at a position: work–energy for the whole system.",
-  answers:(v,r)=>[
-    {label:"α", unit:"rad/s²", val:r.al},
-    {label:"Tension T", unit:"N", val:r.T},
-    {label:"Speed v", unit:"m/s", val:r.v}],
-  steps(v,r){ return [
-    {t:"Block: ΣF (down +), spring stretched by s", eq:T`mg-T-ks=ma\;\Rightarrow\;${fmt(r.W)}-T-${fmt(r.Fs)}=${fmt(v.m)}a\quad(1)`},
-    {t:"Pulley: ΣM_O = Iα", eq:T`TR=I\alpha\;\Rightarrow\;${fmt(v.R)}\,T=${fmt(v.I)}\,\alpha\quad(2)`},
-    {t:"Kinematics (cord doesn't slip)", eq:T`a=R\alpha=${fmt(v.R)}\,\alpha\quad(3)`},
-    {t:"Solve (1)–(3)", eq:T`\alpha=\frac{(mg-ks)R}{I+mR^2}=\frac{(${fmt(r.W)}-${fmt(r.Fs)})(${fmt(v.R)})}{${fmt(v.I)}+${fmt(r.mr2)}}=${fmt(r.al)}\ \text{rad/s}^2,\qquad T=\frac{I\alpha}{R}=${fmt(r.T)}\ \text{N}`},
-    {t:"Work–energy for the system, 1 → 2", eq:T`T_1+U_{1\to2}=T_2:\quad 0+mgs-\tfrac12ks^2=\tfrac12mv^2+\tfrac12I\omega^2,\qquad \omega=\frac{v}{R}`,
-      note:"The tension is internal to the block–cord–pulley system and does no net work; the axle force does none either."},
-    {t:"Numbers", eq:T`${fmt(r.W)}(${fmt(v.s)})-\tfrac12(${fmt(v.k)})(${fmt(v.s)})^2=${fmt(r.U)}\ \text{J}=\Big(\tfrac12(${fmt(v.m)})+\tfrac12\frac{${fmt(v.I)}}{${fmt(v.R)}^2}\Big)v^2=${fmt(r.Tc)}\,v^2\;\Rightarrow\;v=${fmt(r.v)}\ \text{m/s}`}
-  ];},
-  takeaway:(v,r)=>`The tension (${fmt(r.T,3)} N) is less than the weight (${fmt(r.W,3)} N) because the block is accelerating down, but more than it would be without the spring, since the spring is now pulling back with ${fmt(r.Fs,3)} N. Newton–Euler gives the instant's α and T; work–energy gives v without ever integrating α(s).`,
-  plot(v,r){ const pts=[]; const smax=2*r.W/v.k; for(let i=0;i<=60;i++){const s=smax*i/60, U=r.W*s-0.5*v.k*s*s; pts.push([s, Math.sqrt(Math.max(U,0)/r.Tc)]);} return {xl:"drop s (m)", yl:"v (m/s)", series:[{pts}], mark:[v.s,r.v], cap:"Block speed vs. distance fallen. It peaks at s = mg/k, where the spring force equals the weight, and returns to zero at 2mg/k."}; }
+  takeaway:(v,r)=>`Even with both rates constant the tip accelerates: −rθ̇² because its direction changes, and 2ṙθ̇ because it moves outward while the ladder turns. Here the Coriolis term is ${fmt(Math.abs(r.at/r.ar),3)} times the centripetal term.`,
+  plot(v,r){ const T2=12; const pts=[]; for(let i=0;i<=80;i++){const t=T2*i/80, rr=v.r0+v.rd*t, th=(v.th0*D2R)+r.w*t; pts.push([rr*Math.cos(th), rr*Math.sin(th)]);} const th=v.th0*D2R, M=[v.r0*Math.cos(th), v.r0*Math.sin(th)]; return {xl:"x (m)", yl:"y (m)", series:[{pts},{pts:[[0,0],M],alt:true}], mark:M, equal:true, cap:`Path of the ladder tip over the next ${T2} s (to scale). Orange is the ladder at the instant asked; the dot is the tip. The path curves because the ladder turns as it extends.`}; }
 }
-
 ];
 
 
@@ -847,30 +667,18 @@ D.tidy=function(svg){
 };
 
 const DIAG = {
-armfixed(v,r){ const B=[70,178], L=150, E=D.at(B[0],B[1],v.th,L), G=D.at(B[0],B[1],v.th,L*v.rG/(2*v.rG));
-  return D.svg(D.line(B[0],B[1],B[0]+120,B[1],"h")+D.bar(B[0],B[1],E[0],E[1],10)+D.pin(B[0],B[1])+D.dot(G[0],G[1],4.5,"dotf")+D.text(G[0]+10,G[1]+12,"G","start")+D.text(B[0]-12,B[1],"B","end")+D.text(E[0]+8,E[1],"C","start")+D.angle(B[0],B[1],40,0,v.th,`${nf(v.th)}°`)+D.arcArrow(B[0],B[1],28,110,170,"v","ω","end")+D.arcArrow(B[0],B[1],50,190,230,"f","M_B","end")+LG(225,150,[[`m = ${nf(v.m)} kg, I_G = ${nf(v.IG)}`],[`BG = ${nf(v.rG)} m`],[`ω = ${nf(v.w)} rad/s, α = 0`,"tv"]])); },
-armmoving(v,r){ const B=[160,185], LB=110, L=140, E=D.at(B[0],B[1],v.th,L), G=D.at(B[0],B[1],v.th,L/2), A=[B[0]-LB,B[1]];
-  return D.svg(D.bar(A[0],A[1],B[0],B[1],9,"body2")+D.bar(B[0],B[1],E[0],E[1],10)+D.pin(A[0],A[1])+D.pinj(B[0],B[1])+D.dot(G[0],G[1],4.5,"dotf")+D.text(G[0]+10,G[1]+12,"G","start")+D.text(A[0]-12,A[1],"A","end")+D.text(B[0]+4,B[1]+16,"B")+D.text(E[0]+8,E[1],"C","start")+D.angle(B[0],B[1],36,0,v.th,`${nf(v.th)}°`)+LG(12,24,[[`AB: ${nf(v.LAB)} m, ω_AB = ${nf(v.wAB)}, α_AB = 0`,"tv"],[`BC: ω = ${nf(v.wBC)}, α = ${nf(v.aBC)} (CCW +)`,"tv"],[`m = ${nf(v.m)} kg, I_G = ${nf(v.IG)}, BG = ${nf(v.rG)} m`]])); },
-barcollar(v,r){ const O=[40,110], s=280/v.L, c=[O[0]+v.r*s,O[1]];
-  return D.svg(D.bar(O[0],O[1],O[0]+v.L*s,O[1],8,"body2")+D.collar(c[0],c[1],0,22,18)+D.circ(O[0],O[1],5,"body2")+D.dot(O[0],O[1],2)+D.text(O[0],O[1]+18,"O")+D.arcArrow(O[0],O[1],36,30,90,"v",`ω = ${nf(v.w)} rad/s`,"start")+D.arrow(c[0]+14,c[1]-22,c[0]+54,c[1]-22,"v",`ṙ = ${nf(v.vr)} m/s`)+D.dim(O[0],O[1]+30,c[0],O[1]+30,`r = ${nf(v.r)} m`)+D.dim(O[0],O[1]+56,O[0]+v.L*s,O[1]+56,`L = ${nf(v.L)} m`)+LG(20,20,[[`bar ${nf(v.mb)} kg, collar ${nf(v.mc)} kg (top view)`]])); },
-twolink(v,r){ const T=FIT([[0,0],[v.LAB,0],[v.LAB+v.b,-v.h]],[60,62,270,178]); const A=T([0,0]),B=T([v.LAB,0]),C=T([v.LAB+v.b,-v.h]);
-  return D.svg(D.bar(A[0],A[1],B[0],B[1],9,"body2")+D.bar(B[0],B[1],C[0],C[1],9)+D.pin(A[0],A[1])+D.pinj(B[0],B[1])+D.ground(A[0]-20,C[0]+50,C[1]+6)+D.circ(C[0],C[1],4,"body2")+D.text(A[0]-12,A[1],"A","end")+D.text(B[0],B[1]-14,"B")+D.text(C[0]-12,C[1]-6,"C","end")+D.arrow(C[0]+60,C[1],C[0]+8,C[1],"f",`F = ${nf(v.F)} N`,C[0]+34,C[1]-14)+LG(12,20,[[`AB: ${nf(v.mAB)} kg, ${nf(v.LAB)} m;  BC: ${nf(v.mBC)} kg`],["released from rest, smooth floor"]])+D.dim(B[0],C[1]+24,C[0],C[1]+24,`${nf(v.b)}`)+D.dim(C[0]+26,B[1],C[0]+26,C[1],`${nf(v.h)} m`)); },
-linkage(v,r){ const T=FIT([[0,0],[0,v.h],[v.c,0],[v.c+v.d+v.e,0]],[80,45,330,170]); const A=T([0,0]),B=T([0,v.h]),C=T([v.c,0]),Dd=T([v.c+v.d,0]),E=T([v.c+v.d+v.e,0]);
-  return D.svg(D.bar(A[0],A[1],B[0],B[1],8,"body2")+D.bar(B[0],B[1],C[0],C[1],8)+D.bar(C[0],E[1],E[0],E[1],8,"body2")+D.pin(A[0],A[1])+D.pin(Dd[0],Dd[1])+D.pinj(B[0],B[1])+D.pinj(C[0],C[1])+D.text(A[0]-12,A[1],"A","end")+D.text(B[0]-10,B[1]-8,"B","end")+D.text(C[0],C[1]+18,"C")+D.text(Dd[0],Dd[1]-14,"D")+D.text(E[0]+8,E[1],"E","start")+D.arcArrow(A[0],A[1],24,20,80,"v")+D.arrow(B[0]-50,B[1],B[0]-10,B[1],"f","F (part b)",B[0]-10,B[1]+17,"end")+LG(12,20,[[`ω_AB = ${nf(v.w)} rad/s CCW, α_AB = 0`,"tv"]])+D.dim(A[0],A[1]+34,C[0],A[1]+34,`${nf(v.c)}`)+D.dim(C[0],A[1]+34,Dd[0],A[1]+34,`${nf(v.d)}`)+D.dim(Dd[0],A[1]+34,E[0],A[1]+34,`${nf(v.e)} m`)); },
-vspring(v,r){ const th=v.th*RAD, L=78, O=[150,200], J=[O[0]-L*Math.sin(th),O[1]-L*Math.cos(th)], C=[O[0],O[1]-2*L*Math.cos(th)];
-  return D.svg(D.line(O[0],O[1],O[0],10,"h")+D.line(O[0]-30,8,O[0]+30,8,"s")+D.spring(O[0],8,O[0],C[1]-8,8,6)+D.rect(O[0]-10,C[1]-8,20,14,"body2")+D.bar(O[0],O[1],J[0],J[1],8)+D.bar(J[0],J[1],C[0],C[1],8)+D.pin(O[0],O[1])+D.pinj(J[0],J[1])+D.text(O[0]+12,O[1],"O","start")+D.angle(O[0],O[1],28,90,90+v.th,`θ`)+D.line(O[0]-2*L*0.05,O[1]-2*L,O[0]+50,O[1]-2*L,"h")+D.text(O[0]+54,O[1]-2*L,"collar at θ = 0","start","tm")+LG(215,110,[[`each bar ${nf(v.m)} kg, ${nf(v.L)} m`],[`k = ${nf(v.k)} N/m`],[`θ = ${nf(v.th)}° (shown)`]])); },
-unkspring(v,r){ const t=v.th1*RAD, s=70, Dd=[40,185], B=[Dd[0]+s*Math.cos(t),Dd[1]-s*Math.sin(t)], C=[Dd[0]+2*s*Math.cos(t),Dd[1]], A=[Dd[0],Dd[1]-2*s*Math.sin(t)];
-  return D.svg(D.ground(20,330,Dd[1]+8)+D.bar(Dd[0],Dd[1],B[0],B[1],8,"body2")+D.bar(A[0],A[1],C[0],C[1],8)+D.pin(Dd[0],Dd[1])+D.pinj(B[0],B[1])+D.rect(C[0]-9,C[1]-8,18,14,"body")+D.spring(C[0]+9,C[1],C[0]+110,C[1],8,5)+D.line(C[0]+110,C[1]-14,C[0]+110,C[1]+8,"s")+D.arrow(A[0],A[1]-40,A[0],A[1]-4,"f",`F_A = ${nf(v.FA)} N`,A[0]+8,A[1]-30,"start")+D.text(A[0]-8,A[1],"A","end")+D.text(B[0]-4,B[1]-12,"B","end")+D.text(C[0],C[1]+22,"C")+D.text(Dd[0]-10,Dd[1]-4,"D","end")+D.angle(Dd[0],Dd[1],26,0,v.th1,`${nf(v.th1)}°`)+LG(215,24,[[`ABC ${nf(v.m1)} kg (2 m)`],[`BD ${nf(v.m2)} kg (1 m)`],[`slider C ${nf(v.mc)} kg`],[`k = ${nf(v.k)} N/m`],[`find ω at ${nf(v.th2)}°`]])); },
-club(v,r){ const C=[150,110], R=70, dp=Math.max(8,v.d/(v.D/2)*R);
-  return D.svg(D.circ(C[0],C[1],R,"body2")+D.dot(C[0],C[1],3)+D.text(C[0]-6,C[1]+12,"G","end")+D.line(C[0]-R-50,C[1]+dp,C[0]+R+30,C[1]+dp,"h")+D.arrow(C[0]-R-50,C[1]+dp,C[0]-R*0.98+2,C[1]+dp,"f","F",C[0]-R-50,C[1]+dp-14,"start")+D.dim(C[0]+R+24,C[1],C[0]+R+24,C[1]+dp,"")+D.text(C[0]+R+32,C[1]+dp/2,`d = ${nf(v.d)} mm`,"start","tm")+D.line(C[0],C[1],C[0]+R+30,C[1],"ext")+D.dim(C[0]-R,C[1]-R-12,C[0]+R,C[1]-R-12,`${nf(v.D)} mm`)+LG(12,200,[[`m = ${nf(v.m)} kg, contact ${sci(v.t)} s, v_f = ${nf(v.v)} m/s`]])); },
-threedisk(v,r){ const tot=2*(v.rA+v.rB+v.rC), s=Math.min(300/tot,140/(2*Math.max(v.rA,v.rB,v.rC))), y=100, A=[30+v.rA*s,y], B=[A[0]+(v.rA+v.rB)*s,y], C=[B[0]+(v.rB+v.rC)*s,y];
-  return D.svg(D.circ(A[0],A[1],v.rA*s,"body")+D.circ(B[0],B[1],v.rB*s,"body2")+D.circ(C[0],C[1],v.rC*s,"body2")+D.pinj(A[0],A[1])+D.pinj(B[0],B[1])+D.pinj(C[0],C[1])+D.text(A[0],A[1]+v.rA*s+14,"A")+D.text(B[0],B[1]+v.rB*s+14,"B")+D.text(C[0],C[1]+v.rC*s+14,"C")+D.arcArrow(A[0],A[1],v.rA*s+8,40,130,"v",`${nf(v.w0)} rad/s`,"end")+LG(12,200,[[`r = ${nf(v.rA)}, ${nf(v.rB)}, ${nf(v.rC)} m;  m = ${nf(v.mA)}, ${nf(v.mB)}, ${nf(v.mC)} kg;  B, C at rest`]])); },
-satellites(v,r){ const y=100, s=280/v.Lf, A=[40,y], B0=[40+v.L0*s,y], Bf=[40+v.Lf*s,y], G0=40+r.xA0*s, Gf=40+r.xAf*s;
-  return D.svg(D.line(A[0],y,Bf[0],y,"h")+D.line(A[0],y,B0[0],y,"s")+D.rect(A[0]-14,y-12,28,24,"body")+D.text(A[0],y+24,"A")+D.rect(B0[0]-8,y-8,16,16,"body2")+D.text(B0[0],y+22,"B (start)","middle","tm")+D.rect(Bf[0]-8,y-8,16,16,"h")+D.text(Bf[0],y-20,"B (end)","middle","tm")+D.text(G0,y-18,"G","middle","tv")+D.arcArrow(G0,y,34,60,120,"v",`${nf(v.rpm)} rpm`)+D.dim(A[0],y+46,B0[0],y+46,`${nf(v.L0)} m`)+D.dim(A[0],y+72,Bf[0],y+72,`${nf(v.Lf)} m`)+LG(12,18,[[`A: ${nf(v.mA)} kg, I = ${nf(v.IA)};  B: ${nf(v.mB)} kg, I = ${nf(v.IB)}`]])); },
-satthruster(v,r){ const G=[180,95], w=120, h=64, dp=Math.min(w/2-8, v.d/2.5*(w/2-8)+10), nx=G[0]+dp, ny=G[1]+h/2;
-  return D.svg(D.line(G[0]-w/2-46,G[1]-h/2-4,G[0]-w/2-46,G[1]+h/2+4,"thin")+D.line(G[0]+w/2+46,G[1]-h/2-4,G[0]+w/2+46,G[1]+h/2+4,"thin")+D.rect(G[0]-w/2-46,G[1]-12,46,24,"body")+D.rect(G[0]+w/2,G[1]-12,46,24,"body")+D.rect(G[0]-w/2,G[1]-h/2,w,h,"body2")+D.dot(G[0],G[1],4,"dotf")+D.text(G[0]-8,G[1]-10,"G","end")+D.line(G[0],G[1],G[0],ny+34,"ext")+D.rect(nx-6,ny,12,10,"body")+D.line(nx,G[1]-h/2-10,nx,ny+70,"h")+D.arrow(nx,ny+72,nx,ny+14,"f",`F = ${nf(v.F)} N for ${nf(v.dt)} s`,nx+10,ny+58,"start")+D.dim(G[0],ny+30,nx,ny+30,`d = ${nf(v.d)} m`)+D.text(G[0]-w/2-46,G[1]-h/2-14,`m = ${nf(v.m)} kg, I_G = ${nf(v.IG)} kg·m², at rest in space`,"start","tm")); },
-pulleymass(v,r){ const O=[170,50], R=34, bx=O[0]+R, by=130, bw=44, bh=30, gy=200;
-  return D.svg(D.rect(O[0]-40,O[1]-R-14,80,8,"body2")+D.line(O[0],O[1]-R-6,O[0],O[1],"s")+D.circ(O[0],O[1],R,"body2")+D.pinj(O[0],O[1])+D.text(O[0]-R-8,O[1],"O","end")+D.line(bx,O[1],bx,by,"s")+D.rect(bx-bw/2,by,bw,bh,"body")+D.text(bx,by+bh/2+1,`${nf(v.m)} kg`)+D.spring(bx,by+bh,bx,gy,6,6)+D.ground(bx-40,bx+40,gy)+D.arrow(bx-bw/2-14,by-8,bx-bw/2-14,by+bh+16,"v","s",bx-bw/2-22,by+bh/2,"end")+D.text(12,118,`R = ${nf(v.R)} m`,"start","tm")+D.text(12,136,`I = ${nf(v.I)} kg·m²`,"start","tm")+D.arcArrow(O[0],O[1],R+9,150,60,"v","α?","end")+D.text(bx+bw/2+8,(by+bh+gy)/2,`k = ${nf(v.k)} N/m`,"start","tm")+LG(12,208,[[`released from rest, spring unstretched; find α, T, v at s = ${nf(v.s)} m`]])); }
+collar(v,r){ const O=[150,115], deg=((r.th*180/Math.PI)%360+360)%360, L=88, rr=Math.min(0.9,r.r/(v.r0+v.c*16))*L, E=D.at(O[0],O[1],deg,L), A=D.at(O[0],O[1],deg,rr);
+  return D.svg(D.line(O[0],O[1],O[0]+120,O[1],"h")+D.bar(O[0],O[1],E[0],E[1],7,"body2")+D.collar(A[0],A[1],deg)+D.pin(O[0],O[1])+D.angle(O[0],O[1],26,0,deg,"θ")+D.text(A[0]+12,A[1]-12,"A","start")+D.text(250,30,`r = ${nf(v.r0)} + ${nf(v.c)}t² m`,"start","tm")+D.text(250,50,`θ = ${nf(v.k)}t rad`,"start","tm")+D.text(250,70,`t = ${nf(v.t)} s`,"start","tm")+D.text(250,200,"rod shown at θ(t)","start","tm")+D.text(O[0]+14,O[1]+22,"O","start")); },
+arc(v,r){ const O=[50,180], R=95, C=[O[0]+R,O[1]], th=v.th, rr=2*R*Math.cos(th*RAD), A=D.at(O[0],O[1],th,rr);
+  return D.svg(D.path(`M${O[0]},${O[1]} A${R},${R} 0 0 1 ${O[0]+2*R},${O[1]}`,"s")+D.line(O[0]-10,O[1],O[0]+2*R+30,O[1],"h")+D.line(O[0],O[1],A[0],A[1],"s")+D.collar(A[0],A[1],th-90,16,12)+D.pin(O[0],O[1])+D.angle(O[0],O[1],34,0,th,`θ = ${nf(v.th)}°`)+D.text(A[0]+12,A[1]-10,"A","start")+D.text(O[0]-4,O[1]-12,"O","end")+D.arcArrow(O[0],O[1],62,th+10,th+38,"v")+D.text(250,30,`r = ${nf(v.b)} cos θ m`,"start","tm")+D.text(250,50,`θ̇ = ${nf(v.w)} rad/s`,"start","tv")+D.text(250,70,"θ̈ = 0","start","tm")); },
+cam(v,r){ const O=[165,110], th=v.th; let mx=0; const fr=(a)=>v.p/(1+v.e*Math.cos(a)); for(let i=0;i<72;i++) mx=Math.max(mx,fr(i*5*RAD)); const sc=88/mx; const pts=[]; for(let i=0;i<=72;i++){const a=i*5*RAD, q=fr(a)*sc; pts.push([O[0]+q*Math.cos(a), O[1]-q*Math.sin(a)]);} const rr=fr(th*RAD)*sc, P=D.at(O[0],O[1],th,rr), E=D.at(O[0],O[1],th,rr+30);
+  return D.svg(D.poly(pts,"body2",true)+D.line(O[0]-110,O[1],O[0]+110,O[1],"h")+D.bar(O[0],O[1],E[0],E[1],10,"h")+D.circ(P[0],P[1],7,"body")+D.pin(O[0],O[1])+D.angle(O[0],O[1],22,0,th,`θ = ${nf(v.th)}°`)+D.arcArrow(O[0],O[1],44,th+18,th+55,"v")+D.text(10,18,`r = ${nf(v.p)}/(1 + ${nf(v.e)} cos θ) m`,"start","tm")+D.text(10,205,`ω = ${nf(v.w)} rad/s (const)`,"start","tv")); },
+spring(v,r){ const O=[50,160], deg=25, L=280, s=L*0.8/Math.max(v.r2,1e-6), A1=D.at(O[0],O[1],deg,v.r1*s), A2=D.at(O[0],O[1],deg,v.r2*s), E=D.at(O[0],O[1],deg,L);
+  return D.svg(D.bar(O[0],O[1],E[0],E[1],7,"body2")+D.spring(O[0],O[1],A1[0],A1[1],8,5)+D.collar(A1[0],A1[1],deg)+D.collar(A2[0],A2[1],deg,18,14,"h")+D.pin(O[0],O[1])+D.arcArrow(O[0],O[1],40,40,95,"v")+D.text(20,44,`ω = ${nf(v.w)} rad/s`,"start","tv")+D.text(A1[0],A1[1]+22,`r₁ = ${nf(v.r1)}`,"middle","tm")+D.text(A2[0],A2[1]+22,`r₂ = ${nf(v.r2)}`,"middle","tm")+D.arrow(A1[0]-6,A1[1]-18,A1[0]+32,A1[1]-36,"v")+D.text(20,64,`ṙ₁ = ${nf(v.vr1)} m/s (outward)`,"start","tv")+D.text(20,24,`a_r = −${nf(v.k)} r`,"start","tf")); },
+boat(v,r){ const O=[180,112], th=r.th, sc=95/(v.b*th); const pts=[]; for(let i=0;i<=240;i++){const a=th*i/240, q=v.b*a*sc; pts.push([O[0]+q*Math.cos(a), O[1]-q*Math.sin(a)]);} const P=pts[pts.length-1];
+  return D.svg(D.poly(pts,"h")+D.dot(O[0],O[1],2.5)+D.line(O[0],O[1],P[0],P[1],"thin")+D.text(O[0]+6,O[1]+12,"O","start")+D.rect(P[0]-9,P[1]-6,18,12,"body")+D.text(P[0],P[1]-16,"boat")+D.text(10,18,`r = ${nf(v.b)}θ m`,"start","tm")+D.text(10,38,`θ = ${nf(v.n)}π rad`,"start","tm")+D.text(10,58,`speed ${nf(v.kn)} knots`,"start","tv")); },
+ladder(v,r){ const O=[60,158], L=145, th=v.th0, E=D.at(O[0],O[1],th,L), Mi=D.at(O[0],O[1],th,L*0.6), Mo=D.at(O[0],O[1],th,L*0.45), Vt=D.at(O[0],O[1],th,L+30), Mb=D.at(O[0],O[1],th,L*0.5), n=D.at(0,0,th+90,1);
+  return D.svg(D.ground(15,345,200)+D.rect(25,158,150,27,"body2")+D.rect(175,146,50,39,"body")+D.circ(55,192,8,"body")+D.circ(150,192,8,"body")+D.circ(205,192,8,"body")+D.bar(O[0],O[1],Mi[0],Mi[1],11,"body")+D.bar(Mo[0],Mo[1],E[0],E[1],7,"body2")+D.pinj(O[0],O[1])+D.line(O[0],O[1],O[0]+95,O[1],"h")+D.angle(O[0],O[1],30,0,th,`θ = ${nf(v.th0)}°`)+D.arcArrow(O[0],O[1],104,th+10,th+50,"v",`θ̇ = ${nf(v.wdeg)} °/s`,"start")+D.arrow(E[0],E[1],Vt[0],Vt[1],"v",`ṙ = ${nf(v.rd)} m/s`,Vt[0]+8,Vt[1],"start")+D.text(Mb[0]+n[0]*16,Mb[1]+n[1]*16,`r = ${nf(v.r0)} m`,"middle","tm")+D.text(O[0]-8,O[1]+12,"O","end")+D.dot(E[0],E[1],3.5,"dotf")+D.text(250,40,"both rates constant","start","tm")+D.text(250,58,"(r̈ = 0, θ̈ = 0)","start","tm")); }
 };
 
 /* SCHEMATICS-END */
@@ -1200,600 +1008,222 @@ const SENSE=(()=>{
   return (val,unit,label)=>{ try{ return sense(val,unit,label||""); }catch(e){ return ""; } };
 })();
 
-/* MATLAB fill-in-the-blank scripts, hints and answer meanings — Rigid-Body Kinetics */
+/* MATLAB fill-in-the-blank scripts, hints and answer meanings — Polar Coordinates & Relative Motion */
 const MAT={
-
-/* ================= NEWTON–EULER ================= */
-armfixed:{
-  out:["M_B","B_x","B_y"],
-  code:(v,r)=>`% Robotic arm BC on a fixed pin B: couple and pin reactions (alpha = 0)
+collar:{
+  out:["v_r","v_th","a_r","a_th"],
+  code:(v,r)=>`% Collar on a rotating rod: r(t) and theta(t) given, polar velocity and acceleration
 clc; clear;
 
 % ---- Given ----
-m      = ${v.m};        % mass of BC, kg
-I_G    = ${v.IG};       % moment of inertia about G, kg*m^2
-r_G    = ${v.rG};       % distance B to G, m
-theta  = ${v.th};       % angle of BC above horizontal, deg
-omega  = ${v.w};        % angular velocity, rad/s (CCW +)
-alpha  = 0;             % angular acceleration, rad/s^2
-g      = 9.81;          % m/s^2
+r0 = ${v.r0};        % m,   r = r0 + c t^2
+c  = ${v.c};         % m/s^2 coefficient in r(t)
+k  = ${v.k};         % rad/s, theta = k t
+t  = ${v.t};         % time of interest, s
 
-% ---- Geometry and vectors (B at the origin, CCW positive = +k) ----
-th      = deg2rad(theta);
-r_GB    = [r_G*cos(th)  r_G*sin(th)  0];   % position of G relative to B, m
-omega_v = [0 0 omega];
-alpha_v = [0 0 alpha];
-W       = m*g;                             % weight, N
+% ---- Radial terms: differentiate r(t) = r0 + c t^2 ----
+r      = r0 + c*t^2;                    % m
+r_dot  = {{2*c*t || Differentiate r = r0 + c t^2 once with respect to t.}};          % m/s
+r_ddot = {{2*c || Differentiate r_dot = 2 c t once more.}};             % m/s^2
 
-% ---- Kinematics: B is fixed, so a_G = alpha x r_G/B - omega^2 r_G/B ----
-a_G = {{cross(alpha_v, r_GB) + cross(omega_v, cross(omega_v, r_GB)) || B is a fixed point: a_G = alpha x r_G/B + omega x (omega x r_G/B); the second term is -omega^2 r_G/B.}};   % m/s^2
+% ---- Angular terms: theta = k t ----
+theta      = k*t;                       % rad
+theta_dot  = {{k || d/dt of k t is k (constant angular rate).}};         % rad/s
+theta_ddot = 0;                         % rad/s^2, rate is constant
 
-% ---- Kinetics: fixed-axis rotation about B ----
-% sum M_B = I_B alpha, with I_B from the parallel-axis theorem
-I_B = {{I_G + m*r_G^2 || Parallel-axis theorem: I_B = I_G + m d^2 with d = r_G.}};                    % kg*m^2
-% M_B - W*(horizontal arm of G) = I_B*alpha   (the weight acts at G, straight down)
-M_B = {{W*r_GB(1) + I_B*alpha || Moments about B: the couple minus the weight's moment (W times the x-distance of G) equals I_B*alpha.}};   % N*m, CCW +
+% ---- Velocity: v = r_dot e_r + r theta_dot e_theta ----
+v_r  = r_dot;                                       % m/s
+v_th = {{r*theta_dot || Transverse velocity is r times the angular rate.}};                           % m/s
 
-% sum F = m a_G  (the pin force is the only force besides the weight)
-B_x = {{m*a_G(1) || Only B_x acts horizontally: B_x = m*a_Gx.}};                 % N
-B_y = {{m*a_G(2) + W || B_y - W = m*a_Gy, so B_y = m*a_Gy + W.}};             % N
+% ---- Acceleration: a = (r_ddot - r theta_dot^2) e_r + (r theta_ddot + 2 r_dot theta_dot) e_theta ----
+a_r  = {{r_ddot - r*theta_dot^2 || Radial acceleration = r_ddot minus the centripetal term r*theta_dot^2.}};       % m/s^2
+a_th = {{r*theta_ddot + 2*r_dot*theta_dot || Transverse: r*theta_ddot plus the Coriolis term 2*r_dot*theta_dot.}};       % m/s^2
 
-fprintf('a_G = (%.3f, %.3f) m/s^2\\n', a_G(1), a_G(2));
-fprintf('Couple at B:      M_B = %.3f N*m (CCW +)\\n', M_B);
-fprintf('Pin reactions:    B_x = %.2f N,  B_y = %.2f N\\n', B_x, B_y);`,
+fprintf('At t = %g s: r = %.3f m, theta = %.3f rad\\n', t, r, theta);
+fprintf('v = %.4f e_r %+.4f e_theta m/s   (|v| = %.4f m/s)\\n', v_r, v_th, hypot(v_r, v_th));
+fprintf('a = %.4f e_r %+.4f e_theta m/s^2 (|a| = %.4f m/s^2)\\n', a_r, a_th, hypot(a_r, a_th));`,
   hints:(v,r)=>[
-    "BC rotates about the fixed pin B, so this is fixed-axis rotation. With alpha = 0 the only acceleration of G is centripetal (toward B). Sum moments about B so the unknown pin force drops out, then use sum F = m a_G for B_x and B_y.",
-    "Key equations: a_G = alpha x r_G/B − ω² r_G/B, ΣM_B = I_B α with I_B = I_G + m r_G², B_x = m a_Gx, B_y − W = m a_Gy.",
-    `r_G/B = (${fmt(v.rG)} cos ${fmt(v.th)}°, ${fmt(v.rG)} sin ${fmt(v.th)}°) m, a_G = −(${fmt(v.w)})² r_G/B = (${fmt(r.ax)}, ${fmt(r.ay)}) m/s². Moments about B: M_B − ${fmt(r.W)}(${fmt(v.rG*r.c)}) = 0.`],
+    "Both r and θ are given as functions of time, so this is pure polar kinematics: differentiate each twice, then substitute into the polar velocity and acceleration formulas. θ̈ = 0, so the only transverse acceleration is the Coriolis term 2ṙθ̇, and a_r is not just r̈: subtract rθ̇².",
+    "Key equations: v = ṙ ê_r + rθ̇ ê_θ, a = (r̈ − rθ̇²) ê_r + (rθ̈ + 2ṙθ̇) ê_θ, with ṙ = 2ct, r̈ = 2c, θ̇ = k, θ̈ = 0.",
+    `At t = ${fmt(v.t)} s: r = ${fmt(v.r0)} + ${fmt(v.c)}(${fmt(v.t)})² = ${fmt(r.r)} m, ṙ = 2(${fmt(v.c)})(${fmt(v.t)}) = ${fmt(r.rd)} m/s, r̈ = ${fmt(r.rdd)} m/s², θ̇ = ${fmt(v.k)} rad/s. Then a_r = ${fmt(r.rdd)} − ${fmt(r.r)}(${fmt(v.k)})².`],
 },
-
-armmoving:{
-  out:["M_B","B_x","B_y"],
-  code:(v,r)=>`% Robotic arm BC on a moving pin B: general plane motion
+arc:{
+  out:["v_r","v_th","a_r","a_th"],
+  code:(v,r)=>`% Collar on a semicircular arc r = b cos(theta), seen from O
 clc; clear;
 
 % ---- Given ----
-m        = ${v.m};       % mass of BC, kg
-I_G      = ${v.IG};      % moment of inertia of BC about G, kg*m^2
-r_G      = ${v.rG};      % distance B to G, m
-theta    = ${v.th};      % angle of BC above horizontal, deg
-omega_BC = ${v.wBC};     % angular velocity of BC, rad/s (CCW +)
-alpha_BC = ${v.aBC};     % angular acceleration of BC, rad/s^2 (CCW +)
-L_AB     = ${v.LAB};     % length of arm AB (horizontal), m
-omega_AB = ${v.wAB};     % angular velocity of AB, rad/s (CCW +)
-alpha_AB = 0;            % AB turns at constant rate
-g        = 9.81;         % m/s^2
+b         = ${v.b};       % m, path r = b cos(theta)
+theta_deg = ${v.th};      % deg, angle of OA at this instant
+omega     = ${v.w};       % rad/s, theta_dot (constant, so theta_ddot = 0)
 
-% ---- Vectors (B at the origin, A at -L_AB on the x axis) ----
-th         = deg2rad(theta);
-r_BA       = [L_AB 0 0];                       % B relative to A, m
-r_GB       = [r_G*cos(th)  r_G*sin(th)  0];    % G relative to B, m
-omega_AB_v = [0 0 omega_AB];   alpha_AB_v = [0 0 alpha_AB];
-omega_BC_v = [0 0 omega_BC];   alpha_BC_v = [0, 0, alpha_BC];
-W          = m*g;                              % N
+theta = deg2rad(theta_deg);          % rad, keep the math in radians
 
-% ---- Kinematics: a_B from arm AB (rotates about fixed A), then a_G from BC ----
-a_B = {{cross(alpha_AB_v, r_BA) + cross(omega_AB_v, cross(omega_AB_v, r_BA)) || A is fixed: a_B = alpha_AB x r_B/A + omega_AB x (omega_AB x r_B/A). With alpha_AB = 0 only the centripetal part survives.}};   % m/s^2
-a_G = {{a_B + cross(alpha_BC_v, r_GB) + cross(omega_BC_v, cross(omega_BC_v, r_GB)) || Relative acceleration: a_G = a_B + alpha_BC x r_G/B + omega_BC x (omega_BC x r_G/B).}};   % m/s^2
+% ---- r and its time derivatives by the chain rule: d/dt f(theta) = f'(theta) theta_dot ----
+r      = b*cos(theta);                                   % m
+r_dot  = {{-b*omega*sin(theta) || d/dt of b cos(theta) is -b sin(theta) * theta_dot.}};          % m/s
+r_ddot = {{-b*omega^2*cos(theta) || Differentiate r_dot again; theta_ddot = 0 so only the cos term with theta_dot^2 survives.}};        % m/s^2
 
-% ---- Kinetics ----
-% B accelerates, so moments about B need the r x m a_G term:
-%   sum M_B = I_G alpha_BC + (r_G/B x m a_G)_z
-%   M_B - W*(x-distance of G) = I_G*alpha_BC + (r_G/B x m a_G)_z
-M_ma = cross(r_GB, m*a_G);                     % moment of the m*a_G vector about B
-M_B  = {{W*r_GB(1) + I_G*alpha_BC + M_ma(3) || Move the weight's moment to the right side: M_B = W*x_G + I_G*alpha_BC + (r_G/B x m a_G)_z.}};   % N*m, CCW +
+% ---- Velocity ----
+v_r  = r_dot;                                            % m/s
+v_th = {{r*omega || Transverse velocity r*theta_dot.}};                                        % m/s
 
-% sum F = m a_G
-B_x = {{m*a_G(1) || B_x = m*a_Gx.}};                    % N
-B_y = {{m*a_G(2) + W || B_y - W = m*a_Gy.}};            % N
+% ---- Acceleration (theta_ddot = 0) ----
+a_r  = {{r_ddot - r*omega^2 || r_ddot minus the centripetal term r*omega^2.}};                          % m/s^2
+a_th = {{2*r_dot*omega || r*theta_ddot is zero; only the Coriolis term 2*r_dot*omega remains.}};                             % m/s^2
 
-fprintf('a_B = (%.3f, %.3f) m/s^2,  a_G = (%.3f, %.3f) m/s^2\\n', a_B(1), a_B(2), a_G(1), a_G(2));
-fprintf('Couple at B:      M_B = %.3f N*m (CCW +)\\n', M_B);
-fprintf('Pin reactions:    B_x = %.2f N,  B_y = %.2f N\\n', B_x, B_y);`,
+fprintf('r = %.4f m, r_dot = %.4f m/s, r_ddot = %.4f m/s^2\\n', r, r_dot, r_ddot);
+fprintf('v = %.4f e_r %+.4f e_theta m/s   (|v| = %.4f m/s, check b*omega = %.4f)\\n', v_r, v_th, hypot(v_r, v_th), b*omega);
+fprintf('a = %.4f e_r %+.4f e_theta m/s^2 (|a| = %.4f m/s^2)\\n', a_r, a_th, hypot(a_r, a_th));`,
   hints:(v,r)=>[
-    "B is no longer fixed, so BC is in general plane motion. Get a_B first from arm AB (a fixed-axis body with alpha = 0, so a_B is purely centripetal, toward A), then a_G = a_B + alpha_BC x r_G/B − ω_BC² r_G/B. Because B accelerates, ΣM_B = I_G α is NOT enough: add the moment of m a_G about B.",
-    "Key equations: a_B = −ω_AB² r_B/A; a_G = a_B + α_BC x r_G/B − ω_BC² r_G/B; ΣM_B = I_G α_BC + (r_G/B × m a_G)_z; ΣF = m a_G for B_x and B_y.",
-    `a_B = −(${fmt(v.wAB)})²(${fmt(v.LAB)}) i = ${fmt(r.aBx)} i m/s². r_G/B = (${fmt(r.rx)}, ${fmt(r.ry)}) m, so a_G = (${fmt(r.ax)}, ${fmt(r.ay)}) m/s². Then M_B − ${fmt(r.W)}(${fmt(r.rx)}) = ${fmt(v.IG)}(${fmt(v.aBC)}) + ${fmt(v.m)}(${fmt(r.rx)}·a_Gy − ${fmt(r.ry)}·a_Gx).`],
+    "r is given as a function of θ, not t, so use the chain rule: ṙ = (dr/dθ)θ̇ and r̈ = (d²r/dθ²)θ̇² + (dr/dθ)θ̈, with θ̈ = 0. Then it is the ordinary polar formulas. Sanity check: the speed must equal bθ̇ at every angle.",
+    "Key equations: ṙ = −bθ̇ sin θ, r̈ = −bθ̇² cos θ; v_r = ṙ, v_θ = rθ̇; a_r = r̈ − rθ̇², a_θ = 2ṙθ̇.",
+    `r = ${fmt(v.b)} cos ${fmt(v.th)}° = ${fmt(r.r)} m, ṙ = −${fmt(v.b)}(${fmt(v.w)}) sin ${fmt(v.th)}° = ${fmt(r.rd)} m/s, r̈ = −${fmt(v.b)}(${fmt(v.w)})² cos ${fmt(v.th)}°. Then a_r = r̈ − ${fmt(r.r)}(${fmt(v.w)})².`],
 },
-
-barcollar:{
-  out:["alpha_1","N","alpha_2"],
-  code:(v,r)=>`% Bar pinned at O with a sliding collar, horizontal plane: angular acceleration
+cam:{
+  out:["v_r","v_th","v_x","v_y","a_r","a_th","a_x","a_y"],
+  code:(v,r)=>`% Cam and roller follower: r(theta) = p/(1 + ecc cos(theta)), constant theta_dot
 clc; clear;
 
 % ---- Given ----
-m_b   = ${v.mb};        % mass of slender bar, kg
-L     = ${v.L};         % bar length, m
-m_c   = ${v.mc};        % collar mass, kg
-r     = ${v.r};         % collar position along the bar, m
-omega = ${v.w};         % bar angular velocity, rad/s
-rdot  = ${v.vr};        % collar radial (outward) speed, m/s
-I_c   = ${v.Ic};        % collar moment of inertia about its own center (part b), kg*m^2
+p         = ${v.p};       % m, cam profile constant
+ecc       = ${v.e};       % dimensionless, profile "eccentricity"
+theta_deg = ${v.th};      % deg
+omega     = ${v.w};       % rad/s, theta_dot (constant, theta_ddot = 0)
 
-% ---- Bar: rotation about the fixed pin O ----
-I_O = {{m_b*L^2/3 || Slender bar about one end: I_O = m L^2 / 3.}};             % kg*m^2
+theta = deg2rad(theta_deg);              % rad
+D     = 1 + ecc*cos(theta);              % denominator of r(theta)
 
-% ---- (a) Collar as a particle ----
-% Horizontal plane, no friction: the only force between bar and collar is the normal force N
-% (transverse). No torque at O.
-%   Bar:     sum M_O = I_O alpha         ->  N*r = I_O*alpha
-%   Collar:  sum F_theta = m_c a_theta   ->  -N  = m_c*(r*alpha + 2*rdot*omega)   (polar coordinates)
-% Eliminate N: (I_O + m_c r^2) alpha = -2 m_c r rdot omega
-alpha_1 = {{-2*m_c*r*rdot*omega/(I_O + m_c*r^2) || Substitute N = I_O*alpha/r into the collar equation and solve for alpha.}};   % rad/s^2
-N       = {{I_O*alpha_1/r || From the bar equation N*r = I_O*alpha.}};                              % N, on the bar in +theta
+% ---- r and its theta-derivatives ----
+r       = p/D;                                                          % m
+dr_dth  = {{p*ecc*sin(theta)/D^2 || d/dtheta of p*D^-1 is -p*D^-2 * dD/dtheta, and dD/dtheta = -ecc*sin(theta).}};             % m/rad
+d2r_dth2 = {{2*p*ecc^2*sin(theta)^2/D^3 + p*ecc*cos(theta)/D^2 || Differentiate dr_dth again (product/chain rule on sin(theta)/D^2).}};   % m/rad^2
 
-% ---- (b) Collar as a rigid body (it turns with the bar, so it also needs I_c alpha) ----
-%   Bar:     N*r - I_c*alpha = I_O*alpha   (the collar's couple I_c alpha reacts on the bar)
-%   Collar:  -N = m_c*(r*alpha + 2*rdot*omega)  as before
-alpha_2 = {{-2*m_c*r*rdot*omega/(I_O + m_c*r^2 + I_c) || Same as part (a) but the effective inertia now also includes I_c.}};   % rad/s^2
+% ---- Time derivatives by the chain rule (theta_ddot = 0) ----
+r_dot  = {{dr_dth*omega || r_dot = (dr/dtheta) * theta_dot.}};                    % m/s
+r_ddot = d2r_dth2*omega^2;               % m/s^2  (the (dr/dtheta)*theta_ddot term is zero)
 
-% ---- Check: angular momentum about O is conserved (no torque) ----
-H_O   = (I_O + m_c*r^2 + I_c)*omega;             % kg*m^2/s
-dH_dt = (I_O + m_c*r^2 + I_c)*alpha_2 + 2*m_c*r*rdot*omega;   % should be zero
+% ---- Polar components ----
+v_r  = r_dot;                            % m/s
+v_th = {{r*omega || Transverse velocity r*theta_dot.}};                             % m/s
+a_r  = {{r_ddot - r*omega^2 || r_ddot minus the centripetal term.}};                 % m/s^2
+a_th = {{2*r_dot*omega || Only the Coriolis term 2*r_dot*theta_dot (theta_ddot = 0).}};                     % m/s^2
 
-fprintf('I_O = %.4f kg*m^2\\n', I_O);
-fprintf('(a) collar as particle:   alpha = %.4f rad/s^2,  N = %.4f N\\n', alpha_1, N);
-fprintf('(b) collar as rigid body: alpha = %.4f rad/s^2\\n', alpha_2);
-fprintf('check dH_O/dt = %.2e (should be 0)\\n', dH_dt);`,
+% ---- Change of basis to x-y: e_r = [cos sin 0], e_theta = [-sin cos 0] ----
+e_r  = [cos(theta), sin(theta), 0];
+e_th = [-sin(theta), cos(theta), 0];
+v_vec = {{v_r*e_r + v_th*e_th || Add the radial and transverse components along their unit vectors.}};        % m/s
+a_vec = {{a_r*e_r + a_th*e_th || Same change of basis for the acceleration.}};        % m/s^2
+v_x = v_vec(1);  v_y = v_vec(2);
+a_x = a_vec(1);  a_y = a_vec(2);
+
+fprintf('r = %.4f m, r_dot = %.4f m/s, r_ddot = %.4f m/s^2\\n', r, r_dot, r_ddot);
+fprintf('v = %.4f e_r %+.4f e_theta = %.4f i %+.4f j m/s\\n', v_r, v_th, v_x, v_y);
+fprintf('a = %.4f e_r %+.4f e_theta = %.4f i %+.4f j m/s^2\\n', a_r, a_th, a_x, a_y);
+fprintf('|v| = %.4f m/s, |a| = %.4f m/s^2\\n', norm(v_vec), norm(a_vec));`,
   hints:(v,r)=>[
-    "Two bodies that interact through one force. The bar rotates about O (ΣM_O = I_O α); the collar is best handled in polar coordinates, where its transverse acceleration is rα + 2ṙω (the Coriolis term is the whole point). The normal force N is the only coupling: it is +N on the bar and −N on the collar. Gravity does nothing here (horizontal plane).",
-    "Key equations: N r = I_O α (bar), −N = m_c (r α + 2 ṙ ω) (collar). For (b) the collar also spins with the bar, so add its couple: N r − I_c α = I_O α. Check: H_O = (I_O + m_c r² [+ I_c]) ω is conserved.",
-    `I_O = ${fmt(v.mb)}(${fmt(v.L)})²/3 = ${fmt(r.IO)} kg·m². Then ${fmt(v.r)} N = ${fmt(r.IO)} α and −N = ${fmt(v.mc)}(${fmt(v.r)} α + 2(${fmt(v.vr)})(${fmt(v.w)})). Eliminate N to get α.`],
-  sense:(v,r)=>[`slowing: ω drops ${fmt(100*Math.abs(r.a1)/v.w,2)}% per second right now`, null, `slightly gentler: ${fmt(100*Math.abs(r.a2)/v.w,2)}% per second`],
+    "The arm sets θ(t) and the cam sets r(θ), so polar coordinates about O are natural. The work is in differentiating r(θ) = p(1 + e cos θ)⁻¹ twice with respect to θ, then converting with ṙ = r'θ̇ and r̈ = r''θ̇² (θ̈ = 0). Convert to x–y only at the end by projecting on ê_r and ê_θ at this θ.",
+    "Key equations: dr/dθ = p e sin θ/(1 + e cos θ)², d²r/dθ² = 2p e² sin²θ/(1 + e cos θ)³ + p e cos θ/(1 + e cos θ)²; v_r = ṙ, v_θ = rθ̇, a_r = r̈ − rθ̇², a_θ = 2ṙθ̇; v_x = v_r cos θ − v_θ sin θ, v_y = v_r sin θ + v_θ cos θ.",
+    `1 + ${fmt(v.e)} cos ${fmt(v.th)}° = ${fmt(r.Dn)}, so r = ${fmt(v.p)}/${fmt(r.Dn)} = ${fmt(r.r)} m and dr/dθ = ${fmt(v.p)}(${fmt(v.e)}) sin ${fmt(v.th)}°/${fmt(r.Dn)}² = ${fmt(r.drdth)} m. Then ṙ = ${fmt(r.drdth)}·${fmt(v.w)} and v_θ = ${fmt(r.r)}·${fmt(v.w)}.`],
 },
-
-twolink:{
-  out:["alpha_AB","alpha_BC","N_C"],
-  code:(v,r)=>`% Two slender bars AB and BC released from rest with a force F at C: 5 x 5 system
+spring:{
+  out:["v_r","v_th"],
+  code:(v,r)=>`% Collar on a rotating bar with a spring: a_r = -k r, constant omega
 clc; clear;
 
 % ---- Given ----
-m_AB = ${v.mAB};        % mass of AB, kg
-m_BC = ${v.mBC};        % mass of BC, kg
-F    = ${v.F};          % horizontal force at C (to the left), N
-L_AB = ${v.LAB};        % length of AB (horizontal), m
-h    = ${v.h};          % C is h below B, m
-b    = ${v.b};          % C is b to the right of B, m
-g    = 9.81;            % m/s^2
+omega = ${v.w};        % rad/s, bar rotation rate (constant)
+k     = ${v.k};        % 1/s^2, spring gives a_r = -k r
+r1    = ${v.r1};       % m, first position
+vr1   = ${v.vr1};      % m/s, radial speed r_dot at r1
+r2    = ${v.r2};       % m, position where the velocity is wanted
 
-% ---- Properties ----
-W_AB = m_AB*g;    W_BC = m_BC*g;                        % N
-I_A  = {{m_AB*L_AB^2/3 || AB rotates about its end A: I_A = m L^2 / 3.}};              % AB about its pin A, kg*m^2
-L_BC = sqrt(b^2 + h^2);                                 % length of BC, m
-I_G  = {{m_BC*L_BC^2/12 || BC is a slender bar in plane motion: I_G = m L^2 / 12 with L = sqrt(b^2 + h^2).}};             % BC about its center, kg*m^2
+% ---- Radial equation: a_r = r_ddot - r omega^2 = -k r  ->  r_ddot = (omega^2 - k) r ----
+C = {{omega^2 - k || Solve -k*r = r_ddot - r*omega^2 for r_ddot; C is the coefficient of r.}};        % 1/s^2, so that r_ddot = C*r
 
-% ---- Unknowns:  x = [B_x; B_y; N_C; alpha_AB; alpha_BC]  (CCW +) ----
-% B_x, B_y = force ON AB at B (BC feels -B_x, -B_y).  Released from rest, so omega = 0 everywhere.
-% Kinematics (omega = 0): a_B = L_AB*alpha_AB (up),  G of BC is (b/2, -h/2) from B, so
-%   a_Gx = (h/2)*alpha_BC,   a_Gy = L_AB*alpha_AB + (b/2)*alpha_BC,   a_Cy = L_AB*alpha_AB + b*alpha_BC
+% ---- Chain rule: r_ddot = v_r dv_r/dr  ->  integral(C r dr, r1..r2) = integral(v_r dv_r, vr1..v_r) ----
+%   C (r2^2 - r1^2)/2 = (v_r^2 - vr1^2)/2
+v_r = {{sqrt(vr1^2 + C*(r2^2 - r1^2)) || Solve the integrated equation for v_r at r2 (positive root: the collar keeps sliding outward).}};     % m/s
 
-% (1) AB, moments about A:  L_AB*B_y - W_AB*(L_AB/2) = I_A*alpha_AB
-row1 = {{[0, L_AB, 0, -I_A, 0] || Put the unknowns on the left: L_AB*B_y - I_A*alpha_AB = W_AB*L_AB/2.}};
-rhs1 = W_AB*L_AB/2;
-% (2) BC, sum F_x:  -B_x - F = m_BC*a_Gx = m_BC*(h/2)*alpha_BC
-row2 = {{[-1, 0, 0, 0, -m_BC*h/2] || -B_x - m_BC*(h/2)*alpha_BC = F.}};
-rhs2 = F;
-% (3) BC, sum F_y:  N_C - B_y - W_BC = m_BC*a_Gy = m_BC*(L_AB*alpha_AB + (b/2)*alpha_BC)
-row3 = {{[0, -1, 1, -m_BC*L_AB, -m_BC*b/2] || -B_y + N_C - m_BC*L_AB*alpha_AB - m_BC*(b/2)*alpha_BC = W_BC.}};
-rhs3 = W_BC;
-% (4) BC, moments about G:  (h/2)*B_x + (b/2)*B_y + (b/2)*N_C - (h/2)*F = I_G*alpha_BC
-row4 = {{[h/2, b/2, b/2, 0, -I_G] || Each force times its lever arm about G (F and -B_x act h/2 below/above G; -B_y and N_C act b/2 left/right of G): (h/2)B_x + (b/2)B_y + (b/2)N_C - I_G*alpha_BC = (h/2)F.}};
-rhs4 = h/2*F;
-% (5) Constraint: C slides on the floor, so a_Cy = 0:  L_AB*alpha_AB + b*alpha_BC = 0
-row5 = {{[0, 0, 0, L_AB, b] || a_Cy = a_By + (alpha_BC x r_C/B)_y = L_AB*alpha_AB + b*alpha_BC = 0.}};
-rhs5 = 0;
+% ---- Transverse component ----
+v_th = {{r2*omega || v_theta = r*theta_dot at r = r2.}};              % m/s
+speed = {{hypot(v_r, v_th) || Magnitude of the velocity from its two perpendicular components.}};     % m/s
 
-A = [row1; row2; row3; row4; row5];
-bvec = [rhs1; rhs2; rhs3; rhs4; rhs5];
-x = A\\bvec;
-
-B_x      = x(1);    B_y = x(2);    N_C = x(3);
-alpha_AB = x(4);                                     % rad/s^2
-alpha_BC = x(5);                                     % rad/s^2
-
-fprintf('alpha_AB = %.3f rad/s^2,  alpha_BC = %.3f rad/s^2  (CCW +)\\n', alpha_AB, alpha_BC);
-fprintf('Pin force on AB at B: B_x = %.2f N, B_y = %.2f N;  floor: N_C = %.2f N\\n', B_x, B_y, N_C);`,
+fprintf('r_ddot = %.3f r  (omega^2 - k = %.3f 1/s^2)\\n', C, C);
+fprintf('At r = %g m: v = %.4f e_r %+.4f e_theta m/s, |v| = %.4f m/s\\n', r2, v_r, v_th, speed);`,
   hints:(v,r)=>[
-    "Two connected rigid bodies released from rest (ω = 0, so no centripetal terms). AB is in fixed-axis rotation about A: sum moments about A to avoid A_x, A_y. BC is in general plane motion: ΣF = m a_G and ΣM_G = I_G α. That is 4 equations for 5 unknowns (B_x, B_y, N_C, α_AB, α_BC) — the fifth is the floor constraint a_Cy = 0. Watch the signs: the pin force on BC at B is the negative of the force on AB.",
-    "Key equations: L_AB B_y − W_AB L_AB/2 = I_A α_AB; −B_x − F = m_BC (h/2) α_BC; N_C − B_y − W_BC = m_BC (L_AB α_AB + (b/2) α_BC); (h/2)B_x + (b/2)B_y + (b/2)N_C − (h/2)F = I_G α_BC; L_AB α_AB + b α_BC = 0.",
-    `I_A = ${fmt(v.mAB)}(${fmt(v.LAB)})²/3 = ${fmt(r.IA)} kg·m², I_G = ${fmt(r.IG)} kg·m². Row (1): ${fmt(v.LAB)} B_y − ${fmt(r.IA)} α_AB = ${fmt(v.mAB*9.81*v.LAB/2)}; constraint: ${fmt(v.LAB)} α_AB + ${fmt(v.b)} α_BC = 0. Assemble the 5 × 5 and solve.`],
+    "a_r is the full radial acceleration, not r̈: a_r = r̈ − rω². Set −kr equal to that and solve for r̈ = (ω² − k)r, which is a function of r only, so remove time with the chain rule r̈ = v_r dv_r/dr and integrate from (r₁, ṙ₁) to (r₂, v_r). v_θ needs no integration: it is just r₂ω.",
+    "Key equations: r̈ = (ω² − k) r; ∫(ω² − k) r dr = ∫ v_r dv_r → v_r² = ṙ₁² + (ω² − k)(r₂² − r₁²); v_θ = r₂ω.",
+    `ω² − k = ${fmt(v.w)}² − ${fmt(v.k)} = ${fmt(r.C)} 1/s². So v_r² = ${fmt(v.vr1)}² + ${fmt(r.C)}(${fmt(v.r2)}² − ${fmt(v.r1)}²), and v_θ = ${fmt(v.r2)}·${fmt(v.w)}.`],
 },
-
-linkage:{
-  out:["alpha_BC","alpha_CDE","B_x","B_y","C_x","C_y","B_x_F"],
-  code:(v,r)=>`% Crank-link-rocker: kinematics (IC), then a 4 x 4 kinetics system for the pin forces
+boat:{
+  out:["theta_dot","v_r","v_th"],
+  code:(v,r)=>`% Survey boat on the spiral r = b theta at constant speed: find theta_dot and the velocity components
 clc; clear;
 
 % ---- Given ----
-omega_AB = ${v.w};       % crank angular velocity, rad/s (CCW +, constant)
-m_BC     = ${v.m1};      % mass of link BC, kg
-m_CDE    = ${v.m2};      % mass of bar CDE, kg
-h        = ${v.h};       % AB length (vertical), m
-c        = ${v.c};       % A to C, horizontal, m
-d        = ${v.d};       % C to D, m
-e        = ${v.e};       % D to E, m
-F        = ${v.F};       % added horizontal force at B (part b), N
-g        = 9.81;         % m/s^2
+knots = ${v.kn};       % boat speed, knots (1 knot = 1852 m/h)
+b     = ${v.b};        % m/rad, spiral r = b theta
+n     = ${v.n};        % theta = n*pi rad at the instant of interest
 
-% ---- Geometry (A at the origin, B above A, C to the right of A, D to the right of C) ----
-r_BA = [0, h, 0];   r_CB = [c, -h, 0];   r_GB = r_CB/2;   r_CD = [-d, 0, 0];
+% ---- Unit conversion ----
+speed = {{knots*1852/3600 || 1 knot = 1852 m per hour, and 1 h = 3600 s.}};      % m/s
 
-% ---- Velocities: v_B is horizontal, v_C is vertical, so the IC of BC is at A ----
-v_B      = omega_AB*h;                              % m/s (to the left)
-omega_BC = v_B/h;                                   % rad/s (CCW +): same as omega_AB since the IC is at A
-v_C      = omega_BC*c;                              % m/s (upward)
-omega_CDE = {{-v_C/d || C is d to the left of D and moves up, so CDE turns clockwise: omega_CDE = -v_C/d.}};   % rad/s (CCW +)
+% ---- Position on the spiral ----
+theta = n*pi;                            % rad
+r     = {{b*theta || The spiral: r = b*theta with theta in radians.}};          % m
 
-% ---- Accelerations: write a_C from BC and from CDE and match components ----
-% From BC:  a_C = a_B + alpha_BC k x r_C/B - omega_BC^2 r_C/B,  a_B = -omega_AB^2 r_B/A
-%           a_Cx = h*alpha_BC - omega_AB^2*c,   a_Cy = c*alpha_BC
-% From CDE: a_C = alpha_CDE k x r_C/D - omega_CDE^2 r_C/D
-%           a_Cx = omega_CDE^2*d,               a_Cy = -d*alpha_CDE
-alpha_BC  = {{(omega_CDE^2*d + omega_AB^2*c)/h || Match the x components: h*alpha_BC - omega_AB^2*c = omega_CDE^2*d.}};   % rad/s^2 (CCW +)
-alpha_CDE = -c*alpha_BC/d;                          % from the y components: c*alpha_BC = -d*alpha_CDE
+% ---- Velocity in terms of theta_dot: r_dot = b theta_dot, v_theta = r theta_dot ----
+%   speed^2 = (b theta_dot)^2 + (r theta_dot)^2
+theta_dot = {{speed/sqrt(b^2 + r^2) || Factor theta_dot^2 out of speed^2 = (b^2 + r^2) theta_dot^2 and solve.}};   % rad/s
 
-a_B = -omega_AB^2*r_BA;                             % crank at constant rate: centripetal only
-a_G = {{a_B + cross([0, 0, alpha_BC], r_GB) - omega_BC^2*r_GB || a_G = a_B + alpha_BC x r_G/B - omega_BC^2 r_G/B with r_G/B = r_C/B / 2.}};   % of BC, m/s^2
+v_r  = {{b*theta_dot || r_dot = d/dt (b theta) = b theta_dot.}};          % m/s
+v_th = {{r*theta_dot || Transverse velocity r*theta_dot.}};          % m/s
 
-% ---- Inertias ----
-I_G  = m_BC*(c^2 + h^2)/12;                          % BC about its center, kg*m^2
-x_G2 = (e - d)/2;                                    % center of CDE is (e-d)/2 to the right of D
-I_D  = m_CDE*(d + e)^2/12 + m_CDE*x_G2^2;            % CDE about pin D (parallel axis), kg*m^2
-
-% ---- Kinetics: unknowns x = [B_x; B_y; C_x; C_y] = pin forces ON BC ----
-% (1) BC, sum F_x:   B_x + C_x = m_BC*a_Gx
-row1 = {{[1, 0, 1, 0] || Both pin forces act on BC: B_x + C_x = m_BC*a_Gx.}};
-rhs1 = m_BC*a_G(1);
-% (2) BC, sum F_y:   B_y + C_y - m_BC*g = m_BC*a_Gy
-row2 = {{[0, 1, 0, 1] || B_y + C_y = m_BC*a_Gy + m_BC*g.}};
-rhs2 = m_BC*a_G(2) + m_BC*g;
-% (3) BC, moments about G:  B is (-c/2, +h/2) from G and C is (+c/2, -h/2) from G
-%     -(c/2)*B_y - (h/2)*B_x + (c/2)*C_y + (h/2)*C_x = I_G*alpha_BC
-row3 = {{[-h/2, -c/2, h/2, c/2] || M_G = (r x F)_z = x*F_y - y*F_x for each pin force: r_B/G = (-c/2, h/2), r_C/G = (c/2, -h/2).}};
-rhs3 = I_G*alpha_BC;
-% (4) CDE, moments about D: CDE feels -C_y at C (d to the left of D) and its weight at x_G2 to the right
-%     d*C_y - m_CDE*g*x_G2 = I_D*alpha_CDE
-row4 = {{[0, 0, 0, d] || Only C_y and the weight have moments about D: d*C_y = I_D*alpha_CDE + m_CDE*g*x_G2.}};
-rhs4 = I_D*alpha_CDE + m_CDE*g*x_G2;
-
-A = [row1; row2; row3; row4];
-bvec = [rhs1; rhs2; rhs3; rhs4];
-x = A\\bvec;
-B_x = x(1);   B_y = x(2);   C_x = x(3);   C_y = x(4);     % N
-
-% ---- (b) Add F (to the right) at B with the same motion ----
-% F enters sum F_x and sum M_G only in the combination (B_x + F), so the pin simply absorbs it.
-B_x_F = {{B_x - F || The same motion needs the same total force at B: B_x' + F = B_x.}};                 % N
-
-fprintf('omega_BC = %.3f rad/s, omega_CDE = %.3f rad/s\\n', omega_BC, omega_CDE);
-fprintf('alpha_BC = %.3f rad/s^2, alpha_CDE = %.3f rad/s^2  (CCW +)\\n', alpha_BC, alpha_CDE);
-fprintf('Forces on BC:  B_x = %.2f N, B_y = %.2f N, C_x = %.2f N, C_y = %.2f N\\n', B_x, B_y, C_x, C_y);
-fprintf('(b) with F = %.0f N added at B:  B_x = %.2f N\\n', F, B_x_F);`,
+fprintf('speed = %.4f m/s, r = %.2f m at theta = %g pi rad\\n', speed, r, n);
+fprintf('theta_dot = %.6f rad/s\\n', theta_dot);
+fprintf('v = %.4f e_r %+.4f e_theta m/s  (check |v| = %.4f m/s)\\n', v_r, v_th, hypot(v_r, v_th));`,
   hints:(v,r)=>[
-    "Kinematics first, kinetics second. v_B is horizontal and v_C is vertical, so BC's instantaneous center is at A; that gives ω_BC and ω_CDE. Then write a_C two ways (from BC through B, and from CDE about D) and match x and y components for α_BC and α_CDE. For the forces, ΣF and ΣM_G on BC plus ΣM_D on CDE give 4 equations in B_x, B_y, C_x, C_y (the crank AB is useless: it only adds the motor torque).",
-    "Key equations: ω_BC = v_B/h, ω_CDE = −v_C/d; h α_BC − ω_AB² c = ω_CDE² d and c α_BC = −d α_CDE; a_G = a_B + α_BC × r_G/B − ω_BC² r_G/B; B_x + C_x = m a_Gx, B_y + C_y − mg = m a_Gy, ΣM_G = I_G α_BC; d C_y − m_CDE g (e−d)/2 = I_D α_CDE.",
-    `v_B = ${fmt(v.w)}(${fmt(v.h)}) = ${fmt(r.vB)} m/s, v_C = ${fmt(r.vC)} m/s, ω_CDE = −${fmt(r.vC)}/${fmt(v.d)} = ${fmt(r.w2)} rad/s. Then α_BC = (${fmt(r.w2*r.w2*v.d)} + ${fmt(v.w*v.w*v.c)})/${fmt(v.h)}. CDE about D: ${fmt(v.d)} C_y − ${fmt(v.m2*9.81)}(${fmt(r.g2)}) = ${fmt(r.ID)} α_CDE.`],
+    "Neither r(t) nor θ(t) is known, only the path r(θ) and the speed. Write both velocity components in terms of the single unknown θ̇ (ṙ = bθ̇ by the chain rule), then use |v|² = v_r² + v_θ² to solve for θ̇. Keep θ̇ at full precision before plugging back in.",
+    "Key equations: v = (kn)(1852/3600) m/s, r = bθ, ṙ = bθ̇, v_θ = rθ̇, so v² = θ̇²(b² + r²) → θ̇ = v/√(b² + r²).",
+    `v = ${fmt(v.kn)}·1852/3600 = ${fmt(r.sp)} m/s and r = ${fmt(v.b)}(${fmt(v.n)}π) = ${fmt(r.r)} m. Then θ̇ = ${fmt(r.sp)}/√(${fmt(v.b)}² + ${fmt(r.r)}²), v_r = ${fmt(v.b)}θ̇, v_θ = ${fmt(r.r)}θ̇.`],
+  sense:(v,r)=>[`one full turn of the spiral takes about ${fmt(2*Math.PI/r.w/60,3)} min`, null, null],
 },
-
-/* ================= WORK & ENERGY ================= */
-vspring:{
-  out:["U12","omega"],
-  code:(v,r)=>`% Two pinned bars with a vertical spring at the collar: work-energy for omega
+ladder:{
+  out:["v_r","v_th","v_mag","a_r","a_th","a_mag"],
+  code:(v,r)=>`% Fire-truck ladder: constant raise rate theta_dot and constant extension rate r_dot
 clc; clear;
 
-% ---- Given ----
-m     = ${v.m};         % mass of each bar, kg
-L     = ${v.L};         % length of each bar, m
-k     = ${v.k};         % spring stiffness, N/m (unstretched when bars are vertical)
-theta = ${v.th};        % final angle of each bar from vertical, deg
-g     = 9.81;           % m/s^2
+% ---- Given (at this instant) ----
+r         = ${v.r0};        % m, pin-to-tip length
+theta_deg = ${v.th0};       % deg, elevation (does not enter the polar components)
+w_deg     = ${v.wdeg};      % deg/s, raise rate (constant)
+r_dot     = ${v.rd};        % m/s, extension rate (constant)
 
-th = deg2rad(theta);
-W  = m*g;               % weight of one bar, N
+% ---- Convert the angular rate; both rates are constant ----
+theta_dot  = {{deg2rad(w_deg) || The polar formulas need theta_dot in rad/s: multiply by pi/180.}};      % rad/s
+theta_ddot = 0;                       % rad/s^2, raise rate is constant
+r_ddot     = 0;                       % m/s^2,   extension rate is constant
 
-% ---- Position 1: rest, bars vertical (T1 = 0).  Position 2: each bar at theta ----
-% Lower bar pinned at O; its center is at L/2 and drops L/2 (1 - cos th).
-% Upper bar: its center is at 3L/2 above O and drops 3L/2 (1 - cos th).
-% Collar (top of upper bar) is at 2L and drops 2L (1 - cos th): that stretches the spring.
-U_lower = {{W*L/2*(1 - cos(th)) || Gravity does positive work = W times the drop of the bar's center, (L/2)(1 - cos th).}};        % J
-U_upper = {{W*3*L/2*(1 - cos(th)) || The upper bar's center starts at 3L/2 and drops (3L/2)(1 - cos th).}};      % J
-s       = {{2*L*(1 - cos(th)) || The collar starts 2L above O and ends at 2L cos th: the spring stretches by the difference.}};                   % spring stretch at position 2, m
-U_s     = {{-0.5*k*s^2 || Spring work from unstretched to stretch s is -k s^2 / 2 (negative: it resists the motion).}};                     % J (negative: spring resists)
-U12     = U_lower + U_upper + U_s;             % total work, J
+% ---- Velocity: v = r_dot e_r + r theta_dot e_theta ----
+v_r   = r_dot;                                   % m/s
+v_th  = {{r*theta_dot || Transverse velocity is r times the angular rate (rad/s).}};                      % m/s
+v_mag = {{hypot(v_r, v_th) || Magnitude from two perpendicular components.}};                  % m/s
 
-% ---- Kinetic energy at position 2 in terms of omega (both bars turn at the same rate by symmetry) ----
-% Lower bar rotates about O: T = 1/2 I_O omega^2.
-% Upper bar is in general plane motion: T = 1/2 m v_G^2 + 1/2 I_G omega^2.
-% Its center is at (-L sin th /2, 3L cos th /2): differentiate for v_G (per unit omega).
-I_O      = m*L^2/3;                                     % kg*m^2
-I_G      = m*L^2/12;                                    % kg*m^2
-vG_per_w = {{[-L*cos(th)/2, -3*L*sin(th)/2] || Differentiate x_G = -(L/2) sin th and y_G = (3L/2) cos th with th_dot = omega: v_G/omega = (-(L/2) cos th, -(3L/2) sin th).}};   % v_G / omega, m
-T2_coef  = {{0.5*m*dot(vG_per_w, vG_per_w) + 0.5*I_G + 0.5*I_O || T2 = 1/2 m v_G^2 + 1/2 I_G omega^2 + 1/2 I_O omega^2, so divide everything by omega^2.}};   % T2 = T2_coef * omega^2
+% ---- Acceleration: a = (r_ddot - r theta_dot^2) e_r + (r theta_ddot + 2 r_dot theta_dot) e_theta ----
+a_r   = {{r_ddot - r*theta_dot^2 || With r_ddot = 0 only the centripetal term -r*theta_dot^2 remains.}};        % m/s^2
+a_th  = {{r*theta_ddot + 2*r_dot*theta_dot || With theta_ddot = 0 only the Coriolis term 2*r_dot*theta_dot remains.}};        % m/s^2
+a_mag = hypot(a_r, a_th);                         % m/s^2
 
-% ---- Work-energy: T1 + U12 = T2 with T1 = 0 ----
-T1    = 0;
-omega = sqrt((T1 + U12)/T2_coef);                       % rad/s
-v_G   = norm(vG_per_w)*omega;                           % speed of the upper bar's center, m/s
-
-fprintf('Work: gravity lower = %.3f J, gravity upper = %.3f J, spring = %.3f J\\n', U_lower, U_upper, U_s);
-fprintf('Total work U12 = %.3f J\\n', U12);
-fprintf('omega at theta = %g deg: %.3f rad/s  (v_G upper = %.3f m/s)\\n', theta, omega, v_G);`,
+fprintf('theta_dot = %.5f rad/s\\n', theta_dot);
+fprintf('v = %.4f e_r %+.4f e_theta m/s,   |v| = %.4f m/s\\n', v_r, v_th, v_mag);
+fprintf('a = %.5f e_r %+.5f e_theta m/s^2, |a| = %.5f m/s^2\\n', a_r, a_th, a_mag);`,
   hints:(v,r)=>[
-    "Position-dependent forces and a velocity at a given position: work–energy. The pins do no work; gravity on both bars and the spring do. By symmetry the two bars turn at the same rate (opposite senses). The lower bar rotates about O (use I_O); the upper bar is in general plane motion, so it needs both ½ m v_G² and ½ I_G ω². The trap: the spring's work is negative because it stretches.",
-    "Key equations: U_g = W (L/2)(1 − cos θ) + W (3L/2)(1 − cos θ); s = 2L(1 − cos θ), U_s = −½ k s²; v_G² = L² ω² (cos²θ/4 + 9 sin²θ/4); T2 = ½ m v_G² + ½ (mL²/12) ω² + ½ (mL²/3) ω²; 0 + U = T2.",
-    `W = ${fmt(v.m*9.81)} N. U_lower = ${fmt(v.m*9.81)}(${fmt(v.L)}/2)(1 − cos ${fmt(v.th)}°) = ${fmt(r.UB)} J, U_upper = ${fmt(r.UA)} J, s = ${fmt(r.sf)} m so U_s = −½(${fmt(v.k)})(${fmt(r.sf)})². T2 = ${fmt(r.Tc)} ω².`],
-},
-
-unkspring:{
-  out:["F_s","U12","omega"],
-  code:(v,r)=>`% Bars ABC and BD with a slider at C: statics for the spring force, then work-energy
-clc; clear;
-
-% ---- Given ----
-m_ABC = ${v.m1};        % mass of bar ABC (2 m long, B at its midpoint), kg
-m_BD  = ${v.m2};        % mass of bar BD (1 m long, pinned at D), kg
-m_C   = ${v.mc};        % slider mass at C, kg
-k     = ${v.k};         % spring stiffness, N/m (pushes C toward D)
-F_A   = ${v.FA};        % downward force applied at A, N
-th1   = ${v.th1};       % initial (equilibrium) angle of both bars to the horizontal, deg
-th2   = ${v.th2};       % final angle, deg
-g     = 9.81;           % m/s^2
-L     = 1;              % BD length, m (ABC = 2L)
-
-t1 = deg2rad(th1);  t2 = deg2rad(th2);
-W_ABC = m_ABC*g;   W_BD = m_BD*g;                   % N
-
-% ---- Step 1: statics at th1 to find the spring force (F_A not yet applied) ----
-% Geometry: D at the origin, B = (L cos th, L sin th), C = (2L cos th, 0), A = (0, 2L sin th).
-% B_x, B_y = pin force ON ABC at B (BD feels -B_x, -B_y).  Unknowns x = [B_x; B_y].
-% (1) ABC, moments about C (this kills N and F_s):  -B_y*(L cos t1) - B_x*(L sin t1) + W_ABC*(L cos t1) = 0
-row1 = {{[-L*sin(t1), -L*cos(t1)] || Moments about C on ABC: B is L to the left/up of C, the weight acts at B: -sin(t1) B_x - cos(t1) B_y = -W_ABC cos(t1).}};
-rhs1 = -W_ABC*L*cos(t1);
-% (2) BD, moments about D:  -W_BD*(L/2 cos t1) + B_x*(L sin t1) - B_y*(L cos t1) = 0
-row2 = {{[L*sin(t1), -L*cos(t1)] || Moments about D on BD (it feels -B_x, -B_y at B): sin(t1) B_x - cos(t1) B_y = (W_BD/2) cos(t1).}};
-rhs2 = W_BD*L/2*cos(t1);
-x   = [row1; row2]\\[rhs1; rhs2];
-B_x = x(1);   B_y = x(2);                            % N
-N_C = W_ABC - B_y;                                   % floor force on the slider, N (sum F_y on ABC)
-F_s = B_x;                                           % sum F_x on ABC: the spring balances B_x, N
-s0  = F_s/k;                                         % initial compression, m
-
-% ---- Step 2: work-energy from th1 to th2 (F_A now applied) ----
-dS  = sin(t1) - sin(t2);                             % drop of B per unit L (B is at height L sin th), m
-% C moves away from D by 2L (cos t2 - cos t1), compressing the spring further
-s_f = {{s0 + 2*L*(cos(t2) - cos(t1)) || x_C = 2L cos th grows as th falls; the extra compression adds to s0.}};                 % final compression, m
-% Work of each force: weights drop, F_A moves down with A (height 2L sin th), the spring resists
-U_g = {{W_BD*L/2*dS + W_ABC*L*dS || BD's center is at (L/2) sin th and B (center of ABC) at L sin th; each weight times its drop.}};                  % J
-U_F = {{F_A*2*L*dS || A is at height 2L sin th, so F_A moves through 2L (sin t1 - sin t2).}};                                   % J
-U_s = {{-0.5*k*(s_f^2 - s0^2) || Spring work = -(k/2)(s_f^2 - s0^2): negative because it is compressed further.}};                      % J
-U12 = U_g + U_F + U_s;                                % J
-
-% ---- Kinetic energy at th2 (both bars turn at the same rate omega by symmetry) ----
-% BD rotates about D: 1/2 I_D omega^2.   ABC: 1/2 m v_B^2 + 1/2 I_G omega^2 with v_B = L omega.
-% Slider: x_C = 2L cos th  ->  v_C = 2L sin th omega.
-I_D     = m_BD*L^2/3;                                 % kg*m^2
-I_G_ABC = m_ABC*(2*L)^2/12;                           % kg*m^2
-T2_coef = {{0.5*I_D + 0.5*m_ABC*L^2 + 0.5*I_G_ABC + 0.5*m_C*(2*L*sin(t2))^2 || T2/omega^2 = I_D/2 + m_ABC L^2/2 + I_G/2 + m_C (2L sin t2)^2 / 2.}};   % T2 = T2_coef*omega^2
-
-% ---- T1 + U12 = T2, T1 = 0 (starts from equilibrium at rest) ----
-omega = sqrt(U12/T2_coef);                            % rad/s
-
-fprintf('Statics at %g deg: B_x = %.2f N, B_y = %.2f N, N_C = %.2f N\\n', th1, B_x, B_y, N_C);
-fprintf('Spring force F_s = %.2f N  (initial compression %.4f m)\\n', F_s, s0);
-fprintf('Work: gravity %.3f J, F_A %.3f J, spring %.3f J  ->  U12 = %.3f J\\n', U_g, U_F, U_s, U12);
-fprintf('omega at %g deg = %.3f rad/s\\n', th2, omega);`,
-  hints:(v,r)=>[
-    "Two steps. First, the spring's initial compression is unknown, but the system is in equilibrium at θ₁, so statics on each bar (moments about C for ABC, about D for BD) gives the pin force at B, and ΣF_x on ABC then gives the spring force. Second, from θ₁ to θ₂ use work–energy. Include F_A's work (A drops 2L Δsin θ) and remember the spring is compressed further, so its work is negative.",
-    "Key equations: −sin θ₁ B_x − cos θ₁ B_y = −W_ABC cos θ₁; sin θ₁ B_x − cos θ₁ B_y = ½ W_BD cos θ₁; F_s = B_x, s₀ = F_s/k; s_f = s₀ + 2L(cos θ₂ − cos θ₁); U = W_BD (L/2) Δs + W_ABC L Δs + F_A 2L Δs − ½k(s_f² − s₀²) with Δs = sin θ₁ − sin θ₂; T₂ = ½ I_D ω² + ½ m_ABC (Lω)² + ½ I_G ω² + ½ m_C (2L sin θ₂ ω)².",
-    `Statics gives B_y = (${fmt(v.m1*9.81)} − ${fmt(v.m2*9.81)}/2)/2 = ${fmt(r.By)} N and B_x = cot ${fmt(v.th1)}° (${fmt(v.m1*9.81)}/2 + ${fmt(v.m2*9.81)}/4), so s₀ = B_x/${fmt(v.k)}. Then s_f = s₀ + 2(cos ${fmt(v.th2)}° − cos ${fmt(v.th1)}°) = ${fmt(r.sf)} m and T₂ = ${fmt(r.Tc)} ω².`],
-},
-
-/* ================= IMPULSE & MOMENTUM ================= */
-club:{
-  out:["F","omega_f"],
-  code:(v,r)=>`% Golf club on a ball: linear and angular impulse-momentum
-clc; clear;
-
-% ---- Given ----
-m   = ${v.m};           % ball mass, kg
-D   = ${v.D};           % ball diameter, mm
-t   = ${v.t};           % contact time, s
-v_f = ${v.v};           % launch speed, m/s
-d   = ${v.d};           % offset of the force line from the ball's center, mm
-
-% ---- Unit conversions ----
-r_b = D/2/1000;         % radius, m
-d_m = d/1000;           % offset, m
-
-% ---- Solid sphere about its center ----
-I_G = {{2/5*m*r_b^2 || Solid sphere: I_G = (2/5) m r^2.}};                 % kg*m^2
-
-% ---- Linear impulse-momentum (ball starts at rest): F*t = m*v_f ----
-F = {{m*v_f/t || Average force = change in linear momentum divided by the contact time.}};                     % N
-
-% ---- Angular impulse-momentum about G: (F*d)*t = I_G*omega_f ----
-H_G     = {{F*d_m*t || Angular impulse about G = moment of the force (F times its offset) times the contact time.}};                 % angular impulse, kg*m^2/s
-omega_f = {{H_G/I_G || The ball starts with no spin, so I_G*omega_f = angular impulse.}};                 % rad/s
-rpm     = omega_f*60/(2*pi);
-
-fprintf('I_G = %.3e kg*m^2\\n', I_G);
-fprintf('Average contact force F = %.1f N\\n', F);
-fprintf('Spin omega_f = %.1f rad/s  (%.0f rpm)\\n', omega_f, rpm);`,
-  hints:(v,r)=>[
-    "Force, velocity and a short time interval: impulse–momentum. The linear impulse of the average force equals the ball's final momentum (it starts at rest). The same force, acting a distance d from the center, gives an angular impulse about G equal to I_G ω_f. Convert mm to m before anything else.",
-    "Key equations: F t = m v_f; I_G = (2/5) m r²; (F d) t = I_G ω_f, so ω_f = m v_f d / I_G.",
-    `F = ${fmt(v.m)}(${fmt(v.v)})/${sci(v.t)} N. I_G = 0.4(${fmt(v.m)})(${fmt(r.r)})² = ${sci(r.I)} kg·m², and ω_f = F(${fmt(r.dd)})(${sci(v.t)})/I_G.`],
-  sense:(v,r)=>[null, `about ${fmt(r.w*60/(2*Math.PI),3)} rpm of backspin from a ${fmt(v.d)} mm offset`],
-},
-
-threedisk:{
-  out:["omega_A","omega_B","omega_C"],
-  code:(v,r)=>`% Three disks brought into contact: angular impulse-momentum, 5 x 5 system
-clc; clear;
-
-% ---- Given ----
-r_A = ${v.rA};   m_A = ${v.mA};      % disk A: radius m, mass kg
-r_B = ${v.rB};   m_B = ${v.mB};      % disk B: radius m, mass kg
-r_C = ${v.rC};   m_C = ${v.mC};      % disk C: radius m, mass kg
-omega_0 = ${v.w0};                   % initial angular velocity of A, rad/s (CCW +); B and C at rest
-
-% ---- Uniform disks about their axles ----
-I_A = {{0.5*m_A*r_A^2 || Uniform disk: I = m r^2 / 2.}};        % kg*m^2
-I_B = 0.5*m_B*r_B^2;                  % kg*m^2
-I_C = 0.5*m_C*r_C^2;                  % kg*m^2
-
-% ---- Unknowns: x = [omega_A; omega_B; omega_C; J1; J2] ----
-% J1 = friction impulse at the A-B contact (on A, +y at its right edge; B feels -J1 at its left edge)
-% J2 = friction impulse at the B-C contact (on B, +y at its right edge; C feels -J2 at its left edge)
-% Angular impulse-momentum about each fixed axle:  sum(M dt) = I (omega_final - omega_initial), CCW +
-% (1) Disk A:  r_A*J1 = I_A*(omega_A - omega_0)
-row1 = {{[I_A, 0, 0, -r_A, 0] || Unknowns on the left: I_A*omega_A - r_A*J1 = I_A*omega_0.}};
-rhs1 = I_A*omega_0;
-% (2) Disk B:  r_B*J1 - r_B*J2 = I_B*omega_B   (-J1 at the left edge and +J2 at the right edge both give moments)
-row2 = {{[0, I_B, 0, -r_B, r_B] || I_B*omega_B - r_B*J1 + r_B*J2 = 0.}};
-rhs2 = 0;
-% (3) Disk C:  -r_C*J2 = I_C*omega_C
-row3 = {{[0, 0, I_C, 0, r_C] || I_C*omega_C + r_C*J2 = 0.}};
-rhs3 = 0;
-% No slip at the end: the rim speeds match at each contact (adjacent disks turn opposite ways)
-% (4) A-B contact:  r_A*omega_A + r_B*omega_B = 0
-row4 = {{[r_A, r_B, 0, 0, 0] || Rim speeds equal and opposite in sense: r_A*omega_A = -r_B*omega_B.}};
-rhs4 = 0;
-% (5) B-C contact:  r_B*omega_B + r_C*omega_C = 0
-row5 = {{[0, r_B, r_C, 0, 0] || r_B*omega_B = -r_C*omega_C.}};
-rhs5 = 0;
-
-A = [row1; row2; row3; row4; row5];
-bvec = [rhs1; rhs2; rhs3; rhs4; rhs5];
-x = A\\bvec;
-omega_A = x(1);   omega_B = x(2);   omega_C = x(3);    % rad/s (CCW +)
-J1 = x(4);   J2 = x(5);                                % N*s
-
-fprintf('I_A = %.4f, I_B = %.4f, I_C = %.4f kg*m^2\\n', I_A, I_B, I_C);
-fprintf('omega_A = %.3f rad/s, omega_B = %.3f rad/s, omega_C = %.3f rad/s  (CCW +)\\n', omega_A, omega_B, omega_C);
-fprintf('Friction impulses: J1 = %.3f N*s, J2 = %.3f N*s\\n', J1, J2);
-fprintf('Check rim speeds: %.3f, %.3f, %.3f m/s\\n', r_A*omega_A, abs(r_B*omega_B), r_C*omega_C);`,
-  hints:(v,r)=>[
-    "The friction forces at the contacts are unknown functions of time, so use angular impulse–momentum about each fixed axle: ∫ΣM dt = I Δω. Call the two friction impulses J₁ and J₂; each acts on two disks in opposite directions. That gives 3 equations with 5 unknowns; the last two come from no-slip at the end: rim speeds match, with neighbouring disks turning opposite ways. Total angular momentum is NOT conserved (the axles push on the disks), so do not just add H's.",
-    "Key equations: r_A J₁ = I_A (ω_A − ω₀); r_B J₁ − r_B J₂ = I_B ω_B; −r_C J₂ = I_C ω_C; r_A ω_A + r_B ω_B = 0; r_B ω_B + r_C ω_C = 0. I = ½ m r² for each disk.",
-    `I_A = ½(${fmt(v.mA)})(${fmt(v.rA)})² = ${fmt(r.IA)}, I_B = ${fmt(r.IB)}, I_C = ${fmt(r.IC)} kg·m². Row (1): ${fmt(r.IA)} ω_A − ${fmt(v.rA)} J₁ = ${fmt(r.IA*v.w0)}; no-slip: ${fmt(v.rA)} ω_A + ${fmt(v.rB)} ω_B = 0. Solve the 5 × 5.`],
-},
-
-satellites:{
-  out:["I_0","I_f","omega_f"],
-  code:(v,r)=>`% Tethered satellites: conservation of angular momentum about the system's center of mass
-clc; clear;
-
-% ---- Given ----
-m_A = ${v.mA};   I_A = ${v.IA};      % satellite A: mass kg, moment of inertia about its own G, kg*m^2
-m_B = ${v.mB};   I_B = ${v.IB};      % satellite B: mass kg, moment of inertia about its own G, kg*m^2
-rpm_0 = ${v.rpm};                    % initial rotation rate, rev/min
-L_0   = ${v.L0};                     % initial separation, m
-L_f   = ${v.Lf};                     % final separation, m
-
-% ---- Locate the system center of mass G (distance from A) ----
-M    = m_A + m_B;                                   % kg
-x_A0 = {{m_B*L_0/M || Distance from A to the combined center of mass: x_A = m_B L / (m_A + m_B).}};                 % A to G, before, m
-x_B0 = L_0 - x_A0;                                  % B to G, before, m
-x_Af = m_B*L_f/M;                                   % A to G, after, m
-x_Bf = L_f - x_Af;                                  % B to G, after, m
-
-% ---- Moment of inertia of the pair about G (parallel-axis theorem for each satellite) ----
-I_0 = {{I_A + m_A*x_A0^2 + I_B + m_B*x_B0^2 || Each satellite: its own I plus m d^2, where d is its distance to the system G.}};    % kg*m^2, before
-I_f = {{I_A + m_A*x_Af^2 + I_B + m_B*x_Bf^2 || Same formula with the new distances.}};    % kg*m^2, after
-
-% ---- No external moment about G in space: H_G is conserved, I_0*omega_0 = I_f*omega_f ----
-% (rpm can stay in rpm: the unit appears on both sides)
-omega_f = {{rpm_0*I_0/I_f || Conservation of angular momentum: omega_f = omega_0 * I_0 / I_f.}};                  % rev/min
-
-fprintf('Center of mass: %.3f m from A (before), %.3f m from A (after)\\n', x_A0, x_Af);
-fprintf('I about G: before = %.1f kg*m^2, after = %.1f kg*m^2\\n', I_0, I_f);
-fprintf('New rotation rate: %.4f rpm (was %.4f rpm)\\n', omega_f, rpm_0);`,
-  hints:(v,r)=>[
-    "In space there is no external moment about the system's center of mass, so the pair's angular momentum about G is conserved even though the tether force does internal work. First locate G (it stays a fixed fraction of the way along the tether), then build I about G with the parallel-axis theorem for each satellite, before and after.",
-    "Key equations: x_A = m_B L/(m_A + m_B), x_B = L − x_A; I = I_A + m_A x_A² + I_B + m_B x_B²; I₀ ω₀ = I_f ω_f.",
-    `Before: x_A = ${fmt(v.mB)}(${fmt(v.L0)})/${fmt(r.M)} = ${fmt(r.xA0)} m, x_B = ${fmt(r.xB0)} m, so I₀ = ${fmt(v.IA)} + ${fmt(v.mA)}(${fmt(r.xA0)})² + ${fmt(v.IB)} + ${fmt(v.mB)}(${fmt(r.xB0)})². Repeat with L = ${fmt(v.Lf)} m, then ω_f = ${fmt(v.rpm)} I₀/I_f.`],
-  sense:(v,r)=>[null, `${fmt(r.If/r.I0,3)}× the initial value`, `one turn every ${fmt(1/r.wf,3)} min, down from every ${fmt(1/v.rpm,3)} min`],
-},
-
-satthruster:{
-  out:["v_G","omega","H_G"],
-  code:(v,r)=>`% Satellite side thruster: linear and angular impulse-momentum (particle vs rigid body)
-clc; clear;
-
-% ---- Given ----
-m   = ${v.m};        % satellite mass, kg
-I_G = ${v.IG};       % moment of inertia about G, kg*m^2
-F   = ${v.F};        % thrust, N (constant)
-dt  = ${v.dt};       % burn time, s
-d   = ${v.d};        % offset of the thrust line from G, m
-
-% ---- Linear impulse of the burn (constant force) ----
-J = {{F*dt || Impulse of a constant force = F times the time it acts.}};                    % N*s
-
-% ---- Linear impulse-momentum for G (this is the particle part; the offset plays no role) ----
-v_G = {{J/m || Starts at rest: J = m*v_G.}};                    % m/s
-
-% ---- Angular impulse-momentum about G (the rigid-body part) ----
-% The thrust has a moment F*d about G, so its angular impulse is F*d*dt
-H_G   = {{J*d || Angular impulse about G = (F*dt)*d = linear impulse times its moment arm.}};                  % kg*m^2/s, angular momentum after the burn
-omega = {{H_G/I_G || Starts with no spin: H_G = I_G*omega.}};                % rad/s
-rpm   = omega*60/(2*pi);
-
-% ---- After shut-off: no force and no moment, so both v_G and H_G stay constant ----
-fprintf('Velocity of G after the burn: %.4f m/s\\n', v_G);
-fprintf('Angular velocity after the burn: %.4f rad/s (%.3f rpm)\\n', omega, rpm);
-fprintf('Angular momentum H_G = %.2f kg*m^2/s (conserved afterwards)\\n', H_G);
-fprintf('Same force through G: same v_G = %.4f m/s, but omega = 0\\n', v_G);`,
-  hints:(v,r)=>[
-    "A force over a time interval means impulse–momentum. The linear equation treats the satellite as a particle: F Δt = m Δv_G, and it does not care where the force acts. The angular equation about G is what makes it a rigid body: the thrust line misses G by d, so its moment F d over Δt changes I_G ω. Once the thruster is off there is no external force or moment, so both v_G and H_G are conserved.",
-    "Key equations: J = F Δt; J = m v_G; F d Δt = I_G ω; H_G = I_G ω = F d Δt.",
-    `J = ${fmt(v.F)}(${fmt(v.dt)}) = ${fmt(r.J)} N·s, so v_G = ${fmt(r.J)}/${fmt(v.m)}. Angular impulse about G = ${fmt(r.J)}(${fmt(v.d)}) = ${fmt(r.HG)} N·m·s = ${fmt(v.IG)} ω.`],
-  sense:(v,r)=>[`a slow drift: ${fmt(r.vG*3600,3)} m per hour`, `one full tumble every ${fmt(2*Math.PI/r.w,3)} s`, `the same number as the angular impulse F d Δt`],
-},
-
-pulleymass:{
-  out:["alpha","T","v"],
-  code:(v,r)=>`% Pulley with a hanging block and a spring: Newton-Euler at s, then work-energy for v
-clc; clear;
-
-% ---- Given ----
-R = ${v.R};        % pulley radius, m
-I = ${v.I};        % pulley moment of inertia about the axle, kg*m^2
-m = ${v.m};        % block mass, kg
-k = ${v.k};        % spring stiffness, N/m (unstretched at release)
-s = ${v.s};        % distance the block has fallen, m
-g = 9.81;          % m/s^2
-
-W   = m*g;         % block weight, N
-F_s = {{k*s || The spring is unstretched at release and the block has dropped s, so it is stretched by s.}};         % spring force at this instant, N (pulls the block up)
-
-% ---- Newton-Euler at the instant the block has fallen s ----
-% Block (down +):   W - T - F_s = m*a
-% Pulley (about O): T*R = I*alpha
-% Cord (no slip):   a = R*alpha
-% Eliminate T and a:  (W - F_s)*R = (I + m*R^2)*alpha
-alpha = {{(W - F_s)*R/(I + m*R^2) || Substitute T = I*alpha/R and a = R*alpha into the block equation and solve for alpha.}};     % rad/s^2
-a     = R*alpha;                                  % m/s^2
-T     = {{I*alpha/R || From the pulley equation T*R = I*alpha.}};                       % cord tension, N
-
-% ---- Work-energy from release (rest) to the same position ----
-% Gravity does +W*s, the spring does -k*s^2/2; the tension is internal and the axle force does no work.
-U12 = {{W*s - 0.5*k*s^2 || Work of the weight (positive, block drops s) plus the spring's work from unstretched to stretch s (negative).}};                   % J
-% T2 = 1/2 m v^2 + 1/2 I omega^2 with omega = v/R
-T2_coef = {{0.5*m + 0.5*I/R^2 || T2/v^2: the block's 1/2 m and the pulley's 1/2 I (v/R)^2 / v^2.}};             % T2 = T2_coef*v^2
-v = sqrt(U12/T2_coef);                            % m/s
-
-fprintf('Spring force at s: %.2f N\\n', F_s);
-fprintf('alpha = %.3f rad/s^2, a = %.3f m/s^2, T = %.2f N\\n', alpha, a, T);
-fprintf('Block speed at s = %.2f m: v = %.4f m/s\\n', s, v);`,
-  hints:(v,r)=>[
-    "Two bodies coupled by the cord. Draw the block's free-body diagram with three forces: weight down, tension up, and the spring force up (it is stretched by s now). Draw the pulley's: only the tension has a moment about the axle. The no-slip cord gives a = Rα. For the speed, do not integrate α: forces depend on position and you want v at a position, so use work–energy for the whole system with the spring's work negative.",
-    "Key equations: W − T − ks = m a; T R = I α; a = R α → α = (mg − ks) R/(I + mR²), T = Iα/R. Work–energy: 0 + mgs − ½ks² = ½mv² + ½I(v/R)².",
-    `W = ${fmt(r.W)} N, spring force ${fmt(v.k)}(${fmt(v.s)}) = ${fmt(r.Fs)} N. So α = (${fmt(r.W)} − ${fmt(r.Fs)})(${fmt(v.R)})/(${fmt(v.I)} + ${fmt(r.mr2)}). Energy: ${fmt(r.W)}(${fmt(v.s)}) − ½(${fmt(v.k)})(${fmt(v.s)})² = (½(${fmt(v.m)}) + ½(${fmt(v.I)})/${fmt(v.R)}²) v².`],
-  sense:(v,r)=>[`the block accelerates at ${fmt(r.a/9.81,3)} g right now`, `${fmt(r.T/r.W*100,3)}% of the block's weight`, null],
-},
-
+    "Polar coordinates about the pivot: r is the ladder length and θ its elevation. Both rates are constant, so r̈ = 0 and θ̈ = 0, but do not conclude a = 0. The centripetal term −rθ̇² and the Coriolis term 2ṙθ̇ survive. Convert °/s to rad/s first; the value of θ itself never appears in the components.",
+    "Key equations: v_r = ṙ, v_θ = rθ̇; a_r = r̈ − rθ̇² = −rθ̇², a_θ = rθ̈ + 2ṙθ̇ = 2ṙθ̇; magnitudes by Pythagoras.",
+    `θ̇ = ${fmt(v.wdeg)}·π/180 = ${fmt(r.w)} rad/s. v_θ = ${fmt(v.r0)}(${fmt(r.w)}), a_r = −${fmt(v.r0)}(${fmt(r.w)})², a_θ = 2(${fmt(v.rd)})(${fmt(r.w)}).`],
+  sense:(v,r)=>[null, null, `a slow walk: the tip moves about ${fmt(r.V*60,3)} m per minute`, `about ${fmt(Math.abs(r.ar)/9.81*1000,3)} milli-g toward the pivot`, `the Coriolis term, ${fmt(Math.abs(r.at/r.ar),3)}× the centripetal term`, null],
+}
 };
 
 /* ---------- Hints, "what does it mean", and the MATLAB fill-in-the-blank panel ---------- */
@@ -1891,7 +1321,7 @@ const MLAB=(()=>{
 
 /* MLAB-JS-END */
 /* GAME-JS-START */
-const GAME_PAGE="Rigid_Body_Kinetics.html";
+const GAME_PAGE="Particle_Kinematics_Polar.html";
 /* ---------- Game layer: XP, levels, streak, cleared badges, celebration ---------- */
 const GAME=(()=>{
   const KEY="dpl-game";
@@ -1977,7 +1407,7 @@ function renderNav(){
 
 function select(id){
   state.id=id; state.vars={...cur().original}; state.isOriginal=true; state.shown=0; state.variant=1;
-  try{ localStorage.setItem("dpl-last-Rigid_Body_Kinetics.html", id); }catch(e){}
+  try{ localStorage.setItem("dpl-last-Particle_Kinematics_Polar_Relative_Motion.html", id); }catch(e){}
   renderNav(); renderSheet(); window.scrollTo({top:0});
 }
 function fresh(){ state.vars=cur().randomize(); state.isOriginal=false; state.shown=0; state.variant++; renderSheet(); }
@@ -2049,7 +1479,7 @@ function drawSolution(p,v,r,ans,steps){
   sol.innerHTML = `<h3>Worked solution</h3>
     <ol class="steps">${steps.slice(0,state.shown).map(s=>`<li><span class="step-title">${s.t}</span><div class="step-body"><div class="eq">${tex(s.eq)}</div>${s.note?`<p class="note">${s.note}</p>`:""}</div></li>`).join("")}</ol>
     ${done ? `
-      <div class="final">${ans.map((a,i)=>`<div class="ans"><div class="k">${a.label}</div><div class="val">${typeof sci==="function"?sci(a.val):fmt(a.val)} ${a.unit}</div>${(m=>m?`<div class="mean"><span class="sk">Means</span>${m}</div>`:"")(meaningOf(p,v,r,i,a))}</div>`).join("")}</div>
+      <div class="final">${ans.map((a,i)=>`<div class="ans"><div class="k">${a.label}</div><div class="val">${fmt(a.val)} ${a.unit}</div>${(m=>m?`<div class="mean"><span class="sk">Means</span>${m}</div>`:"")(meaningOf(p,v,r,i,a))}</div>`).join("")}</div>
       <p class="takeaway"><b>Takeaway.</b> ${tk}</p>
       <figure class="plotwrap" style="margin:0"><figcaption id="cap"></figcaption><canvas id="plot"></canvas></figure>`
       : `<p class="note">Step ${state.shown} of ${steps.length}. Try the next step yourself before revealing it.</p>`}`;
@@ -2091,7 +1521,7 @@ function drawPlot(P){
 window.addEventListener("resize",()=>{ if(state.shown && !$("#sol").hidden){ const p=cur(), v=state.vars, r=p.solve(v); if(state.shown>=p.steps(v,r).length) drawPlot(p.plot(v,r)); }});
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>window.dispatchEvent(new Event("resize")));
 
-let start=PROBLEMS[0].id; try{ const s=localStorage.getItem("dpl-last-Rigid_Body_Kinetics.html"); if(s && PROBLEMS.some(p=>p.id===s)) start=s; }catch(e){}
+let start=PROBLEMS[0].id; try{ const s=localStorage.getItem("dpl-last-Particle_Kinematics_Polar_Relative_Motion.html"); if(s && PROBLEMS.some(p=>p.id===s)) start=s; }catch(e){}
 try{ const hh=decodeURIComponent(location.hash.slice(1)); if(hh&&PROBLEMS.some(p=>p.id===hh)) start=hh; }catch(e){}
 state.id=start; state.vars={...cur().original};
 renderNav(); renderSheet(); GAME.hud();

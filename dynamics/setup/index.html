@@ -388,7 +388,7 @@ function N(x, unit="", sig=4){ return `<span class="num">${fmt(x,sig)}${unit?"&n
 function fixSubs(root){
   if(!root) return;
   const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*)?|[θαωρμ∞])/g;
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
   nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
@@ -402,7 +402,7 @@ function fixSubs(root){
 const D = (()=>{
   const r1=(n)=>Math.round(n*10)/10;
   const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
-  const lab=(s)=>esc(s).replace(/_([A-Za-z0-9θαωρμ′]+(?:\/[A-Z][A-Za-z]*)?)/g,(m,b)=>`<tspan dy="0.32em" font-size="0.72em">${b}</tspan><tspan dy="-0.32em"> </tspan>`);
+  const lab=(s)=>esc(s).replace(/_([A-Za-z0-9θαωρμ′]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?)/g,(m,b)=>`<tspan dy="0.32em" font-size="0.72em">${b}</tspan><tspan dy="-0.32em"> </tspan>`);
   const defs=`<defs>${["s","v","f"].map(k=>`<marker id="ah-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="m${k}" d="M0,0 L10,5 L0,10 z"/></marker>`).join("")}<linearGradient id="gBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5" stop-opacity=".85"/><stop offset="1" stop-color="#0e7490" stop-opacity=".75"/></linearGradient><linearGradient id="gBody2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#334a7d" stop-opacity=".9"/><stop offset="1" stop-color="#1a2748" stop-opacity=".9"/></linearGradient><filter id="glow" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="800"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
   const D={
     W:360, H:220,
@@ -531,7 +531,7 @@ SCEN.push(
 const AXP=(P,d1,l1,d2,l2,len=46)=>{ const a=D.at(P[0],P[1],d1,len), b=D.at(P[0],P[1],d2,len); return D.arrow(P[0],P[1],a[0],a[1],"ax",l1)+D.arrow(P[0],P[1],b[0],b[1],"ax",l2); };
 const AX1=(P,d1,l1,len=52)=>{ const a=D.at(P[0],P[1],d1,len); return D.arrow(P[0],P[1],a[0],a[1],"ax",l1); };
 const OK=(P)=>`<circle cx="${P[0]}" cy="${P[1]}" r="5" class="okdot"/>`;
-const CART="Particle_Kinematics_Cartesian.html", NT="Particle_Kinematics_Normal_Tangential.html", POL="Particle_Kinematics_Polar_Relative_Motion.html";
+const CART="Particle_Kinematics_Cartesian.html", NT="Particle_Kinematics_Normal_Tangential.html", POL="Particle_Kinematics_Polar.html", REL="Relative_Motion_Particles.html";
 
 /* ================= 1. Private plane: rectilinear braking ================= */
 const PL={ g:165, T:[70,165], S:[320,165], G:[70,150], C:[300,60] };
@@ -986,7 +986,7 @@ SCEN.push({
     return { frame:AXP(c.S,0,"x",90,"y")+OK(c.S),
       eqs:[T`\vec v_P=\vec v_S+\vec v_{P/S}\qquad(\text{frame translating with the carrier, axes east/north})`, T`\vec v_P=${fmt(v.vP)}\big(\sin ${fmt(v.hd)}^\circ\,\hat i+\cos ${fmt(v.hd)}^\circ\,\hat j\big)\ \text{m/s},\qquad \vec v_S=${fmt(v.vS)}\,\hat i\ \text{m/s}`],
       note:"Relative velocity is a vector subtraction: resolve both absolute velocities into east/north components and subtract. The observer's frame translates with the carrier but does not rotate, so no Coriolis or ω × r terms appear — a translating frame is all 'relative to the ship' requires here.",
-      link:{file:POL,pid:"jet"} }; }
+      link:{file:REL,pid:"jet"} }; }
 });
 
 /* ================= 10. Intersection: relative motion of two cars ================= */
@@ -1039,7 +1039,7 @@ SCEN.push({
     return { frame:AXP(CA.I,0,"x",90,"y")+OK(CA.I),
       eqs:[T`\vec r_A=${fmt(vA)}\,t\,\hat i\ \text{m},\quad \vec a_A=0;\qquad y_B=${fmt(v.d)}-\tfrac12(${fmt(v.aB)})t^2,\quad \vec v_B=-${fmt(v.aB)}\,t\,\hat j,\quad \vec a_B=-${fmt(v.aB)}\,\hat j`, T`\vec r_{B/A}=\vec r_B-\vec r_A,\qquad \vec v_{B/A}=\vec v_B-\vec v_A,\qquad \vec a_{B/A}=\vec a_B-\vec a_A\qquad\text{at } t=${fmt(v.t)}\ \text{s}`],
       note:"Two straight-line motions in fixed directions: Cartesian x east, y north with the origin at the intersection. Describe each car with constant-acceleration kinematics, then subtract — relative motion with translating axes, no rotation anywhere.",
-      link:{file:POL,pid:"cars"} }; }
+      link:{file:REL,pid:"cars"} }; }
 });
 })();
 
