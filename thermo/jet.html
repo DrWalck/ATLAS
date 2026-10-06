@@ -1,0 +1,832 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jet Engine Lab · ATLAS Thermodynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';s.onload=function(){window.renderSheet&&renderSheet();window.renderConcepts&&renderConcepts()};document.head.appendChild(s)"></script>
+<style>
+
+:root{
+  --bg:#eef1f5; --grid:rgba(29,79,145,.06); --surface:#ffffff; --surface-2:#f6f8fb;
+  --ink:#16202c; --muted:#5a6878; --line:#d5dce5;
+  --accent:#1d4f91; --accent-ink:#ffffff; --accent-soft:#e3ecf8;
+  --hl:#fbe7a1; --hl-ink:#3d2f00;
+  --good:#1f7a4d; --good-soft:#e1f3e9; --warn:#9a6200; --warn-soft:#fbf0dc; --bad:#b3261e; --bad-soft:#fbe5e3;
+  --plot-2:#c2571a;
+  --display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e131a; --grid:rgba(127,176,240,.05); --surface:#161e28; --surface-2:#1c2632;
+    --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3644;
+    --accent:#7fb0f0; --accent-ink:#0e131a; --accent-soft:#1f3350;
+    --hl:#4a3f17; --hl-ink:#fbe7a1;
+    --good:#5cc58e; --good-soft:#15301f; --warn:#e0a84a; --warn-soft:#33270f; --bad:#f08a80; --bad-soft:#3a1a18;
+    --plot-2:#f0a070;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e131a; --grid:rgba(127,176,240,.05); --surface:#161e28; --surface-2:#1c2632;
+  --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3644;
+  --accent:#7fb0f0; --accent-ink:#0e131a; --accent-soft:#1f3350;
+  --hl:#4a3f17; --hl-ink:#fbe7a1;
+  --good:#5cc58e; --good-soft:#15301f; --warn:#e0a84a; --warn-soft:#33270f; --bad:#f08a80; --bad-soft:#3a1a18;
+  --plot-2:#f0a070;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55;
+  padding-inline:16px; padding-block:0 48px;
+}
+.wrap{max-width:1120px;margin:0 auto}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;padding-block:28px 20px;border-bottom:2px solid var(--ink);margin-bottom:24px}
+header.top h1{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4vw,2.6rem);letter-spacing:.01em;line-height:1;margin:0;text-wrap:balance}
+.back{display:inline-block;font:600 .9rem var(--body);color:var(--accent);text-decoration:none;margin-bottom:8px}
+.back:hover{text-decoration:underline}
+.back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top p{margin:0;color:var(--muted);font-size:.95rem;max-width:52ch}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
+nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;gap:18px}
+.topic h2{font-family:var(--display);font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px}
+.topic ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.topic button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:8px;width:100%;padding:8px 10px;border-radius:6px;border:1px solid transparent}
+.topic button:hover{background:var(--surface)}
+.topic button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.topic button[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent)}
+.topic .pname{font-weight:600}
+.topic .ptag{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+.soon{font-size:.85rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+
+.concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
+.concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
+.concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
+.cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
+.cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
+.ceq{overflow-x:auto;font-size:1.05rem}
+main.sheet{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,3vw,32px);display:flex;flex-direction:column;gap:24px;min-width:0}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;font-size:.8rem;font-weight:600;color:var(--accent)}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.phead h2{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.2vw,2.1rem);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 .95rem/1 var(--body);padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.statement{font-size:1.08rem;max-width:68ch;margin:0}
+.num{font-family:var(--mono);font-size:.92em;background:var(--hl);color:var(--hl-ink);padding:0 .3em;border-radius:3px;white-space:nowrap}
+.variant{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.box{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--surface-2)}
+.box h3{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.box ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.box li{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.box li .v{font-family:var(--mono);font-size:.92rem}
+.method{font-size:.95rem;color:var(--muted);margin:0}
+.method b{color:var(--ink)}
+
+.answers h3{font-family:var(--display);font-size:1.15rem;margin:0 0 10px;font-weight:600}
+.arow{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(120px,1fr) 11rem;gap:10px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
+.arow label{font-weight:600}
+.arow .inp{display:flex;align-items:center;gap:6px}
+.arow input{width:100%;min-width:0;font:1rem var(--mono);padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.arow input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.arow .unit{font-family:var(--mono);font-size:.85rem;color:var(--muted);white-space:nowrap;min-width:4.2em}
+.chip{font:600 .8rem/1 var(--body);padding:6px 10px;border-radius:999px;white-space:nowrap;justify-self:start}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.idle{color:var(--muted)}
+.checkbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.hint{font-size:.85rem;color:var(--muted)}
+
+.solution{border-top:2px solid var(--ink);padding-top:20px;display:flex;flex-direction:column;gap:16px}
+.solution h3{font-family:var(--display);font-size:1.3rem;margin:0;font-weight:700}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:2rem minmax(0,1fr);gap:4px 10px}
+ol.steps li::before{content:counter(s);font-family:var(--mono);font-weight:600;color:var(--accent);border:1.5px solid var(--accent);border-radius:50%;width:1.7rem;height:1.7rem;display:grid;place-items:center;font-size:.8rem}
+.step-title{font-weight:600;align-self:center}
+.step-body{grid-column:2;display:flex;flex-direction:column;gap:6px;min-width:0}
+.eq{overflow-x:auto;padding:6px 0;font-size:1.12rem}
+.eq math{font-size:1.12em}
+.note{font-size:.92rem;color:var(--muted);margin:0}
+.final{display:flex;flex-wrap:wrap;gap:10px}
+.final .ans{border:2px solid var(--accent);border-radius:8px;padding:10px 14px;background:var(--accent-soft)}
+.final .ans .k{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--display);font-weight:600}
+.final .ans .val{font-family:var(--mono);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.plotwrap{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--surface-2)}
+.plotwrap figcaption{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+canvas{display:block;width:100%;height:260px}
+.takeaway{border-left:3px solid var(--hl);background:var(--surface-2);padding:10px 14px;border-radius:0 6px 6px 0;font-size:.95rem;margin:0}
+
+@media (max-width:780px){
+  .layout{grid-template-columns:1fr}
+  nav.problems{position:static}
+  .topic ul{flex-direction:row;flex-wrap:wrap}
+  .topic li{flex:1 1 150px}
+  .soon{display:none}
+  .arow{grid-template-columns:1fr auto}
+  .arow label{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:no-preference){
+  .solution{animation:rise .25s ease-out}
+  @keyframes rise{from{transform:translateY(6px)}to{transform:none}}
+}
+sub{font-size:.72em;line-height:0;vertical-align:-.25em}
+.eyebrow sub,.topic h2 sub{text-transform:none}
+/* SCHEM-CSS-START */
+.probtop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:18px;align-items:start}
+@media (max-width:900px){.probtop{grid-template-columns:1fr}}
+.schem{margin:0;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:8px 8px 4px}
+.schem figcaption{font-size:.74rem;color:var(--muted);text-align:right;margin-top:2px}
+.diag{width:100%;height:auto;display:block;overflow:visible}
+.diag .s,.diag .spr{stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.diag .thin{stroke:var(--ink);stroke-width:1.1;fill:none}
+.diag .h{stroke:var(--muted);stroke-width:1.3;fill:none;stroke-dasharray:5 4}
+.diag .h2{stroke:var(--muted);stroke-width:1.2;fill:none}
+.diag .hatch{stroke:var(--muted);stroke-width:1}
+.diag .v{stroke:var(--accent);stroke-width:2.2;fill:none}
+.diag .f{stroke:var(--plot-2);stroke-width:2.2;fill:none}
+.diag .body{fill:var(--accent-soft);stroke:var(--ink);stroke-width:1.6}
+.diag .body2{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.diag .pinb,.diag .pinc{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.diag .dotk{fill:var(--ink)} .diag .dotv{fill:var(--accent)} .diag .dotf{fill:var(--plot-2)}
+.diag .dimln{stroke:var(--muted);stroke-width:1} .diag .ext{stroke:var(--muted);stroke-width:.8;stroke-dasharray:2 3}
+.diag .ms{fill:var(--muted)} .diag .mv{fill:var(--accent)} .diag .mf{fill:var(--plot-2)}
+.diag text{font-family:var(--body);font-size:12.5px}
+.diag .t,.diag .ts{fill:var(--ink)} .diag .tv{fill:var(--accent);font-weight:600} .diag .tf{fill:var(--plot-2);font-weight:600} .diag .tm{fill:var(--muted)}
+/* SCHEM-CSS-END */
+/* ---------- Neon "game" theme (overrides everything above) ---------- */
+:root:root:root{
+  color-scheme:dark;
+  --bg:#060a14; --grid:rgba(34,211,238,.05); --surface:rgba(13,20,38,.86); --surface-2:#0e1730; --surface-3:#15213f;
+  --ink:#e9f1ff; --muted:#97a7c9; --line:#23345c;
+  --accent:#22d3ee; --accent-ink:#04121a; --accent-soft:rgba(34,211,238,.10);
+  --hl:rgba(255,210,63,.13); --hl-ink:#ffe27a;
+  --good:#7cff6b; --good-soft:rgba(124,255,107,.11); --warn:#ffd23f; --warn-soft:rgba(255,210,63,.12); --bad:#ff5c8a; --bad-soft:rgba(255,92,138,.13);
+  --plot-2:#ff8a3d; --mag:#ff4fd8; --vio:#8b5cf6;
+  --display:"Chakra Petch","Barlow Semi Condensed",system-ui,sans-serif;
+  --grad:linear-gradient(135deg,#22d3ee 0%,#8b5cf6 55%,#ff4fd8 100%);
+}
+html{background:#060a14}
+body{
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 5% -8%,rgba(139,92,246,.20),transparent 62%),
+    radial-gradient(800px 480px at 105% 0%,color-mix(in srgb,var(--zone) 20%,transparent),transparent 60%),
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:auto,auto,28px 28px,28px 28px;
+}
+::selection{background:rgba(34,211,238,.35)}
+
+/* header */
+header.top{border-bottom:none;position:relative;padding-block:26px 22px;align-items:flex-end}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--zone),#8b5cf6,transparent);box-shadow:0 0 14px var(--zone)}
+header.top h1{font-weight:700;letter-spacing:.02em;background:linear-gradient(90deg,#ffffff 20%,var(--zone));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.back{color:var(--zone);font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.8rem}
+header.top p{flex:1 1 320px}
+
+/* HUD */
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;flex:0 1 auto}
+.hud .cell{display:flex;align-items:center;gap:8px;background:rgba(10,16,32,.9);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-family:var(--display);font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.hud .cell svg{width:18px;height:18px;flex:none}
+.hud .k{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+.hud .n{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.hud .lvl{border-color:rgba(139,92,246,.6);box-shadow:0 0 16px -6px #8b5cf6}
+.hud .lvl .n{color:#c4b5fd}
+.hud .xpbar{width:84px;height:7px;border-radius:9px;background:#1a2648;overflow:hidden}
+.hud .xpbar i{display:block;height:100%;background:var(--grad);box-shadow:0 0 10px #22d3ee;transition:width .5s}
+.hud .streak .n{color:#ffb35c}.hud .streak svg{color:#ff8a3d;filter:drop-shadow(0 0 5px #ff8a3d)}
+.hud .clr .n{color:var(--good)}.hud .clr svg{color:var(--good);filter:drop-shadow(0 0 4px var(--good))}
+.hud .xp svg{color:#22d3ee;filter:drop-shadow(0 0 4px #22d3ee)}
+.hud .bump{animation:bump .5s ease-out}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* panels */
+.concepts,main.sheet{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 0 0 1px rgba(34,211,238,.04),0 24px 60px -24px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+main.sheet{border-top:2px solid color-mix(in srgb,var(--zone) 70%,transparent)}
+.concepts summary{font-family:var(--display);letter-spacing:.03em;color:#fff}
+.concepts summary::marker{color:var(--zone)}
+.cgrid h4{color:var(--zone)}
+.cgrid>div{background:rgba(8,14,30,.6);border:1px solid var(--line);border-radius:10px;padding:12px}
+
+/* nav */
+.topic h2{color:var(--zone);font-family:var(--display);letter-spacing:.14em}
+.topic button{border-radius:9px;transition:background .15s,box-shadow .15s}
+.topic button:hover{background:rgba(34,211,238,.06)}
+.topic button[aria-current="true"]{background:linear-gradient(90deg,color-mix(in srgb,var(--zone) 18%,transparent),rgba(13,20,38,.6));border-color:color-mix(in srgb,var(--zone) 45%,transparent);box-shadow:inset 3px 0 0 var(--zone),0 0 22px -10px var(--zone)}
+.topic .ptag{color:#8ea3cf}
+.topic button.solved .pname::after{content:"✓";display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-left:.45em;border-radius:50%;font-size:.72em;background:var(--good);color:#06210a;box-shadow:0 0 8px var(--good);vertical-align:.1em}
+.soon{border-top-color:var(--line)}
+
+/* problem sheet */
+.eyebrow{color:var(--zone);letter-spacing:.14em}
+.phead h2{color:#fff;letter-spacing:.01em}
+.variant{color:#8ea3cf}
+.btn{font-family:var(--display);letter-spacing:.05em;text-transform:uppercase;font-size:.84rem;padding:11px 15px;border-radius:9px;background:var(--surface-3);border:1px solid #2c4274;color:var(--ink);transition:transform .12s,box-shadow .15s,border-color .15s}
+.btn:hover{border-color:var(--accent);box-shadow:0 0 16px -4px var(--accent)}
+.btn.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#050b18;border-color:transparent;font-weight:700;box-shadow:0 0 18px -6px #22d3ee}
+.btn.primary:hover{filter:brightness(1.08);box-shadow:0 0 24px -4px #22d3ee}
+@media (prefers-reduced-motion:no-preference){.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}}
+.num{background:var(--hl);color:var(--hl-ink);border:1px solid rgba(255,210,63,.25);text-shadow:0 0 8px rgba(255,210,63,.35)}
+.box{background:rgba(8,14,30,.7);border-radius:12px;border-color:var(--line)}
+.cols .box:first-child{box-shadow:inset 0 2px 0 #22d3ee}
+.cols .box:first-child h3{color:#5eeaff}
+.cols .box:last-child{box-shadow:inset 0 2px 0 var(--mag)}
+.cols .box:last-child h3{color:#ff8be6}
+.box h3{letter-spacing:.14em}
+.box li .v{color:#ffe27a}
+.method b{color:#c4b5fd}
+.answers h3{font-family:var(--display);letter-spacing:.04em;color:#fff}
+.arow{border-top-color:var(--line)}
+.arow input{background:#08101f;border:1px solid #2c4274;border-radius:9px;color:#fff;transition:border-color .15s,box-shadow .15s}
+.arow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.18),0 0 18px -4px var(--accent)}
+.chip{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;border:1px solid transparent}
+.chip.good{border-color:rgba(124,255,107,.45);box-shadow:0 0 14px -4px var(--good);text-shadow:0 0 6px rgba(124,255,107,.6)}
+.chip.warn{border-color:rgba(255,210,63,.4)}
+.chip.bad{border-color:rgba(255,92,138,.45)}
+.chip.idle{border-color:var(--line)}
+@media (prefers-reduced-motion:no-preference){.chip.good,.chip.warn,.chip.bad{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.hint{color:#8ea3cf}
+
+/* solution */
+.solution{border-top:none;position:relative}
+.solution::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,#8b5cf6,var(--zone),transparent)}
+.solution h3{font-family:var(--display);letter-spacing:.04em;color:#fff}
+ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,211,238,.08);box-shadow:0 0 10px -2px #22d3ee}
+.final .ans{border:1px solid transparent;background:linear-gradient(#0c1530,#0c1530) padding-box,var(--grad) border-box;border-radius:12px;box-shadow:0 0 20px -8px #8b5cf6}
+.final .ans .val{color:#fff}
+.plotwrap{background:rgba(8,14,30,.75);border-radius:12px}
+.takeaway{border-left:3px solid var(--good);background:rgba(124,255,107,.06);border-radius:0 10px 10px 0}
+.takeaway b{color:var(--good)}
+
+/* schematic */
+.schem{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:12px;box-shadow:inset 0 0 30px rgba(34,211,238,.06),0 0 24px -12px #22d3ee}
+.schem figcaption{color:#7f93bd;letter-spacing:.04em}
+.diag .s{stroke:#d6e4ff}
+.diag .thin{stroke:#b8c9ee}
+.diag .spr{stroke:#a3e635;stroke-width:2.2;filter:url(#glow)}
+.diag .h{stroke:#6d82b3}
+.diag .h2{stroke:#b69cff}
+.diag .hatch{stroke:#4f6396}
+.diag .v{stroke:#22d3ee;stroke-width:2.6;filter:url(#glow)}
+.diag .f{stroke:#ff8a3d;stroke-width:2.6;filter:url(#glow)}
+.diag .body{fill:url(#gBody);stroke:#a5c4ff}
+.diag .body2{fill:url(#gBody2);stroke:#86a6e6}
+.diag .pinb{fill:#1c2a52;stroke:#a5c4ff}
+.diag .pinc{fill:#0b1226;stroke:#22d3ee}
+.diag .dotk{fill:#ffffff;filter:url(#glow)} .diag .dotv{fill:#22d3ee;filter:url(#glow)} .diag .dotf{fill:#ff8a3d;filter:url(#glow)}
+.diag .dimln{stroke:#b69cff} .diag .ext{stroke:#6d82b3}
+.diag .ms{fill:#b8c9ee} .diag .mv{fill:#22d3ee} .diag .mf{fill:#ff8a3d}
+.diag text{paint-order:stroke;stroke:#08101f;stroke-width:3.2px;stroke-linejoin:round}
+.diag .t,.diag .ts{fill:#f1f6ff} .diag .tv{fill:#67e8f9} .diag .tf{fill:#ffa468} .diag .tm{fill:#c9bcff}
+
+/* celebration */
+#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-140%);z-index:60;background:rgba(8,14,30,.95);border:1px solid transparent;background-image:linear-gradient(#0a1226,#0a1226),var(--grad);background-origin:border-box;background-clip:padding-box,border-box;border-radius:14px;padding:12px 20px;font-family:var(--display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;box-shadow:0 0 30px -6px #8b5cf6;transition:transform .35s cubic-bezier(.3,1.4,.5,1);display:flex;gap:12px;align-items:center;max-width:calc(100vw - 32px)}
+.toast.show{transform:translate(-50%,0)}
+.toast .plus{color:var(--good);text-shadow:0 0 10px var(--good)}
+.toast small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--muted);font-family:var(--body);font-size:.85rem}
+@media (max-width:780px){.hud{width:100%}.hud .cell{flex:1 1 auto;justify-content:center}}
+/* keep symbols like ma, Iα, a_t in their real case */
+.eyebrow,.topic h2{text-transform:none;letter-spacing:.06em;font-size:.86rem}
+.final .ans .k,.cgrid h4{text-transform:none;letter-spacing:.05em}
+:root:root:root{--zone:#22d3ee}
+/* ---------- hints ---------- */
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.hintcard{border:1px solid rgba(255,210,63,.35);background:rgba(255,210,63,.06);border-radius:10px;padding:10px 14px;font-size:.95rem}
+.hintcard .hk{display:block;font-family:var(--display);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#ffe27a;margin-bottom:3px}
+#hintbtn{border-color:rgba(255,210,63,.5);color:#ffe27a}
+#hintbtn:hover{box-shadow:0 0 16px -4px #ffd23f}
+#hintbtn:disabled{opacity:.5;cursor:default;box-shadow:none}
+/* ---------- meaning ---------- */
+.arow{grid-template-rows:auto auto}
+.sense{grid-column:1/-1;font-size:.9rem;color:#c9d6f2;padding:2px 0 4px;border-left:2px solid var(--good);padding-left:10px;margin-top:-2px}
+.sense .sk,.final .mean .sk{font-family:var(--display);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--good);margin-right:6px}
+.final .ans{max-width:100%}
+.final .mean{font-size:.82rem;color:#c9d6f2;margin-top:6px;max-width:30ch;line-height:1.35}
+/* ---------- MATLAB panel ---------- */
+#mlab:empty{display:none}
+.mlab{border:1px solid #2a3f70;border-radius:12px;background:rgba(8,14,30,.75);overflow:hidden}
+.mlab summary{cursor:pointer;padding:12px 16px;font-family:var(--display);font-weight:600;letter-spacing:.03em;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mlab summary::marker{color:#ff8a3d}
+.mlt{background:#ff8a3d;color:#1a0a00;font-size:.7rem;letter-spacing:.14em;padding:3px 8px;border-radius:6px;font-weight:700}
+.mlsub{color:var(--muted);font-weight:500;font-size:.85rem;letter-spacing:.02em}
+.mlbody{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.mlhelp{margin:0;font-size:.9rem;color:var(--muted)}
+.mlhelp code{font-family:var(--mono);font-size:.85em;color:#ffe27a;background:rgba(255,210,63,.1);padding:0 .3em;border-radius:3px}
+.mlcode{font-family:var(--mono);font-size:.86rem;line-height:1.75;background:#070c19;border:1px solid #1e2d52;border-radius:10px;padding:10px 0;overflow-x:auto;white-space:pre}
+.mlcode .cl{display:flex;gap:12px;padding:0 12px;min-height:1.75em}
+.mlcode .cl.err{background:rgba(255,92,138,.14);box-shadow:inset 3px 0 0 var(--bad)}
+.mlcode .ln{color:#3f5382;min-width:2ch;text-align:right;user-select:none;flex:none}
+.mlcode .ct{color:#d6e2ff;white-space:pre}
+.mlcode .c{color:#6ea86e;font-style:italic}
+.mlcode .s{color:#c39dff}
+.mlcode .n{color:#ffb35c}
+.mlcode .k{color:#5eeaff}
+.mlcode .f{color:#8ee7ff}
+.blank{position:relative;display:inline-flex;align-items:center;gap:2px;vertical-align:baseline}
+.mb{font:inherit;color:#fff;background:#0d1a3a;border:1px dashed #5a78c4;border-radius:6px;padding:0 8px;height:1.55em;line-height:1.55em;transition:border-color .15s,box-shadow .15s}
+.mb:focus{outline:none;border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.18)}
+.mb.ok{border-style:solid;border-color:var(--good);background:rgba(124,255,107,.1);box-shadow:0 0 10px -3px var(--good)}
+.mb.bad{border-style:solid;border-color:var(--bad);background:rgba(255,92,138,.1)}
+.mbh{font:700 .72rem var(--display);width:1.4em;height:1.4em;border-radius:50%;border:1px solid rgba(255,210,63,.6);background:rgba(255,210,63,.12);color:#ffe27a;cursor:pointer;padding:0;line-height:1}
+.mbh:hover{background:rgba(255,210,63,.3)}
+.mbtip{position:absolute;left:0;top:calc(100% + 6px);z-index:5;background:#141b33;border:1px solid rgba(255,210,63,.5);color:#ffe9a8;font:.8rem var(--body);line-height:1.35;padding:8px 10px;border-radius:8px;white-space:normal;width:max-content;max-width:min(360px,80vw);box-shadow:0 10px 30px -10px #000}
+.mlbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mlbar .hint.good{color:var(--good)}
+.mlout{border:1px solid #1e2d52;border-radius:10px;background:#03060f;overflow:hidden}
+.mlouth{font-family:var(--display);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:1px solid #1e2d52;background:#0a1226}
+.mlout pre{margin:0;padding:10px 12px;font:.86rem/1.5 var(--mono);color:#d6e2ff;white-space:pre-wrap;overflow-x:auto}
+.mlout pre.haserr{color:#ffb4c6}
+@media (max-width:600px){.mlcode{font-size:.8rem}.mb{max-width:60vw}}
+/* ---------- thermo sheet ---------- */
+.credit{color:#8ea3cf;font-style:italic}
+.sheetgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:760px){.sheetgrid{grid-template-columns:1.25fr 1fr}}
+.kl{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px;font-size:.95rem}
+.box .kl li{display:list-item;list-style:disc;justify-content:normal}
+.box .kl li span{display:inline}
+.box.find{box-shadow:inset 0 2px 0 var(--mag)}.box.find h3{color:#ff8be6}
+.box.kf:first-child{box-shadow:inset 0 2px 0 #22d3ee}.box.kf:first-child h3{color:#5eeaff}
+.schembox .schem{margin-top:4px}
+.secline{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.secline h3{font-family:var(--display);font-size:1.15rem;margin:0;color:#fff;letter-spacing:.03em}
+.btn.small{padding:7px 11px;font-size:.76rem}
+.props{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)}
+.pstate{border:1px solid #2a3f70;border-radius:10px;padding:10px 12px;margin-top:8px;background:#0a1226}
+.pshead{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:6px}
+.pshead b{font-family:var(--display);color:#fff}
+.pfix{color:#c9d6f2;font-size:.9rem}
+.pphase{font-family:var(--display);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#ffe27a;border:1px solid rgba(255,210,63,.4);border-radius:999px;padding:2px 8px}
+.ptab{border-collapse:collapse;width:100%;font-size:.92rem}
+.ptab td{padding:4px 8px;border-top:1px solid #1e2d52;vertical-align:top}
+.psym{font-family:var(--mono);color:#5eeaff;white-space:nowrap}
+.pval{font-family:var(--mono);color:#ffe27a;white-space:nowrap}
+.psrc{color:var(--muted);font-size:.85rem}
+.howbtn{all:unset;cursor:pointer;color:#c4b5fd;font-size:.8rem;text-decoration:underline dotted;margin-left:6px}
+.howlist{margin:4px 0 6px;padding-left:1.2em;font-size:.86rem;color:#c9d6f2;display:flex;flex-direction:column;gap:3px}
+.pnote{margin:6px 0 0;font-size:.88rem;color:var(--muted)}
+.pdiag{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)}
+.pdgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (min-width:860px){.pdgrid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.pvc{display:block;width:100%;height:300px;border-radius:10px}
+.spd{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.spd input{width:90px;accent-color:#22d3ee}
+.animbox{display:flex;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
+.pist{width:100%;max-width:240px;height:auto}
+.pist .cyl{fill:#0b1226;stroke:#a5c4ff;stroke-width:2}
+.pist .gas{stroke:none}
+.pist .pis{fill:url(#gBody2);fill:#334a7d;stroke:#a5c4ff;stroke-width:1.5}
+.pist .rod{fill:#4a5f96}
+.pist .wt{fill:#1c2a52;stroke:#ffd23f;stroke-width:1.5}
+.pist .pin{fill:#ff8a3d}
+.pist .ptxt{fill:#c9d6f2;font-size:11px;font-family:var(--body)}
+.pist .hin path{stroke:#ff8a3d;stroke-width:2;fill:none;filter:url(#glow)}
+.pist .hout path{stroke:#22d3ee;stroke-width:2;fill:none;filter:url(#glow)}
+.readout{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:.8rem;color:#c9d6f2;justify-content:center}
+.readout b{color:#ffe27a}
+.readout .pl{color:#7cff6b;font-family:var(--display)}
+.boxed{display:inline-block;border:1.5px solid var(--good);border-radius:8px;padding:4px 12px;margin-top:4px;background:rgba(124,255,107,.06)}
+.boxed math{font-size:1.1em}
+.box.comm{box-shadow:inset 0 2px 0 #ffd23f}.box.comm h3{color:#ffe27a}
+.box.refs{box-shadow:inset 0 2px 0 #a78bfa}.box.refs h3{color:#c4b5fd}
+.box.refs ol{padding-left:1.3em}.box.refs li{list-style:decimal}
+.diag .gas{fill:rgba(255,138,61,.22);stroke:none}
+.diag .water{fill:rgba(34,211,238,.12);stroke:none}
+.diag .wall{fill:rgba(255,210,63,.18);stroke:var(--ink);stroke-width:1.4}
+.ptable{border-collapse:collapse;margin:10px 0 0;font-family:var(--mono);font-size:.92rem}
+.ptable th,.ptable td{border:1px solid var(--line);padding:3px 10px;text-align:center}
+.ptable th{color:var(--muted);font-weight:600}
+.ptable td.q{color:#ff8be6;font-weight:700}
+.diag .hot{fill:rgba(255,138,61,.28);stroke:#ff8a3d;stroke-width:1.4}
+.diag .cold{fill:rgba(34,211,238,.22);stroke:#22d3ee;stroke-width:1.4}
+.diag .warm{fill:rgba(255,210,63,.22);stroke:#ffd23f;stroke-width:1.4}
+/* ---------- tables tool ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tabbtn{all:unset;cursor:pointer;font:600 .78rem var(--display);letter-spacing:.05em;text-transform:uppercase;padding:7px 11px;border-radius:8px;border:1px solid #2c4274;background:var(--surface-3);color:var(--ink)}
+.tabbtn.on{background:linear-gradient(135deg,#ffd23f,#ff8a3d);color:#1a0a00;border-color:transparent}
+.tblwrap{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#070c19}
+.dt{border-collapse:collapse;width:100%;font:.84rem var(--mono);white-space:nowrap}
+.dt th{position:sticky;top:0;background:#0f1a36;color:#5eeaff;padding:6px 8px;text-align:right;border-bottom:1px solid #2c4274;font-weight:600}
+.dt td{padding:3px 8px;text-align:right;border-bottom:1px solid #131d3a;color:#d6e2ff}
+.dt tr:hover td{background:rgba(34,211,238,.08)}
+.dt td:first-child,.dt th:first-child{text-align:left;color:#ffe27a;position:sticky;left:0;background:#0a1226}
+.dt .satrow td{color:#ffb35c}
+.blk{font-family:var(--display);color:#fff;margin:14px 8px 4px;font-size:.95rem;letter-spacing:.03em}
+.lookup{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7);display:flex;flex-direction:column;gap:10px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.lgrid label{display:flex;flex-direction:column;gap:3px;font:600 .72rem var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lgrid input,.lgrid select{font:.95rem var(--mono);padding:7px 9px;border-radius:8px;border:1px solid #2c4274;background:#08101f;color:#fff}
+.tlayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:1000px){.tlayout{grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr)}}
+
+/* ---------- concepts lab ---------- */
+.term{color:#ffe27a}
+.defq{margin:8px 0 0;font-size:1rem;color:#e9f1ff;border-left:3px solid #ffd23f;padding-left:10px}
+.opt.ok{border-color:var(--good);background:rgba(124,255,107,.1)}
+.efw{max-height:none}
+.eft{border-collapse:collapse;width:100%;font-size:.85rem}
+.eft th{background:#0f1a36;color:#5eeaff;padding:8px;text-align:left;border-bottom:1px solid #2c4274;font-family:var(--display);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.eft tbody th{color:#ffe27a;white-space:nowrap;text-transform:none;letter-spacing:0;font-size:.9rem}
+.eft td{padding:6px;border-bottom:1px solid #131d3a;vertical-align:top}
+.eft select{width:100%;max-width:220px;font:.82rem var(--body);padding:6px;border-radius:7px;border:1px dashed #5a78c4;background:#0d1a3a;color:#fff;white-space:normal}
+.eft select.ok{border:1px solid var(--good);background:rgba(124,255,107,.1)}
+.eft select.bad{border:1px solid var(--bad);background:rgba(255,92,138,.12)}
+.devgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:10px}
+@media (min-width:760px){.devgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.devfig{margin:0}
+.diag .wall{stroke:#a5c4ff;stroke-width:6}
+.diag .wt{fill:#1c2a52;stroke:#ffd23f;stroke-width:1.5}
+nav.problems .topic button{grid-template-columns:1fr;gap:2px}
+nav.problems .topic .ptag{white-space:normal;line-height:1.3}
+
+.flowbox{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
+.flowbox svg{width:100%;max-width:640px;height:auto;display:block;margin:0 auto;overflow:visible}
+.flow .pipe{stroke:#3a4f86;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow .part{stroke:none;filter:url(#glow)}
+
+/* ===== Jet Engine Lab ===== */
+.jetlayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media(min-width:1100px){.jetlayout{grid-template-columns:minmax(0,1.6fr) minmax(300px,.9fr)}}
+#scene{position:relative;width:100%;aspect-ratio:1000/420;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
+#scene svg,#scene canvas{position:absolute;inset:0;width:100%;height:100%}
+#scene canvas{pointer-events:none}
+.part{transition:opacity .25s}
+.part.selected .skin,.part.selected .casing,.part.selected .blade,.part.selected .disk,.part.selected .liner,.part.selected .cone,.part.selected .abox{filter:drop-shadow(0 0 6px #ffd23f)}
+.skin{fill:none;stroke:#9fb3d6;stroke-width:3}
+.lip{fill:none;stroke:#9fb3d6;stroke-width:3}
+.casing{fill:none;stroke:#6f86b3;stroke-width:2.5}
+.shaftlp{fill:#3a4a6e;stroke:#8aa0c8;stroke-width:1}
+.shafthp{fill:#55679a;stroke:#a7b9dd;stroke-width:1}
+.spinner{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:1}
+.blade{fill:#8fa6d2;stroke:#dbe6ff;stroke-width:.6}
+.blade.fan{fill:#a9bde6}
+.blade.hot{fill:#d9a06b;stroke:#ffe1bf}
+.stator{fill:#55679a;stroke:#8aa0c8;stroke-width:.5}
+.disk{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:.8}
+.liner{fill:#3b2a1e;stroke:#f0b27a;stroke-width:1.2}
+.flame{opacity:.95}
+.fuel{fill:none;stroke:#ffd23f;stroke-width:2}
+.cone{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:1}
+.plabel{font:600 11px "Chakra Petch",sans-serif;fill:#cfe0ff;letter-spacing:.03em}
+.plabel.small{font-size:9px}
+.stline{stroke:#ffd23f;stroke-width:1;stroke-dasharray:3 3;opacity:.8}
+.stbox{fill:rgba(5,10,24,.85);stroke:#ffd23f;stroke-width:.8}
+.stn-n{font:700 9px ui-monospace,monospace;fill:#ffd23f;text-anchor:middle}
+.stn-v{font:10px ui-monospace,monospace;fill:#eaf2ff;text-anchor:middle}
+.bypass{fill:none;stroke:#ff8a3d;stroke-width:4;stroke-dasharray:8 6;opacity:.7}
+.fanair{stroke:#a9bde6}
+.abox{fill:#1b2748;stroke:#8aa0c8;stroke-width:1.5}
+.hx .abox{fill:#13303a;stroke:#5fd3e6}
+.duct{fill:none;stroke:#6f86b3;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
+.ramduct{fill:none;stroke:#5fd3e6;stroke-width:6;opacity:.5}
+#legend{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.ro{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.ro span{color:var(--muted)} .ro b{font-family:ui-monospace,monospace;font-weight:600;color:#fff;text-align:right}
+.ctl label{display:block;margin:6px 0;font-size:.8rem;color:var(--muted)} .ctl label b{float:right;color:#fff;font-family:ui-monospace,monospace} .ctl input[type=range]{width:100%;accent-color:#ffd23f}
+.xray{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px} .xray select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:5px 8px;font:inherit}
+.btn.small{padding:5px 9px;font-size:.72rem}
+.xgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px} .xgrid label{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted)} .xgrid label span{flex:0 0 46%} .xgrid input{flex:1;accent-color:#5fd3e6;min-width:0}
+.panel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)} .panel h4{margin:0 0 6px;font-family:var(--display);color:#fff;letter-spacing:.03em}
+#controls h4{margin:10px 0 4px;font-family:var(--display);font-size:.9rem;color:#ffd23f}
+.ceq2{font-family:ui-monospace,monospace;font-size:.8rem;color:#eaf2ff;background:rgba(255,255,255,.04);border-left:3px solid #ffd23f;padding:6px 8px;margin:6px 0;border-radius:4px;overflow-x:auto}
+.cvt{width:100%;font-size:.8rem} .cvt th{text-align:left;color:var(--muted);font-weight:600} .cvt td{padding:3px 6px 3px 0;font-family:ui-monospace,monospace}
+#tscanvas{width:100%;height:260px;display:block;border:1px solid var(--line);border-radius:12px;background:rgba(8,14,30,.7)}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div><a class="back" href="./">&larr; All topics</a><h1>Jet Engine Lab</h1></div>
+    <p>A business-jet-class turbofan running the <b>Brayton cycle</b>, and its air-conditioning pack running the <b>reverse Brayton cycle</b>. Fly it, make parts transparent, isolate any component as a control volume, and watch the working fluid change state. Every number comes from the Chapter 4 energy balances with the course's cold/hot ideal-gas model, so you can reproduce it by hand.</p>
+  </header>
+  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="engine">Turbofan engine · Brayton</button><button type="button" class="tabbtn" data-k="acm">Air cycle machine · reverse Brayton</button></div>
+  <div class="jetlayout">
+    <section>
+      <div id="scene"></div>
+      <p id="legend"></p>
+      <div class="sheetgrid" style="margin-top:12px">
+        <div class="panel" id="cvpanel"></div>
+        <canvas id="tscanvas"></canvas>
+      </div>
+    </section>
+    <aside>
+      <div class="panel" id="controls"></div>
+      <div class="panel" style="margin-top:12px"><h4>Readouts</h4><div id="readout"></div></div>
+      <div class="panel" style="margin-top:12px"><h4>Model notes</h4><p class="note">Generic two-spool high-bypass turbofan (bypass ratio 4.5, overall pressure ratio ≈ 36, T₄,max = 1650 K, 230 kg/s at sea-level takeoff), representative of the 60–80 kN engines on large business jets. Cold section c_p = 1.005 kJ/kg·K, k = 1.4; hot section c_p = 1.148, k = 1.333; LHV = 43 MJ/kg. Component isentropic efficiencies: fan 90 %, LPC 88 %, HPC 87 %, HPT 91 %, LPT 92 %; combustor 99.5 % with 4 % pressure loss; nozzles fully expanded with velocity coefficient 0.98. Off-design behaviour (idle, altitude) is a simple spool-speed scaling, not a full component-matching model. Station numbering follows the usual engine convention (0 ambient, 2 fan face, 13 bypass, 2.5, 3, 4, 4.5, 5, 8).</p></div>
+    </aside>
+  </div>
+</div>
+<script>
+const T = String.raw;
+const g = 9.81;
+function pick(min, max, step){ const n = Math.round((max-min)/step); return +(min + step*Math.floor(Math.random()*(n+1))).toFixed(6); }
+function fmt(x, sig=4){ if(!isFinite(x)) return "—"; if(Math.abs(x) < 1e-12) return "0"; return String(Number(x.toPrecision(sig))); }
+function sgn(x, sig=4){ return (x < 0 ? " - " : " + ") + fmt(Math.abs(x), sig); }   // signed term for equations
+function tex(s, display=true){
+  if(window.katex){ try{ return katex.renderToString(s,{output:"mathml",displayMode:display,throwOnError:false}); }catch(e){} }
+  return '<code>'+s.replace(/</g,"&lt;")+'</code>';
+}
+function N(x, unit="", sig=4){ return `<span class="num">${fmt(x,sig)}${unit?"&nbsp;"+unit:""}</span>`; }
+
+
+function fixSubs(root){
+  if(!root) return;
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
+  while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
+  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+}
+
+/* ===================== JET ENGINE LAB: turbofan (Brayton) + air cycle machine (reverse Brayton) =====================
+   Generic two-spool high-bypass turbofan of the business-jet class. All station values are computed with the
+   cold/hot ideal-gas model used in the course (cp = 1.005, k = 1.4 before the combustor; cp = 1.148, k = 1.333 after),
+   so every number on the screen can be reproduced by hand with the Chapter 4 energy balance.                      */
+const JET=(()=>{
+  const $=(s)=>document.querySelector(s);
+  const cpc=1.005, kc=1.4, cph=1.148, kh=1.333, R=0.287, LHV=43000;        // kJ/kg·K, kJ/kg
+  const ISA=(h)=>{ const T=h<11000?288.15-0.0065*h:216.65; const p=h<11000?101325*Math.pow(T/288.15,5.2559):22632*Math.exp(-9.80665*(h-11000)/(287.05*216.65)); return {T,p:p/1000}; }; // K, kPa
+  /* ---------- engine design point (sea-level static, full throttle) ---------- */
+  const D={BPR:4.5, FPR:1.65, LPC:1.9, HPC:11.5, T4:1650, mdot:230, eta:{ram:0.98,fan:0.90,lpc:0.88,hpc:0.87,b:0.995,dpb:0.04,hpt:0.91,lpt:0.92,m:0.99,cv:0.98}};
+  /* entropy relative to 288.15 K, 101.325 kPa with a smooth cp(T) = a + bT fit between the cold and hot values */
+  const sRel=(T,p)=>{ const a=0.957,b=1.6e-4; const f=(t)=>a*Math.log(t)+b*t; return f(T)-f(288.15)-R*Math.log(p/101.325); };
+  function engine(inp){
+    const {th,alt,M}=inp; const amb=ISA(alt); const T0=amb.T, p0=amb.p; const V0=M*Math.sqrt(kc*R*1000*T0);
+    const N=0.55+0.45*th;                                   // spool speed fraction (idle ≈ 55 %)
+    const T02=T0*(1+(kc-1)/2*M*M), p02=p0*Math.pow(1+(kc-1)/2*M*M,kc/(kc-1))*D.eta.ram;
+    const FPR=1+(D.FPR-1)*N*N, LPC=1+(D.LPC-1)*N*N, HPC=1+(D.HPC-1)*Math.pow(N,1.8);
+    const T4=Math.min(D.T4, T02+ (D.T4-288.15)*(0.42+0.58*th));       // turbine inlet temperature set by the fuel control
+    const mdot=D.mdot*N*(p02/101.325)*Math.sqrt(288.15/T02);          // corrected-flow scaling
+    const BPR=D.BPR; const mc=mdot/(1+BPR), mb=mdot-mc;
+    const comp=(T,PR,eta,k)=>T*(1+(Math.pow(PR,(k-1)/k)-1)/eta);
+    const T13=comp(T02,FPR,D.eta.fan,kc), p13=p02*FPR;
+    const T25=comp(T13,LPC,D.eta.lpc,kc), p25=p13*LPC;
+    const T3=comp(T25,HPC,D.eta.hpc,kc), p3=p25*HPC;
+    const p4=p3*(1-D.eta.dpb); const f=(cph*T4-cpc*T3)/(D.eta.b*LHV-cph*T4); const mf=f*mc;
+    const wHPC=cpc*(T3-T25), wLPC=cpc*(T25-T13), wFAN=cpc*(T13-T02);
+    const T45=T4-wHPC/((1+f)*cph*D.eta.m); const T45s=T4-(T4-T45)/D.eta.hpt; const p45=p4*Math.pow(T45s/T4,kh/(kh-1));
+    const T5=T45-(wLPC+BPR*wFAN)/((1+f)*cph*D.eta.m); const T5s=T45-(T45-T5)/D.eta.lpt; const p5=p45*Math.pow(T5s/T45,kh/(kh-1));
+    const V8=D.eta.cv*Math.sqrt(Math.max(0,2*cph*1000*T5*(1-Math.pow(p0/p5,(kh-1)/kh)))); const T8=T5-V8*V8/(2*cph*1000);
+    const V18=D.eta.cv*Math.sqrt(Math.max(0,2*cpc*1000*T13*(1-Math.pow(p0/p13,(kc-1)/kc)))); const T18=T13-V18*V18/(2*cpc*1000);
+    const Fc=mc*((1+f)*V8-V0), Fb=mb*(V18-V0), F=Fc+Fb;                 // N
+    const KE=0.5*(mc*(1+f)*V8*V8+mb*V18*V18-mdot*V0*V0)/1000;            // kW
+    const Qin=mf*LHV*D.eta.b; const eta_th=KE/Qin, eta_p=F*V0/1000/KE, eta_o=eta_th*eta_p;
+    const TSFC=F>0?mf/F*3.6e6:NaN;                                        // g/(kN·s) → kg/(kN·h)
+    const st={0:{T:T0,p:p0,V:V0,m:mdot},2:{T:T02,p:p02,V:V0,m:mdot},13:{T:T13,p:p13,V:0,m:mb},25:{T:T25,p:p25,m:mc},3:{T:T3,p:p3,m:mc},4:{T:T4,p:p4,m:mc*(1+f)},45:{T:T45,p:p45,m:mc*(1+f)},5:{T:T5,p:p5,m:mc*(1+f)},8:{T:T8,p:p0,V:V8,m:mc*(1+f)},18:{T:T18,p:p0,V:V18,m:mb}};
+    for(const k in st) st[k].s=sRel(st[k].T,st[k].p);
+    return {st,N,FPR,LPC,HPC,OPR:FPR*LPC*HPC,BPR,mdot,mc,mb,f,mf,F,Fc,Fb,TSFC,eta_th,eta_p,eta_o,V0,V8,V18,wFAN,wLPC,wHPC,Qin,KE,T0,p0,M,alt,th,
+      W:{fan:mdot*wFAN,lpc:mc*wLPC,hpc:mc*wHPC,hpt:mc*(1+f)*cph*(T4-T45),lpt:mc*(1+f)*cph*(T45-T5)}};
+  }
+  /* ---------- air cycle machine (bootstrap pack fed by HPC bleed) ---------- */
+  function acm(E,inp){
+    const {mb,prv,PRa,eps1,eps2,cabAlt,Tdem}=inp; const T3=E.st[3].T, p3=E.st[3].p, Tram=E.st[2].T, Tfan=E.st[13].T;
+    const pcab=ISA(E.alt>cabAlt?cabAlt:E.alt).p;                                   // cabin pressure (pressurized to 'cabin altitude')
+    const eta_c=0.80, eta_t=0.85, eta_m=0.98, dpHX=0.03;
+    const a={}; a.bleed={T:T3,p:p3};
+    a.prsov={T:T3,p:Math.min(p3,prv)};                                            // pressure-regulating valve (isenthalpic)
+    a.pc={T:a.prsov.T-0.45*(a.prsov.T-Tfan),p:a.prsov.p*(1-dpHX)};                // precooler vs fan air, ε = 0.45
+    a.phx={T:a.pc.T-eps1*(a.pc.T-Tram),p:a.pc.p*(1-dpHX)};                        // primary heat exchanger vs ram air
+    const T2s=a.phx.T*Math.pow(PRa,(kc-1)/kc); a.comp={T:a.phx.T+(T2s-a.phx.T)/eta_c,p:a.phx.p*PRa};
+    a.shx={T:a.comp.T-eps2*(a.comp.T-Tram),p:a.comp.p*(1-dpHX)};                  // secondary heat exchanger vs ram air
+    const pt=pcab*1.06; const T4s=a.shx.T*Math.pow(pt/a.shx.p,(kc-1)/kc); a.turb={T:a.shx.T-eta_t*(a.shx.T-T4s),p:pt};
+    a.ws={T:a.turb.T,p:pt*0.99};
+    /* temperature-control valve: hot bleed (PRSOV state) bypasses the ACM and mixes with the cold turbine discharge to the demanded duct temperature */
+    const Td=Tdem+273.15; let x=0; if(a.ws.T<Td) x=Math.min(0.9,(Td-a.ws.T)/(a.prsov.T-a.ws.T));
+    const Tmix=a.ws.T+x*(a.prsov.T-a.ws.T); a.mix={T:Tmix,p:pcab*1.02}; a.cabin={T:Tmix,p:pcab};
+    const ma=mb*(1-x);                                                            // flow through the ACM
+    const wc=cpc*(a.comp.T-a.phx.T), wt=cpc*(a.shx.T-a.turb.T);
+    const q1=cpc*(a.prsov.T-a.pc.T)+cpc*(a.pc.T-a.phx.T), q2=cpc*(a.comp.T-a.shx.T);
+    const COP=cpc*(Tram-a.turb.T)/(wc);
+    for(const k in a) a[k].s=sRel(a[k].T,a[k].p);
+    return {a,mb,ma,x,wc,wt,Wc:ma*wc,Wt:ma*wt,Wfan:ma*(wt*eta_m-wc),q1,q2,Q1:ma*q1,Q2:ma*q2,pcab,Tram,Tfan,COP,eta_c,eta_t,Tdem};
+  }
+  /* ---------- drawing ---------- */
+  const W=1000,H=420, cy=230;                      // engine axis
+  const X={inlet:40,fan:150,lpc:250,hpc:340,comb:470,hpt:560,lpt:640,noz:760,exit:930};   // station x positions
+  const tC=(T)=>{ const t=Math.max(0,Math.min(1,(T-220)/1400)); const stops=[[0.0,[60,140,255]],[0.25,[90,220,255]],[0.45,[230,230,120]],[0.65,[255,140,40]],[0.85,[255,60,30]],[1,[255,240,230]]]; let i=1; while(i<stops.length&&stops[i][0]<t) i++; const [a,ca]=stops[i-1],[b,cb]=stops[i]; const u=(t-a)/(b-a); return `rgb(${ca.map((c,j)=>Math.round(c+u*(cb[j]-c))).join(",")})`; };
+  const G=(id,cls,inner)=>`<g id="${id}" class="part ${cls||""}" data-part="${id}">${inner}</g>`;
+  function engineSVG(){
+    const rN=150, rCore=70, rHub=28;
+    const ring=(x,w,r,cls,fill)=>`<rect x="${x}" y="${cy-r}" width="${w}" height="${2*r}" rx="4" class="${cls}" ${fill?`fill="${fill}"`:""}/>`;
+    const rotor=(x,r1,r2,n,w,cls)=>{ let s=""; for(let i=0;i<n;i++){ const xi=x+i*w; s+=`<path d="M${xi},${cy-r2} l${w*0.5},${0} l${w*0.3},${r2-r1} l${-w*0.5},${0} z" class="${cls}"/><path d="M${xi},${cy+r2} l${w*0.5},${0} l${w*0.3},${-(r2-r1)} l${-w*0.5},${0} z" class="${cls}"/>`; } return s; };
+    const stator=(x,r1,r2,n,w)=>{ let s=""; for(let i=0;i<n;i++){ const xi=x+w*0.55+i*w; s+=`<rect x="${xi}" y="${cy-r2}" width="${w*0.25}" height="${r2-r1}" class="stator"/><rect x="${xi}" y="${cy+r1}" width="${w*0.25}" height="${r2-r1}" class="stator"/>`; } return s; };
+    let s=`<svg id="jetsvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-label="Turbofan cutaway">
+      <defs><linearGradient id="gmetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fb3d6"/><stop offset=".5" stop-color="#4b5f85"/><stop offset="1" stop-color="#1e2a46"/></linearGradient>
+      <radialGradient id="gflame" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#fff3c4"/><stop offset=".4" stop-color="#ff9a2e"/><stop offset="1" stop-color="#ff3b1f" stop-opacity=".1"/></radialGradient></defs>`;
+    /* bypass duct + nacelle */
+    s+=G("nacelle","",`<path d="M${X.inlet},${cy-rN} C${X.fan-40},${cy-rN-8} ${X.lpc},${cy-rN+6} ${X.hpc+60},${cy-rN+10} L${X.noz+40},${cy-rN+40} Q${X.exit-60},${cy-rN+56} ${X.exit},${cy-rN+70}" class="skin"/>
+      <path d="M${X.inlet},${cy+rN} C${X.fan-40},${cy+rN+8} ${X.lpc},${cy+rN-6} ${X.hpc+60},${cy+rN-10} L${X.noz+40},${cy+rN-40} Q${X.exit-60},${cy+rN-56} ${X.exit},${cy+rN-70}" class="skin"/>
+      <path d="M${X.inlet},${cy-rN} q-14,0 -14,14 l0,${2*rN-28} q0,14 14,14" class="lip"/>
+      <text x="${X.lpc+40}" y="${cy-rN+34}" class="plabel">bypass duct</text>`);
+    /* core casing */
+    s+=G("core","",`<path d="M${X.fan+40},${cy-rCore-10} L${X.hpc},${cy-rCore} L${X.comb},${cy-rCore-6} L${X.lpt+70},${cy-rCore+4} L${X.noz+90},${cy-rCore+30} L${X.exit-30},${cy-20}" class="casing"/>
+      <path d="M${X.fan+40},${cy+rCore+10} L${X.hpc},${cy+rCore} L${X.comb},${cy+rCore+6} L${X.lpt+70},${cy+rCore-4} L${X.noz+90},${cy+rCore-30} L${X.exit-30},${cy+20}" class="casing"/>`);
+    /* shafts */
+    s+=G("shaft","",`<rect x="${X.fan-10}" y="${cy-9}" width="${X.lpt+60-X.fan+10}" height="18" rx="3" class="shaftlp"/><rect x="${X.hpc-10}" y="${cy-16}" width="${X.hpt+40-X.hpc+10}" height="32" rx="4" class="shafthp"/>
+      <text x="${X.lpt+10}" y="${cy+48}" class="plabel">LP shaft (N1)</text><text x="${X.hpc+20}" y="${cy-20}" class="plabel small">HP shaft (N2)</text>`);
+    /* fan */
+    s+=G("fan","",`<path d="M${X.fan-50},${cy} q20,-30 50,-30 l0,60 q-30,0 -50,-30 z" class="spinner"/>${rotor(X.fan,rHub,rN-12,1,22,"blade fan")}<rect x="${X.fan-2}" y="${cy-rHub}" width="26" height="${2*rHub}" class="disk"/>
+      ${stator(X.fan+34,rCore+14,rN-14,1,22)}<text x="${X.fan-30}" y="${cy-rN+6}" class="plabel">fan</text>`);
+    /* LPC */
+    s+=G("lpc","",`${rotor(X.lpc-20,rHub+6,rCore-6,3,22,"blade")}${stator(X.lpc-20,rHub+8,rCore-8,3,22)}<rect x="${X.lpc-22}" y="${cy-rHub-6}" width="70" height="${2*(rHub+6)}" rx="6" class="disk"/><text x="${X.lpc-30}" y="${cy-rCore-16}" class="plabel">LP compressor</text>`);
+    /* HPC */
+    s+=G("hpc","",`${rotor(X.hpc,rHub+12,rCore-12,7,16,"blade")}${stator(X.hpc,rHub+14,rCore-14,7,16)}<rect x="${X.hpc-4}" y="${cy-rHub-12}" width="${7*16+8}" height="${2*(rHub+12)}" rx="8" class="disk"/><text x="${X.hpc+10}" y="${cy-rCore-16}" class="plabel">HP compressor</text>`);
+    /* combustor */
+    s+=G("comb","",`<rect x="${X.comb-10}" y="${cy-rCore+10}" width="80" height="34" rx="12" class="liner"/><rect x="${X.comb-10}" y="${cy+rCore-44}" width="80" height="34" rx="12" class="liner"/>
+      <ellipse cx="${X.comb+32}" cy="${cy-rCore+27}" rx="28" ry="12" fill="url(#gflame)" class="flame"/><ellipse cx="${X.comb+32}" cy="${cy+rCore-27}" rx="28" ry="12" fill="url(#gflame)" class="flame"/>
+      <path d="M${X.comb-30},${cy-rCore-26} l20,0 l0,26" class="fuel"/><text x="${X.comb-60}" y="${cy-rCore-30}" class="plabel">fuel</text><text x="${X.comb-10}" y="${cy-rCore-16}" class="plabel">combustor</text>`);
+    /* HPT */
+    s+=G("hpt","",`${rotor(X.hpt,rHub+10,rCore-8,2,18,"blade hot")}${stator(X.hpt-20,rHub+10,rCore-8,1,18)}<rect x="${X.hpt-4}" y="${cy-rHub-10}" width="44" height="${2*(rHub+10)}" rx="6" class="disk"/><text x="${X.hpt-16}" y="${cy-rCore-16}" class="plabel">HP turbine</text>`);
+    /* LPT */
+    s+=G("lpt","",`${rotor(X.lpt,rHub+4,rCore+2,4,20,"blade hot")}${stator(X.lpt,rHub+6,rCore,4,20)}<rect x="${X.lpt-4}" y="${cy-rHub-4}" width="88" height="${2*(rHub+4)}" rx="6" class="disk"/><text x="${X.lpt+6}" y="${cy-rCore-16}" class="plabel">LP turbine</text>`);
+    /* nozzle + cone */
+    s+=G("noz","",`<path d="M${X.noz},${cy-rHub} q90,6 170,28 L${X.exit},${cy} L${X.noz+170},${cy+28} q-80,-22 -170,-28 z" class="cone"/><text x="${X.noz+30}" y="${cy+rCore+40}" class="plabel">exhaust cone / core nozzle</text>`);
+    /* stations */
+    const stations=[["0",X.inlet+30,"ambient"],["2",X.fan-20,"fan inlet"],["13",X.fan+60,"bypass"],["2.5",X.lpc+60,"LPC exit"],["3",X.hpc+118,"HPC exit"],["4",X.comb+80,"turbine inlet"],["4.5",X.hpt+48,"HPT exit"],["5",X.lpt+92,"LPT exit"],["8",X.exit-40,"core exit"]];
+    s+=`<g id="stations">`+stations.map(([n,x,lab],i)=>{ const yb=(i%2?cy+rN+20:cy-rN-36); const yt=n==="13"?cy-rN+30:(i%2?cy+rN+6:cy-rN-12); return `<g class="stn" data-st="${n}"><line x1="${x}" y1="${n==="13"?cy-rN+40:cy-rHub-4}" x2="${x}" y2="${n==="13"?cy-rN+14:yt}" class="stline"/><g transform="translate(${x},${n==="13"?cy-rN-2:yb})"><rect x="-40" y="-12" width="80" height="40" rx="6" class="stbox"/><text x="0" y="1" class="stn-n">${n} · ${lab}</text><text x="0" y="14" class="stn-v" data-k="p">p</text><text x="0" y="26" class="stn-v" data-k="T">T</text></g></g>`; }).join("")+`</g>`;
+    s+=`</svg>`; return s;
+  }
+  /* ---------- ACM pack drawing (two rows: hot side along the top, cold side along the bottom) ---------- */
+  const AY1=110, AY2=310; const AX={bleed:[70,AY1],prsov:[190,AY1],pc:[320,AY1],phx:[470,AY1],comp:[640,AY1],shx:[820,AY1],turb:[640,AY2],ws:[470,AY2],mix:[320,AY2],cabin:[150,AY2]};
+  const APATH=[[0,AY1],[70,AY1],[190,AY1],[320,AY1],[470,AY1],[640,AY1],[820,AY1],[880,AY1],[880,AY2],[640,AY2],[470,AY2],[320,AY2],[150,AY2],[60,AY2]];
+  const ANODE=["bleed","bleed","prsov","pc","phx","comp","shx","shx","shx","turb","ws","mix","cabin","cabin"];
+  function acmSVG(){
+    const box=(id,w,h,lab,cls,shape)=>{ const [x,y]=AX[id]; return G(id,cls,(shape||`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="10" class="abox"/>`)+`<text x="${x}" y="${y+4}" class="plabel" text-anchor="middle">${lab}</text>`); };
+    let s=`<svg id="acmsvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-label="Air cycle machine">`;
+    s+=`<path d="M${APATH.map(p=>p.join(",")).join(" L")}" class="duct"/>`;
+    /* hot-bypass duct from the regulating valve to the mixing point */
+    s+=`<path d="M190,${AY1+26} L190,210 L300,210 L300,${AY2-30}" class="bypass"/><text x="196" y="228" class="plabel small">hot bypass (temperature-control valve)</text>`;
+    s+=box("bleed",80,50,"HPC bleed");
+    s+=box("prsov",80,50,"PRSOV");
+    s+=box("pc",100,70,"precooler","hx");
+    s+=box("phx",110,80,"primary HX","hx");
+    s+=box("comp",0,0,"compressor","",`<path d="M${AX.comp[0]-40},${AY1-46} L${AX.comp[0]+40},${AY1-28} L${AX.comp[0]+40},${AY1+28} L${AX.comp[0]-40},${AY1+46} z" class="abox"/>`);
+    s+=box("shx",110,80,"secondary HX","hx");
+    s+=box("turb",0,0,"turbine","",`<path d="M${AX.turb[0]+40},${AY2-46} L${AX.turb[0]-40},${AY2-28} L${AX.turb[0]-40},${AY2+28} L${AX.turb[0]+40},${AY2+46} z" class="abox"/>`);
+    s+=G("shaftacm","",`<rect x="${AX.comp[0]-6}" y="${AY1+46}" width="12" height="${AY2-AY1-92}" rx="3" class="shaftlp"/><text x="${AX.comp[0]+14}" y="${(AY1+AY2)/2+4}" class="plabel small">bootstrap shaft</text>`);
+    s+=box("ws",90,56,"water separator");
+    s+=box("mix",0,0,"mix (TCV)","",`<circle cx="${AX.mix[0]}" cy="${AY2}" r="30" class="abox"/>`);
+    s+=box("cabin",100,64,"cabin");
+    /* fan air across the precooler, ram air across both heat exchangers */
+    s+=`<g id="ram"><path d="M${AX.pc[0]},${AY1+70} L${AX.pc[0]},${AY1-70}" class="ramduct fanair"/><text x="${AX.pc[0]}" y="${AY1+84}" class="plabel small" text-anchor="middle">fan air</text>
+      <path d="M${AX.phx[0]-20},${AY1+72} L${AX.phx[0]-20},${AY1-72} M${AX.phx[0]+20},${AY1+72} L${AX.phx[0]+20},${AY1-72}" class="ramduct"/><text x="${AX.phx[0]}" y="${AY1+86}" class="plabel small" text-anchor="middle">ram air</text>
+      <path d="M${AX.shx[0]-20},${AY1+72} L${AX.shx[0]-20},${AY1-72} M${AX.shx[0]+20},${AY1+72} L${AX.shx[0]+20},${AY1-72}" class="ramduct"/><text x="${AX.shx[0]}" y="${AY1+86}" class="plabel small" text-anchor="middle">ram air</text></g>`;
+    const tags=[["bleed",0,-1],["prsov",0,-1],["pc",0,-1],["phx",0,-1],["comp",0,-1],["shx",0,-1],["turb",0,1],["ws",0,1],["mix",0,1],["cabin",0,1]];
+    s+=`<g id="astations">`+tags.map(([k,dx,dy])=>{ const [x,y]=AX[k]; const ty=y+dy*(dy<0?78:66); return `<g class="stn" data-st="${k}"><g transform="translate(${x+dx},${ty})"><rect x="-46" y="-13" width="92" height="42" rx="6" class="stbox"/><text x="0" y="1" class="stn-n">${k==="cabin"?"to cabin":k==="mix"?"after mixing":"out of "+k}</text><text x="0" y="15" class="stn-v" data-k="p">p</text><text x="0" y="27" class="stn-v" data-k="T">T</text></g></g>`; }).join("")+`</g>`;
+    s+=`</svg>`; return s;
+  }
+  /* ---------- particles ---------- */
+  const PARTS={engine:["nacelle","core","shaft","fan","lpc","hpc","comb","hpt","lpt","noz"], acm:["bleed","prsov","pc","phx","comp","shx","turb","shaftacm","ws","mix","cabin"]};
+  const state={tab:"engine", th:0.85, alt:0, M:0, sel:null, xray:{}, acm:{mb:1.0,prv:310,PRa:1.8,eps1:0.75,eps2:0.85,cabAlt:2440,Tdem:5}, E:null, A:null, run:true, speed:1};
+  let particles=[]; let canvas, ctx, raf;
+  function paths(){ /* core: along upper annulus; bypass: along duct */
+    const rc=50, rb=112;
+    const core=[[X.inlet-40,cy-rc-20],[X.fan-20,cy-rc],[X.lpc,cy-rc],[X.hpc+60,cy-rc+6],[X.comb+40,cy-rc+2],[X.hpt+20,cy-rc],[X.lpt+40,cy-rc+6],[X.noz+60,cy-rc+30],[X.exit,cy-12],[X.exit+60,cy-8]];
+    const byp=[[X.inlet-40,cy-rb-10],[X.fan-20,cy-rb],[X.fan+60,cy-rb],[X.hpc+60,cy-rb+8],[X.noz+40,cy-rb+36],[X.exit,cy-rb+62],[X.exit+60,cy-rb+70]];
+    const mirror=(p)=>p.map(([x,y])=>[x,2*cy-y]);
+    return {core,coreL:mirror(core),byp,bypL:mirror(byp)};
+  }
+  function segProps(E,kind,u){ /* temperature, pressure, speed along the path parameter u∈[0,1] */
+    const st=E.st; const at=(a,b,t)=>a+(b-a)*t;
+    if(kind==="byp"){ const brk=[0,0.18,0.3,1]; if(u<brk[1]) return {T:st[0].T,p:st[0].p,v:Math.max(60,E.V0)}; if(u<brk[2]) return {T:at(st[2].T,st[13].T,(u-brk[1])/(brk[2]-brk[1])),p:at(st[2].p,st[13].p,(u-brk[1])/(brk[2]-brk[1])),v:150}; const t=(u-brk[2])/(1-brk[2]); return {T:at(st[13].T,st[18].T,t*t),p:at(st[13].p,st[18].p,t*t),v:at(150,E.V18,t)}; }
+    const nodes=[[0,"0",Math.max(60,E.V0)],[0.1,"2",Math.max(60,E.V0)],[0.2,"13",150],[0.3,"25",140],[0.44,"3",120],[0.56,"4",110],[0.65,"45",280],[0.76,"5",240],[0.9,"8",E.V8],[1,"8",E.V8]];
+    let i=1; while(i<nodes.length-1&&nodes[i][0]<u) i++; const [ua,ka,va]=nodes[i-1],[ub,kb,vb]=nodes[i]; const t=(u-ua)/(ub-ua);
+    return {T:at(st[ka].T,st[kb].T,t),p:at(st[ka].p,st[kb].p,t),v:at(va,vb,t)};
+  }
+  function initParticles(){ particles=[]; const P=paths(); const mk=(path,kind,n)=>{ for(let i=0;i<n;i++) particles.push({path,kind,u:Math.random(),off:(Math.random()-0.5)*(kind==="core"?30:34)}); };
+    mk(P.core,"core",90); mk(P.coreL,"core",90); mk(P.byp,"byp",140); mk(P.bypL,"byp",140); }
+  function ptOn(path,u){ const n=path.length-1; const x=u*n; const i=Math.min(n-1,Math.floor(x)); const t=x-i; const [ax,ay]=path[i],[bx,by]=path[i+1]; return [ax+(bx-ax)*t, ay+(by-ay)*t, Math.atan2(by-ay,bx-ax)]; }
+  function drawParticles(dt){
+    if(!canvas||!state.E) return; const r=canvas.getBoundingClientRect(); if(canvas.width!==Math.round(r.width*devicePixelRatio)){ canvas.width=Math.round(r.width*devicePixelRatio); canvas.height=Math.round(r.height*devicePixelRatio); }
+    const sx=canvas.width/W, sy=canvas.height/H; ctx.clearRect(0,0,canvas.width,canvas.height);
+    const vis=(kind)=>{ const op=state.sel?(state.sel==="nacelle"?1:0.25):1; return op; };
+    for(const q of particles){ const pr=segProps(state.E,q.kind,q.u); q.u+=dt*state.speed*pr.v/9000; if(q.u>1) q.u-=1;
+      const [x,y,ang]=ptOn(q.path,q.u); const size=(1.2+2.2*Math.min(1,pr.p/2000))*sx; ctx.globalAlpha=q.kind==="byp"?0.75*vis("byp"):0.95*vis("core"); ctx.fillStyle=tC(pr.T);
+      ctx.beginPath(); ctx.ellipse(x*sx+Math.cos(ang+Math.PI/2)*q.off*sx, y*sy+Math.sin(ang+Math.PI/2)*q.off*sy, size*(1+pr.v/400), size, ang, 0, Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha=1;
+  }
+  /* ---------- ACM particles along the duct ---------- */
+  function acmParticles(dt){ if(!canvas||!state.A) return; const r=canvas.getBoundingClientRect(); if(canvas.width!==Math.round(r.width*devicePixelRatio)){ canvas.width=Math.round(r.width*devicePixelRatio); canvas.height=Math.round(r.height*devicePixelRatio); }
+    const sx=canvas.width/W, sy=canvas.height/H; ctx.clearRect(0,0,canvas.width,canvas.height); const a=state.A.a;
+    if(!particles.acm){ particles.acm=[]; for(let i=0;i<160;i++) particles.acm.push({u:Math.random(),off:(Math.random()-0.5)*12}); }
+    const n=APATH.length-1;
+    for(const q of particles.acm){ q.u+=dt*state.speed*0.06; if(q.u>1) q.u-=1; const xq=q.u*n; const i=Math.min(n-1,Math.floor(xq)); const t=xq-i; const A0=a[ANODE[i]], A1=a[ANODE[i+1]]; const T=A0.T+(A1.T-A0.T)*t, p=A0.p+(A1.p-A0.p)*t; const [ax,ay]=APATH[i],[bx,by]=APATH[i+1]; const x=ax+(bx-ax)*t, y=ay+(by-ay)*t; const horiz=Math.abs(bx-ax)>Math.abs(by-ay);
+      ctx.fillStyle=tC(T); ctx.globalAlpha=0.9; const rr=(1.6+2.6*Math.min(1,p/600))*sx; ctx.beginPath(); ctx.ellipse(x*sx+(horiz?0:q.off*sx), y*sy+(horiz?q.off*sy:0), rr*(horiz?1.7:1), rr*(horiz?1:1.7), 0, 0, Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha=1;
+  }
+  /* ---------- UI ---------- */
+  const f=(x,d=0)=>isFinite(x)?x.toFixed(d):"—";
+  const fmtK=(T)=>`${f(T)} K (${f(T-273.15)} °C)`;
+  function compute(){ state.E=engine({th:state.th,alt:state.alt,M:state.M}); state.A=acm(state.E,state.acm); }
+  function stationTags(){ const E=state.E; if(state.tab==="engine"){ document.querySelectorAll('#jetsvg .stn').forEach(g=>{ const k=g.dataset.st.replace(".",""); const s=E.st[k]; if(!s) return; g.querySelector('[data-k=p]').textContent=`p = ${f(s.p,s.p<10?2:0)} kPa`; g.querySelector('[data-k=T]').textContent=`T = ${f(s.T)} K`; }); }
+    else { const a=state.A.a; document.querySelectorAll('#acmsvg .stn').forEach(g=>{ const s=a[g.dataset.st]; if(!s) return; g.querySelector('[data-k=p]').textContent=`p = ${f(s.p)} kPa`; g.querySelector('[data-k=T]').textContent=`T = ${f(s.T)} K (${f(s.T-273.15)} °C)`; }); } }
+  function readouts(){ const E=state.E, A=state.A; const el=$("#readout");
+    if(state.tab==="engine"){ el.innerHTML=[["Net thrust",`${f(E.F/1000,1)} kN (${f(E.F/4.448,0)} lbf)`],["Core / bypass thrust",`${f(E.Fc/1000,1)} / ${f(E.Fb/1000,1)} kN`],["Air flow",`${f(E.mdot,0)} kg/s (core ${f(E.mc,0)})`],["Fuel flow",`${f(E.mf*3600,0)} kg/h · f = ${f(E.f,4)}`],["TSFC",`${f(E.TSFC,1)} kg/(kN·h)`],["Overall pressure ratio",`${f(E.OPR,1)} (fan ${f(E.FPR,2)} · LPC ${f(E.LPC,2)} · HPC ${f(E.HPC,1)})`],["Turbine inlet T₄ / EGT T₅",`${f(E.st[4].T)} / ${f(E.st[5].T)} K`],["Exit velocities V₈ / V₁₈",`${f(E.V8)} / ${f(E.V18)} m/s (V₀ = ${f(E.V0)})`],["η_th · η_prop = η_overall",`${f(100*E.eta_th,1)} % · ${f(100*E.eta_p,1)} % = ${f(100*E.eta_o,1)} %`],["Spool speed N",`${f(100*E.N,0)} %`]].map(([k,v])=>`<div class="ro"><span>${k}</span><b>${v}</b></div>`).join(""); }
+    else { el.innerHTML=[["Bleed flow",`${f(A.mb,2)} kg/s from HPC exit (${f(E.st[3].p,0)} kPa, ${f(E.st[3].T)} K)`],["Turbine discharge",`${f(A.a.turb.T-273.15,1)} °C at ${f(A.a.turb.p,1)} kPa`],["Pack outlet (after TCV mixing)",`${f(A.a.cabin.T-273.15,1)} °C, hot bypass ${f(100*A.x,0)} % of the bleed`],["Cabin pressure altitude",`${f(state.acm.cabAlt/0.3048,0)} ft → ${f(A.pcab,1)} kPa`],["Flow through the ACM",`${f(A.ma,2)} kg/s`],["ACM compressor / turbine",`${f(A.Wc,1)} kW in / ${f(A.Wt,1)} kW out (surplus ${f(A.Wfan,1)} kW to ram fan)`],["Heat rejected (precooler + primary HX)",`${f(A.Q1,1)} kW`],["Heat rejected (secondary HX)",`${f(A.Q2,1)} kW`],["Ram-air temperature",`${f(A.Tram)} K (${f(A.Tram-273.15,1)} °C)`],["Cooling per unit compressor work",`${f(A.COP,2)}`]].map(([k,v])=>`<div class="ro"><span>${k}</span><b>${v}</b></div>`).join(""); }
+    fixSubs(el); }
+  function cvPanel(){ const el=$("#cvpanel"); const E=state.E, A=state.A; const sel=state.sel; if(!sel){ el.innerHTML=`<p class="note">Click a component (or pick one from the list) to isolate it as a control volume and see its energy balance with the numbers from the simulation.</p>`; return; }
+    const st=E.st; const row=(lab,s,extra="")=>`<tr><td>${lab}</td><td>${f(s.p,s.p<10?2:1)} kPa</td><td>${f(s.T,1)} K</td><td>${f(s.m,1)} kg/s</td>${extra}</tr>`;
+    const tbl=(rows)=>`<table class="ptab cvt"><thead><tr><th></th><th>p</th><th>T</th><th>ṁ</th></tr></thead><tbody>${rows}</tbody></table>`;
+    const eq=(s)=>`<div class="ceq2">${s}</div>`;
+    let h="";
+    if(state.tab==="engine"){
+      const C={
+        fan:["Fan (driven by the LP turbine)",tbl(row("inlet (2)",st[2])+row("bypass exit (13)",st[13])),eq(`Ẇ_fan = ṁ c_p (T_13 − T_2) = ${f(E.mdot,1)} × 1.005 × (${f(st[13].T,1)} − ${f(st[2].T,1)}) = <b>${f(E.W.fan,0)} kW</b>`)+eq(`η_fan = (T_13s − T_2)/(T_13 − T_2) with T_13s = T_2 (p_13/p_2)^{0.286} → ${f(100*D.eta.fan,0)} %`)+`<p class="note">Steady flow, adiabatic, ΔKE and ΔPE neglected across the stage. The whole airflow (core + bypass) passes through the fan.</p>`],
+        lpc:["LP compressor (booster)",tbl(row("inlet (13, core share)",{p:st[13].p,T:st[13].T,m:E.mc})+row("exit (2.5)",st[25])),eq(`Ẇ_LPC = ṁ_core c_p (T<sub>2.5</sub> − T_13) = ${f(E.mc,1)} × 1.005 × (${f(st[25].T,1)} − ${f(st[13].T,1)}) = <b>${f(E.W.lpc,0)} kW</b>`)],
+        hpc:["HP compressor",tbl(row("inlet (2.5)",st[25])+row("exit (3)",st[3])),eq(`Ẇ_HPC = ṁ_core c_p (T_3 − T<sub>2.5</sub>) = ${f(E.mc,1)} × 1.005 × (${f(st[3].T,1)} − ${f(st[25].T,1)}) = <b>${f(E.W.hpc,0)} kW</b>`)+eq(`p_3/p<sub>2.5</sub> = ${f(E.HPC,2)}; isentropic T_3s = T<sub>2.5</sub> (p_3/p<sub>2.5</sub>)^{0.286} = ${f(st[25].T*Math.pow(E.HPC,0.2857),1)} K, η_HPC = ${f(100*D.eta.hpc,0)} %`)],
+        comb:["Combustor",tbl(row("air in (3)",st[3])+row("gas out (4)",st[4])),eq(`ṁ_f = ${f(E.mf,3)} kg/s; f = ṁ_f/ṁ_air = ${f(E.f,4)}`)+eq(`Energy: ṁ_a c_p,a T_3 + η_b ṁ_f LHV = (ṁ_a + ṁ_f) c_p,g T_4 → Q̇_in = η_b ṁ_f LHV = <b>${f(E.Qin/1000,1)} MW</b>`)+eq(`Pressure drop ${f(100*D.eta.dpb,0)} % (p_4 = ${f(st[4].p,0)} kPa); c_p,g = 1.148 kJ/kg·K`)],
+        hpt:["HP turbine (drives the HP compressor)",tbl(row("inlet (4)",st[4])+row("exit (4.5)",st[45])),eq(`Ẇ_HPT = ṁ_g c_p,g (T_4 − T<sub>4.5</sub>) = ${f(st[4].m,1)} × 1.148 × (${f(st[4].T,1)} − ${f(st[45].T,1)}) = <b>${f(E.W.hpt,0)} kW</b>`)+eq(`Shaft balance: η_m Ẇ_HPT = Ẇ_HPC → ${f(D.eta.m,2)} × ${f(E.W.hpt,0)} ≈ ${f(E.W.hpc,0)} kW ✓`)],
+        lpt:["LP turbine (drives fan + LP compressor)",tbl(row("inlet (4.5)",st[45])+row("exit (5)",st[5])),eq(`Ẇ_LPT = ṁ_g c_p,g (T<sub>4.5</sub> − T_5) = <b>${f(E.W.lpt,0)} kW</b>`)+eq(`Shaft balance: η_m Ẇ_LPT = Ẇ_fan + Ẇ_LPC = ${f(E.W.fan,0)} + ${f(E.W.lpc,0)} = ${f(E.W.fan+E.W.lpc,0)} kW ✓`)],
+        noz:["Core nozzle",tbl(row("inlet (5)",st[5])+row("exit (8)",st[8],""))+`<p class="note">exit V₈ = ${f(E.V8)} m/s</p>`,eq(`h_5 = h_8 + V_8²/2 → V_8 = √(2 c_p,g (T_5 − T_8)) = √(2 × 1148 × (${f(st[5].T,1)} − ${f(st[8].T,1)})) = <b>${f(E.V8)} m/s</b>`)+eq(`Core thrust = ṁ_g V_8 − ṁ_core V_0 = ${f(E.Fc/1000,1)} kN (fully expanded, p_8 = p_0)`)],
+        nacelle:["Bypass duct & nozzle",tbl(row("fan exit (13)",st[13])+row("bypass exit (18)",st[18])),eq(`V_18 = √(2 c_p (T_13 − T_18)) = <b>${f(E.V18)} m/s</b>; bypass thrust = ṁ_b (V_18 − V_0) = ${f(E.Fb/1000,1)} kN`)+`<p class="note">On a high-bypass engine most of the thrust comes from the fan stream — compare with the core thrust.</p>`],
+        core:["Whole engine as one control volume",tbl(row("air in (0)",st[0])+row("core out (8)",st[8])+row("bypass out (18)",st[18])),eq(`F = ṁ_core[(1+f)V_8 − V_0] + ṁ_b (V_18 − V_0) = <b>${f(E.F/1000,1)} kN</b>`)+eq(`η_th = ΔKĖ/(ṁ_f LHV) = ${f(100*E.eta_th,1)} %, η_p = F V_0/ΔKĖ = ${f(100*E.eta_p,1)} %`)],
+        shaft:["Two spools",`<p class="note">The HP turbine and HP compressor share the inner (N2) shaft; the LP turbine drives the fan and LP compressor through the outer (N1) shaft. Each shaft is its own power balance — see the HPT and LPT panels.</p>`,""],
+      }[sel]; if(C) h=`<h4>${C[0]}</h4>${C[1]}${C[2]}`;
+    } else {
+      const a=A.a; const r2=(lab,s)=>`<tr><td>${lab}</td><td>${f(s.p,1)} kPa</td><td>${f(s.T,1)} K (${f(s.T-273.15,1)} °C)</td></tr>`; const t2=(rows)=>`<table class="ptab cvt"><thead><tr><th></th><th>p</th><th>T</th></tr></thead><tbody>${rows}</tbody></table>`;
+      const C={
+        bleed:["Bleed port","Hot, high-pressure air is tapped from the HP compressor exit: "+t2(r2("bleed",a.bleed)),""],
+        prsov:["Pressure-regulating valve (throttling)",t2(r2("in",a.bleed)+r2("out",a.prsov)),eq(`Throttling: h_in = h_out → T unchanged (ideal gas), p drops to the regulated ${f(state.acm.prv,0)} kPa`)],
+        pc:["Precooler (cooled by fan air)",t2(r2("in",a.prsov)+r2("out",a.pc)),eq(`Q̇ = ṁ c_p (T_in − T_out) = ${f(A.mb,2)} × 1.005 × (${f(a.prsov.T,1)} − ${f(a.pc.T,1)}) = <b>${f(A.mb*cpc*(a.prsov.T-a.pc.T),1)} kW</b> to the fan stream (ε = 0.45 vs T_fan = ${f(A.Tfan,0)} K)`)],
+        phx:["Primary heat exchanger (ram air)",t2(r2("in",a.pc)+r2("out",a.phx)),eq(`ε = (T_in − T_out)/(T_in − T_ram) = ${f(state.acm.eps1,2)}; Q̇ = ${f(A.mb*cpc*(a.pc.T-a.phx.T),1)} kW`)],
+        comp:["ACM compressor",t2(r2("in",a.phx)+r2("out",a.comp)),eq(`p ratio ${f(state.acm.PRa,2)}; T_out,s = T_in (p_out/p_in)^{0.286}; η_c = ${f(100*A.eta_c,0)} %`)+eq(`Ẇ_c = ṁ c_p (T_out − T_in) = <b>${f(A.Wc,1)} kW</b> (supplied by the ACM turbine)`)],
+        shx:["Secondary heat exchanger (ram air)",t2(r2("in",a.comp)+r2("out",a.shx)),eq(`ε = ${f(state.acm.eps2,2)}; Q̇ = ṁ c_p (T_in − T_out) = <b>${f(A.Q2,1)} kW</b> rejected to ram air`)],
+        turb:["ACM turbine (the cold producer)",t2(r2("in",a.shx)+r2("out",a.turb)),eq(`Expands to ${f(a.turb.p,1)} kPa: T_out,s = T_in (p_out/p_in)^{0.286} = ${f(a.shx.T*Math.pow(a.turb.p/a.shx.p,0.2857),1)} K; η_t = ${f(100*A.eta_t,0)} %`)+eq(`Ẇ_t = ṁ c_p (T_in − T_out) = <b>${f(A.Wt,1)} kW</b> → drives the compressor (${f(A.Wc,1)} kW); surplus ${f(A.Wfan,1)} kW drives the ram-air fan`)+`<p class="note">This is the reverse Brayton (air-refrigeration) cycle: the air itself is the refrigerant and the turbine expansion produces the cold air.</p>`],
+        ws:["Water separator",t2(r2("in (turbine discharge)",a.turb)+r2("out",a.ws)),"<p class=\"note\">Moisture condensed by the cold turbine discharge is removed here; dry air is assumed thermodynamically, with a 1 % pressure loss.</p>"],
+        mix:["Temperature-control valve: mixing chamber",t2(r2("cold (turbine, via separator)",a.ws)+r2("hot bypass (PRSOV state)",a.prsov)+r2("mixed",a.mix)),eq(`Mass: ṁ = ṁ_cold + ṁ_hot; energy: ṁ c_p T_mix = ṁ_cold c_p T_cold + ṁ_hot c_p T_hot`)+eq(`x = ṁ_hot/ṁ = (T_mix − T_cold)/(T_hot − T_cold) = (${f(a.mix.T,1)} − ${f(a.ws.T,1)})/(${f(a.prsov.T,1)} − ${f(a.ws.T,1)}) = <b>${f(A.x,3)}</b>`)+`<p class="note">The valve adds just enough hot bleed to hold the demanded duct temperature (${f(A.Tdem,0)} °C, kept above freezing so the water separator does not ice). When the turbine discharge is already warmer than the demand, the bypass closes (x = 0) and the pack delivers all the cooling it can.</p>`],
+        cabin:["Cabin",t2(r2("pack outlet",a.cabin)),`<p class="note">Pack air is mixed with recirculated cabin air to the selected cabin temperature. The cabin is held at a pressure altitude of ${f(state.acm.cabAlt/0.3048,0)} ft (${f(A.pcab,1)} kPa) by the outflow valve.</p>`],
+        shaftacm:["Bootstrap shaft","<p class=\"note\">Turbine and compressor sit on one shaft: the turbine's work bootstraps the pressure (and hence the expansion ratio available to the turbine). The leftover power turns the ram-air fan that pulls cooling air through the heat exchangers on the ground.</p>",""],
+      }[sel]; if(C) h=`<h4>${C[0]}</h4>${C[1]}${C[2]}`;
+    }
+    el.innerHTML=h||""; fixSubs(el);
+  }
+  /* ---------- T–s diagram ---------- */
+  function tsDiagram(){ const c=$("#tscanvas"); if(!c) return; const r=c.getBoundingClientRect(); c.width=Math.round(r.width*devicePixelRatio); c.height=Math.round(r.height*devicePixelRatio); const g=c.getContext("2d"); g.scale(devicePixelRatio,devicePixelRatio); const Wc=r.width, Hc=r.height; g.clearRect(0,0,Wc,Hc);
+    const E=state.E; let pts, ideal, title;
+    if(state.tab==="engine"){ const st=E.st; pts=[["0",st[0]],["2",st[2]],["2.5",st[25]],["3",st[3]],["4",st[4]],["4.5",st[45]],["5",st[5]],["8",st[8]]]; title="Core Brayton cycle, T–s (actual)";
+      /* ideal: isentropic to p3, isobaric to T4, isentropic to p0 */ const T3s=st[2].T*Math.pow(st[3].p/st[2].p,(kc-1)/kc), T8s=st[4].T*Math.pow(st[0].p/st[4].p,(kh-1)/kh); ideal=[{T:st[2].T,p:st[2].p},{T:T3s,p:st[3].p},{T:st[4].T,p:st[3].p},{T:T8s,p:st[0].p}].map(q=>({...q,s:sRel(q.T,q.p)})); }
+    else { const a=state.A.a; pts=[["bleed",a.bleed],["PRSOV",a.prsov],["precooler",a.pc],["PHX",a.phx],["comp",a.comp],["SHX",a.shx],["turbine",a.turb],["mix",a.mix]]; title="Air cycle machine, T–s (reverse Brayton)"; ideal=null; }
+    const all=pts.map(p=>p[1]).concat(ideal||[]); const smin=Math.min(...all.map(p=>p.s))-0.1, smax=Math.max(...all.map(p=>p.s))+0.1, Tmin=Math.min(...all.map(p=>p.T))-50, Tmax=Math.max(...all.map(p=>p.T))+80;
+    const px=(s)=>44+(s-smin)/(smax-smin)*(Wc-60), py=(T)=>Hc-30-(T-Tmin)/(Tmax-Tmin)*(Hc-50);
+    g.strokeStyle="#2c4274"; g.lineWidth=1; g.beginPath(); g.moveTo(44,10); g.lineTo(44,Hc-30); g.lineTo(Wc-10,Hc-30); g.stroke();
+    g.fillStyle="#9fb3d6"; g.font="11px ui-monospace, monospace"; g.fillText("s (kJ/kg·K, rel.)",Wc-120,Hc-12); g.save(); g.translate(12,Hc/2); g.rotate(-Math.PI/2); g.fillText("T (K)",-14,0); g.restore();
+    g.fillStyle="#cfe0ff"; g.font="600 12px Chakra Petch, sans-serif"; g.fillText(title,50,16);
+    for(let T=Math.ceil(Tmin/200)*200;T<Tmax;T+=200){ g.fillStyle="#6b7fa6"; g.font="10px ui-monospace"; g.fillText(T,16,py(T)+3); g.strokeStyle="rgba(44,66,116,.5)"; g.beginPath(); g.moveTo(44,py(T)); g.lineTo(Wc-10,py(T)); g.stroke(); }
+    /* isobars through the key states */
+    const isob=(p,color)=>{ g.strokeStyle=color; g.setLineDash([3,4]); g.beginPath(); let first=true; for(let T=Tmin+10;T<Tmax;T+=10){ const s=sRel(T,p); if(s<smin||s>smax){ first=true; continue; } if(first){ g.moveTo(px(s),py(T)); first=false; } else g.lineTo(px(s),py(T)); } g.stroke(); g.setLineDash([]); };
+    if(state.tab==="engine"){ isob(E.st[0].p,"rgba(120,160,255,.35)"); isob(E.st[3].p,"rgba(255,160,80,.35)"); }
+    if(ideal){ g.strokeStyle="rgba(255,255,255,.35)"; g.setLineDash([5,4]); g.beginPath(); ideal.forEach((q,i)=>{ i?g.lineTo(px(q.s),py(q.T)):g.moveTo(px(q.s),py(q.T)); }); g.lineTo(px(ideal[0].s),py(ideal[0].T)); g.stroke(); g.setLineDash([]); g.fillStyle="rgba(255,255,255,.5)"; g.font="10px ui-monospace"; g.fillText("ideal (isentropic) cycle",px(ideal[1].s)+6,py(ideal[1].T)-4); }
+    g.strokeStyle="#ffd23f"; g.lineWidth=2; g.beginPath(); pts.forEach(([n,q],i)=>{ i?g.lineTo(px(q.s),py(q.T)):g.moveTo(px(q.s),py(q.T)); }); g.stroke();
+    pts.forEach(([n,q])=>{ g.fillStyle=tC(q.T); g.beginPath(); g.arc(px(q.s),py(q.T),4,0,Math.PI*2); g.fill(); g.fillStyle="#fff"; g.font="600 10px ui-monospace"; g.fillText(n,px(q.s)+6,py(q.T)-5); });
+  }
+  function applyXray(){ const svg=state.tab==="engine"?$("#jetsvg"):$("#acmsvg"); if(!svg) return; svg.querySelectorAll(".part").forEach(g=>{ const id=g.dataset.part; let op=state.xray[id]!==undefined?state.xray[id]:1; if(state.sel){ op=id===state.sel?1:Math.min(op,0.18); } g.style.opacity=op; g.classList.toggle("selected",state.sel===id); }); }
+  function controls(){ const el=$("#controls"); const parts=PARTS[state.tab]; const NAMES={nacelle:"nacelle & bypass duct",core:"core casing",shaft:"shafts",fan:"fan",lpc:"LP compressor",hpc:"HP compressor",comb:"combustor",hpt:"HP turbine",lpt:"LP turbine",noz:"nozzle & cone",bleed:"bleed port",prsov:"regulating valve",pc:"precooler",phx:"primary HX",comp:"ACM compressor",shx:"secondary HX",turb:"ACM turbine",shaftacm:"bootstrap shaft",ws:"water separator",mix:"TCV mixing",cabin:"cabin"};
+    const eng=`<div class="ctl"><label>Throttle <b id="v-th">${f(100*state.th,0)} %</b><input type="range" id="th" min="0" max="1" step="0.01" value="${state.th}"></label>
+      <label>Altitude <b id="v-alt">${f(state.alt/0.3048,0)} ft</b><input type="range" id="alt" min="0" max="13700" step="100" value="${state.alt}"></label>
+      <label>Flight Mach number <b id="v-M">${f(state.M,2)}</b><input type="range" id="M" min="0" max="0.9" step="0.01" value="${state.M}"></label></div>`;
+    const acmc=`<div class="ctl"><label>Bleed flow <b id="v-mb">${f(state.acm.mb,2)} kg/s</b><input type="range" id="mb" min="0.3" max="2" step="0.05" value="${state.acm.mb}"></label>
+      <label>Regulated bleed pressure <b id="v-prv">${f(state.acm.prv,0)} kPa</b><input type="range" id="prv" min="200" max="500" step="10" value="${state.acm.prv}"></label>
+      <label>ACM compressor pressure ratio <b id="v-PRa">${f(state.acm.PRa,2)}</b><input type="range" id="PRa" min="1.2" max="2.6" step="0.05" value="${state.acm.PRa}"></label>
+      <label>Heat-exchanger effectiveness ε₁ / ε₂ <b id="v-eps">${f(state.acm.eps1,2)} / ${f(state.acm.eps2,2)}</b><input type="range" id="eps1" min="0.4" max="0.95" step="0.01" value="${state.acm.eps1}"><input type="range" id="eps2" min="0.4" max="0.95" step="0.01" value="${state.acm.eps2}"></label>
+      <label>Pack outlet temperature demand <b id="v-Tdem">${f(state.acm.Tdem,0)} °C</b><input type="range" id="Tdem" min="2" max="40" step="1" value="${state.acm.Tdem}"></label>
+      <label>Cabin pressure altitude <b id="v-cab">${f(state.acm.cabAlt/0.3048,0)} ft</b><input type="range" id="cabAlt" min="0" max="2440" step="50" value="${state.acm.cabAlt}"></label>
+      <p class="note">The pack is fed by the engine on the other tab — change throttle, altitude or Mach there and the bleed state follows.</p></div>`;
+    el.innerHTML=`<h4>Operating point</h4>${state.tab==="engine"?eng:acmc}<h4>X-ray</h4><div class="xray"><button type="button" class="btn small" id="xall">All glass</button><button type="button" class="btn small" id="xnone">All solid</button>
+      <select id="isolate"><option value="">Isolate a component…</option>${parts.map(p=>`<option value="${p}" ${state.sel===p?"selected":""}>${NAMES[p]}</option>`).join("")}</select></div>
+      <div class="xgrid">${parts.map(p=>`<label><span>${NAMES[p]}</span><input type="range" data-x="${p}" min="0" max="1" step="0.05" value="${state.xray[p]!==undefined?state.xray[p]:1}"></label>`).join("")}</div>
+      <div class="ctl"><label>Flow animation speed <b id="v-sp">${f(state.speed,1)}×</b><input type="range" id="speed" min="0" max="3" step="0.1" value="${state.speed}"></label></div>`;
+    const upd=()=>{ compute(); stationTags(); readouts(); cvPanel(); tsDiagram(); };
+    const bind=(id,set,lab)=>{ const e=$("#"+id); if(!e) return; e.oninput=()=>{ set(+e.value); if(lab) lab(); upd(); }; };
+    bind("th",v=>state.th=v,()=>$("#v-th").textContent=f(100*state.th,0)+" %"); bind("alt",v=>state.alt=v,()=>$("#v-alt").textContent=f(state.alt/0.3048,0)+" ft"); bind("M",v=>state.M=v,()=>$("#v-M").textContent=f(state.M,2));
+    bind("mb",v=>state.acm.mb=v,()=>$("#v-mb").textContent=f(state.acm.mb,2)+" kg/s"); bind("prv",v=>state.acm.prv=v,()=>$("#v-prv").textContent=f(state.acm.prv,0)+" kPa"); bind("PRa",v=>state.acm.PRa=v,()=>$("#v-PRa").textContent=f(state.acm.PRa,2));
+    bind("eps1",v=>state.acm.eps1=v,()=>$("#v-eps").textContent=f(state.acm.eps1,2)+" / "+f(state.acm.eps2,2)); bind("eps2",v=>state.acm.eps2=v,()=>$("#v-eps").textContent=f(state.acm.eps1,2)+" / "+f(state.acm.eps2,2)); bind("Tdem",v=>state.acm.Tdem=v,()=>$("#v-Tdem").textContent=f(state.acm.Tdem,0)+" °C"); bind("cabAlt",v=>state.acm.cabAlt=v,()=>$("#v-cab").textContent=f(state.acm.cabAlt/0.3048,0)+" ft");
+    bind("speed",v=>state.speed=v,()=>$("#v-sp").textContent=f(state.speed,1)+"×");
+    el.querySelectorAll("input[data-x]").forEach(i=>i.oninput=()=>{ state.xray[i.dataset.x]=+i.value; applyXray(); });
+    $("#xall").onclick=()=>{ parts.forEach(p=>state.xray[p]=0.15); state.sel=null; controls(); applyXray(); cvPanel(); };
+    $("#xnone").onclick=()=>{ parts.forEach(p=>state.xray[p]=1); state.sel=null; controls(); applyXray(); cvPanel(); };
+    $("#isolate").onchange=(e)=>{ state.sel=e.target.value||null; applyXray(); cvPanel(); };
+  }
+  function mountScene(){ const host=$("#scene"); host.innerHTML=(state.tab==="engine"?engineSVG():acmSVG())+`<canvas id="flow"></canvas>`; canvas=$("#flow"); ctx=canvas.getContext("2d"); particles=[]; initParticles();
+    host.querySelectorAll(".part").forEach(g=>{ g.style.cursor="pointer"; g.onclick=()=>{ state.sel=state.sel===g.dataset.part?null:g.dataset.part; controls(); applyXray(); cvPanel(); }; });
+    applyXray(); }
+  function setTab(t){ state.tab=t; state.sel=null; document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.classList.toggle("on",b.dataset.k===t)); $("#legend").innerHTML=t==="engine"?`<b>Brayton cycle:</b> 2→3 compression (fan, LPC, HPC) · 3→4 constant-pressure heat addition (combustor) · 4→5 expansion through the turbines (work to the shafts) · 5→8 expansion in the nozzle (thrust). Particle colour = temperature, size = pressure, speed = velocity.`:`<b>Reverse Brayton (air-cycle refrigeration):</b> compress → reject heat to ram air → expand in a turbine → cold air. The working fluid is the cabin air itself; no refrigerant, no phase change.`;
+    mountScene(); controls(); compute(); stationTags(); readouts(); cvPanel(); tsDiagram(); }
+  function loop(){ let last=performance.now(); const step=(now)=>{ const dt=Math.min(0.05,(now-last)/1000); last=now; if(state.tab==="engine") drawParticles(dt); else acmParticles(dt); raf=requestAnimationFrame(step); }; raf=requestAnimationFrame(step); }
+  function init(){ document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>setTab(b.dataset.k)); setTab("engine"); loop(); window.addEventListener("resize",()=>{ tsDiagram(); }); }
+  return {init,engine,acm,ISA,state};
+})();
+JET.init();
+
+</script>
+</body></html>

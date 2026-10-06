@@ -121,6 +121,17 @@ const TOPICS = [
     ]
   },
   {
+    file: "jet.html",
+    group: "Applications lab",
+    title: "Jet Engine Lab: Turbofan (Brayton) & Air Cycle Machine (Reverse Brayton)",
+    lab: true,
+    problems: [
+      ["Turbofan engine", "fly it · p and T at every station"],
+      ["Air cycle machine (ECS pack)", "bleed air → cabin"],
+      ["X-ray & isolate any component", "control-volume energy balance"]
+    ]
+  },
+  {
     file: "Getting_Started_Pressure_Units.html",
     group: "Chapter 1",
     title: "Getting Started: Systems, Properties & Pressure",
@@ -206,6 +217,7 @@ const TOPICS = [
 const LOOK = {
   "concepts/":                              ["#7cff6b","setup"],
   "tables.html":                            ["#ffd23f","thermo"],
+  "jet.html":                               ["#22d3ee","orbit"],
   "Getting_Started_Pressure_Units.html":    ["#ff8a3d","force"],
   "Energy_and_the_First_Law.html":          ["#ff8a3d","thermo"],
   "Properties_of_Pure_Substances.html":     ["#ffd23f","thermo"],
@@ -246,10 +258,10 @@ document.getElementById("topics").innerHTML = TOPICS.map(t => {
   return `
   <a class="topic" href="${t.file}" style="--z:${z}">
     <div class="top"><span class="icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ICON[ic]}</svg></span>
-      <div><span class="eyebrow">${t.group}${t.setup?" · 3 activities":""}</span><h3>${t.title}</h3></div></div>
+      <div><span class="eyebrow">${t.group}${t.setup?" · 3 activities":t.lab?" · simulator":""}</span><h3>${t.title}</h3></div></div>
     <ul>${t.problems.map(([nm,tag]) => `<li${t.setup?"":""}><span>${nm}</span><span>${tag}</span></li>`).join("")}</ul>
-    <div class="prog"><span class="bar"><i style="width:${pct}%"></i></span><span>${n}/${tot} cleared</span></div>
-    <span class="go">${n?"Continue":"Start"} &rarr;</span>
+    ${t.lab?`<div class="prog"><span class="bar"><i style="width:100%"></i></span><span>interactive simulation</span></div>`:`<div class="prog"><span class="bar"><i style="width:${pct}%"></i></span><span>${n}/${tot} cleared</span></div>`}
+    <span class="go">${t.lab?"Open the lab":n?"Continue":"Start"} &rarr;</span>
   </a>`; }).join("");
 fixSubs(document.getElementById("topics"));
 </script></body></html>
