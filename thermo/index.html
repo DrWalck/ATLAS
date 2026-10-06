@@ -57,9 +57,11 @@ a.topic:focus-visible{outline:2px solid var(--z);outline-offset:3px}
 .topic .eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:600;color:var(--z)}
 .topic h3{font-family:var(--display);font-weight:700;font-size:1.45rem;line-height:1.05;margin:2px 0 0;text-wrap:balance;color:#fff}
 .topic ul{list-style:none;margin:0;padding:10px 0 0;display:flex;flex-direction:column;gap:3px;border-top:1px solid color-mix(in srgb,var(--z) 20%,var(--line))}
-.topic li{display:flex;justify-content:space-between;gap:12px;font-size:.93rem}
+.topic li{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;min-width:0}
+.topic li span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;min-width:0}
 .topic li.done span:first-child::after{content:"✓";margin-left:.4em;color:var(--good);text-shadow:0 0 6px var(--good);font-weight:700}
-.topic li span:last-child{font-family:var(--mono);font-size:.72rem;color:#8ea3cf;white-space:nowrap}
+.topic li span:last-child{font-family:var(--mono);font-size:.72rem;color:#8ea3cf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 46%;text-align:right;min-width:0}
+.topic li:hover span{white-space:normal;overflow:visible}
 .prog{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .prog .bar{flex:1;height:6px;border-radius:9px;background:#141f3b;overflow:hidden}
 .prog .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--z),#fff);box-shadow:0 0 10px var(--z)}
@@ -121,9 +123,20 @@ const TOPICS = [
     ]
   },
   {
+    file: "jet3d.html",
+    group: "Applications lab",
+    title: "Jet 3D: X-ray the Aircraft",
+    lab: true,
+    problems: [
+      ["Rotate, zoom, click any part", "translucent airframe"],
+      ["X-ray the Brayton cycle", "engines · live p, T tags"],
+      ["X-ray the reverse Brayton cycle", "ECS pack behind the seat"]
+    ]
+  },
+  {
     file: "jet.html",
     group: "Applications lab",
-    title: "Jet Engine Lab: Turbofan (Brayton) & Air Cycle Machine (Reverse Brayton)",
+    title: "Jet Engine Lab: Brayton & Reverse Brayton",
     lab: true,
     problems: [
       ["Turbofan engine", "fly it · p and T at every station"],
@@ -218,6 +231,7 @@ const LOOK = {
   "concepts/":                              ["#7cff6b","setup"],
   "tables.html":                            ["#ffd23f","thermo"],
   "jet.html":                               ["#22d3ee","orbit"],
+  "jet3d.html":                             ["#5fd3e6","orbit"],
   "Getting_Started_Pressure_Units.html":    ["#ff8a3d","force"],
   "Energy_and_the_First_Law.html":          ["#ff8a3d","thermo"],
   "Properties_of_Pure_Substances.html":     ["#ffd23f","thermo"],
