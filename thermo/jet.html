@@ -562,11 +562,13 @@ const JET=(()=>{
   const cpc=1.005, kc=1.4, cph=1.148, kh=1.333, R=0.287, LHV=43000;        // kJ/kg·K, kJ/kg
   const ISA=(h)=>{ const T=h<11000?288.15-0.0065*h:216.65; const p=h<11000?101325*Math.pow(T/288.15,5.2559):22632*Math.exp(-9.80665*(h-11000)/(287.05*216.65)); return {T,p:p/1000}; }; // K, kPa
   /* ---------- engine design point (sea-level static, full throttle) ---------- */
-  const D={BPR:4.5, FPR:1.65, LPC:1.9, HPC:11.5, T4:1650, mdot:230, eta:{ram:0.98,fan:0.90,lpc:0.88,hpc:0.87,b:0.995,dpb:0.04,hpt:0.91,lpt:0.92,m:0.99,cv:0.98}};
+  const D0={BPR:4.5, FPR:1.65, LPC:1.9, HPC:11.5, T4:1650, mdot:230, eta:{ram:0.98,fan:0.90,lpc:0.88,hpc:0.87,b:0.995,dpb:0.04,hpt:0.91,lpt:0.92,m:0.99,cv:0.98}};
   /* entropy relative to 288.15 K, 101.325 kPa with a smooth cp(T) = a + bT fit between the cold and hot values */
+  const D=D0;
   const sRel=(T,p)=>{ const a=0.957,b=1.6e-4; const f=(t)=>a*Math.log(t)+b*t; return f(T)-f(288.15)-R*Math.log(p/101.325); };
-  function engine(inp){
-    const {th,alt,M}=inp; const amb=ISA(alt); const T0=amb.T, p0=amb.p; const V0=M*Math.sqrt(kc*R*1000*T0);
+  function engine(inp,Dov){
+    const D=Dov?Object.assign({},D0,Dov,{eta:Object.assign({},D0.eta,Dov.eta||{})}):D0;
+    const {th,alt,M}=inp; const ab=Math.max(0,Math.min(1,inp.ab||0)); const amb=ISA(alt); const T0=amb.T, p0=amb.p; const V0=M*Math.sqrt(kc*R*1000*T0);
     const N=0.55+0.45*th;                                   // spool speed fraction (idle ≈ 55 %)
     const T02=T0*(1+(kc-1)/2*M*M), p02=p0*Math.pow(1+(kc-1)/2*M*M,kc/(kc-1))*D.eta.ram;
     const FPR=1+(D.FPR-1)*N*N, LPC=1+(D.LPC-1)*N*N, HPC=1+(D.HPC-1)*Math.pow(N,1.8);
@@ -581,15 +583,17 @@ const JET=(()=>{
     const wHPC=cpc*(T3-T25), wLPC=cpc*(T25-T13), wFAN=cpc*(T13-T02);
     const T45=T4-wHPC/((1+f)*cph*D.eta.m); const T45s=T4-(T4-T45)/D.eta.hpt; const p45=p4*Math.pow(T45s/T4,kh/(kh-1));
     const T5=T45-(wLPC+BPR*wFAN)/((1+f)*cph*D.eta.m); const T5s=T45-(T45-T5)/D.eta.lpt; const p5=p45*Math.pow(T5s/T45,kh/(kh-1));
-    const V8=D.eta.cv*Math.sqrt(Math.max(0,2*cph*1000*T5*(1-Math.pow(p0/p5,(kh-1)/kh)))); const T8=T5-V8*V8/(2*cph*1000);
+    /* afterburner (augmentor): extra fuel burned in the exhaust duct at nearly constant pressure, station 5 → 7 */
+    const Tab=D.Tab||2100; const T7=T5+ab*(Tab-T5); const fab=ab>0?(1+f)*cph*(T7-T5)/(0.95*LHV-cph*T7):0; const p7=p5*(1-0.05*ab); const mfab=fab*mc;
+    const V8=D.eta.cv*Math.sqrt(Math.max(0,2*cph*1000*T7*(1-Math.pow(p0/p7,(kh-1)/kh)))); const T8=T7-V8*V8/(2*cph*1000);
     const V18=D.eta.cv*Math.sqrt(Math.max(0,2*cpc*1000*T13*(1-Math.pow(p0/p13,(kc-1)/kc)))); const T18=T13-V18*V18/(2*cpc*1000);
-    const Fc=mc*((1+f)*V8-V0), Fb=mb*(V18-V0), F=Fc+Fb;                 // N
-    const KE=0.5*(mc*(1+f)*V8*V8+mb*V18*V18-mdot*V0*V0)/1000;            // kW
-    const Qin=mf*LHV*D.eta.b; const eta_th=KE/Qin, eta_p=F*V0/1000/KE, eta_o=eta_th*eta_p;
-    const TSFC=F>0?mf/F*3.6e6:NaN;                                        // g/(kN·s) → kg/(kN·h)
-    const st={0:{T:T0,p:p0,V:V0,m:mdot},2:{T:T02,p:p02,V:V0,m:mdot},13:{T:T13,p:p13,V:0,m:mb},25:{T:T25,p:p25,m:mc},3:{T:T3,p:p3,m:mc},4:{T:T4,p:p4,m:mc*(1+f)},45:{T:T45,p:p45,m:mc*(1+f)},5:{T:T5,p:p5,m:mc*(1+f)},8:{T:T8,p:p0,V:V8,m:mc*(1+f)},18:{T:T18,p:p0,V:V18,m:mb}};
+    const Fc=mc*((1+f+fab)*V8-V0), Fb=mb*(V18-V0), F=Fc+Fb;                 // N
+    const KE=0.5*(mc*(1+f+fab)*V8*V8+mb*V18*V18-mdot*V0*V0)/1000;            // kW
+    const Qin=mf*LHV*D.eta.b+mfab*LHV*0.95; const eta_th=KE/Qin, eta_p=F*V0/1000/KE, eta_o=eta_th*eta_p;
+    const TSFC=F>0?(mf+mfab)/F*3.6e6:NaN;                                        // g/(kN·s) → kg/(kN·h)
+    const st={0:{T:T0,p:p0,V:V0,m:mdot},2:{T:T02,p:p02,V:V0,m:mdot},13:{T:T13,p:p13,V:0,m:mb},25:{T:T25,p:p25,m:mc},3:{T:T3,p:p3,m:mc},4:{T:T4,p:p4,m:mc*(1+f)},45:{T:T45,p:p45,m:mc*(1+f)},5:{T:T5,p:p5,m:mc*(1+f)},7:{T:T7,p:p7,m:mc*(1+f+fab)},8:{T:T8,p:p0,V:V8,m:mc*(1+f+fab)},18:{T:T18,p:p0,V:V18,m:mb}};
     for(const k in st) st[k].s=sRel(st[k].T,st[k].p);
-    return {st,N,FPR,LPC,HPC,OPR:FPR*LPC*HPC,BPR,mdot,mc,mb,f,mf,F,Fc,Fb,TSFC,eta_th,eta_p,eta_o,V0,V8,V18,wFAN,wLPC,wHPC,Qin,KE,T0,p0,M,alt,th,
+    return {st,N,FPR,LPC,HPC,OPR:FPR*LPC*HPC,BPR,mdot,mc,mb,f,mf,ab,fab,mfab,F,Fc,Fb,TSFC,eta_th,eta_p,eta_o,V0,V8,V18,wFAN,wLPC,wHPC,Qin,KE,T0,p0,M,alt,th,
       W:{fan:mdot*wFAN,lpc:mc*wLPC,hpc:mc*wHPC,hpt:mc*(1+f)*cph*(T4-T45),lpt:mc*(1+f)*cph*(T45-T5)}};
   }
   /* ---------- air cycle machine (bootstrap pack fed by HPC bleed) ---------- */

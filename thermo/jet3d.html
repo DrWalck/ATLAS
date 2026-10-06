@@ -523,7 +523,7 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
       <div class="panel" id="j3info" style="margin-top:12px"></div>
     </section>
     <aside>
-      <div class="panel"><h4>Operating point</h4><div class="ctl"><label>Throttle <b id="j3vth">85 %</b><input type="range" id="j3th" min="0" max="1" step="0.01" value="0.85"></label><label>Altitude <b id="j3valt">0 ft</b><input type="range" id="j3alt" min="0" max="13700" step="100" value="0"></label><label>Flight Mach number <b id="j3vM">0.00</b><input type="range" id="j3M" min="0" max="0.9" step="0.01" value="0"></label></div></div>
+      <div class="panel"><h4>Operating point</h4><div class="ctl"><label>Throttle <b id="j3vth">85 %</b><input type="range" id="j3th" min="0" max="1" step="0.01" value="0.85"></label><label>Altitude <b id="j3valt">0 ft</b><input type="range" id="j3alt" min="0" max="13700" step="100" value="0"></label><label>Flight Mach number <b id="j3vM">0.00</b><input type="range" id="j3M" min="0" max="0.9" step="0.01" value="0"></label><label>Afterburner <b id="j3vab">off</b><input type="range" id="j3ab" min="0" max="1" step="0.05" value="0"></label></div><div id="j3read"></div></div>
       <div class="panel" id="j3controls" style="margin-top:12px"><h4>X-ray</h4>
         <div class="ctl"><label>Airframe <input type="range" data-g="airframe" min="0" max="1" step="0.05" value="0.4"></label><label>Engines <input type="range" data-g="engine" min="0" max="1" step="0.05" value="1"></label><label>ECS pack &amp; ducts <input type="range" data-g="ecs" min="0" max="1" step="0.05" value="1"></label><label>Cockpit <input type="range" data-g="cockpit" min="0" max="1" step="0.05" value="1"></label><label>Fuel system <input type="range" data-g="fuel" min="0" max="1" step="0.05" value="1"></label>
         <label>Flow animation speed <input type="range" id="j3speed" min="0" max="3" step="0.1" value="1"></label></div>
@@ -563,11 +563,13 @@ const JET=(()=>{
   const cpc=1.005, kc=1.4, cph=1.148, kh=1.333, R=0.287, LHV=43000;        // kJ/kg·K, kJ/kg
   const ISA=(h)=>{ const T=h<11000?288.15-0.0065*h:216.65; const p=h<11000?101325*Math.pow(T/288.15,5.2559):22632*Math.exp(-9.80665*(h-11000)/(287.05*216.65)); return {T,p:p/1000}; }; // K, kPa
   /* ---------- engine design point (sea-level static, full throttle) ---------- */
-  const D={BPR:4.5, FPR:1.65, LPC:1.9, HPC:11.5, T4:1650, mdot:230, eta:{ram:0.98,fan:0.90,lpc:0.88,hpc:0.87,b:0.995,dpb:0.04,hpt:0.91,lpt:0.92,m:0.99,cv:0.98}};
+  const D0={BPR:4.5, FPR:1.65, LPC:1.9, HPC:11.5, T4:1650, mdot:230, eta:{ram:0.98,fan:0.90,lpc:0.88,hpc:0.87,b:0.995,dpb:0.04,hpt:0.91,lpt:0.92,m:0.99,cv:0.98}};
   /* entropy relative to 288.15 K, 101.325 kPa with a smooth cp(T) = a + bT fit between the cold and hot values */
+  const D=D0;
   const sRel=(T,p)=>{ const a=0.957,b=1.6e-4; const f=(t)=>a*Math.log(t)+b*t; return f(T)-f(288.15)-R*Math.log(p/101.325); };
-  function engine(inp){
-    const {th,alt,M}=inp; const amb=ISA(alt); const T0=amb.T, p0=amb.p; const V0=M*Math.sqrt(kc*R*1000*T0);
+  function engine(inp,Dov){
+    const D=Dov?Object.assign({},D0,Dov,{eta:Object.assign({},D0.eta,Dov.eta||{})}):D0;
+    const {th,alt,M}=inp; const ab=Math.max(0,Math.min(1,inp.ab||0)); const amb=ISA(alt); const T0=amb.T, p0=amb.p; const V0=M*Math.sqrt(kc*R*1000*T0);
     const N=0.55+0.45*th;                                   // spool speed fraction (idle ≈ 55 %)
     const T02=T0*(1+(kc-1)/2*M*M), p02=p0*Math.pow(1+(kc-1)/2*M*M,kc/(kc-1))*D.eta.ram;
     const FPR=1+(D.FPR-1)*N*N, LPC=1+(D.LPC-1)*N*N, HPC=1+(D.HPC-1)*Math.pow(N,1.8);
@@ -582,15 +584,17 @@ const JET=(()=>{
     const wHPC=cpc*(T3-T25), wLPC=cpc*(T25-T13), wFAN=cpc*(T13-T02);
     const T45=T4-wHPC/((1+f)*cph*D.eta.m); const T45s=T4-(T4-T45)/D.eta.hpt; const p45=p4*Math.pow(T45s/T4,kh/(kh-1));
     const T5=T45-(wLPC+BPR*wFAN)/((1+f)*cph*D.eta.m); const T5s=T45-(T45-T5)/D.eta.lpt; const p5=p45*Math.pow(T5s/T45,kh/(kh-1));
-    const V8=D.eta.cv*Math.sqrt(Math.max(0,2*cph*1000*T5*(1-Math.pow(p0/p5,(kh-1)/kh)))); const T8=T5-V8*V8/(2*cph*1000);
+    /* afterburner (augmentor): extra fuel burned in the exhaust duct at nearly constant pressure, station 5 → 7 */
+    const Tab=D.Tab||2100; const T7=T5+ab*(Tab-T5); const fab=ab>0?(1+f)*cph*(T7-T5)/(0.95*LHV-cph*T7):0; const p7=p5*(1-0.05*ab); const mfab=fab*mc;
+    const V8=D.eta.cv*Math.sqrt(Math.max(0,2*cph*1000*T7*(1-Math.pow(p0/p7,(kh-1)/kh)))); const T8=T7-V8*V8/(2*cph*1000);
     const V18=D.eta.cv*Math.sqrt(Math.max(0,2*cpc*1000*T13*(1-Math.pow(p0/p13,(kc-1)/kc)))); const T18=T13-V18*V18/(2*cpc*1000);
-    const Fc=mc*((1+f)*V8-V0), Fb=mb*(V18-V0), F=Fc+Fb;                 // N
-    const KE=0.5*(mc*(1+f)*V8*V8+mb*V18*V18-mdot*V0*V0)/1000;            // kW
-    const Qin=mf*LHV*D.eta.b; const eta_th=KE/Qin, eta_p=F*V0/1000/KE, eta_o=eta_th*eta_p;
-    const TSFC=F>0?mf/F*3.6e6:NaN;                                        // g/(kN·s) → kg/(kN·h)
-    const st={0:{T:T0,p:p0,V:V0,m:mdot},2:{T:T02,p:p02,V:V0,m:mdot},13:{T:T13,p:p13,V:0,m:mb},25:{T:T25,p:p25,m:mc},3:{T:T3,p:p3,m:mc},4:{T:T4,p:p4,m:mc*(1+f)},45:{T:T45,p:p45,m:mc*(1+f)},5:{T:T5,p:p5,m:mc*(1+f)},8:{T:T8,p:p0,V:V8,m:mc*(1+f)},18:{T:T18,p:p0,V:V18,m:mb}};
+    const Fc=mc*((1+f+fab)*V8-V0), Fb=mb*(V18-V0), F=Fc+Fb;                 // N
+    const KE=0.5*(mc*(1+f+fab)*V8*V8+mb*V18*V18-mdot*V0*V0)/1000;            // kW
+    const Qin=mf*LHV*D.eta.b+mfab*LHV*0.95; const eta_th=KE/Qin, eta_p=F*V0/1000/KE, eta_o=eta_th*eta_p;
+    const TSFC=F>0?(mf+mfab)/F*3.6e6:NaN;                                        // g/(kN·s) → kg/(kN·h)
+    const st={0:{T:T0,p:p0,V:V0,m:mdot},2:{T:T02,p:p02,V:V0,m:mdot},13:{T:T13,p:p13,V:0,m:mb},25:{T:T25,p:p25,m:mc},3:{T:T3,p:p3,m:mc},4:{T:T4,p:p4,m:mc*(1+f)},45:{T:T45,p:p45,m:mc*(1+f)},5:{T:T5,p:p5,m:mc*(1+f)},7:{T:T7,p:p7,m:mc*(1+f+fab)},8:{T:T8,p:p0,V:V8,m:mc*(1+f+fab)},18:{T:T18,p:p0,V:V18,m:mb}};
     for(const k in st) st[k].s=sRel(st[k].T,st[k].p);
-    return {st,N,FPR,LPC,HPC,OPR:FPR*LPC*HPC,BPR,mdot,mc,mb,f,mf,F,Fc,Fb,TSFC,eta_th,eta_p,eta_o,V0,V8,V18,wFAN,wLPC,wHPC,Qin,KE,T0,p0,M,alt,th,
+    return {st,N,FPR,LPC,HPC,OPR:FPR*LPC*HPC,BPR,mdot,mc,mb,f,mf,ab,fab,mfab,F,Fc,Fb,TSFC,eta_th,eta_p,eta_o,V0,V8,V18,wFAN,wLPC,wHPC,Qin,KE,T0,p0,M,alt,th,
       W:{fan:mdot*wFAN,lpc:mc*wLPC,hpc:mc*wHPC,hpt:mc*(1+f)*cph*(T4-T45),lpt:mc*(1+f)*cph*(T45-T5)}};
   }
   /* ---------- air cycle machine (bootstrap pack fed by HPC bleed) ---------- */
@@ -876,32 +880,66 @@ const JET3D=(()=>{
     const sR=addPart({id:"stabR",name:"Horizontal stabilator (right)",group:"airframe",color:COL.skin,alpha:0.9}); plate(sR,stabPoly,-0.1,0.12,false);
     const finPoly=[[-5.4,0],[-7.6,3.2],[-9.0,3.2],[-9.3,0]];
     [["finL",-1.15],["finR",1.15]].forEach(([id,z])=>{ const f=addPart({id,name:"Vertical fin",group:"airframe",color:COL.skin,alpha:0.9}); /* plate in x–y plane: build via lathe trick → use box slices */ const poly=finPoly; const top=poly.map(([x,y])=>[x,y+0.45,z+0.06]), bot=poly.map(([x,y])=>[x,y+0.45,z-0.06]); const n=poly.length; for(let i=1;i<n-1;i++){ f.tris.push([top[0],top[i+1],top[i]]); f.tris.push([bot[0],bot[i],bot[i+1]]); } for(let i=0;i<n;i++){ const j=(i+1)%n; f.tris.push([top[i],bot[i],bot[j]]); f.tris.push([top[i],bot[j],top[j]]); } });
-    [["intakeL",-1.3],["intakeR",1.3]].forEach(([id,z])=>{ const p=addPart({id,name:"Engine inlet (intake duct)",group:"engine",color:COL.intake,alpha:0.45}); box(p,2.6,-0.85,z-0.55,0.2,0.1,z+0.55); });
-    /* engines */
-    [["L",-0.85],["R",0.85]].forEach(([s,z])=>{
-      const nac=addPart({id:"nac"+s,name:"Engine casing ("+(s==="L"?"left":"right")+")",group:"engine",color:COL.skin,alpha:0.25}); lathe(nac,[[0.2,0.62],[-5.6,0.62],[-6.6,0.56],[-8.4,0.46]],16,0,-0.3,z);
-      const fan=addPart({id:"fan"+s,name:"Fan & compressor ("+s+")",group:"engine",color:COL.fan,alpha:1,station:"compressor"}); lathe(fan,[[0,0.12],[0,0.57],[-1.0,0.57],[-1.0,0.12]],16,0,-0.3,z); lathe(fan,[[-1.2,0.14],[-1.2,0.5],[-2.9,0.4],[-2.9,0.14]],16,0,-0.3,z);
-      const comb=addPart({id:"comb"+s,name:"Combustor ("+s+")",group:"engine",color:COL.comb,alpha:1,station:"combustor"}); lathe(comb,[[-3.0,0.18],[-3.0,0.52],[-4.1,0.52],[-4.1,0.18]],16,0,-0.3,z);
-      const turb=addPart({id:"turb"+s,name:"Turbine ("+s+")",group:"engine",color:COL.turb,alpha:1,station:"turbine"}); lathe(turb,[[-4.2,0.14],[-4.2,0.57],[-5.5,0.57],[-5.5,0.14]],16,0,-0.3,z);
-      const shaft=addPart({id:"shaft"+s,name:"Shaft ("+s+")",group:"engine",color:"#dbe6ff",alpha:1}); lathe(shaft,[[0.1,0.07],[-5.6,0.07]],8,0,-0.3,z);
-      const noz=addPart({id:"noz"+s,name:"Exhaust nozzle ("+s+")",group:"engine",color:COL.noz,alpha:0.9,station:"nozzle"}); lathe(noz,[[-5.6,0.56],[-6.8,0.5],[-8.5,0.4],[-9.0,0.44]],16,0,-0.3,z);
+    /* ---- engines: proper Brayton-cycle hardware (per engine, axis at y = -0.3, z = ±0.85) ---- */
+    const bladeRing=(part,x,rh,rt,n,chord,stagger,cz,cy,color)=>{ /* n thin twisted plates between hub and tip */
+      for(let i=0;i<n;i++){ const a=2*Math.PI*i/n, ca=Math.cos(a), sa=Math.sin(a); const rad=[0,ca,sa], tan=[0,-sa,ca]; const ax=[1,0,0];
+        const pt=(r,c)=>{ /* point at radius r, chordwise c (−0.5..0.5) rotated by stagger about the radial axis */ const dx=c*chord*Math.cos(stagger), dt=c*chord*Math.sin(stagger); return [x+dx, cy+rad[1]*r+tan[1]*dt, cz+rad[2]*r+tan[2]*dt]; };
+        const A=pt(rh,-0.5),B=pt(rh,0.5),C=pt(rt,0.5),Dd=pt(rt,-0.5); part.tris.push([A,B,C],[A,C,Dd]); part.twoSided=true; } };
+    [["L",-0.85],["R",0.85]].forEach(([s,z])=>{ const cy=-0.3; const side=s==="L"?"left":"right";
+      const intake=addPart({id:"intake"+s,name:"Air intake / diffuser ("+side+")",group:"engine",color:COL.intake,alpha:0.45,station:"intake"});
+      lathe(intake,[[2.8,0.48],[1.6,0.52],[0.5,0.58],[0.15,0.62]],16,0,cy,z); /* open duct: no caps */ intake.tris=intake.tris.filter(t=>true);
+      const casing=addPart({id:"nac"+s,name:"Engine casing ("+side+")",group:"engine",color:COL.skin,alpha:0.22}); lathe(casing,[[0.15,0.64],[-3.0,0.6],[-4.2,0.62],[-5.6,0.64],[-8.2,0.62],[-9.0,0.5],[-9.5,0.54]],16,0,cy,z);
+      const spin=addPart({id:"spinner"+s,name:"Spinner & fan ("+side+")",group:"engine",color:COL.fan,alpha:1,station:"fan"}); lathe(spin,[[0.55,0.02],[0.3,0.12],[0.05,0.18],[-0.2,0.2]],12,0,cy,z);
+      bladeRing(spin,-0.05,0.18,0.6,18,0.32,0.55,z,cy); bladeRing(spin,-0.4,0.2,0.58,20,0.16,-0.35,z,cy,true);
+      const comp=addPart({id:"comp"+s,name:"Axial-flow compressor: rotor stages ("+side+")",group:"engine",color:COL.fan,alpha:1,station:"compressor"});
+      lathe(comp,[[-0.55,0.2],[-1.6,0.3],[-3.0,0.4],[-3.05,0.2]],14,0,cy,z);            /* hub (drum) */
+      const stat=addPart({id:"compS"+s,name:"Axial-flow compressor: stator vanes ("+side+")",group:"engine",color:"#8a97b3",alpha:1,station:"compressor"});
+      for(let k=0;k<8;k++){ const xr=-0.7-k*0.3; const f=k/7; const rh=0.21+0.19*f, rt=0.58-0.12*f; bladeRing(comp,xr,rh,rt,16+2*k,0.11-0.04*f,0.6,z,cy); bladeRing(stat,xr-0.15,rh+0.01,rt-0.01,18+2*k,0.09-0.03*f,-0.5,z,cy); }
+      const comb=addPart({id:"comb"+s,name:"Combustion chamber ("+side+")",group:"engine",color:COL.comb,alpha:1,station:"combustor"});
+      lathe(comb,[[-3.1,0.22],[-3.1,0.3],[-4.2,0.3],[-4.2,0.22]],12,0,cy,z);               /* inner liner */
+      const flame=addPart({id:"flame"+s,name:"Flame ("+side+")",group:"engine",color:"#fff0b0",alpha:0.85,noPick:true});
+      for(let i=0;i<8;i++){ const a=2*Math.PI*i/8+Math.PI/8; const yc=cy+0.42*Math.cos(a), zc=z+0.42*Math.sin(a); lathe(comb,[[-3.15,0.09],[-3.4,0.11],[-4.0,0.11],[-4.15,0.07]],8,0,yc,zc); lathe(flame,[[-3.45,0.02],[-3.6,0.07],[-4.0,0.07],[-4.3,0.03]],6,0,yc,zc); }
+      const turb=addPart({id:"turb"+s,name:"Turbine ("+side+")",group:"engine",color:COL.turb,alpha:1,station:"turbine"});
+      lathe(turb,[[-4.25,0.26],[-5.0,0.24],[-5.55,0.22],[-5.6,0.08]],12,0,cy,z);
+      [[-4.4,0.28,0.5],[-4.9,0.26,0.56],[-5.4,0.24,0.6]].forEach(([xt,rh,rt],k)=>{ bladeRing(turb,xt+0.12,rh,rt,22,0.09,-0.6,z,cy); bladeRing(turb,xt,rh,rt,24,0.12,0.7,z,cy); });
+      const shaft=addPart({id:"shaft"+s,name:"Drive shaft ("+side+")",group:"engine",color:"#dbe6ff",alpha:1}); lathe(shaft,[[0.0,0.08],[-5.6,0.08]],8,0,cy,z);
+      const abn=addPart({id:"ab"+s,name:"Afterburner / augmentor ("+side+")",group:"engine",color:"#b58cff",alpha:1,station:"afterburner"});
+      lathe(abn,[[-5.65,0.2],[-5.9,0.12],[-6.2,0.02]],10,0,cy,z);                            /* tail cone */
+      const abduct=addPart({id:"abduct"+s,name:"Afterburner duct ("+side+")",group:"engine",color:"#b58cff",alpha:0.3,station:"afterburner"}); lathe(abduct,[[-5.6,0.6],[-8.2,0.6]],16,0,cy,z);
+      for(let i=0;i<12;i++){ const a=2*Math.PI*i/12; const yc=cy+0.42*Math.cos(a), zc=z+0.42*Math.sin(a); const t=[Math.cos(a),Math.sin(a)]; box(abn,-6.05,yc-0.07,zc-0.07,-6.3,yc+0.07,zc+0.07); } /* flame-holder gutters */
+      for(let i=0;i<16;i++){ const a=2*Math.PI*i/16; const yc=cy+0.5*Math.cos(a), zc=z+0.5*Math.sin(a); box(abn,-5.85,yc-0.04,zc-0.04,-5.95,yc+0.04,zc+0.04); } /* spray-bar ring */
+      const abflame=addPart({id:"abflame"+s,name:"Afterburner flame ("+side+")",group:"engine",color:"#ff9a2e",alpha:0.0,noPick:true,ab:true}); lathe(abflame,[[-6.3,0.2],[-7.0,0.42],[-8.2,0.45],[-9.4,0.4],[-11.5,0.3],[-12.5,0.1]],10,0,cy,z);
+      const noz=addPart({id:"noz"+s,name:"Exhaust nozzle, convergent–divergent ("+side+")",group:"engine",color:COL.noz,alpha:0.9,station:"nozzle"});
+      lathe(noz,[[-8.2,0.6],[-8.9,0.46],[-9.1,0.42],[-9.5,0.5]],16,0,cy,z);
     });
-    /* ECS pack behind the cockpit, bleed duct from the right engine compressor */
-    const bleed=addPart({id:"bleed",name:"Bleed-air duct (engine compressor → ECS pack)",group:"ecs",color:COL.duct,alpha:1});
-    const bleedPath=[[-2.4,0.15,0.85],[-1.6,0.4,0.7],[-0.2,0.5,0.45],[1.2,0.55,0.2],[1.9,0.55,0.05]]; tube(bleed,bleedPath,0.09,8); bleed.path=bleedPath;
-    const pack=addPart({id:"pack",name:"ECS pack bay (behind the cockpit)",group:"ecs",color:COL.cabin,alpha:0.25}); box(pack,2.0,0.0,-0.55,0.4,0.95,0.55);
-    const phx=addPart({id:"phx",name:"Primary heat exchanger (ram air)",group:"ecs",color:COL.hx,alpha:1}); box(phx,1.85,0.15,-0.45,1.45,0.8,-0.05);
-    const acm=addPart({id:"acm",name:"Air cycle machine (compressor–turbine)",group:"ecs",color:COL.acm,alpha:1}); lathe(acm,[[-0.42,0.02],[-0.4,0.22],[0.0,0.26],[0.4,0.22],[0.42,0.02]],12,1.15,0.45,0.2,"z");
-    const shx=addPart({id:"shx",name:"Secondary heat exchanger (ram air)",group:"ecs",color:COL.hx,alpha:1}); box(shx,0.95,0.15,-0.45,0.55,0.8,-0.05);
-    const scoop=addPart({id:"scoop",name:"Ram-air scoop & exhaust",group:"ecs",color:COL.intake,alpha:0.6}); box(scoop,2.1,0.95,-0.5,0.3,1.12,-0.1);
-    const cab=addPart({id:"cabduct",name:"Conditioned-air duct to the cockpit",group:"ecs",color:COL.cabin,alpha:1}); const cabPath=[[0.5,0.3,0.2],[1.6,0.25,0.3],[2.8,0.2,0.35],[3.9,0.1,0.3],[4.6,0.0,0.2]]; tube(cab,cabPath,0.07,8); cab.path=cabPath;
+    /* ---- ECS pack behind the cockpit: open bootstrap air cycle (reverse Brayton) ---- */
+    const PY=0.45;                                                                  /* pack centreline height */
+    const bleed=addPart({id:"bleed",name:"Bleed-air duct (compressor exit → ECS pack)",group:"ecs",color:COL.duct,alpha:1});
+    const bleedPath=[[-2.9,0.1,0.85],[-2.2,0.45,0.75],[-1.0,0.6,0.4],[-0.4,0.6,-0.1],[-0.1,PY,-0.3]]; tube(bleed,bleedPath,0.09,8); bleed.path=bleedPath;
+    const pack=addPart({id:"pack",name:"ECS pack bay (behind the cockpit)",group:"ecs",color:COL.cabin,alpha:0.2}); box(pack,2.1,-0.1,-0.7,-0.3,1.0,0.7);
+    const finbox=(part,x0,x1,y0,y1,z0,z1,n)=>{ box(part,x0,y0,z0,x1,y1,z1); for(let i=1;i<n;i++){ const x=x0+(x1-x0)*i/n; box(part,x-0.008,y0-0.06,z0-0.04,x+0.008,y1+0.06,z1+0.04); } };
+    const phx=addPart({id:"phx",name:"Primary heat exchanger (ram-air cooled)",group:"ecs",color:COL.hx,alpha:1}); finbox(phx,0.35,-0.15,PY-0.3,PY+0.3,-0.55,-0.1,8);
+    const shx=addPart({id:"shx",name:"Secondary heat exchanger (ram-air cooled)",group:"ecs",color:COL.hx,alpha:1}); finbox(shx,1.35,0.85,PY-0.3,PY+0.3,-0.55,-0.1,8);
+    const ramduct=addPart({id:"ramduct",name:"Ram-air duct (scoop → heat exchangers → overboard)",group:"ecs",color:COL.intake,alpha:0.3}); box(ramduct,1.5,PY-0.34,-0.6,-0.3,PY+0.34,-0.05); box(ramduct,2.2,PY+0.3,-0.55,1.5,1.12,-0.1); box(ramduct,-0.3,PY+0.3,-0.55,-0.9,1.12,-0.1);
+    const acm=addPart({id:"acm",name:"Air cycle machine: bootstrap compressor",group:"ecs",color:COL.acm,alpha:1}); lathe(acm,[[0.25,0.04],[0.3,0.26],[0.5,0.3],[0.62,0.1]],14,0,PY,0.3); bladeRing(acm,0.42,0.1,0.27,14,0.12,0.5,0.3,PY);
+    const acmt=addPart({id:"acmt",name:"Air cycle machine: expansion turbine",group:"ecs",color:"#5fd3e6",alpha:1}); lathe(acmt,[[0.95,0.1],[1.05,0.3],[1.25,0.26],[1.3,0.04]],14,0,PY,0.3); bladeRing(acmt,1.12,0.1,0.27,16,0.12,-0.5,0.3,PY);
+    const acms=addPart({id:"acmshaft",name:"ACM shaft (turbine drives compressor)",group:"ecs",color:"#dbe6ff",alpha:1}); lathe(acms,[[0.2,0.045],[1.35,0.045]],8,0,PY,0.3);
+    const ws=addPart({id:"ws",name:"Water separator",group:"ecs",color:COL.cabin,alpha:1}); lathe(ws,[[1.5,0.04],[1.55,0.16],[1.95,0.16],[2.0,0.04]],10,0,PY-0.05,0.05);
+    const pd=addPart({id:"packduct",name:"Pack internal ducting",group:"ecs",color:"#9fb3d6",alpha:0.9});
+    const dPhxC=[[-0.15,PY,-0.3],[-0.15,PY,0.05],[0.15,PY,0.3]], dCS=[[0.6,PY,0.3],[0.75,PY+0.1,0.0],[0.85,PY,-0.3]], dST=[[1.35,PY,-0.3],[1.3,PY+0.1,0.0],[1.3,PY,0.3],[1.0,PY,0.3]], dTW=[[1.3,PY,0.3],[1.45,PY-0.05,0.2],[1.55,PY-0.05,0.05]];
+    [dPhxC,dCS,dST,dTW].forEach(d=>tube(pd,d,0.06,8));
+    const cab=addPart({id:"cabduct",name:"Conditioned-air duct to the cockpit",group:"ecs",color:COL.cabin,alpha:1}); const cabPath=[[2.0,PY-0.05,0.05],[2.6,0.3,0.15],[3.9,0.1,0.3],[4.6,0.0,0.2]]; tube(cab,cabPath,0.07,8); cab.path=cabPath;
+    const avd=addPart({id:"avduct",name:"Cooling-air duct to the avionics bay",group:"ecs",color:COL.cabin,alpha:1}); const avPath=[[2.0,PY-0.05,0.05],[2.6,-0.2,-0.2],[4.5,-0.45,-0.3],[6.3,-0.3,-0.2]]; tube(avd,avPath,0.06,8);
+    const av=addPart({id:"avionics",name:"Avionics bay (radar & fire-control electronics)",group:"airframe",color:"#7cff6b",alpha:0.35}); box(av,7.9,-0.5,-0.45,6.3,0.25,0.45);
+    const scoop=addPart({id:"scoop",name:"Ram-air scoop (inlet) and overboard exhaust",group:"ecs",color:COL.intake,alpha:0.7}); box(scoop,2.3,1.0,-0.6,1.7,1.2,-0.05); box(scoop,-0.4,1.0,-0.6,-0.9,1.2,-0.05);
     const tank=addPart({id:"tank",name:"Fuselage fuel tank",group:"fuel",color:COL.tank,alpha:0.35}); box(tank,0.3,-0.6,-0.9,-3.0,0.45,0.9);
     const fuel=addPart({id:"fuelline",name:"Fuel lines to the combustors",group:"fuel",color:COL.tank,alpha:1}); tube(fuel,[[-3.0,-0.1,0.0],[-3.3,-0.2,0.5],[-3.5,-0.3,0.78]],0.05,6); tube(fuel,[[-3.0,-0.1,0.0],[-3.3,-0.2,-0.5],[-3.5,-0.3,-0.78]],0.05,6);
     /* flow paths */
     PATHS.push({id:"coreL",kind:"core",pts:[[2.8,-0.4,-1.3],[0.6,-0.32,-0.95],[0,-0.3,-0.85],[-3,-0.3,-0.85],[-4.1,-0.3,-0.85],[-5.5,-0.3,-0.85],[-9,-0.3,-0.85],[-11,-0.3,-0.85]]});
     PATHS.push({id:"coreR",kind:"core",pts:[[2.8,-0.4,1.3],[0.6,-0.32,0.95],[0,-0.3,0.85],[-3,-0.3,0.85],[-4.1,-0.3,0.85],[-5.5,-0.3,0.85],[-9,-0.3,0.85],[-11,-0.3,0.85]]});
-    PATHS.push({id:"bleed",kind:"bleed",pts:bleedPath.concat([[1.65,0.5,-0.25],[1.15,0.45,0.2],[0.75,0.5,-0.25],[0.5,0.3,0.2]]).concat(cabPath.slice(1))});
-    PATHS.push({id:"ram",kind:"ram",pts:[[2.6,1.3,-0.3],[2.0,1.05,-0.3],[1.6,0.5,-0.25],[0.75,0.5,-0.25],[0.2,0.9,-0.3],[-0.4,1.3,-0.3]]});
+    PATHS.push({id:"bleed",kind:"bleed",pts:bleedPath.concat([[0.1,PY,-0.3],[-0.15,PY,0.05],[0.45,PY,0.3],[0.75,PY+0.1,0.0],[1.1,PY,-0.3],[1.3,PY+0.1,0.0],[1.12,PY,0.3],[1.55,PY-0.05,0.05],[1.95,PY-0.05,0.05]]).concat(cabPath.slice(1))});
+    PATHS.push({id:"avionics",kind:"cold",pts:[[2.0,PY-0.05,0.05]].concat(avPath.slice(1))});
+    PATHS.push({id:"ram",kind:"ram",pts:[[2.8,1.4,-0.32],[2.0,1.1,-0.32],[1.5,PY,-0.32],[0.6,PY,-0.32],[-0.3,PY,-0.32],[-0.65,1.1,-0.32],[-1.2,1.45,-0.32]]});
     parts.forEach(p=>{ let c=[0,0,0],n=0; p.tris.forEach(t=>t.forEach(v=>{ c[0]+=v[0];c[1]+=v[1];c[2]+=v[2]; n++; })); p.center=c.map(x=>x/n); p.baseAlpha=p.alpha; });
   }
   const PATHS=[];
@@ -914,21 +952,23 @@ const JET3D=(()=>{
   function project(p,M){ const d=[p[0]-M.eye[0],p[1]-M.eye[1],p[2]-M.eye[2]]; const x=d[0]*M.r[0]+d[1]*M.r[1]+d[2]*M.r[2], y=d[0]*M.u[0]+d[1]*M.u[1]+d[2]*M.u[2], z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; const s=(Hc/2)/Math.tan(cam.fov*Math.PI/360)/Math.max(z,0.1); return [Wc/2+x*s, Hc/2-y*s, z]; }
   const light=norm([0.5,0.9,0.35]);
   const shade=(hex,k)=>{ const n=parseInt(hex.slice(1),16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255; return `rgb(${Math.round(r*k)},${Math.round(g*k)},${Math.round(b*k)})`; };
-  const state={sel:null,focus:null,groupAlpha:{airframe:0.4,engine:1,ecs:1,cockpit:1,fuel:1},flow:true,speed:1,labels:true,hover:null,op:{th:0.85,alt:0,M:0},E:null,A:null};
-  const ACMP={mb:1.0,prv:310,PRa:1.8,eps1:0.75,eps2:0.85,cabAlt:2440,Tdem:5};
-  function physics(){ if(typeof JET==='undefined') return; state.E=JET.engine(state.op); state.A=JET.acm(state.E,ACMP); }
-  const FOCUS={brayton:{airframe:0.1,cockpit:0.15,fuel:0.15,engine:1,ecs:0.2,cam:[-3.6,-0.1,0.5],dist:12.5,phi:0.22},reverse:{airframe:0.1,cockpit:0.35,fuel:0.1,engine:0.3,ecs:1,cam:[0.9,0.4,0.1],dist:7,phi:0.45}};
+  const state={sel:null,focus:null,groupAlpha:{airframe:0.4,engine:1,ecs:1,cockpit:1,fuel:1},flow:true,speed:1,labels:true,hover:null,op:{th:0.85,alt:0,M:0,ab:0},E:null,A:null};
+  const ACMP={mb:1.0,prv:240,PRa:1.6,eps1:0.75,eps2:0.85,cabAlt:2440,Tdem:5};
+  const FIGHTER={BPR:0.6, FPR:3.0, LPC:1.0, HPC:8.0, T4:1750, mdot:110, Tab:2100, eta:{fan:0.88}};
+  function physics(){ if(typeof JET==='undefined') return; state.E=JET.engine(state.op,FIGHTER); state.A=JET.acm(state.E,ACMP); const r=$("#j3read"); if(r&&state.E){ const E=state.E; r.innerHTML=[["Thrust (both engines)",`${(2*E.F/1000).toFixed(1)} kN (${Math.round(2*E.F/4.448)} lbf)`],["TSFC",`${E.TSFC.toFixed(1)} kg/(kN·h)`],["Overall pressure ratio",E.OPR.toFixed(1)],["T₄ / T₇ / exit V₈",`${Math.round(E.st[4].T)} K / ${Math.round(E.st[7].T)} K / ${Math.round(E.V8)} m/s`],["Air flow per engine",`${Math.round(E.mdot)} kg/s`]].map(([k,v])=>`<div class="ro"><span>${k}</span><b>${v}</b></div>`).join(""); } }
+  const FOCUS={brayton:{airframe:0.1,cockpit:0.15,fuel:0.15,engine:1,ecs:0.2,cam:[-3.6,-0.1,0.5],dist:12.5,phi:0.22},reverse:{airframe:0.1,cockpit:0.35,fuel:0.1,engine:0.3,ecs:1,cam:[0.8,0.45,0.0],dist:6.5,phi:0.5}};
   const camGoal={active:false};
   let drawn=[]; /* projected triangles for picking */
   function render(){
     const M=camMatrix(); ctx.clearRect(0,0,Wc,Hc); const list=[];
-    for(const p of parts){ let g=state.groupAlpha[p.group]!==undefined?state.groupAlpha[p.group]:1; if(state.focus){ g=Math.min(g,FOCUS[state.focus][p.group]!==undefined?FOCUS[state.focus][p.group]:1); if(state.focus==='reverse'&&(p.id==='fanR'||p.id==='nacR')) g=Math.max(g,0.6); } let a=p.baseAlpha*g; if(state.sel){ a=p.id===state.sel?Math.max(p.baseAlpha,0.95):Math.min(a,state.focus?0.35:0.12); if(state.focus&&FOCUS[state.focus][p.group]===1&&p.id!==state.sel) a=Math.max(a,0.45); } if(a<=0.02) continue;
+    for(const p of parts){ let g=state.groupAlpha[p.group]!==undefined?state.groupAlpha[p.group]:1; if(state.focus){ g=Math.min(g,FOCUS[state.focus][p.group]!==undefined?FOCUS[state.focus][p.group]:1); if(state.focus==='reverse'&&(p.id==='fanR'||p.id==='nacR')) g=Math.max(g,0.6); } if(p.ab) p.baseAlpha=0.55*(state.op.ab||0); let a=p.baseAlpha*g; if(state.sel){ a=p.id===state.sel?Math.max(p.baseAlpha,0.95):Math.min(a,state.focus?0.35:0.12); if(state.focus&&FOCUS[state.focus][p.group]===1&&p.id!==state.sel) a=Math.max(a,0.45); } if(a<=0.02) continue;
       for(const t of p.tris){ const a0=project(t[0],M),a1=project(t[1],M),a2=project(t[2],M); if(a0[2]<0.2||a1[2]<0.2||a2[2]<0.2) continue;
         const e1=[t[1][0]-t[0][0],t[1][1]-t[0][1],t[1][2]-t[0][2]], e2=[t[2][0]-t[0][0],t[2][1]-t[0][1],t[2][2]-t[0][2]]; const n=norm(cross(e1,e2));
         const toEye=norm([M.eye[0]-t[0][0],M.eye[1]-t[0][1],M.eye[2]-t[0][2]]); const facing=n[0]*toEye[0]+n[1]*toEye[1]+n[2]*toEye[2];
-        if(facing<0&&a>0.9) continue;                               /* back-face cull only for opaque parts */
-        const k=0.45+0.55*Math.max(0,n[0]*light[0]+n[1]*light[1]+n[2]*light[2])*(facing<0?0.6:1);
-        list.push({z:(a0[2]+a1[2]+a2[2])/3,pts:[a0,a1,a2],col:shade(p.color,k),a:facing<0?a*0.5:a,part:p}); } }
+        if(facing<0&&a>0.9&&!p.twoSided) continue;                 /* back-face cull only for opaque, closed parts */
+        const k=0.45+0.55*Math.abs(n[0]*light[0]+n[1]*light[1]+n[2]*light[2])*(facing<0&&!p.twoSided?0.6:1);
+        const area=Math.abs((a1[0]-a0[0])*(a2[1]-a0[1])-(a2[0]-a0[0])*(a1[1]-a0[1])); if(area<0.6) continue;
+        list.push({z:(a0[2]+a1[2]+a2[2])/3,pts:[a0,a1,a2],col:shade(p.color,k),a:(facing<0&&!p.twoSided)?a*0.5:a,part:p}); } }
     list.sort((u,v)=>v.z-u.z); drawn=list;
     for(const t of list){ ctx.globalAlpha=t.a; ctx.fillStyle=t.col; ctx.beginPath(); ctx.moveTo(t.pts[0][0],t.pts[0][1]); ctx.lineTo(t.pts[1][0],t.pts[1][1]); ctx.lineTo(t.pts[2][0],t.pts[2][1]); ctx.closePath(); ctx.fill(); if(t.a<0.9){ ctx.strokeStyle="rgba(200,220,255,.25)"; ctx.lineWidth=0.5; ctx.stroke(); } }
     ctx.globalAlpha=1;
@@ -936,35 +976,36 @@ const JET3D=(()=>{
     if(state.labels) drawLabels(M);
   }
   /* ---------- particles ---------- */
-  const particles=[]; function initParticles(){ PATHS.forEach(P=>{ const n=P.kind==="core"?70:P.kind==="bleed"?40:30; for(let i=0;i<n;i++) particles.push({P,u:Math.random(),off:[(Math.random()-0.5)*0.5,(Math.random()-0.5)*0.5]}); }); }
+  const particles=[]; function initParticles(){ PATHS.forEach(P=>{ const n=P.kind==="core"?70:P.kind==="bleed"?60:P.kind==="cold"?16:30; for(let i=0;i<n;i++) particles.push({P,u:Math.random(),off:[(Math.random()-0.5)*0.5,(Math.random()-0.5)*0.5]}); }); }
   const tC=(T)=>{ const t=Math.max(0,Math.min(1,(T-220)/1400)); const stops=[[0.0,[60,140,255]],[0.25,[90,220,255]],[0.45,[230,230,120]],[0.65,[255,140,40]],[0.85,[255,60,30]],[1,[255,240,230]]]; let i=1; while(i<stops.length&&stops[i][0]<t) i++; const [a,ca]=stops[i-1],[b,cb]=stops[i]; const w=(t-a)/(b-a); return `rgb(${ca.map((c,j)=>Math.round(c+w*(cb[j]-c))).join(",")})`; };
   function pathState(P,u){ /* temperature & speed along each path, from the engine/pack model when available */
     const E=state.E, A=state.A;
-    if(P.kind==="core"){ const seg=E?[[0,E.st[0].T,1],[0.28,E.st[2].T,1],[0.42,E.st[3].T,0.6],[0.52,E.st[4].T,0.7],[0.68,E.st[5].T,1.4],[0.8,E.st[8].T,2.2],[1,E.st[8].T-80,2.6]]:[[0,300,1],[0.28,300,1],[0.42,700,0.6],[0.52,1600,0.7],[0.68,900,1.4],[0.8,750,2.2],[1,650,2.6]]; let i=1; while(i<seg.length-1&&seg[i][0]<u) i++; const [ua,Ta,va]=seg[i-1],[ub,Tb,vb]=seg[i]; const t=(u-ua)/(ub-ua); return {T:Ta+(Tb-Ta)*t,v:va+(vb-va)*t,r:P.kind==="core"?0.25:0.1}; }
-    if(P.kind==="bleed"){ const a=A&&A.a; const seg=a?[[0,a.bleed.T,.7],[0.35,a.prsov.T,.7],[0.5,a.phx.T,.7],[0.62,a.comp.T,.7],[0.72,a.shx.T,.7],[0.8,a.turb.T,.9],[1,a.cabin.T,.9]]:[[0,720,.7],[0.35,720,.7],[0.5,330,.7],[0.62,390,.7],[0.72,265,.7],[0.8,180,.9],[1,278,.9]]; let i=1; while(i<seg.length-1&&seg[i][0]<u) i++; const [ua,Ta,va]=seg[i-1],[ub,Tb,vb]=seg[i]; const t=(u-ua)/(ub-ua); return {T:Ta+(Tb-Ta)*t,v:va+(vb-va)*t,r:0.08}; }
-    return {T:250+120*u,v:0.8,r:0.12}; }
+    if(P.kind==="core"){ const seg=E?[[0,E.st[0].T,1],[0.28,E.st[2].T,1],[0.42,E.st[3].T,0.6],[0.52,E.st[4].T,0.7],[0.66,E.st[5].T,1.4],[0.78,E.st[7].T,2.0],[0.86,E.st[8].T,2.6],[1,E.st[8].T-80,2.8]]:[[0,300,1],[0.28,300,1],[0.42,700,0.6],[0.52,1600,0.7],[0.68,900,1.4],[0.8,750,2.2],[1,650,2.6]]; let i=1; while(i<seg.length-1&&seg[i][0]<u) i++; const [ua,Ta,va]=seg[i-1],[ub,Tb,vb]=seg[i]; const t=(u-ua)/(ub-ua); return {T:Ta+(Tb-Ta)*t,v:va+(vb-va)*t,r:P.kind==="core"?0.25:0.1}; }
+    if(P.kind==="bleed"){ const a=A&&A.a; const seg=a?[[0,a.bleed.T,.7],[0.2,a.prsov.T,.7],[0.3,a.pc.T,.7],[0.38,a.phx.T,.7],[0.5,a.comp.T,.7],[0.6,a.shx.T,.7],[0.68,a.turb.T,.9],[0.78,a.ws.T,.9],[1,a.cabin.T,.9]]:[[0,720,.7],[0.35,720,.7],[0.5,330,.7],[0.62,390,.7],[0.72,265,.7],[0.8,180,.9],[1,278,.9]]; let i=1; while(i<seg.length-1&&seg[i][0]<u) i++; const [ua,Ta,va]=seg[i-1],[ub,Tb,vb]=seg[i]; const t=(u-ua)/(ub-ua); return {T:Ta+(Tb-Ta)*t,v:va+(vb-va)*t,r:0.08}; }
+    if(P.kind==="cold"){ const T=A?A.a.cabin.T:278; return {T,v:0.9,r:0.08}; }
+    return {T:(E?E.st[2].T:288)+(A?Math.max(0,A.Q1+A.Q2)/60:0)*u,v:0.8,r:0.12}; }
   function ptOn(path,u){ const n=path.length-1; const x=Math.max(0,Math.min(1,u))*n; const i=Math.min(n-1,Math.floor(x)); const t=x-i; const a=path[i],b=path[i+1]; return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]; }
   function stepParticles(dt){ if(!isFinite(dt)) return; for(const q of particles){ const s=pathState(q.P,q.u); q.u+=dt*state.speed*s.v*0.12; if(!(q.u>=0&&q.u<=1)) q.u=isFinite(q.u)?((q.u%1)+1)%1:Math.random(); } }
   function drawFlow(M){ const sel=state.sel; for(const q of particles){ const s=pathState(q.P,q.u); const p=ptOn(q.P.pts,q.u); const pp=project([p[0],p[1]+q.off[0]*s.r*2,p[2]+q.off[1]*s.r*2],M); if(pp[2]<0.3) continue; const sc=(Hc/2)/Math.tan(cam.fov*Math.PI/360)/pp[2]; let a=q.P.kind==="ram"?0.5:0.9; if(sel&&!(sel.includes("fan")||sel.includes("comb")||sel.includes("turb")||sel.includes("noz")||sel.includes("intake")||["bleed","pack","phx","acm","shx","cabduct","scoop"].includes(sel))) a*=0.35; ctx.globalAlpha=a; ctx.fillStyle=tC(s.T); ctx.beginPath(); ctx.arc(pp[0],pp[1],Math.max(1,0.06*sc),0,Math.PI*2); ctx.fill(); } ctx.globalAlpha=1; }
   const f0=(x,d=0)=>isFinite(x)?x.toFixed(d):"—";
   function drawStations(M){ const E=state.E, A=state.A; if(!E) return; let tags=[];
-    if(state.focus==="brayton"){ const z=0.85,y=0.35; tags=[["0 ambient",E.st[0],[2.9,-0.1,1.3]],["2 fan inlet",E.st[2],[0.1,y,z]],["3 HPC exit",E.st[3],[-2.9,y,z]],["4 turbine inlet",E.st[4],[-4.1,y,z]],["5 turbine exit",E.st[5],[-5.5,y,z]],["8 nozzle exit",E.st[8],[-9.0,y,z]]]; }
-    if(state.focus==="reverse"&&A){ const a=A.a; tags=[["bleed (HPC exit)",a.bleed,[-2.4,0.15,0.85]],["after precooler",a.pc,[-0.2,0.5,0.45]],["primary HX out",a.phx,[1.65,0.85,-0.25]],["ACM compressor out",a.comp,[1.15,0.75,0.2]],["secondary HX out",a.shx,[0.75,0.85,-0.25]],["turbine out",a.turb,[0.5,0.3,0.2]],["to cockpit",a.cabin,[4.0,0.1,0.3]]]; }
+    if(state.focus==="brayton"){ const z=0.85,y=0.35; tags=[["0 ambient",E.st[0],[2.9,-0.1,1.3]],["2 fan inlet",E.st[2],[0.1,y,z]],["3 HPC exit",E.st[3],[-2.9,y,z]],["4 turbine inlet",E.st[4],[-4.1,y,z]],["5 turbine exit",E.st[5],[-5.5,y,z]],["7 afterburner exit",E.st[7],[-8.0,y,z]],["8 nozzle exit",E.st[8],[-9.4,y,z]]]; }
+    if(state.focus==="reverse"&&A){ const a=A.a; tags=[["bleed (compressor exit)",a.bleed,[-2.9,0.1,0.85]],["after precooler / PRSOV",a.pc,[-1.0,0.6,0.4]],["1 · primary HX out",a.phx,[0.1,0.75,-0.3]],["2 · ACM compressor out",a.comp,[0.45,0.75,0.3]],["2 · secondary HX out",a.shx,[1.1,0.75,-0.3]],["3 · expansion turbine out",a.turb,[1.12,0.2,0.3]],["to cockpit & avionics",a.cabin,[2.6,0.3,0.15]]]; }
     ctx.font="600 10px ui-monospace, monospace"; const w=230; const x0=Wc-w-10; const order=tags.map((t,i)=>({t,i,pp:project(t[2],M)})).filter(o=>o.pp[2]>0.3).sort((a,b)=>a.pp[1]-b.pp[1]);
     order.forEach((o,k)=>{ const [n,s]=o.t; const pp=o.pp; const by=14+k*36; const t1=n, t2=`p = ${f0(s.p,s.p<10?2:0)} kPa · T = ${f0(s.T)} K (${f0(s.T-273.15)} °C)`; ctx.fillStyle="rgba(5,10,24,.9)"; ctx.strokeStyle="#5fd3e6"; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(x0,by,w,30,5):ctx.rect(x0,by,w,30); ctx.fill(); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.fillText(t1,x0+6,by+12); ctx.fillStyle="#eaf2ff"; ctx.fillText(t2,x0+6,by+24); ctx.strokeStyle="rgba(95,211,230,.8)"; ctx.beginPath(); ctx.moveTo(pp[0],pp[1]); ctx.lineTo(x0,by+15); ctx.stroke(); ctx.fillStyle="#5fd3e6"; ctx.beginPath(); ctx.arc(pp[0],pp[1],3,0,Math.PI*2); ctx.fill(); }); }
-  function drawLabels(M){ const show=[]; if(state.focus){ drawStations(M); if(state.sel&&state.sel!=='bay'&&state.sel!=='pack'){ const p=parts.find(x=>x.id===state.sel); if(p) show.push([p.name,p.center]); } } else if(state.sel){ const p=parts.find(x=>x.id===state.sel); if(p) show.push([p.name,p.center]); } else { [["Engines (Brayton cycle)",[-4,-0.3,0.85]],["ECS pack · air cycle machine (reverse Brayton)",[1.2,0.5,0]],["Bleed-air duct",[-0.3,0.5,0.5]],["Cockpit",[4.6,0.9,0]]].forEach(l=>show.push(l)); }
+  function drawLabels(M){ const show=[]; if(state.focus){ drawStations(M); if(state.sel&&state.sel!=='bay'&&state.sel!=='pack'){ const p=parts.find(x=>x.id===state.sel); if(p) show.push([p.name,p.center]); } } else if(state.sel){ const p=parts.find(x=>x.id===state.sel); if(p) show.push([p.name,p.center]); } else { [["Engines (Brayton cycle)",[-4,-0.3,0.85]],["ECS pack · air cycle machine (reverse Brayton)",[0.8,0.5,0]],["Bleed-air duct",[-0.3,0.5,0.5]],["Cockpit",[4.6,0.9,0]]].forEach(l=>show.push(l)); }
     ctx.font="600 12px Chakra Petch, sans-serif"; show.forEach(([txt,c],i)=>{ const pp=project(c,M); if(pp[2]<0.3) return; const w=ctx.measureText(txt).width+12; const dy=-40-26*i, dx=14; const bx=Math.min(Wc-w-6,Math.max(6,pp[0]+dx)), by=Math.max(6,pp[1]+dy); ctx.fillStyle="rgba(5,10,24,.88)"; ctx.strokeStyle="#ffd23f"; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(bx,by,w,20,5):ctx.rect(bx,by,w,20); ctx.fill(); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.fillText(txt,bx+6,by+14); ctx.beginPath(); ctx.moveTo(pp[0],pp[1]); ctx.lineTo(bx,by+20); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.beginPath(); ctx.arc(pp[0],pp[1],2.5,0,Math.PI*2); ctx.fill(); }); }
   /* ---------- picking ---------- */
   function pick(x,y){ const inTri=(p,a,b,c)=>{ const s=(a[0]-c[0])*(p[1]-c[1])-(b[0]-c[0])*(p[1]-a[1]); const d=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]); const e=(c[0]-b[0])*(p[1]-b[1])-(c[1]-b[1])*(p[0]-b[0]); const f=(a[0]-c[0])*(p[1]-c[1])-(a[1]-c[1])*(p[0]-c[0]); return (d>=0&&e>=0&&f>=0)||(d<=0&&e<=0&&f<=0); };
-    for(let i=drawn.length-1;i>=0;i--){ const t=drawn[i]; if(t.a<0.2) continue; if(inTri([x,y],t.pts[0],t.pts[1],t.pts[2])) return t.part; } return null; }
+    for(let i=drawn.length-1;i>=0;i--){ const t=drawn[i]; if(t.a<0.2||t.part.noPick) continue; if(inTri([x,y],t.pts[0],t.pts[1],t.pts[2])) return t.part; } return null; }
   /* ---------- info ---------- */
   const INFO={
     fuselage:"The airframe shell. Make it glass with the slider to see what is inside.", canopy:"Transparent canopy over the cockpit.", seat:"The pilot's ejection seat. The ECS pack sits directly behind it; the bleed duct runs under the floor and up behind the seat.", pilot:"Breathes the air the pack delivers: 8,000 ft cabin altitude, about 20 °C.",
-    intake:"Slows the incoming air (ram compression) before the fan: station 0 → 2 of the Brayton cycle.", fan:"Fan + LP and HP compressors: work in, pressure ratio ≈ 30, air temperature rises to ~700–800 K (station 2 → 3). The bleed port for the ECS is at the HP compressor exit.", comb:"Fuel is burned at nearly constant pressure (station 3 → 4): heat addition of the Brayton cycle, T₄ ≈ 1600 K.", turb:"HP and LP turbines extract the work that drives the compressors and fan (station 4 → 5).", noz:"The remaining enthalpy becomes jet velocity: thrust (station 5 → 8).", shaft:"Transmits turbine work forward to the compressor and fan.", nac:"Engine casing / nacelle.",
-    bleed:"Hot, high-pressure air (~720 K, ~800 kPa at takeoff) tapped from the HP compressor and ducted forward to the pack. This is the link between the Brayton cycle in the engine and the reverse Brayton cycle in the pack.", pack:"The environmental-control-system pack: two ram-air heat exchangers and the air cycle machine.", phx:"Bleed air gives heat to ram air before the ACM compressor.", acm:"Compressor and turbine on one shaft (bootstrap). The turbine expansion drops the air far below cabin temperature: this is the reverse Brayton refrigeration cycle, with the air itself as refrigerant.", shx:"Removes the heat of compression before the turbine, so the expansion starts cold.", scoop:"Ram air (outside air) flows through both heat exchangers and overboard.", cabduct:"Conditioned air to the cockpit after the temperature-control valve mixes in a little hot bleed air.",
+    intake:"Air intake / diffuser: slows the incoming high-speed air and converts its kinetic energy into static pressure (ram compression) before the fan — station 0 → 2 of the Brayton cycle.", spinner:"Fan: the first, largest blade row. On this low-bypass engine most of its air continues into the core; a small share bypasses it to cool the afterburner duct.", comp:"Axial-flow compressor: alternating rows of rotating blades and stationary stators squeeze the air, raising its pressure, density and temperature with little entropy change (nearly isentropic, station 2 → 3). The blade height shrinks stage by stage as the air is compressed. The ECS bleed port is at the compressor exit.", comb:"Combustion chamber: high-pressure air mixes with injected jet fuel in the flame cans and burns, adding heat at nearly constant pressure (station 3 → 4). This is the heat-addition leg of the Brayton cycle; T₄ is the turbine inlet temperature.", turb:"Turbine: the expanding hot gas spins the blade rows and the central drive shaft, which powers the compressor and fan (station 4 → 5). Its work output equals what the compressor needs.", noz:"Exhaust nozzle: accelerates the remaining high-energy gas rearward to produce thrust (station 7 → 8). Convergent–divergent on a supersonic fighter; the petals change the throat and exit areas.", abduct:"Afterburner duct: the long section between turbine and nozzle where afterburner fuel burns.", ab:"Afterburner (augmentor): spray bars and flame-holder gutters sit in the exhaust duct ahead of the nozzle. Extra fuel burned here (station 5 → 7) raises the gas temperature to ~2100 K for a large temporary thrust boost at a steep fuel-flow penalty. Turn it up with the afterburner slider.", flame:"", abflame:"", shaft:"Drive shaft: transmits turbine work forward to the compressor and fan.", nac:"Engine casing / nacelle.",
+    bleed:"Engine bleed air: not exhaust, but clean, ultra-hot, highly pressurized air tapped from the compressor stage before any fuel is added (~700 K, several hundred kPa). It is ducted forward along the fuselage to the pack behind the cockpit. This duct is the physical link between the Brayton cycle in the engine and the reverse Brayton cycle in the pack.", pack:"The environmental-control-system pack, physically behind the cockpit: an open bootstrap air cycle running the reversed Brayton (Joule) cycle. Open, because the air itself is the refrigerant and is delivered to the cockpit rather than recirculated. Step 1: primary heat exchanger. Step 2: bootstrap compression and secondary heat exchanger. Step 3: expansion turbine.", phx:"Step 1, primary cooling: the scalding bleed air passes through a finned heat exchanger cooled by outside ram air drawn in through the scoop.", acm:"Step 2, the bootstrap compression: the ACM compressor squeezes the air further, which raises its temperature, so the secondary heat exchanger can dump even more thermal energy to ram air. The compressor is driven by the expansion turbine on the same shaft; no outside power is needed.", acmt:"Step 3, rapid expansion: the air blasts through the expansion turbine. Pressure and temperature drop drastically, to sub-zero values (typically −20 to −30 °C, i.e. −4 to −20 °F; colder at altitude), and the turbine work is what spins the bootstrap compressor. The cold air then goes to the cockpit and the avionics.", acmshaft:"The bootstrap shaft: turbine work in, compressor work out. Any surplus drives a fan that pulls ram air through the exchangers on the ground.", shx:"Step 2 continued: the secondary heat exchanger removes the heat of compression, so the expansion in the turbine starts from as low a temperature as possible.", scoop:"Ram-air scoop: outside air is forced in by the aircraft's speed, flows through both heat exchangers as the cold side, and is dumped overboard through the exhaust louvre.", ramduct:"The ram-air duct that carries outside air across the fins of both heat exchangers.", ws:"Water separator: the sub-zero turbine discharge condenses the moisture in the air; it is removed here before the air reaches the cockpit.", packduct:"Pack ducting between the heat exchangers and the air cycle machine.", avduct:"Cooling air to the avionics bay in the nose: the radar and fire-control electronics are cooled by the same pack air.", avionics:"Avionics bay: radar and fire-control electronics, cooled by conditioned pack air.", cabduct:"Conditioned air to the cockpit, after the temperature-control valve mixes in a little hot bleed air so the duct never ices.",
     tank:"Fuselage fuel tank.", fuelline:"Fuel to the two combustors.", bay:"Lower fuselage housing the two engines side by side.", wing:"Wings (also fuel tanks on most jets).", stab:"All-moving horizontal stabilators.", fin:"Twin vertical fins.",
   };
-  function infoFor(id){ for(const k of Object.keys(INFO)) if(id.startsWith(k)) return INFO[k]; return ""; }
+  function infoFor(id){ const keys=Object.keys(INFO).sort((a,b)=>b.length-a.length); for(const k of keys) if(id.startsWith(k)) return INFO[k]; return ""; }
   function setFocus(fz){ state.focus=fz; document.querySelectorAll("[data-focus]").forEach(b=>b.classList.toggle("on",b.dataset.focus===(fz||"")));
     if(fz){ const F=FOCUS[fz]; camGoal.active=true; camGoal.target=F.cam; camGoal.dist=F.dist; camGoal.phi=F.phi; camGoal.theta=fz==="brayton"?1.25:0.9; } else { camGoal.active=true; camGoal.target=[-1.0,0.1,0]; camGoal.dist=19; camGoal.phi=0.36; camGoal.theta=cam.theta; } }
   function select(id,keepFocus){ state.sel=id; const el=$("#j3info"); const p=parts.find(x=>x.id===id);
@@ -984,7 +1025,7 @@ const JET3D=(()=>{
     const sp=$("#j3speed"); if(sp) sp.oninput=()=>state.speed=+sp.value; const fl=$("#j3flow"); if(fl) fl.onchange=()=>state.flow=fl.checked; const lb=$("#j3labels"); if(lb) lb.onchange=()=>state.labels=lb.checked;
     const sel=$("#j3select"); if(sel){ sel.innerHTML=`<option value="">Jump to a component…</option>`+parts.map(p=>`<option value="${p.id}">${p.name}</option>`).join(""); sel.onchange=()=>select(sel.value||null); }
     document.querySelectorAll("[data-focus]").forEach(b=>b.onclick=()=>{ const fz=b.dataset.focus||null; state.sel=null; setFocus(fz); select(null,true); if(fz) $("#j3info").innerHTML=fz==="brayton"?`<h4>Brayton cycle: the engines</h4><p>Air in (0) → inlet (2) → fan and compressors to 3 (work in) → combustor to 4 (heat in at constant pressure) → turbines to 5 (work out, exactly what the compressors need) → nozzle to 8 (thrust). Click any engine part for its control-volume story. Numbers come from the same model as the <a href="jet.html">Jet Engine Lab</a>.</p>`:`<h4>Reverse Brayton cycle: the ECS pack behind the seat</h4><p>Hot bleed air from the compressor (yellow duct) → precooler and primary heat exchanger (heat out to ram air) → ACM compressor (work in) → secondary heat exchanger (heat out) → ACM turbine (work out, and the big temperature drop) → cold air to the cockpit. The air itself is the refrigerant.</p>`; });
-    ["th","alt","M"].forEach(k=>{ const e=$("#j3"+k); if(!e) return; e.oninput=()=>{ state.op[k]=+e.value; physics(); const lab=$("#j3v"+k); if(lab) lab.textContent=k==="th"?Math.round(100*state.op.th)+" %":k==="alt"?Math.round(state.op.alt/0.3048)+" ft":state.op.M.toFixed(2); }; });
+    ["th","alt","M","ab"].forEach(k=>{ const e=$("#j3"+k); if(!e) return; e.oninput=()=>{ state.op[k]=+e.value; physics(); const lab=$("#j3v"+k); if(lab) lab.textContent=k==="th"?Math.round(100*state.op.th)+" %":k==="alt"?Math.round(state.op.alt/0.3048)+" ft":k==="M"?state.op.M.toFixed(2):(state.op.ab>0?Math.round(100*state.op.ab)+" %":"off"); }; });
     physics(); select(null);
     let last=performance.now(); const loop=(now)=>{ const dt=Math.min(0.05,(now-last)/1000); last=now; try{ if(camGoal.active){ const k=Math.min(1,dt*4); cam.target=cam.target.map((c,i)=>c+(camGoal.target[i]-c)*k); cam.dist+=(camGoal.dist-cam.dist)*k; cam.phi+=(camGoal.phi-cam.phi)*k; cam.theta+=(camGoal.theta-cam.theta)*k; if(Math.abs(cam.dist-camGoal.dist)<0.02) camGoal.active=false; } stepParticles(dt); render(); }catch(e){ console.warn(e); } requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
   return {init,cam,state,parts,select};
