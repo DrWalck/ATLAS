@@ -1,0 +1,1090 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jet 3D · ATLAS Thermodynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';s.onload=function(){window.renderSheet&&renderSheet();window.renderConcepts&&renderConcepts()};document.head.appendChild(s)"></script>
+<style>
+
+:root{
+  --bg:#eef1f5; --grid:rgba(29,79,145,.06); --surface:#ffffff; --surface-2:#f6f8fb;
+  --ink:#16202c; --muted:#5a6878; --line:#d5dce5;
+  --accent:#1d4f91; --accent-ink:#ffffff; --accent-soft:#e3ecf8;
+  --hl:#fbe7a1; --hl-ink:#3d2f00;
+  --good:#1f7a4d; --good-soft:#e1f3e9; --warn:#9a6200; --warn-soft:#fbf0dc; --bad:#b3261e; --bad-soft:#fbe5e3;
+  --plot-2:#c2571a;
+  --display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e131a; --grid:rgba(127,176,240,.05); --surface:#161e28; --surface-2:#1c2632;
+    --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3644;
+    --accent:#7fb0f0; --accent-ink:#0e131a; --accent-soft:#1f3350;
+    --hl:#4a3f17; --hl-ink:#fbe7a1;
+    --good:#5cc58e; --good-soft:#15301f; --warn:#e0a84a; --warn-soft:#33270f; --bad:#f08a80; --bad-soft:#3a1a18;
+    --plot-2:#f0a070;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e131a; --grid:rgba(127,176,240,.05); --surface:#161e28; --surface-2:#1c2632;
+  --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3644;
+  --accent:#7fb0f0; --accent-ink:#0e131a; --accent-soft:#1f3350;
+  --hl:#4a3f17; --hl-ink:#fbe7a1;
+  --good:#5cc58e; --good-soft:#15301f; --warn:#e0a84a; --warn-soft:#33270f; --bad:#f08a80; --bad-soft:#3a1a18;
+  --plot-2:#f0a070;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55;
+  padding-inline:16px; padding-block:0 48px;
+}
+.wrap{max-width:1120px;margin:0 auto}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;padding-block:28px 20px;border-bottom:2px solid var(--ink);margin-bottom:24px}
+header.top h1{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4vw,2.6rem);letter-spacing:.01em;line-height:1;margin:0;text-wrap:balance}
+.back{display:inline-block;font:600 .9rem var(--body);color:var(--accent);text-decoration:none;margin-bottom:8px}
+.back:hover{text-decoration:underline}
+.back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top p{margin:0;color:var(--muted);font-size:.95rem;max-width:52ch}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
+nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;gap:18px}
+.topic h2{font-family:var(--display);font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px}
+.topic ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.topic button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:8px;width:100%;padding:8px 10px;border-radius:6px;border:1px solid transparent}
+.topic button:hover{background:var(--surface)}
+.topic button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.topic button[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent)}
+.topic .pname{font-weight:600}
+.topic .ptag{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+.soon{font-size:.85rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+
+.concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
+.concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
+.concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
+.cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
+.cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
+.ceq{overflow-x:auto;font-size:1.05rem}
+main.sheet{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,3vw,32px);display:flex;flex-direction:column;gap:24px;min-width:0}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;font-size:.8rem;font-weight:600;color:var(--accent)}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.phead h2{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.2vw,2.1rem);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 .95rem/1 var(--body);padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.statement{font-size:1.08rem;max-width:68ch;margin:0}
+.num{font-family:var(--mono);font-size:.92em;background:var(--hl);color:var(--hl-ink);padding:0 .3em;border-radius:3px;white-space:nowrap}
+.variant{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.box{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--surface-2)}
+.box h3{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.box ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.box li{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.box li .v{font-family:var(--mono);font-size:.92rem}
+.method{font-size:.95rem;color:var(--muted);margin:0}
+.method b{color:var(--ink)}
+
+.answers h3{font-family:var(--display);font-size:1.15rem;margin:0 0 10px;font-weight:600}
+.arow{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(120px,1fr) 11rem;gap:10px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
+.arow label{font-weight:600}
+.arow .inp{display:flex;align-items:center;gap:6px}
+.arow input{width:100%;min-width:0;font:1rem var(--mono);padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.arow input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.arow .unit{font-family:var(--mono);font-size:.85rem;color:var(--muted);white-space:nowrap;min-width:4.2em}
+.chip{font:600 .8rem/1 var(--body);padding:6px 10px;border-radius:999px;white-space:nowrap;justify-self:start}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.idle{color:var(--muted)}
+.checkbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.hint{font-size:.85rem;color:var(--muted)}
+
+.solution{border-top:2px solid var(--ink);padding-top:20px;display:flex;flex-direction:column;gap:16px}
+.solution h3{font-family:var(--display);font-size:1.3rem;margin:0;font-weight:700}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:2rem minmax(0,1fr);gap:4px 10px}
+ol.steps li::before{content:counter(s);font-family:var(--mono);font-weight:600;color:var(--accent);border:1.5px solid var(--accent);border-radius:50%;width:1.7rem;height:1.7rem;display:grid;place-items:center;font-size:.8rem}
+.step-title{font-weight:600;align-self:center}
+.step-body{grid-column:2;display:flex;flex-direction:column;gap:6px;min-width:0}
+.eq{overflow-x:auto;padding:6px 0;font-size:1.12rem}
+.eq math{font-size:1.12em}
+.note{font-size:.92rem;color:var(--muted);margin:0}
+.final{display:flex;flex-wrap:wrap;gap:10px}
+.final .ans{border:2px solid var(--accent);border-radius:8px;padding:10px 14px;background:var(--accent-soft)}
+.final .ans .k{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--display);font-weight:600}
+.final .ans .val{font-family:var(--mono);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.plotwrap{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--surface-2)}
+.plotwrap figcaption{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+canvas{display:block;width:100%;height:260px}
+.takeaway{border-left:3px solid var(--hl);background:var(--surface-2);padding:10px 14px;border-radius:0 6px 6px 0;font-size:.95rem;margin:0}
+
+@media (max-width:780px){
+  .layout{grid-template-columns:1fr}
+  nav.problems{position:static}
+  .topic ul{flex-direction:row;flex-wrap:wrap}
+  .topic li{flex:1 1 150px}
+  .soon{display:none}
+  .arow{grid-template-columns:1fr auto}
+  .arow label{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:no-preference){
+  .solution{animation:rise .25s ease-out}
+  @keyframes rise{from{transform:translateY(6px)}to{transform:none}}
+}
+sub{font-size:.72em;line-height:0;vertical-align:-.25em}
+.eyebrow sub,.topic h2 sub{text-transform:none}
+/* SCHEM-CSS-START */
+.probtop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:18px;align-items:start}
+@media (max-width:900px){.probtop{grid-template-columns:1fr}}
+.schem{margin:0;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:8px 8px 4px}
+.schem figcaption{font-size:.74rem;color:var(--muted);text-align:right;margin-top:2px}
+.diag{width:100%;height:auto;display:block;overflow:visible}
+.diag .s,.diag .spr{stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.diag .thin{stroke:var(--ink);stroke-width:1.1;fill:none}
+.diag .h{stroke:var(--muted);stroke-width:1.3;fill:none;stroke-dasharray:5 4}
+.diag .h2{stroke:var(--muted);stroke-width:1.2;fill:none}
+.diag .hatch{stroke:var(--muted);stroke-width:1}
+.diag .v{stroke:var(--accent);stroke-width:2.2;fill:none}
+.diag .f{stroke:var(--plot-2);stroke-width:2.2;fill:none}
+.diag .body{fill:var(--accent-soft);stroke:var(--ink);stroke-width:1.6}
+.diag .body2{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.diag .pinb,.diag .pinc{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.diag .dotk{fill:var(--ink)} .diag .dotv{fill:var(--accent)} .diag .dotf{fill:var(--plot-2)}
+.diag .dimln{stroke:var(--muted);stroke-width:1} .diag .ext{stroke:var(--muted);stroke-width:.8;stroke-dasharray:2 3}
+.diag .ms{fill:var(--muted)} .diag .mv{fill:var(--accent)} .diag .mf{fill:var(--plot-2)}
+.diag text{font-family:var(--body);font-size:12.5px}
+.diag .t,.diag .ts{fill:var(--ink)} .diag .tv{fill:var(--accent);font-weight:600} .diag .tf{fill:var(--plot-2);font-weight:600} .diag .tm{fill:var(--muted)}
+/* SCHEM-CSS-END */
+/* ---------- Neon "game" theme (overrides everything above) ---------- */
+:root:root:root{
+  color-scheme:dark;
+  --bg:#060a14; --grid:rgba(34,211,238,.05); --surface:rgba(13,20,38,.86); --surface-2:#0e1730; --surface-3:#15213f;
+  --ink:#e9f1ff; --muted:#97a7c9; --line:#23345c;
+  --accent:#22d3ee; --accent-ink:#04121a; --accent-soft:rgba(34,211,238,.10);
+  --hl:rgba(255,210,63,.13); --hl-ink:#ffe27a;
+  --good:#7cff6b; --good-soft:rgba(124,255,107,.11); --warn:#ffd23f; --warn-soft:rgba(255,210,63,.12); --bad:#ff5c8a; --bad-soft:rgba(255,92,138,.13);
+  --plot-2:#ff8a3d; --mag:#ff4fd8; --vio:#8b5cf6;
+  --display:"Chakra Petch","Barlow Semi Condensed",system-ui,sans-serif;
+  --grad:linear-gradient(135deg,#22d3ee 0%,#8b5cf6 55%,#ff4fd8 100%);
+}
+html{background:#060a14}
+body{
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 5% -8%,rgba(139,92,246,.20),transparent 62%),
+    radial-gradient(800px 480px at 105% 0%,color-mix(in srgb,var(--zone) 20%,transparent),transparent 60%),
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:auto,auto,28px 28px,28px 28px;
+}
+::selection{background:rgba(34,211,238,.35)}
+
+/* header */
+header.top{border-bottom:none;position:relative;padding-block:26px 22px;align-items:flex-end}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--zone),#8b5cf6,transparent);box-shadow:0 0 14px var(--zone)}
+header.top h1{font-weight:700;letter-spacing:.02em;background:linear-gradient(90deg,#ffffff 20%,var(--zone));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.back{color:var(--zone);font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.8rem}
+header.top p{flex:1 1 320px}
+
+/* HUD */
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;flex:0 1 auto}
+.hud .cell{display:flex;align-items:center;gap:8px;background:rgba(10,16,32,.9);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-family:var(--display);font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.hud .cell svg{width:18px;height:18px;flex:none}
+.hud .k{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+.hud .n{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.hud .lvl{border-color:rgba(139,92,246,.6);box-shadow:0 0 16px -6px #8b5cf6}
+.hud .lvl .n{color:#c4b5fd}
+.hud .xpbar{width:84px;height:7px;border-radius:9px;background:#1a2648;overflow:hidden}
+.hud .xpbar i{display:block;height:100%;background:var(--grad);box-shadow:0 0 10px #22d3ee;transition:width .5s}
+.hud .streak .n{color:#ffb35c}.hud .streak svg{color:#ff8a3d;filter:drop-shadow(0 0 5px #ff8a3d)}
+.hud .clr .n{color:var(--good)}.hud .clr svg{color:var(--good);filter:drop-shadow(0 0 4px var(--good))}
+.hud .xp svg{color:#22d3ee;filter:drop-shadow(0 0 4px #22d3ee)}
+.hud .bump{animation:bump .5s ease-out}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* panels */
+.concepts,main.sheet{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 0 0 1px rgba(34,211,238,.04),0 24px 60px -24px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+main.sheet{border-top:2px solid color-mix(in srgb,var(--zone) 70%,transparent)}
+.concepts summary{font-family:var(--display);letter-spacing:.03em;color:#fff}
+.concepts summary::marker{color:var(--zone)}
+.cgrid h4{color:var(--zone)}
+.cgrid>div{background:rgba(8,14,30,.6);border:1px solid var(--line);border-radius:10px;padding:12px}
+
+/* nav */
+.topic h2{color:var(--zone);font-family:var(--display);letter-spacing:.14em}
+.topic button{border-radius:9px;transition:background .15s,box-shadow .15s}
+.topic button:hover{background:rgba(34,211,238,.06)}
+.topic button[aria-current="true"]{background:linear-gradient(90deg,color-mix(in srgb,var(--zone) 18%,transparent),rgba(13,20,38,.6));border-color:color-mix(in srgb,var(--zone) 45%,transparent);box-shadow:inset 3px 0 0 var(--zone),0 0 22px -10px var(--zone)}
+.topic .ptag{color:#8ea3cf}
+.topic button.solved .pname::after{content:"✓";display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-left:.45em;border-radius:50%;font-size:.72em;background:var(--good);color:#06210a;box-shadow:0 0 8px var(--good);vertical-align:.1em}
+.soon{border-top-color:var(--line)}
+
+/* problem sheet */
+.eyebrow{color:var(--zone);letter-spacing:.14em}
+.phead h2{color:#fff;letter-spacing:.01em}
+.variant{color:#8ea3cf}
+.btn{font-family:var(--display);letter-spacing:.05em;text-transform:uppercase;font-size:.84rem;padding:11px 15px;border-radius:9px;background:var(--surface-3);border:1px solid #2c4274;color:var(--ink);transition:transform .12s,box-shadow .15s,border-color .15s}
+.btn:hover{border-color:var(--accent);box-shadow:0 0 16px -4px var(--accent)}
+.btn.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#050b18;border-color:transparent;font-weight:700;box-shadow:0 0 18px -6px #22d3ee}
+.btn.primary:hover{filter:brightness(1.08);box-shadow:0 0 24px -4px #22d3ee}
+@media (prefers-reduced-motion:no-preference){.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}}
+.num{background:var(--hl);color:var(--hl-ink);border:1px solid rgba(255,210,63,.25);text-shadow:0 0 8px rgba(255,210,63,.35)}
+.box{background:rgba(8,14,30,.7);border-radius:12px;border-color:var(--line)}
+.cols .box:first-child{box-shadow:inset 0 2px 0 #22d3ee}
+.cols .box:first-child h3{color:#5eeaff}
+.cols .box:last-child{box-shadow:inset 0 2px 0 var(--mag)}
+.cols .box:last-child h3{color:#ff8be6}
+.box h3{letter-spacing:.14em}
+.box li .v{color:#ffe27a}
+.method b{color:#c4b5fd}
+.answers h3{font-family:var(--display);letter-spacing:.04em;color:#fff}
+.arow{border-top-color:var(--line)}
+.arow input{background:#08101f;border:1px solid #2c4274;border-radius:9px;color:#fff;transition:border-color .15s,box-shadow .15s}
+.arow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.18),0 0 18px -4px var(--accent)}
+.chip{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;border:1px solid transparent}
+.chip.good{border-color:rgba(124,255,107,.45);box-shadow:0 0 14px -4px var(--good);text-shadow:0 0 6px rgba(124,255,107,.6)}
+.chip.warn{border-color:rgba(255,210,63,.4)}
+.chip.bad{border-color:rgba(255,92,138,.45)}
+.chip.idle{border-color:var(--line)}
+@media (prefers-reduced-motion:no-preference){.chip.good,.chip.warn,.chip.bad{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.hint{color:#8ea3cf}
+
+/* solution */
+.solution{border-top:none;position:relative}
+.solution::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,#8b5cf6,var(--zone),transparent)}
+.solution h3{font-family:var(--display);letter-spacing:.04em;color:#fff}
+ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,211,238,.08);box-shadow:0 0 10px -2px #22d3ee}
+.final .ans{border:1px solid transparent;background:linear-gradient(#0c1530,#0c1530) padding-box,var(--grad) border-box;border-radius:12px;box-shadow:0 0 20px -8px #8b5cf6}
+.final .ans .val{color:#fff}
+.plotwrap{background:rgba(8,14,30,.75);border-radius:12px}
+.takeaway{border-left:3px solid var(--good);background:rgba(124,255,107,.06);border-radius:0 10px 10px 0}
+.takeaway b{color:var(--good)}
+
+/* schematic */
+.schem{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:12px;box-shadow:inset 0 0 30px rgba(34,211,238,.06),0 0 24px -12px #22d3ee}
+.schem figcaption{color:#7f93bd;letter-spacing:.04em}
+.diag .s{stroke:#d6e4ff}
+.diag .thin{stroke:#b8c9ee}
+.diag .spr{stroke:#a3e635;stroke-width:2.2;filter:url(#glow)}
+.diag .h{stroke:#6d82b3}
+.diag .h2{stroke:#b69cff}
+.diag .hatch{stroke:#4f6396}
+.diag .v{stroke:#22d3ee;stroke-width:2.6;filter:url(#glow)}
+.diag .f{stroke:#ff8a3d;stroke-width:2.6;filter:url(#glow)}
+.diag .body{fill:url(#gBody);stroke:#a5c4ff}
+.diag .body2{fill:url(#gBody2);stroke:#86a6e6}
+.diag .pinb{fill:#1c2a52;stroke:#a5c4ff}
+.diag .pinc{fill:#0b1226;stroke:#22d3ee}
+.diag .dotk{fill:#ffffff;filter:url(#glow)} .diag .dotv{fill:#22d3ee;filter:url(#glow)} .diag .dotf{fill:#ff8a3d;filter:url(#glow)}
+.diag .dimln{stroke:#b69cff} .diag .ext{stroke:#6d82b3}
+.diag .ms{fill:#b8c9ee} .diag .mv{fill:#22d3ee} .diag .mf{fill:#ff8a3d}
+.diag text{paint-order:stroke;stroke:#08101f;stroke-width:3.2px;stroke-linejoin:round}
+.diag .t,.diag .ts{fill:#f1f6ff} .diag .tv{fill:#67e8f9} .diag .tf{fill:#ffa468} .diag .tm{fill:#c9bcff}
+
+/* celebration */
+#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-140%);z-index:60;background:rgba(8,14,30,.95);border:1px solid transparent;background-image:linear-gradient(#0a1226,#0a1226),var(--grad);background-origin:border-box;background-clip:padding-box,border-box;border-radius:14px;padding:12px 20px;font-family:var(--display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;box-shadow:0 0 30px -6px #8b5cf6;transition:transform .35s cubic-bezier(.3,1.4,.5,1);display:flex;gap:12px;align-items:center;max-width:calc(100vw - 32px)}
+.toast.show{transform:translate(-50%,0)}
+.toast .plus{color:var(--good);text-shadow:0 0 10px var(--good)}
+.toast small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--muted);font-family:var(--body);font-size:.85rem}
+@media (max-width:780px){.hud{width:100%}.hud .cell{flex:1 1 auto;justify-content:center}}
+/* keep symbols like ma, Iα, a_t in their real case */
+.eyebrow,.topic h2{text-transform:none;letter-spacing:.06em;font-size:.86rem}
+.final .ans .k,.cgrid h4{text-transform:none;letter-spacing:.05em}
+:root:root:root{--zone:#22d3ee}
+/* ---------- hints ---------- */
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.hintcard{border:1px solid rgba(255,210,63,.35);background:rgba(255,210,63,.06);border-radius:10px;padding:10px 14px;font-size:.95rem}
+.hintcard .hk{display:block;font-family:var(--display);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#ffe27a;margin-bottom:3px}
+#hintbtn{border-color:rgba(255,210,63,.5);color:#ffe27a}
+#hintbtn:hover{box-shadow:0 0 16px -4px #ffd23f}
+#hintbtn:disabled{opacity:.5;cursor:default;box-shadow:none}
+/* ---------- meaning ---------- */
+.arow{grid-template-rows:auto auto}
+.sense{grid-column:1/-1;font-size:.9rem;color:#c9d6f2;padding:2px 0 4px;border-left:2px solid var(--good);padding-left:10px;margin-top:-2px}
+.sense .sk,.final .mean .sk{font-family:var(--display);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--good);margin-right:6px}
+.final .ans{max-width:100%}
+.final .mean{font-size:.82rem;color:#c9d6f2;margin-top:6px;max-width:30ch;line-height:1.35}
+/* ---------- MATLAB panel ---------- */
+#mlab:empty{display:none}
+.mlab{border:1px solid #2a3f70;border-radius:12px;background:rgba(8,14,30,.75);overflow:hidden}
+.mlab summary{cursor:pointer;padding:12px 16px;font-family:var(--display);font-weight:600;letter-spacing:.03em;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mlab summary::marker{color:#ff8a3d}
+.mlt{background:#ff8a3d;color:#1a0a00;font-size:.7rem;letter-spacing:.14em;padding:3px 8px;border-radius:6px;font-weight:700}
+.mlsub{color:var(--muted);font-weight:500;font-size:.85rem;letter-spacing:.02em}
+.mlbody{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.mlhelp{margin:0;font-size:.9rem;color:var(--muted)}
+.mlhelp code{font-family:var(--mono);font-size:.85em;color:#ffe27a;background:rgba(255,210,63,.1);padding:0 .3em;border-radius:3px}
+.mlcode{font-family:var(--mono);font-size:.86rem;line-height:1.75;background:#070c19;border:1px solid #1e2d52;border-radius:10px;padding:10px 0;overflow-x:auto;white-space:pre}
+.mlcode .cl{display:flex;gap:12px;padding:0 12px;min-height:1.75em}
+.mlcode .cl.err{background:rgba(255,92,138,.14);box-shadow:inset 3px 0 0 var(--bad)}
+.mlcode .ln{color:#3f5382;min-width:2ch;text-align:right;user-select:none;flex:none}
+.mlcode .ct{color:#d6e2ff;white-space:pre}
+.mlcode .c{color:#6ea86e;font-style:italic}
+.mlcode .s{color:#c39dff}
+.mlcode .n{color:#ffb35c}
+.mlcode .k{color:#5eeaff}
+.mlcode .f{color:#8ee7ff}
+.blank{position:relative;display:inline-flex;align-items:center;gap:2px;vertical-align:baseline}
+.mb{font:inherit;color:#fff;background:#0d1a3a;border:1px dashed #5a78c4;border-radius:6px;padding:0 8px;height:1.55em;line-height:1.55em;transition:border-color .15s,box-shadow .15s}
+.mb:focus{outline:none;border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.18)}
+.mb.ok{border-style:solid;border-color:var(--good);background:rgba(124,255,107,.1);box-shadow:0 0 10px -3px var(--good)}
+.mb.bad{border-style:solid;border-color:var(--bad);background:rgba(255,92,138,.1)}
+.mbh{font:700 .72rem var(--display);width:1.4em;height:1.4em;border-radius:50%;border:1px solid rgba(255,210,63,.6);background:rgba(255,210,63,.12);color:#ffe27a;cursor:pointer;padding:0;line-height:1}
+.mbh:hover{background:rgba(255,210,63,.3)}
+.mbtip{position:absolute;left:0;top:calc(100% + 6px);z-index:5;background:#141b33;border:1px solid rgba(255,210,63,.5);color:#ffe9a8;font:.8rem var(--body);line-height:1.35;padding:8px 10px;border-radius:8px;white-space:normal;width:max-content;max-width:min(360px,80vw);box-shadow:0 10px 30px -10px #000}
+.mlbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mlbar .hint.good{color:var(--good)}
+.mlout{border:1px solid #1e2d52;border-radius:10px;background:#03060f;overflow:hidden}
+.mlouth{font-family:var(--display);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:1px solid #1e2d52;background:#0a1226}
+.mlout pre{margin:0;padding:10px 12px;font:.86rem/1.5 var(--mono);color:#d6e2ff;white-space:pre-wrap;overflow-x:auto}
+.mlout pre.haserr{color:#ffb4c6}
+@media (max-width:600px){.mlcode{font-size:.8rem}.mb{max-width:60vw}}
+/* ---------- thermo sheet ---------- */
+.credit{color:#8ea3cf;font-style:italic}
+.sheetgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:760px){.sheetgrid{grid-template-columns:1.25fr 1fr}}
+.kl{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px;font-size:.95rem}
+.box .kl li{display:list-item;list-style:disc;justify-content:normal}
+.box .kl li span{display:inline}
+.box.find{box-shadow:inset 0 2px 0 var(--mag)}.box.find h3{color:#ff8be6}
+.box.kf:first-child{box-shadow:inset 0 2px 0 #22d3ee}.box.kf:first-child h3{color:#5eeaff}
+.schembox .schem{margin-top:4px}
+.secline{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.secline h3{font-family:var(--display);font-size:1.15rem;margin:0;color:#fff;letter-spacing:.03em}
+.btn.small{padding:7px 11px;font-size:.76rem}
+.props{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)}
+.pstate{border:1px solid #2a3f70;border-radius:10px;padding:10px 12px;margin-top:8px;background:#0a1226}
+.pshead{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:6px}
+.pshead b{font-family:var(--display);color:#fff}
+.pfix{color:#c9d6f2;font-size:.9rem}
+.pphase{font-family:var(--display);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#ffe27a;border:1px solid rgba(255,210,63,.4);border-radius:999px;padding:2px 8px}
+.ptab{border-collapse:collapse;width:100%;font-size:.92rem}
+.ptab td{padding:4px 8px;border-top:1px solid #1e2d52;vertical-align:top}
+.psym{font-family:var(--mono);color:#5eeaff;white-space:nowrap}
+.pval{font-family:var(--mono);color:#ffe27a;white-space:nowrap}
+.psrc{color:var(--muted);font-size:.85rem}
+.howbtn{all:unset;cursor:pointer;color:#c4b5fd;font-size:.8rem;text-decoration:underline dotted;margin-left:6px}
+.howlist{margin:4px 0 6px;padding-left:1.2em;font-size:.86rem;color:#c9d6f2;display:flex;flex-direction:column;gap:3px}
+.pnote{margin:6px 0 0;font-size:.88rem;color:var(--muted)}
+.pdiag{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)}
+.pdgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (min-width:860px){.pdgrid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.pvc{display:block;width:100%;height:300px;border-radius:10px}
+.spd{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.spd input{width:90px;accent-color:#22d3ee}
+.animbox{display:flex;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
+.pist{width:100%;max-width:240px;height:auto}
+.pist .cyl{fill:#0b1226;stroke:#a5c4ff;stroke-width:2}
+.pist .gas{stroke:none}
+.pist .pis{fill:url(#gBody2);fill:#334a7d;stroke:#a5c4ff;stroke-width:1.5}
+.pist .rod{fill:#4a5f96}
+.pist .wt{fill:#1c2a52;stroke:#ffd23f;stroke-width:1.5}
+.pist .pin{fill:#ff8a3d}
+.pist .ptxt{fill:#c9d6f2;font-size:11px;font-family:var(--body)}
+.pist .hin path{stroke:#ff8a3d;stroke-width:2;fill:none;filter:url(#glow)}
+.pist .hout path{stroke:#22d3ee;stroke-width:2;fill:none;filter:url(#glow)}
+.readout{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:.8rem;color:#c9d6f2;justify-content:center}
+.readout b{color:#ffe27a}
+.readout .pl{color:#7cff6b;font-family:var(--display)}
+.boxed{display:inline-block;border:1.5px solid var(--good);border-radius:8px;padding:4px 12px;margin-top:4px;background:rgba(124,255,107,.06)}
+.boxed math{font-size:1.1em}
+.box.comm{box-shadow:inset 0 2px 0 #ffd23f}.box.comm h3{color:#ffe27a}
+.box.refs{box-shadow:inset 0 2px 0 #a78bfa}.box.refs h3{color:#c4b5fd}
+.box.refs ol{padding-left:1.3em}.box.refs li{list-style:decimal}
+.diag .gas{fill:rgba(255,138,61,.22);stroke:none}
+.diag .water{fill:rgba(34,211,238,.12);stroke:none}
+.diag .wall{fill:rgba(255,210,63,.18);stroke:var(--ink);stroke-width:1.4}
+.ptable{border-collapse:collapse;margin:10px 0 0;font-family:var(--mono);font-size:.92rem}
+.ptable th,.ptable td{border:1px solid var(--line);padding:3px 10px;text-align:center}
+.ptable th{color:var(--muted);font-weight:600}
+.ptable td.q{color:#ff8be6;font-weight:700}
+.diag .hot{fill:rgba(255,138,61,.28);stroke:#ff8a3d;stroke-width:1.4}
+.diag .cold{fill:rgba(34,211,238,.22);stroke:#22d3ee;stroke-width:1.4}
+.diag .warm{fill:rgba(255,210,63,.22);stroke:#ffd23f;stroke-width:1.4}
+/* ---------- tables tool ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tabbtn{all:unset;cursor:pointer;font:600 .78rem var(--display);letter-spacing:.05em;text-transform:uppercase;padding:7px 11px;border-radius:8px;border:1px solid #2c4274;background:var(--surface-3);color:var(--ink)}
+.tabbtn.on{background:linear-gradient(135deg,#ffd23f,#ff8a3d);color:#1a0a00;border-color:transparent}
+.tblwrap{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#070c19}
+.dt{border-collapse:collapse;width:100%;font:.84rem var(--mono);white-space:nowrap}
+.dt th{position:sticky;top:0;background:#0f1a36;color:#5eeaff;padding:6px 8px;text-align:right;border-bottom:1px solid #2c4274;font-weight:600}
+.dt td{padding:3px 8px;text-align:right;border-bottom:1px solid #131d3a;color:#d6e2ff}
+.dt tr:hover td{background:rgba(34,211,238,.08)}
+.dt td:first-child,.dt th:first-child{text-align:left;color:#ffe27a;position:sticky;left:0;background:#0a1226}
+.dt .satrow td{color:#ffb35c}
+.blk{font-family:var(--display);color:#fff;margin:14px 8px 4px;font-size:.95rem;letter-spacing:.03em}
+.lookup{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7);display:flex;flex-direction:column;gap:10px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.lgrid label{display:flex;flex-direction:column;gap:3px;font:600 .72rem var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lgrid input,.lgrid select{font:.95rem var(--mono);padding:7px 9px;border-radius:8px;border:1px solid #2c4274;background:#08101f;color:#fff}
+.tlayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:1000px){.tlayout{grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr)}}
+
+/* ---------- concepts lab ---------- */
+.term{color:#ffe27a}
+.defq{margin:8px 0 0;font-size:1rem;color:#e9f1ff;border-left:3px solid #ffd23f;padding-left:10px}
+.opt.ok{border-color:var(--good);background:rgba(124,255,107,.1)}
+.efw{max-height:none}
+.eft{border-collapse:collapse;width:100%;font-size:.85rem}
+.eft th{background:#0f1a36;color:#5eeaff;padding:8px;text-align:left;border-bottom:1px solid #2c4274;font-family:var(--display);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.eft tbody th{color:#ffe27a;white-space:nowrap;text-transform:none;letter-spacing:0;font-size:.9rem}
+.eft td{padding:6px;border-bottom:1px solid #131d3a;vertical-align:top}
+.eft select{width:100%;max-width:220px;font:.82rem var(--body);padding:6px;border-radius:7px;border:1px dashed #5a78c4;background:#0d1a3a;color:#fff;white-space:normal}
+.eft select.ok{border:1px solid var(--good);background:rgba(124,255,107,.1)}
+.eft select.bad{border:1px solid var(--bad);background:rgba(255,92,138,.12)}
+.devgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:10px}
+@media (min-width:760px){.devgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.devfig{margin:0}
+.diag .wall{stroke:#a5c4ff;stroke-width:6}
+.diag .wt{fill:#1c2a52;stroke:#ffd23f;stroke-width:1.5}
+nav.problems .topic button{grid-template-columns:1fr;gap:2px}
+nav.problems .topic .ptag{white-space:normal;line-height:1.3}
+
+.flowbox{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
+.flowbox svg{width:100%;max-width:640px;height:auto;display:block;margin:0 auto;overflow:visible}
+.flow .pipe{stroke:#3a4f86;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow .part{stroke:none;filter:url(#glow)}
+
+/* ===== Jet Engine Lab ===== */
+.jetlayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media(min-width:1100px){.jetlayout{grid-template-columns:minmax(0,1.6fr) minmax(300px,.9fr)}}
+#scene{position:relative;width:100%;aspect-ratio:1000/420;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
+#scene svg,#scene canvas{position:absolute;inset:0;width:100%;height:100%}
+#scene canvas{pointer-events:none}
+.part{transition:opacity .25s}
+.part.selected .skin,.part.selected .casing,.part.selected .blade,.part.selected .disk,.part.selected .liner,.part.selected .cone,.part.selected .abox{filter:drop-shadow(0 0 6px #ffd23f)}
+.skin{fill:none;stroke:#9fb3d6;stroke-width:3}
+.lip{fill:none;stroke:#9fb3d6;stroke-width:3}
+.casing{fill:none;stroke:#6f86b3;stroke-width:2.5}
+.shaftlp{fill:#3a4a6e;stroke:#8aa0c8;stroke-width:1}
+.shafthp{fill:#55679a;stroke:#a7b9dd;stroke-width:1}
+.spinner{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:1}
+.blade{fill:#8fa6d2;stroke:#dbe6ff;stroke-width:.6}
+.blade.fan{fill:#a9bde6}
+.blade.hot{fill:#d9a06b;stroke:#ffe1bf}
+.stator{fill:#55679a;stroke:#8aa0c8;stroke-width:.5}
+.disk{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:.8}
+.liner{fill:#3b2a1e;stroke:#f0b27a;stroke-width:1.2}
+.flame{opacity:.95}
+.fuel{fill:none;stroke:#ffd23f;stroke-width:2}
+.cone{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:1}
+.plabel{font:600 11px "Chakra Petch",sans-serif;fill:#cfe0ff;letter-spacing:.03em}
+.plabel.small{font-size:9px}
+.stline{stroke:#ffd23f;stroke-width:1;stroke-dasharray:3 3;opacity:.8}
+.stbox{fill:rgba(5,10,24,.85);stroke:#ffd23f;stroke-width:.8}
+.stn-n{font:700 9px ui-monospace,monospace;fill:#ffd23f;text-anchor:middle}
+.stn-v{font:10px ui-monospace,monospace;fill:#eaf2ff;text-anchor:middle}
+.bypass{fill:none;stroke:#ff8a3d;stroke-width:4;stroke-dasharray:8 6;opacity:.7}
+.fanair{stroke:#a9bde6}
+.abox{fill:#1b2748;stroke:#8aa0c8;stroke-width:1.5}
+.hx .abox{fill:#13303a;stroke:#5fd3e6}
+.duct{fill:none;stroke:#6f86b3;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
+.ramduct{fill:none;stroke:#5fd3e6;stroke-width:6;opacity:.5}
+#legend{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.ro{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.ro span{color:var(--muted)} .ro b{font-family:ui-monospace,monospace;font-weight:600;color:#fff;text-align:right}
+.ctl label{display:block;margin:6px 0;font-size:.8rem;color:var(--muted)} .ctl label b{float:right;color:#fff;font-family:ui-monospace,monospace} .ctl input[type=range]{width:100%;accent-color:#ffd23f}
+.xray{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px} .xray select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:5px 8px;font:inherit}
+.btn.small{padding:5px 9px;font-size:.72rem}
+.xgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px} .xgrid label{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted)} .xgrid label span{flex:0 0 46%} .xgrid input{flex:1;accent-color:#5fd3e6;min-width:0}
+.panel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)} .panel h4{margin:0 0 6px;font-family:var(--display);color:#fff;letter-spacing:.03em}
+#controls h4{margin:10px 0 4px;font-family:var(--display);font-size:.9rem;color:#ffd23f}
+.ceq2{font-family:ui-monospace,monospace;font-size:.8rem;color:#eaf2ff;background:rgba(255,255,255,.04);border-left:3px solid #ffd23f;padding:6px 8px;margin:6px 0;border-radius:4px;overflow-x:auto}
+.cvt{width:100%;font-size:.8rem} .cvt th{text-align:left;color:var(--muted);font-weight:600} .cvt td{padding:3px 6px 3px 0;font-family:ui-monospace,monospace}
+#tscanvas{width:100%;height:260px;display:block;border:1px solid var(--line);border-radius:12px;background:rgba(8,14,30,.7)}
+
+#j3scene{position:relative;width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
+#j3canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+#j3select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div><a class="back" href="./">&larr; All topics</a><h1>Jet 3D: X-ray the Aircraft</h1></div>
+    <p>A generic twin-engine jet you can rotate, see through and take apart. The two engines run the <b>Brayton cycle</b>; the bleed-air duct carries compressor air forward to the environmental-control pack behind the pilot's seat, where the air cycle machine runs the <b>reverse Brayton cycle</b> to cool it for the cockpit. Click any part.</p>
+  </header>
+  <div class="jetlayout">
+    <section>
+      <div id="j3scene"><canvas id="j3canvas"></canvas></div>
+      <div class="xray" style="margin-top:8px"><span class="note">View:</span><button type="button" class="btn small" data-view="iso">Iso</button><button type="button" class="btn small" data-view="side">Side</button><button type="button" class="btn small" data-view="top">Top</button><button type="button" class="btn small" data-view="front">Front</button><button type="button" class="btn small" data-view="rear">Rear</button>
+        <label class="note"><input type="checkbox" id="j3flow" checked> flow</label><label class="note">labels <select id="j3labels"><option value="class" selected>class schematic (D · C · Comb · T · N, stations 0–5)</option><option value="names">component names</option><option value="off">hidden</option></select></label></div>
+      <div class="tabs" style="margin-top:8px"><button type="button" class="tabbtn" data-focus="brayton">X-ray: Brayton cycle (engines)</button><button type="button" class="tabbtn" data-focus="reverse">X-ray: reverse Brayton (ECS pack)</button><button type="button" class="tabbtn" data-focus="">Whole jet</button><button type="button" class="tabbtn" data-classview="brayton">Class view: Brayton</button><button type="button" class="tabbtn" data-classview="reverse">Class view: reverse Brayton</button></div>
+      <div class="panel" id="j3info" style="margin-top:12px"></div>
+      <details class="panel" style="margin-top:12px" open><summary style="cursor:pointer;font-family:var(--display);color:#ffd23f;letter-spacing:.03em">Three things that look alike (and aren't)</summary>
+        <p>The <b>compressor</b> is a fan that <i>uses</i> work to push air up in pressure. The <b>turbine</b> is the same idea run backwards: a fan that <i>makes</i> work as gas falls in pressure. The <b>nozzle</b> is a funnel that turns whatever pressure is left into speed.</p>
+        <p>So the hot gas expands twice: first through the turbine, where the expansion is harvested as shaft work (3 → 4 in class notation, exactly the work the compressor, and on a turboprop the propeller, needs), then through the nozzle, where the expansion is harvested as jet velocity (4 → 5, V₅ = √2(h₄ − h₅)). No shaft, no work, just h → kinetic energy.</p>
+        <p class="note">Try it: <button type="button" class="btn small" data-jump="compR">C · compressor</button> blade rows that get smaller as the air is squeezed; <button type="button" class="btn small" data-jump="turbR">T · turbine</button> blade rows and the shaft running forward to the compressor; <button type="button" class="btn small" data-jump="nozR">N · nozzle</button> just the converging–diverging cone, no shaft at all. In the pack the same trio appears in miniature: <button type="button" class="btn small" data-jump="acm">C · ACM compressor</button> and <button type="button" class="btn small" data-jump="acmt">T · expansion turbine</button> on one shaft.</p>
+      </details>
+    </section>
+    <aside>
+      <div class="panel"><h4>Operating point</h4><div class="ctl"><label>Throttle <b id="j3vth">85 %</b><input type="range" id="j3th" min="0" max="1" step="0.01" value="0.85"></label><label>Altitude <b id="j3valt">0 ft</b><input type="range" id="j3alt" min="0" max="13700" step="100" value="0"></label><label>Flight Mach number <b id="j3vM">0.00</b><input type="range" id="j3M" min="0" max="0.9" step="0.01" value="0"></label><label>Afterburner <b id="j3vab">off</b><input type="range" id="j3ab" min="0" max="1" step="0.05" value="0"></label></div><div id="j3read"></div></div>
+      <div class="panel" id="j3controls" style="margin-top:12px"><h4>X-ray</h4>
+        <div class="ctl"><label>Airframe <input type="range" data-g="airframe" min="0" max="1" step="0.05" value="0.4"></label><label>Engines <input type="range" data-g="engine" min="0" max="1" step="0.05" value="1"></label><label>ECS pack &amp; ducts <input type="range" data-g="ecs" min="0" max="1" step="0.05" value="1"></label><label>Cockpit <input type="range" data-g="cockpit" min="0" max="1" step="0.05" value="1"></label><label>Fuel system <input type="range" data-g="fuel" min="0" max="1" step="0.05" value="1"></label>
+        <label>Flow animation speed <input type="range" id="j3speed" min="0" max="3" step="0.1" value="1"></label><label>Class schematic overlay <input type="range" id="j3schem" min="0" max="1" step="0.05" value="0"></label></div>
+        <select id="j3select" style="width:100%;margin-top:6px"></select></div>
+      <div class="panel" style="margin-top:12px"><h4>Legend</h4><p class="note">Particle color = temperature (blue cold → red hot). Yellow duct = bleed air from the engine compressor to the ECS pack; cyan = heat exchangers (ram air); green = air cycle machine; orange = combustors; red = turbines; purple = fuel. This is a generic airframe built from simple shapes, not any specific aircraft.</p></div>
+    </aside>
+  </div>
+</div>
+<script>
+const T = String.raw;
+const g = 9.81;
+function pick(min, max, step){ const n = Math.round((max-min)/step); return +(min + step*Math.floor(Math.random()*(n+1))).toFixed(6); }
+function fmt(x, sig=4){ if(!isFinite(x)) return "—"; if(Math.abs(x) < 1e-12) return "0"; return String(Number(x.toPrecision(sig))); }
+function sgn(x, sig=4){ return (x < 0 ? " - " : " + ") + fmt(Math.abs(x), sig); }   // signed term for equations
+function tex(s, display=true){
+  if(window.katex){ try{ return katex.renderToString(s,{output:"mathml",displayMode:display,throwOnError:false}); }catch(e){} }
+  return '<code>'+s.replace(/</g,"&lt;")+'</code>';
+}
+function N(x, unit="", sig=4){ return `<span class="num">${fmt(x,sig)}${unit?"&nbsp;"+unit:""}</span>`; }
+
+
+function fixSubs(root){
+  if(!root) return;
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
+  while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
+  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+}
+
+/* ===================== JET ENGINE LAB: turbofan (Brayton) + air cycle machine (reverse Brayton) =====================
+   Generic two-spool high-bypass turbofan of the business-jet class. All station values are computed with the
+   cold/hot ideal-gas model used in the course (cp = 1.005, k = 1.4 before the combustor; cp = 1.148, k = 1.333 after),
+   so every number on the screen can be reproduced by hand with the Chapter 4 energy balance.                      */
+const JET=(()=>{
+  const $=(s)=>document.querySelector(s);
+  const cpc=1.005, kc=1.4, cph=1.148, kh=1.333, R=0.287, LHV=43000;        // kJ/kg·K, kJ/kg
+  const ISA=(h)=>{ const T=h<11000?288.15-0.0065*h:216.65; const p=h<11000?101325*Math.pow(T/288.15,5.2559):22632*Math.exp(-9.80665*(h-11000)/(287.05*216.65)); return {T,p:p/1000}; }; // K, kPa
+  /* ---------- engine design point (sea-level static, full throttle) ---------- */
+  const D0={BPR:4.5, FPR:1.65, LPC:1.9, HPC:11.5, T4:1650, mdot:230, eta:{ram:0.98,fan:0.90,lpc:0.88,hpc:0.87,b:0.995,dpb:0.04,hpt:0.91,lpt:0.92,m:0.99,cv:0.98}};
+  /* entropy relative to 288.15 K, 101.325 kPa with a smooth cp(T) = a + bT fit between the cold and hot values */
+  const D=D0;
+  const sRel=(T,p)=>{ const a=0.957,b=1.6e-4; const f=(t)=>a*Math.log(t)+b*t; return f(T)-f(288.15)-R*Math.log(p/101.325); };
+  function engine(inp,Dov){
+    const D=Dov?Object.assign({},D0,Dov,{eta:Object.assign({},D0.eta,Dov.eta||{})}):D0;
+    const {th,alt,M}=inp; const ab=Math.max(0,Math.min(1,inp.ab||0)); const amb=ISA(alt); const T0=amb.T, p0=amb.p; const V0=M*Math.sqrt(kc*R*1000*T0);
+    const N=0.55+0.45*th;                                   // spool speed fraction (idle ≈ 55 %)
+    const T02=T0*(1+(kc-1)/2*M*M), p02=p0*Math.pow(1+(kc-1)/2*M*M,kc/(kc-1))*D.eta.ram;
+    const FPR=1+(D.FPR-1)*N*N, LPC=1+(D.LPC-1)*N*N, HPC=1+(D.HPC-1)*Math.pow(N,1.8);
+    const T4=Math.min(D.T4, T02+ (D.T4-288.15)*(0.42+0.58*th));       // turbine inlet temperature set by the fuel control
+    const mdot=D.mdot*N*(p02/101.325)*Math.sqrt(288.15/T02);          // corrected-flow scaling
+    const BPR=D.BPR; const mc=mdot/(1+BPR), mb=mdot-mc;
+    const comp=(T,PR,eta,k)=>T*(1+(Math.pow(PR,(k-1)/k)-1)/eta);
+    const T13=comp(T02,FPR,D.eta.fan,kc), p13=p02*FPR;
+    const T25=comp(T13,LPC,D.eta.lpc,kc), p25=p13*LPC;
+    const T3=comp(T25,HPC,D.eta.hpc,kc), p3=p25*HPC;
+    const p4=p3*(1-D.eta.dpb); const f=(cph*T4-cpc*T3)/(D.eta.b*LHV-cph*T4); const mf=f*mc;
+    const wHPC=cpc*(T3-T25), wLPC=cpc*(T25-T13), wFAN=cpc*(T13-T02);
+    const T45=T4-wHPC/((1+f)*cph*D.eta.m); const T45s=T4-(T4-T45)/D.eta.hpt; const p45=p4*Math.pow(T45s/T4,kh/(kh-1));
+    const T5=T45-(wLPC+BPR*wFAN)/((1+f)*cph*D.eta.m); const T5s=T45-(T45-T5)/D.eta.lpt; const p5=p45*Math.pow(T5s/T45,kh/(kh-1));
+    /* afterburner (augmentor): extra fuel burned in the exhaust duct at nearly constant pressure, station 5 → 7 */
+    const Tab=D.Tab||2100; const T7=T5+ab*(Tab-T5); const fab=ab>0?(1+f)*cph*(T7-T5)/(0.95*LHV-cph*T7):0; const p7=p5*(1-0.05*ab); const mfab=fab*mc;
+    const V8=D.eta.cv*Math.sqrt(Math.max(0,2*cph*1000*T7*(1-Math.pow(p0/p7,(kh-1)/kh)))); const T8=T7-V8*V8/(2*cph*1000);
+    const V18=D.eta.cv*Math.sqrt(Math.max(0,2*cpc*1000*T13*(1-Math.pow(p0/p13,(kc-1)/kc)))); const T18=T13-V18*V18/(2*cpc*1000);
+    const Fc=mc*((1+f+fab)*V8-V0), Fb=mb*(V18-V0), F=Fc+Fb;                 // N
+    const KE=0.5*(mc*(1+f+fab)*V8*V8+mb*V18*V18-mdot*V0*V0)/1000;            // kW
+    const Qin=mf*LHV*D.eta.b+mfab*LHV*0.95; const eta_th=KE/Qin, eta_p=F*V0/1000/KE, eta_o=eta_th*eta_p;
+    const TSFC=F>0?(mf+mfab)/F*3.6e6:NaN;                                        // g/(kN·s) → kg/(kN·h)
+    const st={0:{T:T0,p:p0,V:V0,m:mdot},2:{T:T02,p:p02,V:V0,m:mdot},13:{T:T13,p:p13,V:0,m:mb},25:{T:T25,p:p25,m:mc},3:{T:T3,p:p3,m:mc},4:{T:T4,p:p4,m:mc*(1+f)},45:{T:T45,p:p45,m:mc*(1+f)},5:{T:T5,p:p5,m:mc*(1+f)},7:{T:T7,p:p7,m:mc*(1+f+fab)},8:{T:T8,p:p0,V:V8,m:mc*(1+f+fab)},18:{T:T18,p:p0,V:V18,m:mb}};
+    for(const k in st) st[k].s=sRel(st[k].T,st[k].p);
+    return {st,N,FPR,LPC,HPC,OPR:FPR*LPC*HPC,BPR,mdot,mc,mb,f,mf,ab,fab,mfab,F,Fc,Fb,TSFC,eta_th,eta_p,eta_o,V0,V8,V18,wFAN,wLPC,wHPC,Qin,KE,T0,p0,M,alt,th,
+      W:{fan:mdot*wFAN,lpc:mc*wLPC,hpc:mc*wHPC,hpt:mc*(1+f)*cph*(T4-T45),lpt:mc*(1+f)*cph*(T45-T5)}};
+  }
+  /* ---------- air cycle machine (bootstrap pack fed by HPC bleed) ---------- */
+  function acm(E,inp){
+    const {mb,prv,PRa,eps1,eps2,cabAlt,Tdem}=inp; const T3=E.st[3].T, p3=E.st[3].p, Tram=E.st[2].T, Tfan=E.st[13].T;
+    const pcab=ISA(E.alt>cabAlt?cabAlt:E.alt).p;                                   // cabin pressure (pressurized to 'cabin altitude')
+    const eta_c=0.80, eta_t=0.85, eta_m=0.98, dpHX=0.03;
+    const a={}; a.bleed={T:T3,p:p3};
+    a.prsov={T:T3,p:Math.min(p3,prv)};                                            // pressure-regulating valve (isenthalpic)
+    a.pc={T:a.prsov.T-0.45*(a.prsov.T-Tfan),p:a.prsov.p*(1-dpHX)};                // precooler vs fan air, ε = 0.45
+    a.phx={T:a.pc.T-eps1*(a.pc.T-Tram),p:a.pc.p*(1-dpHX)};                        // primary heat exchanger vs ram air
+    const T2s=a.phx.T*Math.pow(PRa,(kc-1)/kc); a.comp={T:a.phx.T+(T2s-a.phx.T)/eta_c,p:a.phx.p*PRa};
+    a.shx={T:a.comp.T-eps2*(a.comp.T-Tram),p:a.comp.p*(1-dpHX)};                  // secondary heat exchanger vs ram air
+    const pt=pcab*1.06; const T4s=a.shx.T*Math.pow(pt/a.shx.p,(kc-1)/kc); a.turb={T:a.shx.T-eta_t*(a.shx.T-T4s),p:pt};
+    a.ws={T:a.turb.T,p:pt*0.99};
+    /* temperature-control valve: hot bleed (PRSOV state) bypasses the ACM and mixes with the cold turbine discharge to the demanded duct temperature */
+    const Td=Tdem+273.15; let x=0; if(a.ws.T<Td) x=Math.min(0.9,(Td-a.ws.T)/(a.prsov.T-a.ws.T));
+    const Tmix=a.ws.T+x*(a.prsov.T-a.ws.T); a.mix={T:Tmix,p:pcab*1.02}; a.cabin={T:Tmix,p:pcab};
+    const ma=mb*(1-x);                                                            // flow through the ACM
+    const wc=cpc*(a.comp.T-a.phx.T), wt=cpc*(a.shx.T-a.turb.T);
+    const q1=cpc*(a.prsov.T-a.pc.T)+cpc*(a.pc.T-a.phx.T), q2=cpc*(a.comp.T-a.shx.T);
+    const COP=cpc*(Tram-a.turb.T)/(wc);
+    for(const k in a) a[k].s=sRel(a[k].T,a[k].p);
+    return {a,mb,ma,x,wc,wt,Wc:ma*wc,Wt:ma*wt,Wfan:ma*(wt*eta_m-wc),q1,q2,Q1:ma*q1,Q2:ma*q2,pcab,Tram,Tfan,COP,eta_c,eta_t,Tdem};
+  }
+  /* ---------- drawing ---------- */
+  const W=1000,H=420, cy=230;                      // engine axis
+  const X={inlet:40,fan:150,lpc:250,hpc:340,comb:470,hpt:560,lpt:640,noz:760,exit:930};   // station x positions
+  const tC=(T)=>{ const t=Math.max(0,Math.min(1,(T-220)/1400)); const stops=[[0.0,[60,140,255]],[0.25,[90,220,255]],[0.45,[230,230,120]],[0.65,[255,140,40]],[0.85,[255,60,30]],[1,[255,240,230]]]; let i=1; while(i<stops.length&&stops[i][0]<t) i++; const [a,ca]=stops[i-1],[b,cb]=stops[i]; const u=(t-a)/(b-a); return `rgb(${ca.map((c,j)=>Math.round(c+u*(cb[j]-c))).join(",")})`; };
+  const G=(id,cls,inner)=>`<g id="${id}" class="part ${cls||""}" data-part="${id}">${inner}</g>`;
+  function engineSVG(){
+    const rN=150, rCore=70, rHub=28;
+    const ring=(x,w,r,cls,fill)=>`<rect x="${x}" y="${cy-r}" width="${w}" height="${2*r}" rx="4" class="${cls}" ${fill?`fill="${fill}"`:""}/>`;
+    const rotor=(x,r1,r2,n,w,cls)=>{ let s=""; for(let i=0;i<n;i++){ const xi=x+i*w; s+=`<path d="M${xi},${cy-r2} l${w*0.5},${0} l${w*0.3},${r2-r1} l${-w*0.5},${0} z" class="${cls}"/><path d="M${xi},${cy+r2} l${w*0.5},${0} l${w*0.3},${-(r2-r1)} l${-w*0.5},${0} z" class="${cls}"/>`; } return s; };
+    const stator=(x,r1,r2,n,w)=>{ let s=""; for(let i=0;i<n;i++){ const xi=x+w*0.55+i*w; s+=`<rect x="${xi}" y="${cy-r2}" width="${w*0.25}" height="${r2-r1}" class="stator"/><rect x="${xi}" y="${cy+r1}" width="${w*0.25}" height="${r2-r1}" class="stator"/>`; } return s; };
+    let s=`<svg id="jetsvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-label="Turbofan cutaway">
+      <defs><linearGradient id="gmetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fb3d6"/><stop offset=".5" stop-color="#4b5f85"/><stop offset="1" stop-color="#1e2a46"/></linearGradient>
+      <radialGradient id="gflame" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#fff3c4"/><stop offset=".4" stop-color="#ff9a2e"/><stop offset="1" stop-color="#ff3b1f" stop-opacity=".1"/></radialGradient></defs>`;
+    /* bypass duct + nacelle */
+    s+=G("nacelle","",`<path d="M${X.inlet},${cy-rN} C${X.fan-40},${cy-rN-8} ${X.lpc},${cy-rN+6} ${X.hpc+60},${cy-rN+10} L${X.noz+40},${cy-rN+40} Q${X.exit-60},${cy-rN+56} ${X.exit},${cy-rN+70}" class="skin"/>
+      <path d="M${X.inlet},${cy+rN} C${X.fan-40},${cy+rN+8} ${X.lpc},${cy+rN-6} ${X.hpc+60},${cy+rN-10} L${X.noz+40},${cy+rN-40} Q${X.exit-60},${cy+rN-56} ${X.exit},${cy+rN-70}" class="skin"/>
+      <path d="M${X.inlet},${cy-rN} q-14,0 -14,14 l0,${2*rN-28} q0,14 14,14" class="lip"/>
+      <text x="${X.lpc+40}" y="${cy-rN+34}" class="plabel">bypass duct</text>`);
+    /* core casing */
+    s+=G("core","",`<path d="M${X.fan+40},${cy-rCore-10} L${X.hpc},${cy-rCore} L${X.comb},${cy-rCore-6} L${X.lpt+70},${cy-rCore+4} L${X.noz+90},${cy-rCore+30} L${X.exit-30},${cy-20}" class="casing"/>
+      <path d="M${X.fan+40},${cy+rCore+10} L${X.hpc},${cy+rCore} L${X.comb},${cy+rCore+6} L${X.lpt+70},${cy+rCore-4} L${X.noz+90},${cy+rCore-30} L${X.exit-30},${cy+20}" class="casing"/>`);
+    /* shafts */
+    s+=G("shaft","",`<rect x="${X.fan-10}" y="${cy-9}" width="${X.lpt+60-X.fan+10}" height="18" rx="3" class="shaftlp"/><rect x="${X.hpc-10}" y="${cy-16}" width="${X.hpt+40-X.hpc+10}" height="32" rx="4" class="shafthp"/>
+      <text x="${X.lpt+10}" y="${cy+48}" class="plabel">LP shaft (N1)</text><text x="${X.hpc+20}" y="${cy-20}" class="plabel small">HP shaft (N2)</text>`);
+    /* fan */
+    s+=G("fan","",`<path d="M${X.fan-50},${cy} q20,-30 50,-30 l0,60 q-30,0 -50,-30 z" class="spinner"/>${rotor(X.fan,rHub,rN-12,1,22,"blade fan")}<rect x="${X.fan-2}" y="${cy-rHub}" width="26" height="${2*rHub}" class="disk"/>
+      ${stator(X.fan+34,rCore+14,rN-14,1,22)}<text x="${X.fan-30}" y="${cy-rN+6}" class="plabel">fan</text>`);
+    /* LPC */
+    s+=G("lpc","",`${rotor(X.lpc-20,rHub+6,rCore-6,3,22,"blade")}${stator(X.lpc-20,rHub+8,rCore-8,3,22)}<rect x="${X.lpc-22}" y="${cy-rHub-6}" width="70" height="${2*(rHub+6)}" rx="6" class="disk"/><text x="${X.lpc-30}" y="${cy-rCore-16}" class="plabel">LP compressor</text>`);
+    /* HPC */
+    s+=G("hpc","",`${rotor(X.hpc,rHub+12,rCore-12,7,16,"blade")}${stator(X.hpc,rHub+14,rCore-14,7,16)}<rect x="${X.hpc-4}" y="${cy-rHub-12}" width="${7*16+8}" height="${2*(rHub+12)}" rx="8" class="disk"/><text x="${X.hpc+10}" y="${cy-rCore-16}" class="plabel">HP compressor</text>`);
+    /* combustor */
+    s+=G("comb","",`<rect x="${X.comb-10}" y="${cy-rCore+10}" width="80" height="34" rx="12" class="liner"/><rect x="${X.comb-10}" y="${cy+rCore-44}" width="80" height="34" rx="12" class="liner"/>
+      <ellipse cx="${X.comb+32}" cy="${cy-rCore+27}" rx="28" ry="12" fill="url(#gflame)" class="flame"/><ellipse cx="${X.comb+32}" cy="${cy+rCore-27}" rx="28" ry="12" fill="url(#gflame)" class="flame"/>
+      <path d="M${X.comb-30},${cy-rCore-26} l20,0 l0,26" class="fuel"/><text x="${X.comb-60}" y="${cy-rCore-30}" class="plabel">fuel</text><text x="${X.comb-10}" y="${cy-rCore-16}" class="plabel">combustor</text>`);
+    /* HPT */
+    s+=G("hpt","",`${rotor(X.hpt,rHub+10,rCore-8,2,18,"blade hot")}${stator(X.hpt-20,rHub+10,rCore-8,1,18)}<rect x="${X.hpt-4}" y="${cy-rHub-10}" width="44" height="${2*(rHub+10)}" rx="6" class="disk"/><text x="${X.hpt-16}" y="${cy-rCore-16}" class="plabel">HP turbine</text>`);
+    /* LPT */
+    s+=G("lpt","",`${rotor(X.lpt,rHub+4,rCore+2,4,20,"blade hot")}${stator(X.lpt,rHub+6,rCore,4,20)}<rect x="${X.lpt-4}" y="${cy-rHub-4}" width="88" height="${2*(rHub+4)}" rx="6" class="disk"/><text x="${X.lpt+6}" y="${cy-rCore-16}" class="plabel">LP turbine</text>`);
+    /* nozzle + cone */
+    s+=G("noz","",`<path d="M${X.noz},${cy-rHub} q90,6 170,28 L${X.exit},${cy} L${X.noz+170},${cy+28} q-80,-22 -170,-28 z" class="cone"/><text x="${X.noz+30}" y="${cy+rCore+40}" class="plabel">exhaust cone / core nozzle</text>`);
+    /* stations */
+    const stations=[["0",X.inlet+30,"ambient"],["2",X.fan-20,"fan inlet"],["13",X.fan+60,"bypass"],["2.5",X.lpc+60,"LPC exit"],["3",X.hpc+118,"HPC exit"],["4",X.comb+80,"turbine inlet"],["4.5",X.hpt+48,"HPT exit"],["5",X.lpt+92,"LPT exit"],["8",X.exit-40,"core exit"]];
+    s+=`<g id="stations">`+stations.map(([n,x,lab],i)=>{ const yb=(i%2?cy+rN+20:cy-rN-36); const yt=n==="13"?cy-rN+30:(i%2?cy+rN+6:cy-rN-12); return `<g class="stn" data-st="${n}"><line x1="${x}" y1="${n==="13"?cy-rN+40:cy-rHub-4}" x2="${x}" y2="${n==="13"?cy-rN+14:yt}" class="stline"/><g transform="translate(${x},${n==="13"?cy-rN-2:yb})"><rect x="-40" y="-12" width="80" height="40" rx="6" class="stbox"/><text x="0" y="1" class="stn-n">${n} · ${lab}</text><text x="0" y="14" class="stn-v" data-k="p">p</text><text x="0" y="26" class="stn-v" data-k="T">T</text></g></g>`; }).join("")+`</g>`;
+    s+=`</svg>`; return s;
+  }
+  /* ---------- ACM pack drawing (two rows: hot side along the top, cold side along the bottom) ---------- */
+  const AY1=110, AY2=310; const AX={bleed:[70,AY1],prsov:[190,AY1],pc:[320,AY1],phx:[470,AY1],comp:[640,AY1],shx:[820,AY1],turb:[640,AY2],ws:[470,AY2],mix:[320,AY2],cabin:[150,AY2]};
+  const APATH=[[0,AY1],[70,AY1],[190,AY1],[320,AY1],[470,AY1],[640,AY1],[820,AY1],[880,AY1],[880,AY2],[640,AY2],[470,AY2],[320,AY2],[150,AY2],[60,AY2]];
+  const ANODE=["bleed","bleed","prsov","pc","phx","comp","shx","shx","shx","turb","ws","mix","cabin","cabin"];
+  function acmSVG(){
+    const box=(id,w,h,lab,cls,shape)=>{ const [x,y]=AX[id]; return G(id,cls,(shape||`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="10" class="abox"/>`)+`<text x="${x}" y="${y+4}" class="plabel" text-anchor="middle">${lab}</text>`); };
+    let s=`<svg id="acmsvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-label="Air cycle machine">`;
+    s+=`<path d="M${APATH.map(p=>p.join(",")).join(" L")}" class="duct"/>`;
+    /* hot-bypass duct from the regulating valve to the mixing point */
+    s+=`<path d="M190,${AY1+26} L190,210 L300,210 L300,${AY2-30}" class="bypass"/><text x="196" y="228" class="plabel small">hot bypass (temperature-control valve)</text>`;
+    s+=box("bleed",80,50,"HPC bleed");
+    s+=box("prsov",80,50,"PRSOV");
+    s+=box("pc",100,70,"precooler","hx");
+    s+=box("phx",110,80,"primary HX","hx");
+    s+=box("comp",0,0,"compressor","",`<path d="M${AX.comp[0]-40},${AY1-46} L${AX.comp[0]+40},${AY1-28} L${AX.comp[0]+40},${AY1+28} L${AX.comp[0]-40},${AY1+46} z" class="abox"/>`);
+    s+=box("shx",110,80,"secondary HX","hx");
+    s+=box("turb",0,0,"turbine","",`<path d="M${AX.turb[0]+40},${AY2-46} L${AX.turb[0]-40},${AY2-28} L${AX.turb[0]-40},${AY2+28} L${AX.turb[0]+40},${AY2+46} z" class="abox"/>`);
+    s+=G("shaftacm","",`<rect x="${AX.comp[0]-6}" y="${AY1+46}" width="12" height="${AY2-AY1-92}" rx="3" class="shaftlp"/><text x="${AX.comp[0]+14}" y="${(AY1+AY2)/2+4}" class="plabel small">bootstrap shaft</text>`);
+    s+=box("ws",90,56,"water separator");
+    s+=box("mix",0,0,"mix (TCV)","",`<circle cx="${AX.mix[0]}" cy="${AY2}" r="30" class="abox"/>`);
+    s+=box("cabin",100,64,"cabin");
+    /* fan air across the precooler, ram air across both heat exchangers */
+    s+=`<g id="ram"><path d="M${AX.pc[0]},${AY1+70} L${AX.pc[0]},${AY1-70}" class="ramduct fanair"/><text x="${AX.pc[0]}" y="${AY1+84}" class="plabel small" text-anchor="middle">fan air</text>
+      <path d="M${AX.phx[0]-20},${AY1+72} L${AX.phx[0]-20},${AY1-72} M${AX.phx[0]+20},${AY1+72} L${AX.phx[0]+20},${AY1-72}" class="ramduct"/><text x="${AX.phx[0]}" y="${AY1+86}" class="plabel small" text-anchor="middle">ram air</text>
+      <path d="M${AX.shx[0]-20},${AY1+72} L${AX.shx[0]-20},${AY1-72} M${AX.shx[0]+20},${AY1+72} L${AX.shx[0]+20},${AY1-72}" class="ramduct"/><text x="${AX.shx[0]}" y="${AY1+86}" class="plabel small" text-anchor="middle">ram air</text></g>`;
+    const tags=[["bleed",0,-1],["prsov",0,-1],["pc",0,-1],["phx",0,-1],["comp",0,-1],["shx",0,-1],["turb",0,1],["ws",0,1],["mix",0,1],["cabin",0,1]];
+    s+=`<g id="astations">`+tags.map(([k,dx,dy])=>{ const [x,y]=AX[k]; const ty=y+dy*(dy<0?78:66); return `<g class="stn" data-st="${k}"><g transform="translate(${x+dx},${ty})"><rect x="-46" y="-13" width="92" height="42" rx="6" class="stbox"/><text x="0" y="1" class="stn-n">${k==="cabin"?"to cabin":k==="mix"?"after mixing":"out of "+k}</text><text x="0" y="15" class="stn-v" data-k="p">p</text><text x="0" y="27" class="stn-v" data-k="T">T</text></g></g>`; }).join("")+`</g>`;
+    s+=`</svg>`; return s;
+  }
+  /* ---------- particles ---------- */
+  const PARTS={engine:["nacelle","core","shaft","fan","lpc","hpc","comb","hpt","lpt","noz"], acm:["bleed","prsov","pc","phx","comp","shx","turb","shaftacm","ws","mix","cabin"]};
+  const state={tab:"engine", th:0.85, alt:0, M:0, sel:null, xray:{}, acm:{mb:1.0,prv:310,PRa:1.8,eps1:0.75,eps2:0.85,cabAlt:2440,Tdem:5}, E:null, A:null, run:true, speed:1};
+  let particles=[]; let canvas, ctx, raf;
+  function paths(){ /* core: along upper annulus; bypass: along duct */
+    const rc=50, rb=112;
+    const core=[[X.inlet-40,cy-rc-20],[X.fan-20,cy-rc],[X.lpc,cy-rc],[X.hpc+60,cy-rc+6],[X.comb+40,cy-rc+2],[X.hpt+20,cy-rc],[X.lpt+40,cy-rc+6],[X.noz+60,cy-rc+30],[X.exit,cy-12],[X.exit+60,cy-8]];
+    const byp=[[X.inlet-40,cy-rb-10],[X.fan-20,cy-rb],[X.fan+60,cy-rb],[X.hpc+60,cy-rb+8],[X.noz+40,cy-rb+36],[X.exit,cy-rb+62],[X.exit+60,cy-rb+70]];
+    const mirror=(p)=>p.map(([x,y])=>[x,2*cy-y]);
+    return {core,coreL:mirror(core),byp,bypL:mirror(byp)};
+  }
+  function segProps(E,kind,u){ /* temperature, pressure, speed along the path parameter u∈[0,1] */
+    const st=E.st; const at=(a,b,t)=>a+(b-a)*t;
+    if(kind==="byp"){ const brk=[0,0.18,0.3,1]; if(u<brk[1]) return {T:st[0].T,p:st[0].p,v:Math.max(60,E.V0)}; if(u<brk[2]) return {T:at(st[2].T,st[13].T,(u-brk[1])/(brk[2]-brk[1])),p:at(st[2].p,st[13].p,(u-brk[1])/(brk[2]-brk[1])),v:150}; const t=(u-brk[2])/(1-brk[2]); return {T:at(st[13].T,st[18].T,t*t),p:at(st[13].p,st[18].p,t*t),v:at(150,E.V18,t)}; }
+    const nodes=[[0,"0",Math.max(60,E.V0)],[0.1,"2",Math.max(60,E.V0)],[0.2,"13",150],[0.3,"25",140],[0.44,"3",120],[0.56,"4",110],[0.65,"45",280],[0.76,"5",240],[0.9,"8",E.V8],[1,"8",E.V8]];
+    let i=1; while(i<nodes.length-1&&nodes[i][0]<u) i++; const [ua,ka,va]=nodes[i-1],[ub,kb,vb]=nodes[i]; const t=(u-ua)/(ub-ua);
+    return {T:at(st[ka].T,st[kb].T,t),p:at(st[ka].p,st[kb].p,t),v:at(va,vb,t)};
+  }
+  function initParticles(){ particles=[]; const P=paths(); const mk=(path,kind,n)=>{ for(let i=0;i<n;i++) particles.push({path,kind,u:Math.random(),off:(Math.random()-0.5)*(kind==="core"?30:34)}); };
+    mk(P.core,"core",90); mk(P.coreL,"core",90); mk(P.byp,"byp",140); mk(P.bypL,"byp",140); }
+  function ptOn(path,u){ const n=path.length-1; const x=u*n; const i=Math.min(n-1,Math.floor(x)); const t=x-i; const [ax,ay]=path[i],[bx,by]=path[i+1]; return [ax+(bx-ax)*t, ay+(by-ay)*t, Math.atan2(by-ay,bx-ax)]; }
+  function drawParticles(dt){
+    if(!canvas||!state.E) return; const r=canvas.getBoundingClientRect(); if(canvas.width!==Math.round(r.width*devicePixelRatio)){ canvas.width=Math.round(r.width*devicePixelRatio); canvas.height=Math.round(r.height*devicePixelRatio); }
+    const sx=canvas.width/W, sy=canvas.height/H; ctx.clearRect(0,0,canvas.width,canvas.height);
+    const vis=(kind)=>{ const op=state.sel?(state.sel==="nacelle"?1:0.25):1; return op; };
+    for(const q of particles){ const pr=segProps(state.E,q.kind,q.u); q.u+=dt*state.speed*pr.v/9000; if(q.u>1) q.u-=1;
+      const [x,y,ang]=ptOn(q.path,q.u); const size=(1.2+2.2*Math.min(1,pr.p/2000))*sx; ctx.globalAlpha=q.kind==="byp"?0.75*vis("byp"):0.95*vis("core"); ctx.fillStyle=tC(pr.T);
+      ctx.beginPath(); ctx.ellipse(x*sx+Math.cos(ang+Math.PI/2)*q.off*sx, y*sy+Math.sin(ang+Math.PI/2)*q.off*sy, size*(1+pr.v/400), size, ang, 0, Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha=1;
+  }
+  /* ---------- ACM particles along the duct ---------- */
+  function acmParticles(dt){ if(!canvas||!state.A) return; const r=canvas.getBoundingClientRect(); if(canvas.width!==Math.round(r.width*devicePixelRatio)){ canvas.width=Math.round(r.width*devicePixelRatio); canvas.height=Math.round(r.height*devicePixelRatio); }
+    const sx=canvas.width/W, sy=canvas.height/H; ctx.clearRect(0,0,canvas.width,canvas.height); const a=state.A.a;
+    if(!particles.acm){ particles.acm=[]; for(let i=0;i<160;i++) particles.acm.push({u:Math.random(),off:(Math.random()-0.5)*12}); }
+    const n=APATH.length-1;
+    for(const q of particles.acm){ q.u+=dt*state.speed*0.06; if(q.u>1) q.u-=1; const xq=q.u*n; const i=Math.min(n-1,Math.floor(xq)); const t=xq-i; const A0=a[ANODE[i]], A1=a[ANODE[i+1]]; const T=A0.T+(A1.T-A0.T)*t, p=A0.p+(A1.p-A0.p)*t; const [ax,ay]=APATH[i],[bx,by]=APATH[i+1]; const x=ax+(bx-ax)*t, y=ay+(by-ay)*t; const horiz=Math.abs(bx-ax)>Math.abs(by-ay);
+      ctx.fillStyle=tC(T); ctx.globalAlpha=0.9; const rr=(1.6+2.6*Math.min(1,p/600))*sx; ctx.beginPath(); ctx.ellipse(x*sx+(horiz?0:q.off*sx), y*sy+(horiz?q.off*sy:0), rr*(horiz?1.7:1), rr*(horiz?1:1.7), 0, 0, Math.PI*2); ctx.fill(); }
+    ctx.globalAlpha=1;
+  }
+  /* ---------- UI ---------- */
+  const f=(x,d=0)=>isFinite(x)?x.toFixed(d):"—";
+  const fmtK=(T)=>`${f(T)} K (${f(T-273.15)} °C)`;
+  function compute(){ state.E=engine({th:state.th,alt:state.alt,M:state.M}); state.A=acm(state.E,state.acm); }
+  function stationTags(){ const E=state.E; if(state.tab==="engine"){ document.querySelectorAll('#jetsvg .stn').forEach(g=>{ const k=g.dataset.st.replace(".",""); const s=E.st[k]; if(!s) return; g.querySelector('[data-k=p]').textContent=`p = ${f(s.p,s.p<10?2:0)} kPa`; g.querySelector('[data-k=T]').textContent=`T = ${f(s.T)} K`; }); }
+    else { const a=state.A.a; document.querySelectorAll('#acmsvg .stn').forEach(g=>{ const s=a[g.dataset.st]; if(!s) return; g.querySelector('[data-k=p]').textContent=`p = ${f(s.p)} kPa`; g.querySelector('[data-k=T]').textContent=`T = ${f(s.T)} K (${f(s.T-273.15)} °C)`; }); } }
+  function readouts(){ const E=state.E, A=state.A; const el=$("#readout");
+    if(state.tab==="engine"){ el.innerHTML=[["Net thrust",`${f(E.F/1000,1)} kN (${f(E.F/4.448,0)} lbf)`],["Core / bypass thrust",`${f(E.Fc/1000,1)} / ${f(E.Fb/1000,1)} kN`],["Air flow",`${f(E.mdot,0)} kg/s (core ${f(E.mc,0)})`],["Fuel flow",`${f(E.mf*3600,0)} kg/h · f = ${f(E.f,4)}`],["TSFC",`${f(E.TSFC,1)} kg/(kN·h)`],["Overall pressure ratio",`${f(E.OPR,1)} (fan ${f(E.FPR,2)} · LPC ${f(E.LPC,2)} · HPC ${f(E.HPC,1)})`],["Turbine inlet T₄ / EGT T₅",`${f(E.st[4].T)} / ${f(E.st[5].T)} K`],["Exit velocities V₈ / V₁₈",`${f(E.V8)} / ${f(E.V18)} m/s (V₀ = ${f(E.V0)})`],["η_th · η_prop = η_overall",`${f(100*E.eta_th,1)} % · ${f(100*E.eta_p,1)} % = ${f(100*E.eta_o,1)} %`],["Spool speed N",`${f(100*E.N,0)} %`]].map(([k,v])=>`<div class="ro"><span>${k}</span><b>${v}</b></div>`).join(""); }
+    else { el.innerHTML=[["Bleed flow",`${f(A.mb,2)} kg/s from HPC exit (${f(E.st[3].p,0)} kPa, ${f(E.st[3].T)} K)`],["Turbine discharge",`${f(A.a.turb.T-273.15,1)} °C at ${f(A.a.turb.p,1)} kPa`],["Pack outlet (after TCV mixing)",`${f(A.a.cabin.T-273.15,1)} °C, hot bypass ${f(100*A.x,0)} % of the bleed`],["Cabin pressure altitude",`${f(state.acm.cabAlt/0.3048,0)} ft → ${f(A.pcab,1)} kPa`],["Flow through the ACM",`${f(A.ma,2)} kg/s`],["ACM compressor / turbine",`${f(A.Wc,1)} kW in / ${f(A.Wt,1)} kW out (surplus ${f(A.Wfan,1)} kW to ram fan)`],["Heat rejected (precooler + primary HX)",`${f(A.Q1,1)} kW`],["Heat rejected (secondary HX)",`${f(A.Q2,1)} kW`],["Ram-air temperature",`${f(A.Tram)} K (${f(A.Tram-273.15,1)} °C)`],["Cooling per unit compressor work",`${f(A.COP,2)}`]].map(([k,v])=>`<div class="ro"><span>${k}</span><b>${v}</b></div>`).join(""); }
+    fixSubs(el); }
+  function cvPanel(){ const el=$("#cvpanel"); const E=state.E, A=state.A; const sel=state.sel; if(!sel){ el.innerHTML=`<p class="note">Click a component (or pick one from the list) to isolate it as a control volume and see its energy balance with the numbers from the simulation.</p>`; return; }
+    const st=E.st; const row=(lab,s,extra="")=>`<tr><td>${lab}</td><td>${f(s.p,s.p<10?2:1)} kPa</td><td>${f(s.T,1)} K</td><td>${f(s.m,1)} kg/s</td>${extra}</tr>`;
+    const tbl=(rows)=>`<table class="ptab cvt"><thead><tr><th></th><th>p</th><th>T</th><th>ṁ</th></tr></thead><tbody>${rows}</tbody></table>`;
+    const eq=(s)=>`<div class="ceq2">${s}</div>`;
+    let h="";
+    if(state.tab==="engine"){
+      const C={
+        fan:["Fan (driven by the LP turbine)",tbl(row("inlet (2)",st[2])+row("bypass exit (13)",st[13])),eq(`Ẇ_fan = ṁ c_p (T_13 − T_2) = ${f(E.mdot,1)} × 1.005 × (${f(st[13].T,1)} − ${f(st[2].T,1)}) = <b>${f(E.W.fan,0)} kW</b>`)+eq(`η_fan = (T_13s − T_2)/(T_13 − T_2) with T_13s = T_2 (p_13/p_2)^{0.286} → ${f(100*D.eta.fan,0)} %`)+`<p class="note">Steady flow, adiabatic, ΔKE and ΔPE neglected across the stage. The whole airflow (core + bypass) passes through the fan.</p>`],
+        lpc:["LP compressor (booster)",tbl(row("inlet (13, core share)",{p:st[13].p,T:st[13].T,m:E.mc})+row("exit (2.5)",st[25])),eq(`Ẇ_LPC = ṁ_core c_p (T<sub>2.5</sub> − T_13) = ${f(E.mc,1)} × 1.005 × (${f(st[25].T,1)} − ${f(st[13].T,1)}) = <b>${f(E.W.lpc,0)} kW</b>`)],
+        hpc:["HP compressor",tbl(row("inlet (2.5)",st[25])+row("exit (3)",st[3])),eq(`Ẇ_HPC = ṁ_core c_p (T_3 − T<sub>2.5</sub>) = ${f(E.mc,1)} × 1.005 × (${f(st[3].T,1)} − ${f(st[25].T,1)}) = <b>${f(E.W.hpc,0)} kW</b>`)+eq(`p_3/p<sub>2.5</sub> = ${f(E.HPC,2)}; isentropic T_3s = T<sub>2.5</sub> (p_3/p<sub>2.5</sub>)^{0.286} = ${f(st[25].T*Math.pow(E.HPC,0.2857),1)} K, η_HPC = ${f(100*D.eta.hpc,0)} %`)],
+        comb:["Combustor",tbl(row("air in (3)",st[3])+row("gas out (4)",st[4])),eq(`ṁ_f = ${f(E.mf,3)} kg/s; f = ṁ_f/ṁ_air = ${f(E.f,4)}`)+eq(`Energy: ṁ_a c_p,a T_3 + η_b ṁ_f LHV = (ṁ_a + ṁ_f) c_p,g T_4 → Q̇_in = η_b ṁ_f LHV = <b>${f(E.Qin/1000,1)} MW</b>`)+eq(`Pressure drop ${f(100*D.eta.dpb,0)} % (p_4 = ${f(st[4].p,0)} kPa); c_p,g = 1.148 kJ/kg·K`)],
+        hpt:["HP turbine (drives the HP compressor)",tbl(row("inlet (4)",st[4])+row("exit (4.5)",st[45])),eq(`Ẇ_HPT = ṁ_g c_p,g (T_4 − T<sub>4.5</sub>) = ${f(st[4].m,1)} × 1.148 × (${f(st[4].T,1)} − ${f(st[45].T,1)}) = <b>${f(E.W.hpt,0)} kW</b>`)+eq(`Shaft balance: η_m Ẇ_HPT = Ẇ_HPC → ${f(D.eta.m,2)} × ${f(E.W.hpt,0)} ≈ ${f(E.W.hpc,0)} kW ✓`)],
+        lpt:["LP turbine (drives fan + LP compressor)",tbl(row("inlet (4.5)",st[45])+row("exit (5)",st[5])),eq(`Ẇ_LPT = ṁ_g c_p,g (T<sub>4.5</sub> − T_5) = <b>${f(E.W.lpt,0)} kW</b>`)+eq(`Shaft balance: η_m Ẇ_LPT = Ẇ_fan + Ẇ_LPC = ${f(E.W.fan,0)} + ${f(E.W.lpc,0)} = ${f(E.W.fan+E.W.lpc,0)} kW ✓`)],
+        noz:["Core nozzle",tbl(row("inlet (5)",st[5])+row("exit (8)",st[8],""))+`<p class="note">exit V₈ = ${f(E.V8)} m/s</p>`,eq(`h_5 = h_8 + V_8²/2 → V_8 = √(2 c_p,g (T_5 − T_8)) = √(2 × 1148 × (${f(st[5].T,1)} − ${f(st[8].T,1)})) = <b>${f(E.V8)} m/s</b>`)+eq(`Core thrust = ṁ_g V_8 − ṁ_core V_0 = ${f(E.Fc/1000,1)} kN (fully expanded, p_8 = p_0)`)],
+        nacelle:["Bypass duct & nozzle",tbl(row("fan exit (13)",st[13])+row("bypass exit (18)",st[18])),eq(`V_18 = √(2 c_p (T_13 − T_18)) = <b>${f(E.V18)} m/s</b>; bypass thrust = ṁ_b (V_18 − V_0) = ${f(E.Fb/1000,1)} kN`)+`<p class="note">On a high-bypass engine most of the thrust comes from the fan stream — compare with the core thrust.</p>`],
+        core:["Whole engine as one control volume",tbl(row("air in (0)",st[0])+row("core out (8)",st[8])+row("bypass out (18)",st[18])),eq(`F = ṁ_core[(1+f)V_8 − V_0] + ṁ_b (V_18 − V_0) = <b>${f(E.F/1000,1)} kN</b>`)+eq(`η_th = ΔKĖ/(ṁ_f LHV) = ${f(100*E.eta_th,1)} %, η_p = F V_0/ΔKĖ = ${f(100*E.eta_p,1)} %`)],
+        shaft:["Two spools",`<p class="note">The HP turbine and HP compressor share the inner (N2) shaft; the LP turbine drives the fan and LP compressor through the outer (N1) shaft. Each shaft is its own power balance — see the HPT and LPT panels.</p>`,""],
+      }[sel]; if(C) h=`<h4>${C[0]}</h4>${C[1]}${C[2]}`;
+    } else {
+      const a=A.a; const r2=(lab,s)=>`<tr><td>${lab}</td><td>${f(s.p,1)} kPa</td><td>${f(s.T,1)} K (${f(s.T-273.15,1)} °C)</td></tr>`; const t2=(rows)=>`<table class="ptab cvt"><thead><tr><th></th><th>p</th><th>T</th></tr></thead><tbody>${rows}</tbody></table>`;
+      const C={
+        bleed:["Bleed port","Hot, high-pressure air is tapped from the HP compressor exit: "+t2(r2("bleed",a.bleed)),""],
+        prsov:["Pressure-regulating valve (throttling)",t2(r2("in",a.bleed)+r2("out",a.prsov)),eq(`Throttling: h_in = h_out → T unchanged (ideal gas), p drops to the regulated ${f(state.acm.prv,0)} kPa`)],
+        pc:["Precooler (cooled by fan air)",t2(r2("in",a.prsov)+r2("out",a.pc)),eq(`Q̇ = ṁ c_p (T_in − T_out) = ${f(A.mb,2)} × 1.005 × (${f(a.prsov.T,1)} − ${f(a.pc.T,1)}) = <b>${f(A.mb*cpc*(a.prsov.T-a.pc.T),1)} kW</b> to the fan stream (ε = 0.45 vs T_fan = ${f(A.Tfan,0)} K)`)],
+        phx:["Primary heat exchanger (ram air)",t2(r2("in",a.pc)+r2("out",a.phx)),eq(`ε = (T_in − T_out)/(T_in − T_ram) = ${f(state.acm.eps1,2)}; Q̇ = ${f(A.mb*cpc*(a.pc.T-a.phx.T),1)} kW`)],
+        comp:["ACM compressor",t2(r2("in",a.phx)+r2("out",a.comp)),eq(`p ratio ${f(state.acm.PRa,2)}; T_out,s = T_in (p_out/p_in)^{0.286}; η_c = ${f(100*A.eta_c,0)} %`)+eq(`Ẇ_c = ṁ c_p (T_out − T_in) = <b>${f(A.Wc,1)} kW</b> (supplied by the ACM turbine)`)],
+        shx:["Secondary heat exchanger (ram air)",t2(r2("in",a.comp)+r2("out",a.shx)),eq(`ε = ${f(state.acm.eps2,2)}; Q̇ = ṁ c_p (T_in − T_out) = <b>${f(A.Q2,1)} kW</b> rejected to ram air`)],
+        turb:["ACM turbine (the cold producer)",t2(r2("in",a.shx)+r2("out",a.turb)),eq(`Expands to ${f(a.turb.p,1)} kPa: T_out,s = T_in (p_out/p_in)^{0.286} = ${f(a.shx.T*Math.pow(a.turb.p/a.shx.p,0.2857),1)} K; η_t = ${f(100*A.eta_t,0)} %`)+eq(`Ẇ_t = ṁ c_p (T_in − T_out) = <b>${f(A.Wt,1)} kW</b> → drives the compressor (${f(A.Wc,1)} kW); surplus ${f(A.Wfan,1)} kW drives the ram-air fan`)+`<p class="note">This is the reverse Brayton (air-refrigeration) cycle: the air itself is the refrigerant and the turbine expansion produces the cold air.</p>`],
+        ws:["Water separator",t2(r2("in (turbine discharge)",a.turb)+r2("out",a.ws)),"<p class=\"note\">Moisture condensed by the cold turbine discharge is removed here; dry air is assumed thermodynamically, with a 1 % pressure loss.</p>"],
+        mix:["Temperature-control valve: mixing chamber",t2(r2("cold (turbine, via separator)",a.ws)+r2("hot bypass (PRSOV state)",a.prsov)+r2("mixed",a.mix)),eq(`Mass: ṁ = ṁ_cold + ṁ_hot; energy: ṁ c_p T_mix = ṁ_cold c_p T_cold + ṁ_hot c_p T_hot`)+eq(`x = ṁ_hot/ṁ = (T_mix − T_cold)/(T_hot − T_cold) = (${f(a.mix.T,1)} − ${f(a.ws.T,1)})/(${f(a.prsov.T,1)} − ${f(a.ws.T,1)}) = <b>${f(A.x,3)}</b>`)+`<p class="note">The valve adds just enough hot bleed to hold the demanded duct temperature (${f(A.Tdem,0)} °C, kept above freezing so the water separator does not ice). When the turbine discharge is already warmer than the demand, the bypass closes (x = 0) and the pack delivers all the cooling it can.</p>`],
+        cabin:["Cabin",t2(r2("pack outlet",a.cabin)),`<p class="note">Pack air is mixed with recirculated cabin air to the selected cabin temperature. The cabin is held at a pressure altitude of ${f(state.acm.cabAlt/0.3048,0)} ft (${f(A.pcab,1)} kPa) by the outflow valve.</p>`],
+        shaftacm:["Bootstrap shaft","<p class=\"note\">Turbine and compressor sit on one shaft: the turbine's work bootstraps the pressure (and hence the expansion ratio available to the turbine). The leftover power turns the ram-air fan that pulls cooling air through the heat exchangers on the ground.</p>",""],
+      }[sel]; if(C) h=`<h4>${C[0]}</h4>${C[1]}${C[2]}`;
+    }
+    el.innerHTML=h||""; fixSubs(el);
+  }
+  /* ---------- T–s diagram ---------- */
+  function tsDiagram(){ const c=$("#tscanvas"); if(!c) return; const r=c.getBoundingClientRect(); c.width=Math.round(r.width*devicePixelRatio); c.height=Math.round(r.height*devicePixelRatio); const g=c.getContext("2d"); g.scale(devicePixelRatio,devicePixelRatio); const Wc=r.width, Hc=r.height; g.clearRect(0,0,Wc,Hc);
+    const E=state.E; let pts, ideal, title;
+    if(state.tab==="engine"){ const st=E.st; pts=[["0",st[0]],["2",st[2]],["2.5",st[25]],["3",st[3]],["4",st[4]],["4.5",st[45]],["5",st[5]],["8",st[8]]]; title="Core Brayton cycle, T–s (actual)";
+      /* ideal: isentropic to p3, isobaric to T4, isentropic to p0 */ const T3s=st[2].T*Math.pow(st[3].p/st[2].p,(kc-1)/kc), T8s=st[4].T*Math.pow(st[0].p/st[4].p,(kh-1)/kh); ideal=[{T:st[2].T,p:st[2].p},{T:T3s,p:st[3].p},{T:st[4].T,p:st[3].p},{T:T8s,p:st[0].p}].map(q=>({...q,s:sRel(q.T,q.p)})); }
+    else { const a=state.A.a; pts=[["bleed",a.bleed],["PRSOV",a.prsov],["precooler",a.pc],["PHX",a.phx],["comp",a.comp],["SHX",a.shx],["turbine",a.turb],["mix",a.mix]]; title="Air cycle machine, T–s (reverse Brayton)"; ideal=null; }
+    const all=pts.map(p=>p[1]).concat(ideal||[]); const smin=Math.min(...all.map(p=>p.s))-0.1, smax=Math.max(...all.map(p=>p.s))+0.1, Tmin=Math.min(...all.map(p=>p.T))-50, Tmax=Math.max(...all.map(p=>p.T))+80;
+    const px=(s)=>44+(s-smin)/(smax-smin)*(Wc-60), py=(T)=>Hc-30-(T-Tmin)/(Tmax-Tmin)*(Hc-50);
+    g.strokeStyle="#2c4274"; g.lineWidth=1; g.beginPath(); g.moveTo(44,10); g.lineTo(44,Hc-30); g.lineTo(Wc-10,Hc-30); g.stroke();
+    g.fillStyle="#9fb3d6"; g.font="11px ui-monospace, monospace"; g.fillText("s (kJ/kg·K, rel.)",Wc-120,Hc-12); g.save(); g.translate(12,Hc/2); g.rotate(-Math.PI/2); g.fillText("T (K)",-14,0); g.restore();
+    g.fillStyle="#cfe0ff"; g.font="600 12px Chakra Petch, sans-serif"; g.fillText(title,50,16);
+    for(let T=Math.ceil(Tmin/200)*200;T<Tmax;T+=200){ g.fillStyle="#6b7fa6"; g.font="10px ui-monospace"; g.fillText(T,16,py(T)+3); g.strokeStyle="rgba(44,66,116,.5)"; g.beginPath(); g.moveTo(44,py(T)); g.lineTo(Wc-10,py(T)); g.stroke(); }
+    /* isobars through the key states */
+    const isob=(p,color)=>{ g.strokeStyle=color; g.setLineDash([3,4]); g.beginPath(); let first=true; for(let T=Tmin+10;T<Tmax;T+=10){ const s=sRel(T,p); if(s<smin||s>smax){ first=true; continue; } if(first){ g.moveTo(px(s),py(T)); first=false; } else g.lineTo(px(s),py(T)); } g.stroke(); g.setLineDash([]); };
+    if(state.tab==="engine"){ isob(E.st[0].p,"rgba(120,160,255,.35)"); isob(E.st[3].p,"rgba(255,160,80,.35)"); }
+    if(ideal){ g.strokeStyle="rgba(255,255,255,.35)"; g.setLineDash([5,4]); g.beginPath(); ideal.forEach((q,i)=>{ i?g.lineTo(px(q.s),py(q.T)):g.moveTo(px(q.s),py(q.T)); }); g.lineTo(px(ideal[0].s),py(ideal[0].T)); g.stroke(); g.setLineDash([]); g.fillStyle="rgba(255,255,255,.5)"; g.font="10px ui-monospace"; g.fillText("ideal (isentropic) cycle",px(ideal[1].s)+6,py(ideal[1].T)-4); }
+    g.strokeStyle="#ffd23f"; g.lineWidth=2; g.beginPath(); pts.forEach(([n,q],i)=>{ i?g.lineTo(px(q.s),py(q.T)):g.moveTo(px(q.s),py(q.T)); }); g.stroke();
+    pts.forEach(([n,q])=>{ g.fillStyle=tC(q.T); g.beginPath(); g.arc(px(q.s),py(q.T),4,0,Math.PI*2); g.fill(); g.fillStyle="#fff"; g.font="600 10px ui-monospace"; g.fillText(n,px(q.s)+6,py(q.T)-5); });
+  }
+  function applyXray(){ const svg=state.tab==="engine"?$("#jetsvg"):$("#acmsvg"); if(!svg) return; svg.querySelectorAll(".part").forEach(g=>{ const id=g.dataset.part; let op=state.xray[id]!==undefined?state.xray[id]:1; if(state.sel){ op=id===state.sel?1:Math.min(op,0.18); } g.style.opacity=op; g.classList.toggle("selected",state.sel===id); }); }
+  function controls(){ const el=$("#controls"); const parts=PARTS[state.tab]; const NAMES={nacelle:"nacelle & bypass duct",core:"core casing",shaft:"shafts",fan:"fan",lpc:"LP compressor",hpc:"HP compressor",comb:"combustor",hpt:"HP turbine",lpt:"LP turbine",noz:"nozzle & cone",bleed:"bleed port",prsov:"regulating valve",pc:"precooler",phx:"primary HX",comp:"ACM compressor",shx:"secondary HX",turb:"ACM turbine",shaftacm:"bootstrap shaft",ws:"water separator",mix:"TCV mixing",cabin:"cabin"};
+    const eng=`<div class="ctl"><label>Throttle <b id="v-th">${f(100*state.th,0)} %</b><input type="range" id="th" min="0" max="1" step="0.01" value="${state.th}"></label>
+      <label>Altitude <b id="v-alt">${f(state.alt/0.3048,0)} ft</b><input type="range" id="alt" min="0" max="13700" step="100" value="${state.alt}"></label>
+      <label>Flight Mach number <b id="v-M">${f(state.M,2)}</b><input type="range" id="M" min="0" max="0.9" step="0.01" value="${state.M}"></label></div>`;
+    const acmc=`<div class="ctl"><label>Bleed flow <b id="v-mb">${f(state.acm.mb,2)} kg/s</b><input type="range" id="mb" min="0.3" max="2" step="0.05" value="${state.acm.mb}"></label>
+      <label>Regulated bleed pressure <b id="v-prv">${f(state.acm.prv,0)} kPa</b><input type="range" id="prv" min="200" max="500" step="10" value="${state.acm.prv}"></label>
+      <label>ACM compressor pressure ratio <b id="v-PRa">${f(state.acm.PRa,2)}</b><input type="range" id="PRa" min="1.2" max="2.6" step="0.05" value="${state.acm.PRa}"></label>
+      <label>Heat-exchanger effectiveness ε₁ / ε₂ <b id="v-eps">${f(state.acm.eps1,2)} / ${f(state.acm.eps2,2)}</b><input type="range" id="eps1" min="0.4" max="0.95" step="0.01" value="${state.acm.eps1}"><input type="range" id="eps2" min="0.4" max="0.95" step="0.01" value="${state.acm.eps2}"></label>
+      <label>Pack outlet temperature demand <b id="v-Tdem">${f(state.acm.Tdem,0)} °C</b><input type="range" id="Tdem" min="2" max="40" step="1" value="${state.acm.Tdem}"></label>
+      <label>Cabin pressure altitude <b id="v-cab">${f(state.acm.cabAlt/0.3048,0)} ft</b><input type="range" id="cabAlt" min="0" max="2440" step="50" value="${state.acm.cabAlt}"></label>
+      <p class="note">The pack is fed by the engine on the other tab — change throttle, altitude or Mach there and the bleed state follows.</p></div>`;
+    el.innerHTML=`<h4>Operating point</h4>${state.tab==="engine"?eng:acmc}<h4>X-ray</h4><div class="xray"><button type="button" class="btn small" id="xall">All glass</button><button type="button" class="btn small" id="xnone">All solid</button>
+      <select id="isolate"><option value="">Isolate a component…</option>${parts.map(p=>`<option value="${p}" ${state.sel===p?"selected":""}>${NAMES[p]}</option>`).join("")}</select></div>
+      <div class="xgrid">${parts.map(p=>`<label><span>${NAMES[p]}</span><input type="range" data-x="${p}" min="0" max="1" step="0.05" value="${state.xray[p]!==undefined?state.xray[p]:1}"></label>`).join("")}</div>
+      <div class="ctl"><label>Flow animation speed <b id="v-sp">${f(state.speed,1)}×</b><input type="range" id="speed" min="0" max="3" step="0.1" value="${state.speed}"></label></div>`;
+    const upd=()=>{ compute(); stationTags(); readouts(); cvPanel(); tsDiagram(); };
+    const bind=(id,set,lab)=>{ const e=$("#"+id); if(!e) return; e.oninput=()=>{ set(+e.value); if(lab) lab(); upd(); }; };
+    bind("th",v=>state.th=v,()=>$("#v-th").textContent=f(100*state.th,0)+" %"); bind("alt",v=>state.alt=v,()=>$("#v-alt").textContent=f(state.alt/0.3048,0)+" ft"); bind("M",v=>state.M=v,()=>$("#v-M").textContent=f(state.M,2));
+    bind("mb",v=>state.acm.mb=v,()=>$("#v-mb").textContent=f(state.acm.mb,2)+" kg/s"); bind("prv",v=>state.acm.prv=v,()=>$("#v-prv").textContent=f(state.acm.prv,0)+" kPa"); bind("PRa",v=>state.acm.PRa=v,()=>$("#v-PRa").textContent=f(state.acm.PRa,2));
+    bind("eps1",v=>state.acm.eps1=v,()=>$("#v-eps").textContent=f(state.acm.eps1,2)+" / "+f(state.acm.eps2,2)); bind("eps2",v=>state.acm.eps2=v,()=>$("#v-eps").textContent=f(state.acm.eps1,2)+" / "+f(state.acm.eps2,2)); bind("Tdem",v=>state.acm.Tdem=v,()=>$("#v-Tdem").textContent=f(state.acm.Tdem,0)+" °C"); bind("cabAlt",v=>state.acm.cabAlt=v,()=>$("#v-cab").textContent=f(state.acm.cabAlt/0.3048,0)+" ft");
+    bind("speed",v=>state.speed=v,()=>$("#v-sp").textContent=f(state.speed,1)+"×");
+    el.querySelectorAll("input[data-x]").forEach(i=>i.oninput=()=>{ state.xray[i.dataset.x]=+i.value; applyXray(); });
+    $("#xall").onclick=()=>{ parts.forEach(p=>state.xray[p]=0.15); state.sel=null; controls(); applyXray(); cvPanel(); };
+    $("#xnone").onclick=()=>{ parts.forEach(p=>state.xray[p]=1); state.sel=null; controls(); applyXray(); cvPanel(); };
+    $("#isolate").onchange=(e)=>{ state.sel=e.target.value||null; applyXray(); cvPanel(); };
+  }
+  function mountScene(){ const host=$("#scene"); host.innerHTML=(state.tab==="engine"?engineSVG():acmSVG())+`<canvas id="flow"></canvas>`; canvas=$("#flow"); ctx=canvas.getContext("2d"); particles=[]; initParticles();
+    host.querySelectorAll(".part").forEach(g=>{ g.style.cursor="pointer"; g.onclick=()=>{ state.sel=state.sel===g.dataset.part?null:g.dataset.part; controls(); applyXray(); cvPanel(); }; });
+    applyXray(); }
+  function setTab(t){ state.tab=t; state.sel=null; document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.classList.toggle("on",b.dataset.k===t)); $("#legend").innerHTML=t==="engine"?`<b>Brayton cycle:</b> 2→3 compression (fan, LPC, HPC) · 3→4 constant-pressure heat addition (combustor) · 4→5 expansion through the turbines (work to the shafts) · 5→8 expansion in the nozzle (thrust). Particle color = temperature, size = pressure, speed = velocity.`:`<b>Reverse Brayton (air-cycle refrigeration):</b> compress → reject heat to ram air → expand in a turbine → cold air. The working fluid is the cabin air itself; no refrigerant, no phase change.`;
+    mountScene(); controls(); compute(); stationTags(); readouts(); cvPanel(); tsDiagram(); }
+  function loop(){ let last=performance.now(); const step=(now)=>{ const dt=Math.min(0.05,(now-last)/1000); last=now; if(state.tab==="engine") drawParticles(dt); else acmParticles(dt); raf=requestAnimationFrame(step); }; raf=requestAnimationFrame(step); }
+  function init(){ document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>setTab(b.dataset.k)); setTab("engine"); loop(); window.addEventListener("resize",()=>{ tsDiagram(); }); }
+  return {init,engine,acm,ISA,state};
+})();
+if(document.querySelector('#scene')) JET.init();
+
+/* ===================== JET 3D: dependency-free low-poly 3D viewer of a generic twin-engine jet =====================
+   Software renderer on a 2D canvas: painter's algorithm with per-triangle depth sort, flat shading, translucency,
+   click-picking, orbit camera, and particle flow paths. Geometry is parametric (lathes, plates, tubes), no external
+   model files, so the whole jet is ours. x = forward (nose +), y = up, z = starboard.                                  */
+const JET3D=(()=>{
+  const $=(s)=>document.querySelector(s);
+  /* ---------- geometry helpers ---------- */
+  const parts=[]; const addPart=(p)=>{ p.tris=p.tris||[]; parts.push(p); return p; };
+  const V=(x,y,z)=>[x,y,z];
+  const lathe=(part,profile,seg=20,cx=0,cy=0,cz=0,axis="x")=>{ /* profile: [[t,r],...] along the axis (t) with radius r */
+    const ring=(t,r)=>{ const o=[]; for(let i=0;i<seg;i++){ const a=2*Math.PI*i/seg; const u=r*Math.cos(a), v=r*Math.sin(a); o.push(axis==="x"?[cx+t,cy+u,cz+v]:axis==="y"?[cx+u,cy+t,cz+v]:[cx+u,cy+v,cz+t]); } return o; };
+    const rings=profile.map(([t,r])=>ring(t,Math.max(r,1e-4)));
+    for(let k=0;k<rings.length-1;k++){ const A=rings[k],B=rings[k+1]; for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([A[i],B[i],B[j]]); part.tris.push([A[i],B[j],A[j]]); } }
+    /* caps */ const cap=(R,rev)=>{ const c=R.reduce((s,p)=>[s[0]+p[0]/R.length,s[1]+p[1]/R.length,s[2]+p[2]/R.length],[0,0,0]); for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push(rev?[c,R[j],R[i]]:[c,R[i],R[j]]); } };
+    if(profile[0][1]>0.01) cap(rings[0],false); if(profile[profile.length-1][1]>0.01) cap(rings[rings.length-1],true); };
+  const plate=(part,poly,y0,th,mirrorZ)=>{ /* poly: [[x,z],...] planar wing at height y0 with thickness th */
+    const top=poly.map(([x,z])=>[x,y0+th/2,mirrorZ?-z:z]), bot=poly.map(([x,z])=>[x,y0-th/2,mirrorZ?-z:z]); const n=poly.length;
+    for(let i=1;i<n-1;i++){ part.tris.push(mirrorZ?[top[0],top[i+1],top[i]]:[top[0],top[i],top[i+1]]); part.tris.push(mirrorZ?[bot[0],bot[i],bot[i+1]]:[bot[0],bot[i+1],bot[i]]); }
+    for(let i=0;i<n;i++){ const j=(i+1)%n; if(mirrorZ){ part.tris.push([top[i],bot[j],bot[i]]); part.tris.push([top[i],top[j],bot[j]]); } else { part.tris.push([top[i],bot[i],bot[j]]); part.tris.push([top[i],bot[j],top[j]]); } } };
+  const box=(part,x0,y0,z0,x1,y1,z1)=>{ const p=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]; const f=[[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]; f.forEach(q=>{ part.tris.push([p[q[0]],p[q[1]],p[q[2]]]); part.tris.push([p[q[0]],p[q[2]],p[q[3]]]); }); };
+  const tube=(part,path,r,seg=8)=>{ /* path: list of [x,y,z]; builds rings perpendicular to local direction */
+    const rings=[]; for(let k=0;k<path.length;k++){ const a=path[Math.max(0,k-1)], b=path[Math.min(path.length-1,k+1)]; let d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]]; const L=Math.hypot(...d)||1; d=d.map(c=>c/L); let up=Math.abs(d[1])<0.9?[0,1,0]:[1,0,0]; const n1=norm(cross(d,up)), n2=norm(cross(n1,d)); const R=[]; for(let i=0;i<seg;i++){ const t=2*Math.PI*i/seg; R.push([path[k][0]+r*(n1[0]*Math.cos(t)+n2[0]*Math.sin(t)),path[k][1]+r*(n1[1]*Math.cos(t)+n2[1]*Math.sin(t)),path[k][2]+r*(n1[2]*Math.cos(t)+n2[2]*Math.sin(t))]); } rings.push(R); }
+    for(let k=0;k<rings.length-1;k++){ const A=rings[k],B=rings[k+1]; for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([A[i],B[i],B[j]]); part.tris.push([A[i],B[j],A[j]]); } } };
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]; const norm=(a)=>{ const L=Math.hypot(...a)||1; return a.map(c=>c/L); };
+  /* ---------- the jet (generic twin-engine fighter-class airframe, ~19 m) ---------- */
+  const COL={skin:"#8fa6d2",glass:"#9fe3ff",seat:"#d9a06b",intake:"#6f86b3",fan:"#a9bde6",comb:"#ff8a3d",turb:"#ff5a3a",noz:"#55679a",duct:"#ffd23f",hx:"#5fd3e6",acm:"#7cff6b",cabin:"#c9d8ff",tank:"#b58cff",gear:"#777"};
+  function buildJet(){
+    const fus=addPart({id:"fuselage",name:"Fuselage",group:"airframe",color:COL.skin,alpha:0.85});
+    lathe(fus,[[9.6,0.02],[8.8,0.28],[7.6,0.55],[6.2,0.78],[4.5,0.9],[2.5,1.0],[0,1.05],[-3,1.05],[-6,0.95],[-8.2,0.7],[-9.2,0.45],[-9.6,0.2]],22);
+    /* flat engine bay / wing box widening the body */
+    const bay=addPart({id:"bay",name:"Engine bay (lower fuselage)",group:"airframe",color:COL.skin,alpha:0.8}); box(bay,1.2,-1.0,-1.55,-8.0,0.45,1.55);
+    const canopy=addPart({id:"canopy",name:"Cockpit canopy",group:"airframe",color:COL.glass,alpha:0.45});
+    lathe(canopy,[[6.6,0.02],[6.0,0.42],[5.2,0.66],[4.2,0.72],[3.2,0.62],[2.4,0.3],[2.1,0.02]],16,0,0.72,0);
+    const seat=addPart({id:"seat",name:"Pilot seat (ejection seat)",group:"cockpit",color:COL.seat,alpha:1}); box(seat,4.9,0.1,-0.28,4.3,0.9,0.28); box(seat,4.35,0.1,-0.32,3.95,1.25,0.32);
+    const pilot=addPart({id:"pilot",name:"Pilot",group:"cockpit",color:"#e8d8c0",alpha:1}); lathe(pilot,[[1.0,0.02],[1.15,0.14],[1.32,0.16],[1.45,0.1],[1.5,0.02]],10,4.55,0,0,"y");
+    const wingPoly=[[1.6,1.0],[-0.4,6.6],[-3.2,6.6],[-4.6,1.45]];
+    const wL=addPart({id:"wingL",name:"Wing (left)",group:"airframe",color:COL.skin,alpha:0.9}); plate(wL,wingPoly,-0.2,0.16,true);
+    const wR=addPart({id:"wingR",name:"Wing (right)",group:"airframe",color:COL.skin,alpha:0.9}); plate(wR,wingPoly,-0.2,0.16,false);
+    const stabPoly=[[-6.2,1.0],[-7.4,3.6],[-8.9,3.6],[-9.2,1.2]];
+    const sL=addPart({id:"stabL",name:"Horizontal stabilator (left)",group:"airframe",color:COL.skin,alpha:0.9}); plate(sL,stabPoly,-0.1,0.12,true);
+    const sR=addPart({id:"stabR",name:"Horizontal stabilator (right)",group:"airframe",color:COL.skin,alpha:0.9}); plate(sR,stabPoly,-0.1,0.12,false);
+    const finPoly=[[-5.4,0],[-7.6,3.2],[-9.0,3.2],[-9.3,0]];
+    [["finL",-1.15],["finR",1.15]].forEach(([id,z])=>{ const f=addPart({id,name:"Vertical fin",group:"airframe",color:COL.skin,alpha:0.9}); /* plate in x–y plane: build via lathe trick → use box slices */ const poly=finPoly; const top=poly.map(([x,y])=>[x,y+0.45,z+0.06]), bot=poly.map(([x,y])=>[x,y+0.45,z-0.06]); const n=poly.length; for(let i=1;i<n-1;i++){ f.tris.push([top[0],top[i+1],top[i]]); f.tris.push([bot[0],bot[i],bot[i+1]]); } for(let i=0;i<n;i++){ const j=(i+1)%n; f.tris.push([top[i],bot[i],bot[j]]); f.tris.push([top[i],bot[j],top[j]]); } });
+    /* ---- engines: proper Brayton-cycle hardware (per engine, axis at y = -0.3, z = ±0.85) ---- */
+    const bladeRing=(part,x,rh,rt,n,chord,stagger,cz,cy,color)=>{ /* n thin twisted plates between hub and tip */
+      for(let i=0;i<n;i++){ const a=2*Math.PI*i/n, ca=Math.cos(a), sa=Math.sin(a); const rad=[0,ca,sa], tan=[0,-sa,ca]; const ax=[1,0,0];
+        const pt=(r,c)=>{ /* point at radius r, chordwise c (−0.5..0.5) rotated by stagger about the radial axis */ const dx=c*chord*Math.cos(stagger), dt=c*chord*Math.sin(stagger); return [x+dx, cy+rad[1]*r+tan[1]*dt, cz+rad[2]*r+tan[2]*dt]; };
+        const A=pt(rh,-0.5),B=pt(rh,0.5),C=pt(rt,0.5),Dd=pt(rt,-0.5); part.tris.push([A,B,C],[A,C,Dd]); part.twoSided=true; } };
+    [["L",-0.85],["R",0.85]].forEach(([s,z])=>{ const cy=-0.3; const side=s==="L"?"left":"right";
+      const intake=addPart({id:"intake"+s,name:"Air intake / diffuser ("+side+")",group:"engine",color:COL.intake,alpha:0.45,station:"intake"});
+      lathe(intake,[[2.8,0.48],[1.6,0.52],[0.5,0.58],[0.15,0.62]],16,0,cy,z); /* open duct: no caps */ intake.tris=intake.tris.filter(t=>true);
+      const casing=addPart({id:"nac"+s,name:"Engine casing ("+side+")",group:"engine",color:COL.skin,alpha:0.22}); lathe(casing,[[0.15,0.64],[-3.0,0.6],[-4.2,0.62],[-5.6,0.64],[-8.2,0.62],[-9.0,0.5],[-9.5,0.54]],16,0,cy,z);
+      const spin=addPart({id:"spinner"+s,name:"Spinner & fan ("+side+")",group:"engine",color:COL.fan,alpha:1,station:"fan"}); lathe(spin,[[0.55,0.02],[0.3,0.12],[0.05,0.18],[-0.2,0.2]],12,0,cy,z);
+      bladeRing(spin,-0.05,0.18,0.6,18,0.32,0.55,z,cy); bladeRing(spin,-0.4,0.2,0.58,20,0.16,-0.35,z,cy,true);
+      const comp=addPart({id:"comp"+s,name:"Axial-flow compressor: rotor stages ("+side+")",group:"engine",color:COL.fan,alpha:1,station:"compressor"});
+      lathe(comp,[[-0.55,0.2],[-1.6,0.3],[-3.0,0.4],[-3.05,0.2]],14,0,cy,z);            /* hub (drum) */
+      const stat=addPart({id:"compS"+s,name:"Axial-flow compressor: stator vanes ("+side+")",group:"engine",color:"#8a97b3",alpha:1,station:"compressor"});
+      for(let k=0;k<8;k++){ const xr=-0.7-k*0.3; const f=k/7; const rh=0.21+0.19*f, rt=0.58-0.12*f; bladeRing(comp,xr,rh,rt,16+2*k,0.11-0.04*f,0.6,z,cy); bladeRing(stat,xr-0.15,rh+0.01,rt-0.01,18+2*k,0.09-0.03*f,-0.5,z,cy); }
+      const comb=addPart({id:"comb"+s,name:"Combustion chamber ("+side+")",group:"engine",color:COL.comb,alpha:1,station:"combustor"});
+      lathe(comb,[[-3.1,0.22],[-3.1,0.3],[-4.2,0.3],[-4.2,0.22]],12,0,cy,z);               /* inner liner */
+      const flame=addPart({id:"flame"+s,name:"Flame ("+side+")",group:"engine",color:"#fff0b0",alpha:0.85,noPick:true});
+      for(let i=0;i<8;i++){ const a=2*Math.PI*i/8+Math.PI/8; const yc=cy+0.42*Math.cos(a), zc=z+0.42*Math.sin(a); lathe(comb,[[-3.15,0.09],[-3.4,0.11],[-4.0,0.11],[-4.15,0.07]],8,0,yc,zc); lathe(flame,[[-3.45,0.02],[-3.6,0.07],[-4.0,0.07],[-4.3,0.03]],6,0,yc,zc); }
+      const turb=addPart({id:"turb"+s,name:"Turbine ("+side+")",group:"engine",color:COL.turb,alpha:1,station:"turbine"});
+      lathe(turb,[[-4.25,0.26],[-5.0,0.24],[-5.55,0.22],[-5.6,0.08]],12,0,cy,z);
+      [[-4.4,0.28,0.5],[-4.9,0.26,0.56],[-5.4,0.24,0.6]].forEach(([xt,rh,rt],k)=>{ bladeRing(turb,xt+0.12,rh,rt,22,0.09,-0.6,z,cy); bladeRing(turb,xt,rh,rt,24,0.12,0.7,z,cy); });
+      const shaft=addPart({id:"shaft"+s,name:"Drive shaft ("+side+")",group:"engine",color:"#dbe6ff",alpha:1}); lathe(shaft,[[0.0,0.08],[-5.6,0.08]],8,0,cy,z);
+      const abn=addPart({id:"ab"+s,name:"Afterburner / augmentor ("+side+")",group:"engine",color:"#b58cff",alpha:1,station:"afterburner"});
+      lathe(abn,[[-5.65,0.2],[-5.9,0.12],[-6.2,0.02]],10,0,cy,z);                            /* tail cone */
+      const abduct=addPart({id:"abduct"+s,name:"Afterburner duct ("+side+")",group:"engine",color:"#b58cff",alpha:0.3,station:"afterburner"}); lathe(abduct,[[-5.6,0.6],[-8.2,0.6]],16,0,cy,z);
+      for(let i=0;i<12;i++){ const a=2*Math.PI*i/12; const yc=cy+0.42*Math.cos(a), zc=z+0.42*Math.sin(a); const t=[Math.cos(a),Math.sin(a)]; box(abn,-6.05,yc-0.07,zc-0.07,-6.3,yc+0.07,zc+0.07); } /* flame-holder gutters */
+      for(let i=0;i<16;i++){ const a=2*Math.PI*i/16; const yc=cy+0.5*Math.cos(a), zc=z+0.5*Math.sin(a); box(abn,-5.85,yc-0.04,zc-0.04,-5.95,yc+0.04,zc+0.04); } /* spray-bar ring */
+      const abflame=addPart({id:"abflame"+s,name:"Afterburner flame ("+side+")",group:"engine",color:"#ff9a2e",alpha:0.0,noPick:true,ab:true}); lathe(abflame,[[-6.3,0.2],[-7.0,0.42],[-8.2,0.45],[-9.4,0.4],[-11.5,0.3],[-12.5,0.1]],10,0,cy,z);
+      const noz=addPart({id:"noz"+s,name:"Exhaust nozzle, convergent–divergent ("+side+")",group:"engine",color:COL.noz,alpha:0.9,station:"nozzle"});
+      lathe(noz,[[-8.2,0.6],[-8.9,0.46],[-9.1,0.42],[-9.5,0.5]],16,0,cy,z);
+    });
+    /* ---- ECS pack behind the cockpit: open bootstrap air cycle (reverse Brayton) ---- */
+    const PY=0.45;                                                                  /* pack centreline height */
+    const bleed=addPart({id:"bleed",name:"Bleed-air duct (compressor exit → ECS pack)",group:"ecs",color:COL.duct,alpha:1});
+    const bleedPath=[[-2.9,0.1,0.85],[-2.2,0.45,0.75],[-1.0,0.6,0.4],[-0.4,0.6,-0.1],[-0.1,PY,-0.3]]; tube(bleed,bleedPath,0.09,8); bleed.path=bleedPath;
+    const pack=addPart({id:"pack",name:"ECS pack bay (behind the cockpit)",group:"ecs",color:COL.cabin,alpha:0.2}); box(pack,2.1,-0.1,-0.7,-0.3,1.0,0.7);
+    const finbox=(part,x0,x1,y0,y1,z0,z1,n)=>{ box(part,x0,y0,z0,x1,y1,z1); for(let i=1;i<n;i++){ const x=x0+(x1-x0)*i/n; box(part,x-0.008,y0-0.06,z0-0.04,x+0.008,y1+0.06,z1+0.04); } };
+    const phx=addPart({id:"phx",name:"Primary heat exchanger (ram-air cooled)",group:"ecs",color:COL.hx,alpha:1}); finbox(phx,0.35,-0.15,PY-0.3,PY+0.3,-0.55,-0.1,8);
+    const shx=addPart({id:"shx",name:"Secondary heat exchanger (ram-air cooled)",group:"ecs",color:COL.hx,alpha:1}); finbox(shx,1.35,0.85,PY-0.3,PY+0.3,-0.55,-0.1,8);
+    const ramduct=addPart({id:"ramduct",name:"Ram-air duct (scoop → heat exchangers → overboard)",group:"ecs",color:COL.intake,alpha:0.3}); box(ramduct,1.5,PY-0.34,-0.6,-0.3,PY+0.34,-0.05); box(ramduct,2.2,PY+0.3,-0.55,1.5,1.12,-0.1); box(ramduct,-0.3,PY+0.3,-0.55,-0.9,1.12,-0.1);
+    const acm=addPart({id:"acm",name:"Air cycle machine: bootstrap compressor",group:"ecs",color:COL.acm,alpha:1}); lathe(acm,[[0.25,0.04],[0.3,0.26],[0.5,0.3],[0.62,0.1]],14,0,PY,0.3); bladeRing(acm,0.42,0.1,0.27,14,0.12,0.5,0.3,PY);
+    const acmt=addPart({id:"acmt",name:"Air cycle machine: expansion turbine",group:"ecs",color:"#5fd3e6",alpha:1}); lathe(acmt,[[0.95,0.1],[1.05,0.3],[1.25,0.26],[1.3,0.04]],14,0,PY,0.3); bladeRing(acmt,1.12,0.1,0.27,16,0.12,-0.5,0.3,PY);
+    const acms=addPart({id:"acmshaft",name:"ACM shaft (turbine drives compressor)",group:"ecs",color:"#dbe6ff",alpha:1}); lathe(acms,[[0.2,0.045],[1.35,0.045]],8,0,PY,0.3);
+    const ws=addPart({id:"ws",name:"Water separator",group:"ecs",color:COL.cabin,alpha:1}); lathe(ws,[[1.5,0.04],[1.55,0.16],[1.95,0.16],[2.0,0.04]],10,0,PY-0.05,0.05);
+    const pd=addPart({id:"packduct",name:"Pack internal ducting",group:"ecs",color:"#9fb3d6",alpha:0.9});
+    const dPhxC=[[-0.15,PY,-0.3],[-0.15,PY,0.05],[0.15,PY,0.3]], dCS=[[0.6,PY,0.3],[0.75,PY+0.1,0.0],[0.85,PY,-0.3]], dST=[[1.35,PY,-0.3],[1.3,PY+0.1,0.0],[1.3,PY,0.3],[1.0,PY,0.3]], dTW=[[1.3,PY,0.3],[1.45,PY-0.05,0.2],[1.55,PY-0.05,0.05]];
+    [dPhxC,dCS,dST,dTW].forEach(d=>tube(pd,d,0.06,8));
+    const cab=addPart({id:"cabduct",name:"Conditioned-air duct to the cockpit",group:"ecs",color:COL.cabin,alpha:1}); const cabPath=[[2.0,PY-0.05,0.05],[2.6,0.3,0.15],[3.9,0.1,0.3],[4.6,0.0,0.2]]; tube(cab,cabPath,0.07,8); cab.path=cabPath;
+    const avd=addPart({id:"avduct",name:"Cooling-air duct to the avionics bay",group:"ecs",color:COL.cabin,alpha:1}); const avPath=[[2.0,PY-0.05,0.05],[2.6,-0.2,-0.2],[4.5,-0.45,-0.3],[6.3,-0.3,-0.2]]; tube(avd,avPath,0.06,8);
+    const av=addPart({id:"avionics",name:"Avionics bay (radar & fire-control electronics)",group:"airframe",color:"#7cff6b",alpha:0.35}); box(av,7.9,-0.5,-0.45,6.3,0.25,0.45);
+    const scoop=addPart({id:"scoop",name:"Ram-air scoop (inlet) and overboard exhaust",group:"ecs",color:COL.intake,alpha:0.7}); box(scoop,2.3,1.0,-0.6,1.7,1.2,-0.05); box(scoop,-0.4,1.0,-0.6,-0.9,1.2,-0.05);
+    const tank=addPart({id:"tank",name:"Fuselage fuel tank",group:"fuel",color:COL.tank,alpha:0.35}); box(tank,0.3,-0.6,-0.9,-3.0,0.45,0.9);
+    const fuel=addPart({id:"fuelline",name:"Fuel lines to the combustors",group:"fuel",color:COL.tank,alpha:1}); tube(fuel,[[-3.0,-0.1,0.0],[-3.3,-0.2,0.5],[-3.5,-0.3,0.78]],0.05,6); tube(fuel,[[-3.0,-0.1,0.0],[-3.3,-0.2,-0.5],[-3.5,-0.3,-0.78]],0.05,6);
+    /* flow paths */
+    PATHS.push({id:"coreL",kind:"core",pts:[[2.8,-0.4,-1.3],[0.6,-0.32,-0.95],[0,-0.3,-0.85],[-3,-0.3,-0.85],[-4.1,-0.3,-0.85],[-5.5,-0.3,-0.85],[-9,-0.3,-0.85],[-11,-0.3,-0.85]]});
+    PATHS.push({id:"coreR",kind:"core",pts:[[2.8,-0.4,1.3],[0.6,-0.32,0.95],[0,-0.3,0.85],[-3,-0.3,0.85],[-4.1,-0.3,0.85],[-5.5,-0.3,0.85],[-9,-0.3,0.85],[-11,-0.3,0.85]]});
+    PATHS.push({id:"bleed",kind:"bleed",pts:bleedPath.concat([[0.1,PY,-0.3],[-0.15,PY,0.05],[0.45,PY,0.3],[0.75,PY+0.1,0.0],[1.1,PY,-0.3],[1.3,PY+0.1,0.0],[1.12,PY,0.3],[1.55,PY-0.05,0.05],[1.95,PY-0.05,0.05]]).concat(cabPath.slice(1))});
+    PATHS.push({id:"avionics",kind:"cold",pts:[[2.0,PY-0.05,0.05]].concat(avPath.slice(1))});
+    PATHS.push({id:"ram",kind:"ram",pts:[[2.8,1.4,-0.32],[2.0,1.1,-0.32],[1.5,PY,-0.32],[0.6,PY,-0.32],[-0.3,PY,-0.32],[-0.65,1.1,-0.32],[-1.2,1.45,-0.32]]});
+    parts.forEach(p=>{ let c=[0,0,0],n=0; p.tris.forEach(t=>t.forEach(v=>{ c[0]+=v[0];c[1]+=v[1];c[2]+=v[2]; n++; })); p.center=c.map(x=>x/n); let r=0; p.tris.forEach(t=>t.forEach(v=>{ r=Math.max(r,Math.hypot(v[0]-p.center[0],v[1]-p.center[1],v[2]-p.center[2])); })); p.radius=r; p.baseAlpha=p.alpha; });
+  }
+  const PATHS=[];
+  /* ---------- camera / projection ---------- */
+  const cam={theta:0.75,phi:0.36,dist:19,target:[-1.0,0.1,0],fov:38};
+  let canvas,ctx,Wc,Hc; const view={m:null};
+  function camMatrix(){ const ct=Math.cos(cam.theta),st=Math.sin(cam.theta),cp=Math.cos(cam.phi),sp=Math.sin(cam.phi);
+    const eye=[cam.target[0]+cam.dist*cp*ct, cam.target[1]+cam.dist*sp, cam.target[2]+cam.dist*cp*st];
+    const f=norm([cam.target[0]-eye[0],cam.target[1]-eye[1],cam.target[2]-eye[2]]); const r=norm(cross(f,[0,1,0])); const u=cross(r,f); return {eye,f,r,u}; }
+  function project(p,M){ const d=[p[0]-M.eye[0],p[1]-M.eye[1],p[2]-M.eye[2]]; const x=d[0]*M.r[0]+d[1]*M.r[1]+d[2]*M.r[2], y=d[0]*M.u[0]+d[1]*M.u[1]+d[2]*M.u[2], z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; const s=(Hc/2)/Math.tan(cam.fov*Math.PI/360)/Math.max(z,0.1); return [Wc/2+x*s, Hc/2-y*s, z]; }
+  const light=norm([0.5,0.9,0.35]);
+  const shade=(hex,k)=>{ const n=parseInt(hex.slice(1),16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255; return `rgb(${Math.round(r*k)},${Math.round(g*k)},${Math.round(b*k)})`; };
+  const state={sel:null,focus:null,groupAlpha:{airframe:0.4,engine:1,ecs:1,cockpit:1,fuel:1},flow:true,speed:1,labels:true,labelMode:"class",schemAlpha:0,hover:null,op:{th:0.85,alt:0,M:0,ab:0},E:null,A:null};
+  const ACMP={mb:1.0,prv:240,PRa:1.6,eps1:0.75,eps2:0.85,cabAlt:2440,Tdem:5};
+  const FIGHTER={BPR:0.6, FPR:3.0, LPC:1.0, HPC:8.0, T4:1750, mdot:110, Tab:2100, eta:{fan:0.88}};
+  function physics(){ if(typeof JET==='undefined') return; state.E=JET.engine(state.op,FIGHTER); state.A=JET.acm(state.E,ACMP); const r=$("#j3read"); if(r&&state.E){ const E=state.E; r.innerHTML=[["Thrust (both engines)",`${(2*E.F/1000).toFixed(1)} kN (${Math.round(2*E.F/4.448)} lbf)`],["TSFC",`${E.TSFC.toFixed(1)} kg/(kN·h)`],["Overall pressure ratio",E.OPR.toFixed(1)],["T₄ / T₇ / exit V₈",`${Math.round(E.st[4].T)} K / ${Math.round(E.st[7].T)} K / ${Math.round(E.V8)} m/s`],["Air flow per engine",`${Math.round(E.mdot)} kg/s`]].map(([k,v])=>`<div class="ro"><span>${k}</span><b>${v}</b></div>`).join(""); } }
+  const FOCUS={brayton:{airframe:0.1,cockpit:0.15,fuel:0.15,engine:1,ecs:0.2,cam:[-3.6,-0.1,0.5],dist:12.5,phi:0.22},reverse:{airframe:0.1,cockpit:0.35,fuel:0.1,engine:0.3,ecs:1,cam:[0.8,0.45,0.0],dist:6.5,phi:0.5}};
+  const camGoal={active:false};
+  let drawn=[]; /* projected triangles for picking */
+  function render(){
+    const M=camMatrix(); ctx.clearRect(0,0,Wc,Hc); const list=[];
+    for(const p of parts){ let g=state.groupAlpha[p.group]!==undefined?state.groupAlpha[p.group]:1; if(state.focus){ g=Math.min(g,FOCUS[state.focus][p.group]!==undefined?FOCUS[state.focus][p.group]:1); if(state.focus==='reverse'&&(p.id==='fanR'||p.id==='nacR')) g=Math.max(g,0.6); } if(p.ab) p.baseAlpha=0.55*(state.op.ab||0); let a=p.baseAlpha*g; if(state.sel){ a=p.id===state.sel?Math.max(p.baseAlpha,0.95):Math.min(a,state.focus?0.35:0.12); if(state.focus&&FOCUS[state.focus][p.group]===1&&p.id!==state.sel) a=Math.max(a,0.45); } if(a<=0.02) continue;
+      for(const t of p.tris){ const a0=project(t[0],M),a1=project(t[1],M),a2=project(t[2],M); if(a0[2]<0.2||a1[2]<0.2||a2[2]<0.2) continue;
+        const e1=[t[1][0]-t[0][0],t[1][1]-t[0][1],t[1][2]-t[0][2]], e2=[t[2][0]-t[0][0],t[2][1]-t[0][1],t[2][2]-t[0][2]]; const n=norm(cross(e1,e2));
+        const toEye=norm([M.eye[0]-t[0][0],M.eye[1]-t[0][1],M.eye[2]-t[0][2]]); const facing=n[0]*toEye[0]+n[1]*toEye[1]+n[2]*toEye[2];
+        if(facing<0&&a>0.9&&!p.twoSided) continue;                 /* back-face cull only for opaque, closed parts */
+        const k=0.45+0.55*Math.abs(n[0]*light[0]+n[1]*light[1]+n[2]*light[2])*(facing<0&&!p.twoSided?0.6:1);
+        const area=Math.abs((a1[0]-a0[0])*(a2[1]-a0[1])-(a2[0]-a0[0])*(a1[1]-a0[1])); if(area<0.6) continue;
+        list.push({z:(a0[2]+a1[2]+a2[2])/3,pts:[a0,a1,a2],col:shade(p.color,k),a:(facing<0&&!p.twoSided)?a*0.5:a,part:p}); } }
+    list.sort((u,v)=>v.z-u.z); drawn=list;
+    const pulse=0.55+0.45*Math.sin(performance.now()/300);
+    for(const t of list){ ctx.globalAlpha=t.a; ctx.fillStyle=t.col; ctx.beginPath(); ctx.moveTo(t.pts[0][0],t.pts[0][1]); ctx.lineTo(t.pts[1][0],t.pts[1][1]); ctx.lineTo(t.pts[2][0],t.pts[2][1]); ctx.closePath(); ctx.fill(); if(state.sel&&t.part.id===state.sel){ ctx.globalAlpha=0.5+0.5*pulse; ctx.strokeStyle="#ffd23f"; ctx.lineWidth=1; ctx.stroke(); } else if(t.a<0.9){ ctx.strokeStyle="rgba(200,220,255,.25)"; ctx.lineWidth=0.5; ctx.stroke(); } }
+    ctx.globalAlpha=1;
+    if(state.flow) drawFlow(M);
+    if(state.schemAlpha>0){ if(state.focus!=="reverse") drawSchem(M,"brayton"); if(state.focus!=="brayton") drawSchem(M,"reverse"); }
+    if(state.labels) drawLabels(M);
+  }
+  /* ---------- particles ---------- */
+  const particles=[]; function initParticles(){ PATHS.forEach(P=>{ const n=P.kind==="core"?70:P.kind==="bleed"?60:P.kind==="cold"?16:30; for(let i=0;i<n;i++) particles.push({P,u:Math.random(),off:[(Math.random()-0.5)*0.5,(Math.random()-0.5)*0.5]}); }); }
+  const tC=(T)=>{ const t=Math.max(0,Math.min(1,(T-220)/1400)); const stops=[[0.0,[60,140,255]],[0.25,[90,220,255]],[0.45,[230,230,120]],[0.65,[255,140,40]],[0.85,[255,60,30]],[1,[255,240,230]]]; let i=1; while(i<stops.length&&stops[i][0]<t) i++; const [a,ca]=stops[i-1],[b,cb]=stops[i]; const w=(t-a)/(b-a); return `rgb(${ca.map((c,j)=>Math.round(c+w*(cb[j]-c))).join(",")})`; };
+  function pathState(P,u){ /* temperature & speed along each path, from the engine/pack model when available */
+    const E=state.E, A=state.A;
+    if(P.kind==="core"){ const seg=E?[[0,E.st[0].T,1],[0.28,E.st[2].T,1],[0.42,E.st[3].T,0.6],[0.52,E.st[4].T,0.7],[0.66,E.st[5].T,1.4],[0.78,E.st[7].T,2.0],[0.86,E.st[8].T,2.6],[1,E.st[8].T-80,2.8]]:[[0,300,1],[0.28,300,1],[0.42,700,0.6],[0.52,1600,0.7],[0.68,900,1.4],[0.8,750,2.2],[1,650,2.6]]; let i=1; while(i<seg.length-1&&seg[i][0]<u) i++; const [ua,Ta,va]=seg[i-1],[ub,Tb,vb]=seg[i]; const t=(u-ua)/(ub-ua); return {T:Ta+(Tb-Ta)*t,v:va+(vb-va)*t,r:P.kind==="core"?0.25:0.1}; }
+    if(P.kind==="bleed"){ const a=A&&A.a; const seg=a?[[0,a.bleed.T,.7],[0.2,a.prsov.T,.7],[0.3,a.pc.T,.7],[0.38,a.phx.T,.7],[0.5,a.comp.T,.7],[0.6,a.shx.T,.7],[0.68,a.turb.T,.9],[0.78,a.ws.T,.9],[1,a.cabin.T,.9]]:[[0,720,.7],[0.35,720,.7],[0.5,330,.7],[0.62,390,.7],[0.72,265,.7],[0.8,180,.9],[1,278,.9]]; let i=1; while(i<seg.length-1&&seg[i][0]<u) i++; const [ua,Ta,va]=seg[i-1],[ub,Tb,vb]=seg[i]; const t=(u-ua)/(ub-ua); return {T:Ta+(Tb-Ta)*t,v:va+(vb-va)*t,r:0.08}; }
+    if(P.kind==="cold"){ const T=A?A.a.cabin.T:278; return {T,v:0.9,r:0.08}; }
+    return {T:(E?E.st[2].T:288)+(A?Math.max(0,A.Q1+A.Q2)/60:0)*u,v:0.8,r:0.12}; }
+  function ptOn(path,u){ const n=path.length-1; const x=Math.max(0,Math.min(1,u))*n; const i=Math.min(n-1,Math.floor(x)); const t=x-i; const a=path[i],b=path[i+1]; return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]; }
+  function stepParticles(dt){ if(!isFinite(dt)) return; for(const q of particles){ const s=pathState(q.P,q.u); q.u+=dt*state.speed*s.v*0.12; if(!(q.u>=0&&q.u<=1)) q.u=isFinite(q.u)?((q.u%1)+1)%1:Math.random(); } }
+  function drawFlow(M){ const sel=state.sel; for(const q of particles){ const s=pathState(q.P,q.u); const p=ptOn(q.P.pts,q.u); const pp=project([p[0],p[1]+q.off[0]*s.r*2,p[2]+q.off[1]*s.r*2],M); if(pp[2]<0.3) continue; const sc=(Hc/2)/Math.tan(cam.fov*Math.PI/360)/pp[2]; let a=q.P.kind==="ram"?0.5:0.9; if(sel&&!(sel.includes("fan")||sel.includes("comb")||sel.includes("turb")||sel.includes("noz")||sel.includes("intake")||["bleed","pack","phx","acm","shx","cabduct","scoop"].includes(sel))) a*=0.35; ctx.globalAlpha=a; ctx.fillStyle=tC(s.T); ctx.beginPath(); ctx.arc(pp[0],pp[1],Math.max(1,0.06*sc),0,Math.PI*2); ctx.fill(); } ctx.globalAlpha=1; }
+  const f0=(x,d=0)=>isFinite(x)?x.toFixed(d):"—";
+  function drawStations(M){ const E=state.E, A=state.A; if(!E) return; let tags=[];
+    if(state.focus==="brayton"){ const z=0.85,y=0.35; tags=[["0 ambient",E.st[0],[2.9,-0.1,1.3]],["2 fan inlet",E.st[2],[0.1,y,z]],["3 HPC exit",E.st[3],[-2.9,y,z]],["4 turbine inlet",E.st[4],[-4.1,y,z]],["5 turbine exit",E.st[5],[-5.5,y,z]],["7 afterburner exit",E.st[7],[-8.0,y,z]],["8 nozzle exit",E.st[8],[-9.4,y,z]]]; }
+    if(state.focus==="reverse"&&A){ const a=A.a; tags=[["bleed (compressor exit)",a.bleed,[-2.9,0.1,0.85]],["after precooler / PRSOV",a.pc,[-1.0,0.6,0.4]],["1 · primary HX out",a.phx,[0.1,0.75,-0.3]],["2 · ACM compressor out",a.comp,[0.45,0.75,0.3]],["2 · secondary HX out",a.shx,[1.1,0.75,-0.3]],["3 · expansion turbine out",a.turb,[1.12,0.2,0.3]],["to cockpit & avionics",a.cabin,[2.6,0.3,0.15]]]; }
+    ctx.font="600 10px ui-monospace, monospace"; const w=230; const x0=Wc-w-10; const order=tags.map((t,i)=>({t,i,pp:project(t[2],M)})).filter(o=>o.pp[2]>0.3).sort((a,b)=>a.pp[1]-b.pp[1]);
+    order.forEach((o,k)=>{ let [n,s]=o.t; if(state.labelMode==="class"&&CLASSTAG[n]) n=CLASSTAG[n]; const pp=o.pp; const by=14+k*36; const t1=n, t2=`p = ${f0(s.p,s.p<10?2:0)} kPa · T = ${f0(s.T)} K (${f0(s.T-273.15)} °C)`; ctx.fillStyle="rgba(5,10,24,.9)"; ctx.strokeStyle="#5fd3e6"; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(x0,by,w,30,5):ctx.rect(x0,by,w,30); ctx.fill(); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.fillText(t1,x0+6,by+12); ctx.fillStyle="#eaf2ff"; ctx.fillText(t2,x0+6,by+24); ctx.strokeStyle="rgba(95,211,230,.8)"; ctx.beginPath(); ctx.moveTo(pp[0],pp[1]); ctx.lineTo(x0,by+15); ctx.stroke(); ctx.fillStyle="#5fd3e6"; ctx.beginPath(); ctx.arc(pp[0],pp[1],3,0,Math.PI*2); ctx.fill(); }); }
+  /* class-schematic labels: the letters and station numbers used in the ES 305 Brayton example (D, C, Comb, T, N; stations 0–5) */
+  const CLASS={
+    brayton:{ comps:[["D","diffuser / intake",[1.4,0.3,0.85]],["C","compressor",[-1.8,0.35,0.85]],["Comb","combustor",[-3.65,0.35,0.85]],["T","turbine",[-4.9,0.35,0.85]],["AB","afterburner",[-7.0,0.35,0.85]],["N","nozzle",[-8.9,0.35,0.85]]],
+      st:[["0",[2.8,0.2,0.85]],["1",[0.15,0.35,0.85]],["2",[-3.05,0.35,0.85]],["3",[-4.2,0.35,0.85]],["4",[-5.6,0.35,0.85]],["5",[-9.5,0.2,0.85]]] },
+    reverse:{ comps:[["HX1","primary heat exchanger",[0.1,0.8,-0.3]],["C","ACM compressor",[0.45,0.8,0.3]],["HX2","secondary heat exchanger",[1.1,0.8,-0.3]],["T","expansion turbine",[1.12,0.1,0.3]],["WS","water separator",[1.75,0.1,0.05]]],
+      st:[["1",[-0.1,0.45,-0.3]],["2",[-0.15,0.45,0.05]],["3",[0.75,0.55,0.0]],["4",[1.3,0.55,0.0]],["5",[1.45,0.4,0.2]],["6",[2.6,0.3,0.15]]] } };
+  const CLASSTAG={"0 ambient":"0 · ambient","2 fan inlet":"1 · diffuser exit","3 HPC exit":"2 · compressor exit","4 turbine inlet":"3 · combustor exit","5 turbine exit":"4 · turbine exit","7 afterburner exit":"4′ · afterburner exit","8 nozzle exit":"5 · nozzle exit",
+    "bleed (compressor exit)":"1 · bleed in (= engine 2)","after precooler / PRSOV":"1′ · after precooler","1 · primary HX out":"2 · HX1 out","2 · ACM compressor out":"3 · C out","2 · secondary HX out":"4 · HX2 out","3 · expansion turbine out":"5 · T out","to cockpit & avionics":"6 · to cockpit"};
+  function drawClass(M,which){ const C=CLASS[which]; if(!C) return; ctx.font="700 12px Chakra Petch, sans-serif";
+    C.comps.forEach(([k,n,c])=>{ const pp=project(c,M); if(pp[2]<0.3) return; const txt=k+"  "+n; const w=ctx.measureText(txt).width+12; const bx=pp[0]-w/2, by=pp[1]-34; ctx.fillStyle="rgba(5,10,24,.88)"; ctx.strokeStyle="#ff8a3d"; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(bx,by,w,20,5):ctx.rect(bx,by,w,20); ctx.fill(); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.fillText(k,bx+6,by+14); ctx.fillStyle="#eaf2ff"; ctx.font="600 11px Chakra Petch, sans-serif"; ctx.fillText(n,bx+6+ctx.measureText(k).width*1.25+6,by+14); ctx.font="700 12px Chakra Petch, sans-serif"; ctx.strokeStyle="rgba(255,138,61,.8)"; ctx.beginPath(); ctx.moveTo(pp[0],by+20); ctx.lineTo(pp[0],pp[1]); ctx.stroke(); });
+    ctx.font="700 11px ui-monospace, monospace"; C.st.forEach(([k,c])=>{ const pp=project(c,M); if(pp[2]<0.3) return; ctx.fillStyle="rgba(5,10,24,.9)"; ctx.strokeStyle="#fff"; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(pp[0],pp[1]+16,9,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.fillText(k,pp[0],pp[1]+20); ctx.textAlign="left"; ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(pp[0],pp[1],2,0,Math.PI*2); ctx.fill(); }); }
+  /* ---------- class schematic (hand-drawn style from the ES 305 Brayton example) drawn over the 3-D parts ---------- */
+  const SCHEM={
+    brayton:{ syms:[{id:"intakeR",kind:"trapOut",lab:"D",anchor:[1.5,-0.3,0.85],w:1.3,h:1.0,sIn:"0",sOut:"1"},{id:"compR",kind:"trapIn",lab:"C",anchor:[-1.8,-0.3,0.85],w:2.4,h:1.1,sOut:"2",eta:"η_sc"},{id:"combR",kind:"box",lab:"Comb.",anchor:[-3.65,-0.3,0.85],w:1.2,h:0.8,sOut:"3",q:"Q̇_in"},{id:"turbR",kind:"trapOut",lab:"T",anchor:[-4.9,-0.3,0.85],w:1.4,h:1.1,sOut:"4",eta:"η_st"},{id:"nozR",kind:"trapIn",lab:"N",anchor:[-8.9,-0.3,0.85],w:1.3,h:1.0,sOut:"5",eta:"η_sn"}],
+      shaft:[["compR","turbR"]], flowAxis:"x" },
+    reverse:{ syms:[{id:"phx",kind:"box",lab:"HX1",anchor:[0.1,0.45,-0.3],w:0.5,h:0.6,sIn:"1",sOut:"2",q:"Q̇_out"},{id:"acm",kind:"trapIn",lab:"C",anchor:[0.45,0.45,0.3],w:0.4,h:0.6,sOut:"3"},{id:"shx",kind:"box",lab:"HX2",anchor:[1.1,0.45,-0.3],w:0.5,h:0.6,sOut:"4",q:"Q̇_out"},{id:"acmt",kind:"trapOut",lab:"T",anchor:[1.12,0.45,0.3],w:0.4,h:0.6,sOut:"5"},{id:"ws",kind:"box",lab:"WS",anchor:[1.75,0.4,0.05],w:0.4,h:0.3,sOut:"6"}],
+      shaft:[["acm","acmt"]], flowAxis:"x", layout:"row" } };
+  function drawSchem(M,which){ const S=SCHEM[which]; if(!S) return; const alpha=state.schemAlpha; if(alpha<=0.02) return;
+    const scale=(Hc/2)/Math.tan(cam.fov*Math.PI/360); let pts=S.syms.map(y=>{ const pp=project(y.anchor,M); return {y,pp,k:scale/Math.max(pp[2],0.1),anchor:pp}; }).filter(o=>o.pp[2]>0.3);
+    if(S.layout==="row"){ /* pack parts overlap in any view, so draw the schematic as a clean row above the hardware with leader lines to each part */
+      const n=S.syms.length; const k=Math.min(Wc/10,Hc/4.5); pts=S.syms.map((y,i)=>{ const pp=project(y.anchor,M); return {y,pp:[Wc*(0.12+0.76*i/(n-1)),Hc*0.2,1],k,anchor:pp,leader:pp[2]>0.3}; });
+      ctx.save(); ctx.globalAlpha=alpha*0.9; ctx.setLineDash([4,4]); ctx.strokeStyle="#ffd23f"; ctx.lineWidth=1.2; pts.forEach(o=>{ if(!o.leader) return; ctx.beginPath(); ctx.moveTo(o.pp[0],o.pp[1]+o.y.h*o.k/2); ctx.lineTo(o.anchor[0],o.anchor[1]); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.beginPath(); ctx.arc(o.anchor[0],o.anchor[1],3,0,Math.PI*2); ctx.fill(); }); ctx.restore(); }
+    ctx.save(); ctx.globalAlpha=alpha; ctx.lineWidth=2.5; ctx.strokeStyle="#ffffff"; ctx.lineJoin="round";
+    /* flow lines between consecutive symbols (drawn first) */
+    for(let i=0;i<pts.length-1;i++){ const a=pts[i].pp,b=pts[i+1].pp; ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); }
+    /* shaft */ S.shaft.forEach(([a,b])=>{ const A=pts.find(o=>o.y.id===a),B=pts.find(o=>o.y.id===b); if(!A||!B) return; ctx.setLineDash([]); ctx.lineWidth=5; ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.beginPath(); ctx.moveTo(A.pp[0],A.pp[1]); ctx.lineTo(B.pp[0],B.pp[1]); ctx.stroke(); ctx.lineWidth=2.5; ctx.strokeStyle="#fff"; });
+    const dir=S.layout==="row"?1:(Math.sign(project([0,0,0],M)[0]-project([1,0,0],M)[0])||1);       /* screen direction of the flow (+x is forward, flow goes aft) */
+    const later=[];
+    pts.forEach(o=>{ const {y,pp,k}=o; const w=y.w*k, h=y.h*k; const x=pp[0], yy=pp[1]; const sel=state.sel===y.id;
+      ctx.fillStyle=sel?"rgba(255,210,63,.35)":"rgba(10,16,34,.55)"; ctx.strokeStyle=sel?"#ffd23f":"#fff"; ctx.beginPath();
+      if(y.kind==="box"){ ctx.rect(x-w/2,yy-h/2,w,h); }
+      else { const narrow=y.kind==="trapIn"?1:-1; /* trapIn: wide at inlet, narrow at outlet (compressor, nozzle); trapOut: the reverse (diffuser, turbine) */ const xin=x-dir*w/2, xout=x+dir*w/2; const hi=narrow>0?h:h*0.45, ho=narrow>0?h*0.45:h; ctx.moveTo(xin,yy-hi/2); ctx.lineTo(xout,yy-ho/2); ctx.lineTo(xout,yy+ho/2); ctx.lineTo(xin,yy+hi/2); ctx.closePath(); }
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle="#fff"; ctx.font=`700 ${Math.max(11,(y.kind==="box"?0.2:0.28)*k)}px "Chakra Petch", sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(y.lab,x,yy);
+      if(y.eta){ ctx.font=`600 ${Math.max(10,0.2*k)}px ui-monospace, monospace`; ctx.fillText(y.eta,x,yy+h/2+0.22*k); }
+      if(y.q){ ctx.font=`600 ${Math.max(10,0.2*k)}px ui-monospace, monospace`; ctx.fillText(y.q,x,yy-h/2-0.28*k); ctx.beginPath(); ctx.moveTo(x,yy-h/2-0.18*k); ctx.lineTo(x,yy-h/2); ctx.stroke(); }
+      const circ=(n,cx,cy)=>{ ctx.beginPath(); ctx.arc(cx,cy,Math.max(8,0.12*k),0,Math.PI*2); ctx.fillStyle="rgba(10,16,34,.9)"; ctx.fill(); ctx.strokeStyle="#fff"; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle="#fff"; ctx.font=`700 ${Math.max(10,0.16*k)}px ui-monospace, monospace`; ctx.fillText(n,cx,cy); ctx.lineWidth=2.5; };
+      const stateFor=(n)=>{ const E=state.E,A=state.A; if(!E) return null; if(which==="brayton") return {"0":E.st[0],"1":E.st[2],"2":E.st[3],"3":E.st[4],"4":E.st[5],"5":E.st[8]}[n]; if(!A) return null; const a=A.a; return {"1":a.prsov,"2":a.phx,"3":a.comp,"4":a.shx,"5":a.turb,"6":a.cabin}[n]; };
+      const circPT=(n,cx,cy)=>{ circ(n,cx,cy); const st=stateFor(n); if(st&&state.focus){ ctx.font=`600 ${Math.max(9,0.13*k)}px ui-monospace, monospace`; ctx.fillStyle="#ffd23f"; ctx.fillText(`${f0(st.p,st.p<10?1:0)} kPa`,cx,cy+Math.max(8,0.12*k)+0.16*k); ctx.fillStyle="#eaf2ff"; ctx.fillText(`${f0(st.T)} K`,cx,cy+Math.max(8,0.12*k)+0.32*k); } };
+      if(y.sIn) later.push([y.sIn,x-dir*(w/2+0.22*k),yy,circPT]); if(y.sOut) later.push([y.sOut,x+dir*(w/2+0.22*k),yy,circPT]); });
+    later.forEach(([n,cx,cy,fn])=>fn(n,cx,cy));
+    ctx.restore(); }
+  function drawLabels(M){ const show=[];
+    if(state.labelMode==="names"&&state.focus&&!state.sel){ const ids=state.focus==="brayton"?["intakeR","spinnerR","compR","combR","turbR","abR","nozR"]:["bleed","phx","acm","shx","acmt","ws","cabduct","scoop"]; ids.forEach(id=>{ const p=parts.find(x=>x.id===id); if(p) show.push([p.name.replace(/ \((left|right)\)/,""),p.center]); }); }
+    if(state.labelMode==="class"&&state.schemAlpha<0.3){ if(state.focus==="brayton"||!state.focus) drawClass(M,"brayton"); if(state.focus==="reverse"||!state.focus) drawClass(M,"reverse"); } if(state.focus){ if(state.schemAlpha<0.5) drawStations(M); if(state.sel&&state.sel!=='bay'&&state.sel!=='pack'){ const p=parts.find(x=>x.id===state.sel); if(p) show.push([p.name,p.center]); } } else if(state.sel){ const p=parts.find(x=>x.id===state.sel); if(p) show.push([p.name,p.center]); } else if(state.labelMode==="names") { [["Engines (Brayton cycle)",[-4,-0.3,0.85]],["ECS pack · air cycle machine (reverse Brayton)",[0.8,0.5,0]],["Bleed-air duct",[-0.3,0.5,0.5]],["Cockpit",[4.6,0.9,0]]].forEach(l=>show.push(l)); }
+    ctx.font="600 12px Chakra Petch, sans-serif"; show.forEach(([txt,c],i)=>{ const pp=project(c,M); if(pp[2]<0.3) return; const w=ctx.measureText(txt).width+12; const dy=-40-26*i, dx=14; const bx=Math.min(Wc-w-6,Math.max(6,pp[0]+dx)), by=Math.max(6,pp[1]+dy); ctx.fillStyle="rgba(5,10,24,.88)"; ctx.strokeStyle="#ffd23f"; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(bx,by,w,20,5):ctx.rect(bx,by,w,20); ctx.fill(); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.fillText(txt,bx+6,by+14); ctx.beginPath(); ctx.moveTo(pp[0],pp[1]); ctx.lineTo(bx,by+20); ctx.stroke(); ctx.fillStyle="#ffd23f"; ctx.beginPath(); ctx.arc(pp[0],pp[1],2.5,0,Math.PI*2); ctx.fill(); }); }
+  /* ---------- picking ---------- */
+  function pick(x,y){ const inTri=(p,a,b,c)=>{ const s=(a[0]-c[0])*(p[1]-c[1])-(b[0]-c[0])*(p[1]-a[1]); const d=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]); const e=(c[0]-b[0])*(p[1]-b[1])-(c[1]-b[1])*(p[0]-b[0]); const f=(a[0]-c[0])*(p[1]-c[1])-(a[1]-c[1])*(p[0]-c[0]); return (d>=0&&e>=0&&f>=0)||(d<=0&&e<=0&&f<=0); };
+    for(let i=drawn.length-1;i>=0;i--){ const t=drawn[i]; if(t.a<0.2||t.part.noPick) continue; if(inTri([x,y],t.pts[0],t.pts[1],t.pts[2])) return t.part; } return null; }
+  /* ---------- info ---------- */
+  const INFO={
+    fuselage:"The airframe shell. Make it glass with the slider to see what is inside.", canopy:"Transparent canopy over the cockpit.", seat:"The pilot's ejection seat. The ECS pack sits directly behind it; the bleed duct runs under the floor and up behind the seat.", pilot:"Breathes the air the pack delivers: 8,000 ft cabin altitude, about 20 °C.",
+    intake:"Air intake / diffuser: slows the incoming high-speed air and converts its kinetic energy into static pressure (ram compression) before the fan — station 0 → 2 of the Brayton cycle.", spinner:"Fan: the first, largest blade row. On this low-bypass engine most of its air continues into the core; a small share bypasses it to cool the afterburner duct.", comp:"Axial-flow compressor: alternating rows of rotating blades and stationary stators squeeze the air, raising its pressure, density and temperature with little entropy change (nearly isentropic, station 2 → 3). The blade height shrinks stage by stage as the air is compressed. The ECS bleed port is at the compressor exit.", comb:"Combustion chamber: high-pressure air mixes with injected jet fuel in the flame cans and burns, adding heat at nearly constant pressure (station 3 → 4). This is the heat-addition leg of the Brayton cycle; T₄ is the turbine inlet temperature.", turb:"Turbine: the expanding hot gas spins the blade rows and the central drive shaft, which powers the compressor and fan (station 4 → 5). Its work output equals what the compressor needs.", noz:"Exhaust nozzle: accelerates the remaining high-energy gas rearward to produce thrust (station 7 → 8). Convergent–divergent on a supersonic fighter; the petals change the throat and exit areas.", abduct:"Afterburner duct: the long section between turbine and nozzle where afterburner fuel burns.", ab:"Afterburner (augmentor): spray bars and flame-holder gutters sit in the exhaust duct ahead of the nozzle. Extra fuel burned here (station 5 → 7) raises the gas temperature to ~2100 K for a large temporary thrust boost at a steep fuel-flow penalty. Turn it up with the afterburner slider.", flame:"", abflame:"", shaft:"Drive shaft: transmits turbine work forward to the compressor and fan.", nac:"Engine casing / nacelle.",
+    bleed:"Engine bleed air: not exhaust, but clean, ultra-hot, highly pressurized air tapped from the compressor stage before any fuel is added (~700 K, several hundred kPa). It is ducted forward along the fuselage to the pack behind the cockpit. This duct is the physical link between the Brayton cycle in the engine and the reverse Brayton cycle in the pack.", pack:"The environmental-control-system pack, physically behind the cockpit: an open bootstrap air cycle running the reversed Brayton (Joule) cycle. Open, because the air itself is the refrigerant and is delivered to the cockpit rather than recirculated. Step 1: primary heat exchanger. Step 2: bootstrap compression and secondary heat exchanger. Step 3: expansion turbine.", phx:"Step 1, primary cooling: the scalding bleed air passes through a finned heat exchanger cooled by outside ram air drawn in through the scoop.", acm:"Step 2, the bootstrap compression: the ACM compressor squeezes the air further, which raises its temperature, so the secondary heat exchanger can dump even more thermal energy to ram air. The compressor is driven by the expansion turbine on the same shaft; no outside power is needed.", acmt:"Step 3, rapid expansion: the air blasts through the expansion turbine. Pressure and temperature drop drastically, to sub-zero values (typically −20 to −30 °C, i.e. −4 to −20 °F; colder at altitude), and the turbine work is what spins the bootstrap compressor. The cold air then goes to the cockpit and the avionics.", acmshaft:"The bootstrap shaft: turbine work in, compressor work out. Any surplus drives a fan that pulls ram air through the exchangers on the ground.", shx:"Step 2 continued: the secondary heat exchanger removes the heat of compression, so the expansion in the turbine starts from as low a temperature as possible.", scoop:"Ram-air scoop: outside air is forced in by the aircraft's speed, flows through both heat exchangers as the cold side, and is dumped overboard through the exhaust louvre.", ramduct:"The ram-air duct that carries outside air across the fins of both heat exchangers.", ws:"Water separator: the sub-zero turbine discharge condenses the moisture in the air; it is removed here before the air reaches the cockpit.", packduct:"Pack ducting between the heat exchangers and the air cycle machine.", avduct:"Cooling air to the avionics bay in the nose: the radar and fire-control electronics are cooled by the same pack air.", avionics:"Avionics bay: radar and fire-control electronics, cooled by conditioned pack air.", cabduct:"Conditioned air to the cockpit, after the temperature-control valve mixes in a little hot bleed air so the duct never ices.",
+    tank:"Fuselage fuel tank.", fuelline:"Fuel to the two combustors.", bay:"Lower fuselage housing the two engines side by side.", wing:"Wings (also fuel tanks on most jets).", stab:"All-moving horizontal stabilators.", fin:"Twin vertical fins.",
+  };
+  function infoFor(id){ const keys=Object.keys(INFO).sort((a,b)=>b.length-a.length); for(const k of keys) if(id.startsWith(k)) return INFO[k]; return ""; }
+  function setFocus(fz){ state.focus=fz; document.querySelectorAll("[data-focus]").forEach(b=>b.classList.toggle("on",b.dataset.focus===(fz||"")));
+    if(fz){ const F=FOCUS[fz]; camGoal.active=true; camGoal.target=F.cam; camGoal.dist=F.dist; camGoal.phi=F.phi; camGoal.theta=fz==="brayton"?1.25:0.9; } else { camGoal.active=true; camGoal.target=[-1.0,0.1,0]; camGoal.dist=19; camGoal.phi=0.36; camGoal.theta=cam.theta; } }
+  function select(id,keepFocus){ state.sel=id; const el=$("#j3info"); const p=parts.find(x=>x.id===id);
+    if(p&&!keepFocus){ if(p.group==="engine"||p.id==="bay") setFocus("brayton"); else if(p.group==="ecs") setFocus("reverse"); if(p.id!=="bay"&&p.id!=="pack"){ camGoal.active=true; camGoal.target=p.center.slice(); camGoal.dist=Math.max(2.5,Math.min(22,p.radius*3.2+1.5)); camGoal.phi=0.35; camGoal.theta=p.center[2]<-0.3?-0.8:0.9; } }
+    if(!p){ if(!keepFocus) setFocus(null); el.innerHTML=`<p class="note">Click any part of the jet. Drag to rotate, scroll to zoom. Click the engine bay to x-ray the Brayton cycle, or the pack behind the seat to x-ray the reverse Brayton cycle; the <b>p</b> and <b>T</b> tags follow the throttle, altitude and Mach sliders.</p>`; return; }
+    el.innerHTML=`<h4>${p.name}</h4><p>${infoFor(p.id)}</p>${p.group==="engine"?`<p class="note">Station values for this component at any flight condition: see the <a href="jet.html">Jet Engine Lab</a> (turbofan tab).</p>`:p.group==="ecs"?`<p class="note">Pack states and the reverse-Brayton T–s diagram: see the <a href="jet.html">Jet Engine Lab</a> (air cycle machine tab).</p>`:""}<button type="button" class="btn small" id="j3clear">Show everything</button>`; $("#j3clear").onclick=()=>select(null); fixSubs(el); }
+  /* ---------- init ---------- */
+  function resize(){ const r=canvas.getBoundingClientRect(); Wc=r.width; Hc=r.height; canvas.width=Math.round(Wc*devicePixelRatio); canvas.height=Math.round(Hc*devicePixelRatio); ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+  function init(){ canvas=$("#j3canvas"); ctx=canvas.getContext("2d"); buildJet(); initParticles(); resize(); window.addEventListener("resize",resize);
+    let drag=null; canvas.addEventListener("pointerdown",e=>{ drag={x:e.clientX,y:e.clientY,t:cam.theta,p:cam.phi,moved:false}; camGoal.active=false; canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener("pointermove",e=>{ if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>3) drag.moved=true; cam.theta=drag.t+dx*0.008; cam.phi=Math.max(-1.4,Math.min(1.4,drag.p+dy*0.008)); });
+    canvas.addEventListener("pointerup",e=>{ if(drag&&!drag.moved){ const r=canvas.getBoundingClientRect(); const p=pick(e.clientX-r.left,e.clientY-r.top); select(p?p.id:null); } drag=null; });
+    canvas.addEventListener("wheel",e=>{ e.preventDefault(); camGoal.active=false; cam.dist=Math.max(4,Math.min(60,cam.dist*(1+Math.sign(e.deltaY)*0.08))); },{passive:false});
+    const views={iso:[0.75,0.36,19],side:[Math.PI/2,0.05,21],top:[Math.PI/2,1.35,23],front:[0.02,0.12,22],rear:[Math.PI,0.15,22]};
+    document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{ const v=views[b.dataset.view]; cam.theta=v[0]; cam.phi=v[1]; cam.dist=v[2]; });
+    document.querySelectorAll("input[data-g]").forEach(i=>i.oninput=()=>{ state.groupAlpha[i.dataset.g]=+i.value; });
+    const sp=$("#j3speed"); if(sp) sp.oninput=()=>state.speed=+sp.value; const fl=$("#j3flow"); if(fl) fl.onchange=()=>state.flow=fl.checked; const lb=$("#j3labels"); if(lb) lb.onchange=()=>{ state.labelMode=lb.value; state.labels=lb.value!=="off"; };
+    const sel=$("#j3select"); if(sel){ sel.innerHTML=`<option value="">Jump to a component…</option>`+parts.map(p=>`<option value="${p.id}">${p.name}</option>`).join(""); sel.onchange=()=>select(sel.value||null); }
+    document.querySelectorAll("[data-focus]").forEach(b=>b.onclick=()=>{ const fz=b.dataset.focus||null; state.sel=null; setFocus(fz); select(null,true); if(fz) $("#j3info").innerHTML=fz==="brayton"?`<h4>Brayton cycle: the engines</h4><p>Air in (0) → inlet (2) → fan and compressors to 3 (work in) → combustor to 4 (heat in at constant pressure) → turbines to 5 (work out, exactly what the compressors need) → nozzle to 8 (thrust). Click any engine part for its control-volume story. Numbers come from the same model as the <a href="jet.html">Jet Engine Lab</a>.</p>`:`<h4>Reverse Brayton cycle: the ECS pack behind the seat</h4><p>Hot bleed air from the compressor (yellow duct) → precooler and primary heat exchanger (heat out to ram air) → ACM compressor (work in) → secondary heat exchanger (heat out) → ACM turbine (work out, and the big temperature drop) → cold air to the cockpit. The air itself is the refrigerant.</p>`; });
+    ["th","alt","M","ab"].forEach(k=>{ const e=$("#j3"+k); if(!e) return; e.oninput=()=>{ state.op[k]=+e.value; physics(); const lab=$("#j3v"+k); if(lab) lab.textContent=k==="th"?Math.round(100*state.op.th)+" %":k==="alt"?Math.round(state.op.alt/0.3048)+" ft":k==="M"?state.op.M.toFixed(2):(state.op.ab>0?Math.round(100*state.op.ab)+" %":"off"); }; });
+    const sa=$("#j3schem"); if(sa) sa.oninput=()=>{ state.schemAlpha=+sa.value; };
+    document.querySelectorAll("[data-classview]").forEach(bt=>bt.onclick=()=>{ const fz=bt.dataset.classview; state.sel=null; setFocus(fz); select(null,true); state.schemAlpha=0.85; if(sa) sa.value=0.85; camGoal.active=true; camGoal.theta=-Math.PI/2; camGoal.phi=0.02; if(fz==="brayton"){ camGoal.target=[-3.8,-0.3,0.85]; camGoal.dist=12; } else { camGoal.target=[0.9,0.45,0]; camGoal.dist=5.5; } state.groupAlpha.engine=fz==="brayton"?0.55:1; state.groupAlpha.ecs=fz==="reverse"?0.6:1; $("#j3info").innerHTML=fz==="brayton"?`<h4>Class view: the schematic on top of the hardware</h4><p>This is the diagram from the class example laid over the real parts: D over the intake, C over the compressor stages, Comb. over the combustor cans, T over the turbine wheels on the same shaft, N over the nozzle. Station circles 0–5 sit where those states physically are. Slide <b>schematic</b> and <b>Engines</b> to fade between the two; click a symbol's part to zoom in.</p>`:`<h4>Class view: the pack schematic on top of the hardware</h4><p>HX1 and HX2 over the finned exchangers in the ram duct, C and T over the two wheels of the air cycle machine on their shared shaft, WS over the water separator. Stations 1–6 follow the air through.</p>`; });
+    document.querySelectorAll("[data-jump]").forEach(bt=>bt.onclick=()=>{ select(bt.dataset.jump); const sel=$("#j3select"); if(sel) sel.value=bt.dataset.jump; $("#j3scene").scrollIntoView({behavior:"smooth",block:"center"}); });
+    physics(); select(null);
+    let last=performance.now(); const loop=(now)=>{ const dt=Math.min(0.05,(now-last)/1000); last=now; try{ if(camGoal.active){ const k=Math.min(1,dt*4); cam.target=cam.target.map((c,i)=>c+(camGoal.target[i]-c)*k); cam.dist+=(camGoal.dist-cam.dist)*k; cam.phi+=(camGoal.phi-cam.phi)*k; cam.theta+=(camGoal.theta-cam.theta)*k; if(Math.abs(cam.dist-camGoal.dist)<0.02) camGoal.active=false; } stepParticles(dt); render(); }catch(e){ console.warn(e); } requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  return {init,cam,state,parts,select};
+})();
+JET3D.init();
+
+</script>
+</body></html>
