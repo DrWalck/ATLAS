@@ -553,6 +553,14 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 #fignote{min-height:3em}
 @media (max-width:900px){.layout{grid-template-columns:1fr}}
 .solution .note{font-size:.88rem;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px 4px 10px;margin:0 0 10px;border:1px solid var(--line,#2c4274);border-radius:999px;background:rgba(12,20,44,.7);width:max-content;max-width:100%}
+.seglab{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.segbtn{border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:999px;font:inherit;font-size:.86rem;cursor:pointer;transition:background .15s,color .15s}
+.segbtn:hover{color:var(--fg,#e8eefc);background:rgba(255,255,255,.05)}
+.segbtn.on{background:linear-gradient(135deg,#ffb347,#ff7a59);color:#1a1200;font-weight:700;box-shadow:0 2px 12px rgba(255,138,61,.35)}
+.playrow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:4px 0 8px}
+.btn.play{min-width:92px}.btn.play.on{background:#22d3ee;color:#04202a;border-color:#22d3ee}
+.chk{display:flex;align-items:center;gap:6px;font-size:.86rem;color:var(--muted);cursor:pointer}.chk input{accent-color:#ffb347}
 table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}table.mini th,table.mini td{padding:3px 6px;text-align:right;border-bottom:1px solid rgba(120,140,200,.18)}table.mini th:first-child,table.mini td:first-child{text-align:left}table.mini th{color:var(--muted);font-weight:600}details.osim summary{cursor:pointer}
 </style>
 </head><body>
@@ -1280,7 +1288,7 @@ const FIG_PAGE="muscle";
       if(r.Mh>5){ groups.push(...HFLEX); txt.push("hip flexors (hip moment +)"); } else if(r.Mh<-5){ groups.push(...HEXT); txt.push("hip extensors (hip moment −)"); }
       FIG.highlight(groups,true,"R"); note(`<b>${P.n}.</b> Highlighted on the right leg: ${txt.join("; ")||"no net muscle moment above 5 N·m"}. The net moment tells you which group dominates, not how hard each muscle works.`); }
     else { FIG.setPose(STAND); FIG.highlight([]); note("Anatomical position. Pick a segment on the left; its mass fraction and COM come from Dempster's cadaver data."); } }
-  function arthro(){ const S=AL.get(); const tab=activeTab();
+  function arthro(){ const S=AL.get(); const tab=activeTab(); window.FIG_TICK=(tab==="knee"&&S.kn.playing)||(tab==="ccrule"&&S.cc.playing);
     if(tab==="knee"){ const fl=S.kn.flex; if(S.kn.chain==="open"){ FIG.setPose({hipR:90,kneeR:fl,hipL:90,kneeL:90,trunk:0,shR:0,shL:0},{fixGround:true}); FIG.highlight(fl<45?QUADS:HAMS,true,"R"); note(`Open chain, seated: the tibia swings on a fixed femur. ${fl<45?"Near extension the quadriceps are working":"Deep in flexion the hamstrings are flexing the knee"}; the concave tibial plateau rolls and glides the same way.`); }
       else { FIG.setPose({hipR:fl*0.9,kneeR:fl,ankR:fl*0.3,hipL:fl*0.9,kneeL:fl,ankL:fl*0.3,trunk:fl*0.4,shR:50,shL:50}); FIG.highlight([...QUADS,"gmax"]); note("Closed chain, squat: the femur moves on a planted tibia. Quadriceps and gluteus maximus control the descent eccentrically and drive the ascent; the convex femoral condyles roll back and glide forward."); } }
     else if(tab==="angles"){ const an=180-S.ang.inc; FIG.setPose({elR:Math.max(0,an),shR:0}); FIG.highlight(["bic","brach","brd"],true,"R"); note(`Right elbow at ${an}° of flexion (included angle ${S.ang.inc}°). The elbow flexors are highlighted.`); }
