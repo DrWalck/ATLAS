@@ -454,6 +454,22 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 .flowbox{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
 .flowbox svg{width:100%;max-width:640px;height:auto;display:block;margin:0 auto;overflow:visible}
 .flow .pipe{stroke:#3a4f86;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow .pipe.hid{stroke:none}
+.seg{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px 4px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(12,20,44,.7)}
+.seglab{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.segbtn{border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:999px;font:inherit;font-size:.86rem;cursor:pointer}
+.segbtn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.segbtn.on{background:linear-gradient(135deg,#ffb347,#ff7a59);color:#1a1200;font-weight:700}
+.secline{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+.flow .rbody{fill:#2a3550;stroke:#9fb0d0;stroke-width:1.2}.flow .fin{stroke:#6f7fa6;stroke-width:1}.flow .rtube{fill:none;stroke:#d9a066;stroke-width:3;stroke-linejoin:round}
+.flow .rcan{fill:#3b4663;stroke:#b8c4e0;stroke-width:1.4}.flow .rcan2{fill:#55628a;stroke:#b8c4e0;stroke-width:1}.flow .rbolt{fill:#1b2238;stroke:#b8c4e0;stroke-width:1}.flow .rblade{stroke:#d9dfef;stroke-width:2;stroke-linecap:round}
+.flow .region{stroke:none}.flow .region.warm{fill:#ff8a3d;fill-opacity:.16}.flow .region.cold{fill:#5fa8ff;fill-opacity:.16}.flow .region.fire{fill:#ff5a5a;fill-opacity:.18}
+.flow .rlab{font-size:11px;font-weight:600;letter-spacing:.04em}.flow .rlab.warm{fill:#ffb27a}.flow .rlab.cold{fill:#9fd0ff}.flow .rlab.fire{fill:#ffa0a0}
+.flowbox.view-sym .reals{display:none}.flowbox.view-real .symbols{display:none}.flowbox.view-real .symbols .nlab{display:block}.flowbox.view-both .symbols{opacity:.9}.flowbox.view-both .symbols .body2{fill:none;stroke:#ffd23f;stroke-width:2;stroke-dasharray:5 3}.flowbox.view-both .reals{opacity:.85}.flowbox.view-both .reals .nlab{display:none}
+.seg.vsel{margin:0;padding:2px 6px 2px 10px}.seg.vsel .segbtn{padding:4px 10px;font-size:.8rem}
+
+.flow .chev{fill:none;stroke:#e8eefc;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.9;pointer-events:none}
 .flow .part{stroke:none;filter:url(#glow)}
 
 /* ===== Jet Engine Lab ===== */
@@ -507,6 +523,17 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 #j3scene{position:relative;width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
 #j3canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #j3select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit}
+
+.hud .cell.reset{padding:0;position:relative;background:transparent;border-style:dashed}
+.hud .resetbtn{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;color:var(--muted);font:inherit}
+.hud .resetbtn:hover{color:var(--ink)}
+.hud .resetmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;width:260px;background:#0d142b;border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:6px;font-family:var(--body);font-weight:400;letter-spacing:0;white-space:normal}
+.hud .resetmenu[hidden]{display:none}
+.hud .resetmenu p{margin:0 0 2px;font-weight:700}
+.hud .resetmenu button{font:inherit;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2,#141b33);color:var(--ink);cursor:pointer;text-align:left}
+.hud .resetmenu button[data-r="all"]{border-color:#ff5a5a;color:#ffb3a7}
+.hud .resetmenu button:hover{border-color:var(--accent)}
+.hud .resetmenu small{color:var(--muted);line-height:1.4}
 </style>
 </head><body>
 <div class="wrap">
@@ -1009,9 +1036,10 @@ const PROBLEMS = [
   references:["Moran &amp; Shapiro, <i>Fundamentals of Engineering Thermodynamics</i>, 9th ed., Sec. 4.8 (compressors), Sec. 4.10 (throttling), Sec. 2.6.3 (COP)","ATLAS property Tables R134a-1E, R134a-2E, R134a-3E (computed with CoolProp; see the Property Tables page)."],
   takeaway:(v,r)=>`Pick one control volume per question: the evaporator gives ṁ = Q̇_in/(h₁ − h₄) with h₄ = h₃ from the throttle; the compressor gives Q̇_cv = Ẇ_cv + ṁ(h₂ − h₁); β needs no tables at all.`,
   flow:(v,r)=>({ title:"Vapor-compression loop", cap:"Clockwise from the bottom: cold mixture boils in the evaporator (Q̇_in), the compressor squeezes the vapor hot and dense (Ẇ in, a little Q̇ out), the condenser rejects heat and liquefies it, and the valve flashes it back to a cold mixture.", w:360,h:220, cv:[40,30,290,170],
-    nodes:[{id:"ev",x:110,y:150,w:130,h:40,kind:"hx",label:"evaporator"},{id:"cp",x:262,y:75,w:60,h:70,kind:"compressor",label:""},{id:"cd",x:110,y:20,w:130,h:40,kind:"condenser",label:"condenser"},{id:"tv",x:35,y:85,w:40,h:40,kind:"throttle",label:"valve"}],
-    streams:[{pts:[[55,125],[55,170],[110,170],[240,170],[292,170],[292,145]],T:[0.15,0.25],size:[1.3,1.6],label:""},{pts:[[292,145],[292,75],[292,40],[240,40]],T:[0.25,1],size:[1.6,0.8],label:""},{pts:[[240,40],[110,40],[55,40],[55,85]],T:[1,0.6],size:[0.8,0.5],label:""},{pts:[[55,85],[55,125]],T:[0.6,0.15],size:[0.5,1.3],speed:1.5,label:""}],
-    arrows:[{x:175,y:205,dir:"in",kind:"Q",label:"Q̇_in = "+fmt(v.Qin)+" Btu/min"},{x:340,y:110,dir:"in",kind:"W",label:"Ẇ compressor"},{x:175,y:-2,dir:"out",kind:"Q",label:"Q̇_out"}],
+    nodes:[{id:"ev",x:110,y:150,w:130,h:40,kind:"hx",label:"evaporator"},{id:"cp",x:262,y:82,w:60,h:50,kind:"compressor",dir:"u",wide:"r",label:""},{id:"cd",x:110,y:20,w:130,h:40,kind:"condenser",label:"condenser"},{id:"tv",x:35,y:85,w:40,h:40,kind:"throttle",label:"valve"}],
+    streams:[{pts:[[55,125],[55,170],[110,170],[240,170],[311,170],[311,132]],T:[0.15,0.25],size:[1.3,1.6],label:""},{pts:[[311,132],[311,107],[273,107],[273,82]],T:[0.25,0.6],size:[1.6,1.1],hidden:true,label:""},{pts:[[273,82],[273,40],[240,40]],T:[0.6,1],size:[1.1,0.8],label:""},{pts:[[240,40],[110,40],[55,40],[55,85]],T:[1,0.6],size:[0.8,0.5],label:""},{pts:[[55,85],[55,125]],T:[0.6,0.15],size:[0.5,1.3],speed:1.5,label:""}],
+    arrows:[{x:175,y:205,dir:"in",kind:"Q",label:"Q̇_in = "+fmt(v.Qin)+" Btu/min"},{x:336,y:107,dir:"in",kind:"W",horiz:true,label:"Ẇ compressor"},{x:175,y:-2,dir:"out",kind:"Q",label:"Q̇_out"}],
+    regions:[{kind:"warm",d:"M60,-10 Q180,-30 320,-8 Q345,30 300,55 Q180,75 70,58 Q30,30 60,-10 Z",label:"outdoors · warm",lx:300,ly:8},{kind:"cold",d:"M60,135 Q180,118 310,135 Q345,170 300,205 Q180,225 70,205 Q30,170 60,135 Z",label:"inside the house · cool",lx:110,ly:210}],
     readout:[{label:"ṁ",val:fmt(r.mdot)+" lb/min"},{label:"Q̇_comp",val:fmt(r.Qc)+" Btu/min"},{label:"β",val:fmt(r.beta)}] })
 },
 /* ------------------------------------------------------------------ 4.100 ------------------------------------------------------------------ */
@@ -1082,6 +1110,7 @@ const PROBLEMS = [
     nodes:[{id:"b",x:45,y:35,w:110,h:45,kind:"boiler",label:"boiler"},{id:"t",x:230,y:35,w:90,h:75,kind:"turbine",label:"turbine"},{id:"c",x:150,y:135,w:120,h:45,kind:"condenser",label:"condenser"},{id:"p",x:50,y:125,w:50,h:50,kind:"pump",label:"pump"}],
     streams:[{pts:[[100,57],[155,57],[235,57]],T:[0.9,1],size:[1,1],label:""},{pts:[[235,57],[300,95],[300,157],[270,157]],T:[1,0.35],size:[1,1.6],label:""},{pts:[[270,157],[150,157],[100,157],[75,150]],T:[0.35,0.2],size:[1.6,0.5],label:""},{pts:[[75,150],[75,120],[75,57],[100,57]],T:[0.2,0.25],size:[0.5,0.55],label:""},{pts:[[150,197],[270,197]],T:[0.05,0.3],size:[0.7,0.7],rate:1.6,label:""}],
     arrows:[{x:100,y:8,dir:"in",kind:"Q",label:"Q̇_in"},{x:340,y:60,dir:"out",kind:"W",label:"Ẇ_T"},{x:22,y:150,dir:"in",kind:"W",label:"Ẇ_P"}],
+    regions:[{kind:"fire",d:"M30,20 Q100,0 175,18 Q190,55 170,92 Q100,105 35,90 Q15,55 30,20 Z",label:"furnace · hot gases",lx:60,ly:26},{kind:"cold",d:"M130,120 Q210,108 300,122 Q320,160 300,200 Q210,215 130,200 Q110,160 130,120 Z",label:"river · cooling water",lx:210,ly:212}],
     readout:[{label:"η_th",val:fmt(r.eta,3)+" %"},{label:"Ẇ_T",val:fmt(r.WTMW,3)+" MW"},{label:"ṁ_cw",val:fmt(r.mcw)+" kg/s"}] })
 }
 ];
@@ -1172,6 +1201,7 @@ D.tidy=function(svg){
 /* Schematics for the Chapter 4 page. Every drawing shows the dashed control-volume boundary (class "h") and labels it. */
 const TURB=(x,y,w,h)=>D.poly([[x,y+h*0.25],[x+w,y],[x+w,y+h],[x,y+h*0.75]],"body2",true);
 const COMP=(x,y,w,h)=>D.poly([[x,y],[x+w,y+h*0.25],[x+w,y+h*0.75],[x,y+h]],"body2",true);
+const COMPR=(x,y,w,h)=>D.poly([[x,y+h*0.25],[x+w,y],[x+w,y+h],[x,y+h*0.75]],"body2",true); /* compressor in a vertical leg, textbook style: horizontal trapezoid, wide (inlet) end on the right with the shaft; inlet pipe joins the bottom at the wide end, outlet leaves the top at the narrow end */
 const NOZ=(x,y,w,h)=>D.poly([[x,y],[x+w,y+h*0.3],[x+w,y+h*0.7],[x,y+h]],"body2",true);
 const HXB=(x,y,w,h)=>D.rect(x,y,w,h,"body2")+D.path(`M${x+8},${y+h*0.3} h${w-16} v${h*0.2} h-${w-16} v${h*0.2} h${w-16}`,"h2");
 const VALVE=(x,y,s)=>D.poly([[x-s,y-s*0.7],[x+s,y+s*0.7],[x+s,y-s*0.7],[x-s,y+s*0.7]],"body2",true)+D.line(x,y-s*0.7,x,y-s*1.6,"s");
@@ -1246,11 +1276,11 @@ const DIAG={
     +CV(70,40,230,120,"CVs: valve (h₂ = h₁) and exchanger (Σṁh)",185,180)),
   ac_system:(v,r)=>D.svg(D.text(180,16,"Vapor-compression air conditioner","middle","t")
     +HXB(110,28,140,34)+D.text(180,45,"condenser","middle","t")+HXB(110,150,140,34)+D.text(180,167,"evaporator","middle","t")
-    +D.circ(300,105,26,"body2")+D.text(300,105,"C","middle","t")+VALVE(60,105,12)
-    +D.arrow(60,62,60,93,"v")+D.arrow(60,117,60,150,"v")+D.arrow(250,167,300,167,"v")+D.line(300,167,300,131,"s")+D.arrow(300,79,300,45,"v")+D.arrow(300,45,250,45,"v")+D.line(110,45,60,45,"s")+D.line(60,45,60,62,"s")+D.line(110,167,60,167,"s")+D.line(60,167,60,150,"s")
+    +COMPR(262,82,60,50)+D.text(296,111,"C","middle","t")+VALVE(60,105,12)
+    +D.arrow(60,62,60,93,"v")+D.arrow(60,117,60,150,"v")+D.arrow(250,167,311,167,"v")+D.line(311,167,311,132,"s")+D.arrow(273,82,273,45,"v")+D.arrow(273,45,250,45,"v")+D.line(110,45,60,45,"s")+D.line(60,45,60,62,"s")+D.line(110,167,60,167,"s")+D.line(60,167,60,150,"s")
     +D.text(72,84,`3: ${nf(v.T3)} °F liquid`,"start","tm")+D.text(72,132,"4: h₄ = h₃","start","tm")
     +D.text(258,150,`1: sat. vap. ${nf(v.p1)} psi`,"start","tm")+D.text(258,66,`2: ${nf(v.p2)} psi, ${nf(v.T2)} °F`,"start","tm")
-    +D.arrow(350,105,326,105,"f",`Ẇ = ${nf(v.W)} Btu/min`,338,132,"middle")
+    +D.rect(322,104,12,6,"body2")+D.arrow(356,107,336,107,"f",`Ẇ = ${nf(v.W)} Btu/min`,344,134,"middle")
     +D.arrow(180,212,180,184,"f",`Q̇_in = ${nf(v.Qin)} Btu/min`,180,200,"middle")
     +D.arrow(180,28,180,6,"f","Q̇_out",196,14,"start")
     +D.rect(100,140,160,54,"h")+D.rect(268,70,64,70,"h")+D.text(300,150,"CV: compressor","middle","tm")),
@@ -2194,8 +2224,15 @@ const GAME=(()=>{
     const n=solved().filter(id=>PROBLEMS.some(p=>p.id===id)).length;
     h.innerHTML=`<div class="cell lvl"><span class="k">LVL</span><span class="n">${lvl()}</span><span class="xpbar" title="${S.xp%100}/100 XP to next level"><i style="width:${S.xp%100}%"></i></span></div>
       <div class="cell xp">${I.xp}<span class="n">${S.xp}</span><span class="k">XP</span></div>
-      <div class="cell streak" title="Problems cleared in a row without opening the full solution (best ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">streak</span></div>
-      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${PROBLEMS.length}</span><span class="k">cleared</span></div>`;
+      <div class="cell streak" title="Streak: problems cleared in a row without opening the full solution — resets when you reveal a solution (best so far ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">in a row</span></div>
+      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${PROBLEMS.length}</span><span class="k">cleared</span></div>
+      <div class="cell reset" id="hudreset" title="Clear your progress and start over"><button type="button" class="resetbtn" aria-haspopup="true">↺ <span class="k">reset</span></button>
+        <div class="resetmenu" hidden><p>Start over?</p><button type="button" data-r="page">This page only</button><button type="button" data-r="all">All of ATLAS</button><button type="button" data-r="no">Cancel</button><small>"This page" clears this topic's solved problems and drill scores; XP and level are shared across ATLAS and are only cleared by "All".</small></div></div>`;
+    const rc=h.querySelector("#hudreset"); if(rc){ const menu=rc.querySelector(".resetmenu"); rc.querySelector(".resetbtn").onclick=()=>{ menu.hidden=!menu.hidden; };
+      rc.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ const what=b.dataset.r; menu.hidden=true; if(what==="no") return;
+        try{ if(what==="all"){ Object.keys(localStorage).filter(k=>k.startsWith("dpl-")).forEach(k=>localStorage.removeItem(k)); }
+          else { S.solved[GAME_PAGE]=[]; save(); localStorage.removeItem("dpl-last-"+GAME_PAGE); if(typeof DRILL_KEY!=="undefined"&&DRILL_KEY) localStorage.removeItem(DRILL_KEY); Object.keys(localStorage).filter(k=>k.startsWith("dpl-")&&k.includes(GAME_PAGE.replace(/\.html$/,""))).forEach(k=>localStorage.removeItem(k)); } }catch(e){}
+        location.reload(); }); }
     if(bump) h.querySelectorAll(".cell").forEach(c=>{ if(bump.includes(c.classList[1])){ c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } });
   }
   function markNav(){ const s=solved(); document.querySelectorAll("#nav button[data-id]").forEach(b=>b.classList.toggle("solved",s.includes(b.dataset.id))); }
@@ -2238,7 +2275,8 @@ const GAME=(()=>{
   }
   function onReveal(){ const m=rec(); if(!m.revealed && !m.cleared){ m.revealed=true; if(S.streak){ S.streak=0; save(); hud(["streak"]); } } }
   function addXP(n,big,small){ S.xp=Math.max(0,S.xp+n); save(); hud(n>0?["xp","lvl"]:["xp"]); if(big) toast(big,small); }
-  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec};
+  function unsolve(id){ const s=solved(); const i=s.indexOf(id); if(i>=0) s.splice(i,1); try{ mem.delete(SL_VARS()); }catch(e){} save(); hud(["clr"]); markNav(); }
+  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec,unsolve};
 })();
 
 /* ===================== FLOW ANIMATION (control volumes) =====================
@@ -2250,18 +2288,48 @@ const FLOW=(()=>{
   const tcol=(t)=>{ t=Math.max(0,Math.min(1,t)); const r=Math.round(34+t*(255-34)), g=Math.round(211-t*(211-138)), b=Math.round(238-t*(238-61)); return `rgb(${r},${g},${b})`; };
   function nodeSVG(n){ const {x,y,w,h}=n; const c=[x+w/2,y+h/2]; let s="";
     switch(n.kind){
-      case "turbine": s=D.poly([[x,y+h*0.25],[x+w,y],[x+w,y+h],[x,y+h*0.75]],"body2",true); break;
-      case "compressor": case "pump": s=n.kind==="pump"?D.circ(c[0],c[1],Math.min(w,h)/2,"body2"):D.poly([[x,y],[x+w,y+h*0.25],[x+w,y+h*0.75],[x,y+h]],"body2",true); break;
-      case "nozzle": s=D.poly([[x,y],[x+w,y+h*0.3],[x+w,y+h*0.7],[x,y+h]],"body2",true); break;
-      case "diffuser": s=D.poly([[x,y+h*0.3],[x+w,y],[x+w,y+h],[x,y+h*0.7]],"body2",true); break;
+      /* flow devices: the silhouette follows the flow. Inlet/outlet widths as fractions of the box: compressor and nozzle shrink (large in → small out),
+         turbine and diffuser grow (small in → large out). n.dir sets the flow direction: "r" (default, left→right), "l", "u" (bottom→top), "d". */
+      case "turbine": case "compressor": case "nozzle": case "diffuser": {
+        const IO={turbine:[0.5,1],compressor:[1,0.5],nozzle:[1,0.4],diffuser:[0.4,1]}[n.kind]; let dir=n.dir||"r";
+        /* textbook convention (Moran & Shapiro): a compressor or turbine in a vertical leg is still drawn as a horizontal trapezoid; the pipes
+           join its bottom and top at the wide and narrow ends (compressor: wide = inlet; turbine: wide = outlet) and the shaft sits on the wide end. */
+        if((n.kind==="compressor"||n.kind==="turbine")&&(dir==="u"||dir==="d")){ const wideRight=(n.wide||"r")==="r"; dir=(n.kind==="compressor")===wideRight?"l":"r"; }
+        const P=(u,v)=>{ /* u: 0 = inlet end, 1 = outlet end; v: −0.5..0.5 across the flow */
+          if(dir==="r") return [x+u*w, c[1]+v*h]; if(dir==="l") return [x+(1-u)*w, c[1]+v*h]; if(dir==="u") return [c[0]+v*w, y+(1-u)*h]; return [c[0]+v*w, y+u*h]; };
+        s=D.poly([P(0,-IO[0]/2),P(1,-IO[1]/2),P(1,IO[1]/2),P(0,IO[0]/2)],"body2",true);
+        if(n.kind==="compressor"||n.kind==="turbine"){ const wideRight=(dir==="l")===(n.kind==="compressor"); const sx=wideRight?x+w:x; s+=D.rect(wideRight?sx:sx-14,c[1]-3,14,6,"body2"); } /* shaft stub on the wide end */
+        break; }
+      case "pump": s=D.circ(c[0],c[1],Math.min(w,h)/2,"body2"); break;
       case "throttle": s=D.poly([[x,y],[x+w,y+h],[x+w,y],[x,y+h]],"body2",true)+D.line(c[0],y,c[0],y-10,"s"); break;
       case "hx": case "boiler": case "condenser": s=D.rect(x,y,w,h,"body2")+D.path(`M${x+8},${y+h*0.3} h${w-16} v${h*0.2} h-${w-16} v${h*0.2} h${w-16}`,"h"); break;
       case "tank": s=D.rect(x,y,w,h,"body2")+D.rect(x+4,y+h*0.4,w-8,h*0.6-4,"water"); break;
       default: s=D.rect(x,y,w,h,"body2"); }
-    return s+(n.label?D.text(c[0],y+h+13,n.label,"middle","tm"):""); }
-  function build(host,sp){ const W=sp.w||360,H=sp.h||220; host.innerHTML=D.svg((sp.cv?D.rect(sp.cv[0],sp.cv[1],sp.cv[2],sp.cv[3],"h"):"")+sp.nodes.map(nodeSVG).join("")+sp.streams.map(st=>`<path class="pipe" d="M${st.pts.map(p=>p.join(",")).join(" L")}"/>`).join("")+(sp.arrows||[]).map(a=>{ const dy=a.dir==="in"?1:-1; const cls=a.kind==="Q"?"f":"v"; return a.kind==="Q"?D.arrow(a.x,a.y-22*dy,a.x,a.y+22*dy,cls,a.label,a.x+8,a.y-10*dy,"start"):D.arrow(a.x,a.y-22*dy,a.x,a.y+22*dy,cls,a.label,a.x+8,a.y-10*dy,"start"); }).join("")+sp.streams.map(st=>st.label?D.text(st.pts[0][0],st.pts[0][1]-8,st.label,"start","tm"):"").join(""),W,H)+`<div class="readout">${(sp.readout||[]).map(r=>`<span>${r.label} = <b>${r.val}</b></span>`).join("")}</div>`;
+    return s+(n.label?`<g class="nlab">${D.text(c[0],y+h+13,n.label,"middle","tm")}</g>`:""); }
+  /* "real-life" look: the same components drawn as the hardware they are (finned coils, a hermetic compressor can, a bladed turbine, a capillary valve) */
+  function realSVG(n){ const {x,y,w,h}=n; const c=[x+w/2,y+h/2]; let s="";
+    const coil=(x,y,w,h)=>{ const fins=[]; for(let k=0;k<Math.floor(w/9);k++) fins.push(`<line x1="${x+6+k*9}" y1="${y+3}" x2="${x+6+k*9}" y2="${y+h-3}" class="fin"/>`); const nt=3; let tube=`M${x+4},${y+h*0.25}`; for(let i=0;i<nt;i++){ const yy=y+h*(0.25+0.25*i); tube+=` H${x+w-4} ${i<nt-1?`V${yy+h*0.25}`:""}`; } return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" class="rbody"/>${fins.join("")}<path d="${tube}" class="rtube"/>`; };
+    switch(n.kind){
+      case "hx": case "boiler": case "condenser": s=coil(x,y,w,h); break;
+      case "compressor": s=`<rect x="${x+w*0.12}" y="${y+h*0.1}" width="${w*0.76}" height="${h*0.85}" rx="${w*0.2}" class="rcan"/><ellipse cx="${c[0]}" cy="${y+h*0.12}" rx="${w*0.38}" ry="${h*0.08}" class="rcan2"/><rect x="${x+w*0.2}" y="${y+h*0.95}" width="${w*0.6}" height="${h*0.07}" class="rcan2"/><circle cx="${c[0]}" cy="${c[1]}" r="${Math.min(w,h)*0.14}" class="rbolt"/>`; break;
+      case "turbine": s=`<path d="M${x},${y+h*0.3} L${x+w},${y} L${x+w},${y+h} L${x},${y+h*0.7} Z" class="rcan"/>`+[0.2,0.4,0.6,0.8].map(u=>{ const xx=x+u*w; const hh=h*(0.3+0.7*u)/2; return `<line x1="${xx}" y1="${c[1]-hh+4}" x2="${xx}" y2="${c[1]+hh-4}" class="rblade"/>`; }).join("")+`<rect x="${x+w}" y="${c[1]-3}" width="14" height="6" class="rcan2"/>`; break;
+      case "pump": s=`<circle cx="${c[0]}" cy="${c[1]}" r="${Math.min(w,h)/2}" class="rcan"/><circle cx="${c[0]}" cy="${c[1]}" r="${Math.min(w,h)/5}" class="rbolt"/>`; break;
+      case "throttle": s=`<path d="M${x},${c[1]} h${w*0.25} q${w*0.1},-${h*0.45} ${w*0.2},0 q${w*0.1},${h*0.45} ${w*0.2},0 q${w*0.1},-${h*0.45} ${w*0.2},0 h${w*0.15}" class="rtube"/>`; break;
+      case "tank": s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" class="rcan"/><rect x="${x+4}" y="${y+h*0.4}" width="${w-8}" height="${h*0.6-4}" class="water"/>`; break;
+      default: s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" class="rcan"/>`; }
+    return `<g class="real">${s}</g>`; }
+  const regionSVG=(rg)=>`<g class="regions">${rg.map(r=>`<path d="${r.d}" class="region ${r.kind}"/>${r.label?`<text x="${r.lx}" y="${r.ly}" class="rlab ${r.kind}" text-anchor="middle">${r.label}</text>`:""}`).join("")}</g>`;
+  function build(host,sp){ const W=sp.w||360,H=sp.h||220; host.innerHTML=D.svg((sp.regions?regionSVG(sp.regions):"")+(sp.cv?D.rect(sp.cv[0],sp.cv[1],sp.cv[2],sp.cv[3],"h"):"")+`<g class="symbols">${sp.nodes.map(nodeSVG).join("")}</g><g class="reals">${sp.nodes.map(n=>realSVG(n)+(n.label?`<g class="nlab">${D.text(n.x+n.w/2,n.y+n.h+13,n.label,"middle","tm")}</g>`:"")).join("")}</g>`+sp.streams.map(st=>`<path class="pipe${st.hidden?" hid":""}" d="M${st.pts.map(p=>p.join(",")).join(" L")}"/>`).join("")+(sp.arrows||[]).map(a=>{ const dy=a.dir==="in"?1:-1; const cls=a.kind==="Q"?"f":"v"; if(a.horiz){ const dx=a.dir==="in"?-1:1; return D.arrow(a.x-26*dx,a.y,a.x,a.y,cls,a.label,a.x-26*dx+(dx<0?4:-4),a.y+20,dx<0?"start":"end"); } return D.arrow(a.x,a.y-22*dy,a.x,a.y+22*dy,cls,a.label,a.x+8,a.y-10*dy,"start"); }).join("")+sp.streams.map(st=>st.label?D.text(st.pts[0][0],st.pts[0][1]-8,st.label,"start","tm"):"").join(""),W,H)+`<div class="readout">${(sp.readout||[]).map(r=>`<span>${r.label} = <b>${r.val}</b></span>`).join("")}</div>`;
     const svg=host.querySelector("svg"); svg.classList.add("flow"); D.tidy(svg);
     const paths=[...svg.querySelectorAll("path.pipe")]; const g=document.createElementNS(NS,"g"); svg.appendChild(g);
+    /* flow-direction chevrons: on the pipe just before each component inlet and just after each outlet, never inside a component;
+       a stream that touches no component gets one chevron at its midpoint */
+    const ga=document.createElementNS(NS,"g"); ga.setAttribute("class","flowdir"); svg.appendChild(ga);
+    const boxes=sp.nodes.map(n=>[n.x-2,n.y-2,n.x+n.w+2,n.y+n.h+2]); const inside=(P)=>boxes.some(b=>P.x>=b[0]&&P.x<=b[2]&&P.y>=b[1]&&P.y<=b[3]);
+    const chev=(pth,sAt)=>{ const L=pth.getTotalLength(); if(sAt<6||sAt>L-6) return; const P=pth.getPointAtLength(sAt), Q=pth.getPointAtLength(Math.min(L,sAt+4)), R=pth.getPointAtLength(Math.max(0,sAt-4)); if(inside(P)) return; const a=Math.atan2(Q.y-R.y,Q.x-R.x)*180/Math.PI; const t=document.createElementNS(NS,"path"); t.setAttribute("d","M-7,-5 L3,0 L-7,5"); t.setAttribute("transform",`translate(${P.x},${P.y}) rotate(${a})`); t.setAttribute("class","chev"); ga.appendChild(t); };
+    paths.forEach(pth=>{ const L=pth.getTotalLength(); if(L<30) return; let was=inside(pth.getPointAtLength(0)); let any=false;
+      for(let d=2;d<=L;d+=2){ const now=inside(pth.getPointAtLength(d)); if(now&&!was){ chev(pth,d-16); any=true; } if(!now&&was){ chev(pth,d+14); any=true; } was=now; }
+      if(!any&&!inside(pth.getPointAtLength(L/2))) chev(pth,L/2); });
     const parts=[]; sp.streams.forEach((st,i)=>{ const L=paths[i].getTotalLength(); const n=Math.max(3,Math.round(L/22*(st.rate||1))); for(let k=0;k<n;k++){ const c=document.createElementNS(NS,"circle"); c.setAttribute("r",st.r||3.2); c.setAttribute("class","part"); g.appendChild(c); parts.push({el:c,path:paths[i],L,off:k/n,st}); } });
     host._flow={parts,t0:performance.now(),raf:null,speed:1};
     function frame(ts){ const f=host._flow; const t=(ts-f.t0)/1000*f.speed; parts.forEach(p=>{ const u=(p.off+t*0.12*(p.st.speed||1))%1; const q=p.path.getPointAtLength(u*p.L); p.el.setAttribute("cx",q.x); p.el.setAttribute("cy",q.y); const T=p.st.T?p.st.T[0]+(p.st.T[1]-p.st.T[0])*u:0.5; p.el.setAttribute("fill",tcol(T)); const sz=p.st.size?p.st.size[0]+(p.st.size[1]-p.st.size[0])*u:1; p.el.setAttribute("r",(p.st.r||3.2)*sz); }); f.raf=requestAnimationFrame(frame); }
@@ -2308,6 +2376,7 @@ function renderSheet(){
       <div class="controls">
         <button class="btn primary" id="new" type="button">New numbers</button>
         <button class="btn" id="orig" type="button">Class example</button>
+        <button class="btn" id="preset" type="button" title="Forget this problem: clear your answers, unmark it as solved and go back to the class example">↺ Reset problem</button>
       </div>
     </div>
     <div class="variant">${state.isOriginal ? "Showing the class-example numbers" : "Practice version #"+(state.variant-1)+" · random givens"}${p.credit?` · <span class="credit">${p.credit}</span>`:""}</div>
@@ -2323,7 +2392,7 @@ function renderSheet(){
     ${props.length?`<section class="props"><div class="secline"><h3>Properties</h3><button class="btn small" type="button" id="showprops">${state.props?"Hide":"Show"} property lookups</button></div>
       <div id="propbody" ${state.props?"":"hidden"}>${props.map(propCard).join("")}</div></section>`:""}
 
-    ${fl?`<section class="pdiag flowsec"><div class="secline"><h3>${fl.title||"Flow through the control volume"}</h3><label class="spd">speed <input type="range" id="fspd" min="0.25" max="3" step="0.25" value="1"></label></div><div class="flowbox" id="flow"></div><p class="note">${fl.cap||"Particles are colored by temperature (blue cold → orange hot) and sized by specific volume. Dashed line = control volume."}</p></section>`:""}
+    ${fl?`<section class="pdiag flowsec"><div class="secline"><h3>${fl.title||"Flow through the control volume"}</h3><div class="seg vsel" id="fview"><span class="seglab">View</span><button type="button" class="segbtn on" data-v="sym">Symbols</button><button type="button" class="segbtn" data-v="real">Real life</button><button type="button" class="segbtn" data-v="both">Both</button></div><label class="spd">speed <input type="range" id="fspd" min="0.25" max="3" step="0.25" value="1"></label></div><div class="flowbox view-sym" id="flow"></div><p class="note">${fl.cap||"Particles are colored by temperature (blue cold → orange hot) and sized by specific volume. Dashed line = control volume."}</p></section>`:""}
     ${dg?`<section class="pdiag"><div class="secline"><h3>${dg.title||"Process diagram"}</h3><div class="controls"><button class="btn small" type="button" id="play">▶ Play process</button><label class="spd">speed <input type="range" id="spd" min="0.25" max="3" step="0.25" value="1"></label></div></div>
       <div class="pdgrid"><canvas id="pv" class="pvc"></canvas>${p.anim?`<div id="anim" class="animbox"></div>`:""}</div><p class="note" id="pdcap">${dg.cap||""}</p></section>`:""}
 
@@ -2345,7 +2414,7 @@ function renderSheet(){
     <section id="mlab"></section>
     <section id="sol" class="solution" ${state.shown?"":"hidden"}></section>`;
 
-  $("#new").onclick=fresh; $("#orig").onclick=original;
+  $("#new").onclick=fresh; $("#orig").onclick=original; $("#preset").onclick=()=>{ if(typeof GAME!=="undefined"&&GAME.unsolve) GAME.unsolve(state.id); original(); if(typeof renderNav==="function") renderNav(); };
   $("#next").onclick=()=>{ state.shown=Math.min(state.shown+1, steps.length); drawSolution(p,v,r,ans,steps); };
   $("#all").onclick=()=>{ state.shown=steps.length; drawSolution(p,v,r,ans,steps); };
   $("#ansform").onsubmit=(e)=>{ e.preventDefault(); ans.forEach((a,i)=>check(a,i)); GAME.onCheck(ans); };
@@ -2353,7 +2422,7 @@ function renderSheet(){
   document.querySelectorAll(".howbtn").forEach(b=>b.onclick=()=>{ const row=b.closest("tr").nextElementSibling; row.hidden=!row.hidden; });
   if(state.shown) drawSolution(p,v,r,ans,steps);
   document.querySelectorAll(".schem svg").forEach(el=>D.tidy(el));
-  if(fl){ FLOW.build($("#flow"),fl); $("#fspd").oninput=(e)=>{ $("#flow")._flow.speed=+e.target.value; }; }
+  if(fl){ FLOW.build($("#flow"),fl); $("#fspd").oninput=(e)=>{ $("#flow")._flow.speed=+e.target.value; }; const fv=localStorage.getItem("dpl-flowview")||"sym"; const setView=(v)=>{ const fb=$("#flow"); fb.className="flowbox view-"+v; document.querySelectorAll("#fview .segbtn").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); try{ localStorage.setItem("dpl-flowview",v); }catch(e){} }; setView(fv); document.querySelectorAll("#fview .segbtn").forEach(b=>b.onclick=()=>setView(b.dataset.v)); }
   if(dg){ PD.draw($("#pv"),dg); if(p.anim) PD.animInit($("#anim"),p.anim(v,r),dg); $("#play").onclick=()=>PD.play($("#pv"),dg,p.anim?p.anim(v,r):null,+$("#spd").value); }
   fixSubs($("#sheet"));
   MLAB.render(p,v,r); HINTS.render(p,v,r);

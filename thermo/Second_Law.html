@@ -454,6 +454,7 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 .flowbox{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
 .flowbox svg{width:100%;max-width:640px;height:auto;display:block;margin:0 auto;overflow:visible}
 .flow .pipe{stroke:#3a4f86;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow .chev{fill:none;stroke:#e8eefc;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.9;pointer-events:none}
 .flow .part{stroke:none;filter:url(#glow)}
 
 /* ===== Jet Engine Lab ===== */
@@ -507,6 +508,17 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 #j3scene{position:relative;width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
 #j3canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #j3select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit}
+
+.hud .cell.reset{padding:0;position:relative;background:transparent;border-style:dashed}
+.hud .resetbtn{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;color:var(--muted);font:inherit}
+.hud .resetbtn:hover{color:var(--ink)}
+.hud .resetmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;width:260px;background:#0d142b;border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:6px;font-family:var(--body);font-weight:400;letter-spacing:0;white-space:normal}
+.hud .resetmenu[hidden]{display:none}
+.hud .resetmenu p{margin:0 0 2px;font-weight:700}
+.hud .resetmenu button{font:inherit;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2,#141b33);color:var(--ink);cursor:pointer;text-align:left}
+.hud .resetmenu button[data-r="all"]{border-color:#ff5a5a;color:#ffb3a7}
+.hud .resetmenu button:hover{border-color:var(--accent)}
+.hud .resetmenu small{color:var(--muted);line-height:1.4}
 </style>
 </head><body>
 <div class="wrap">
@@ -1920,8 +1932,15 @@ const GAME=(()=>{
     const n=solved().filter(id=>PROBLEMS.some(p=>p.id===id)).length;
     h.innerHTML=`<div class="cell lvl"><span class="k">LVL</span><span class="n">${lvl()}</span><span class="xpbar" title="${S.xp%100}/100 XP to next level"><i style="width:${S.xp%100}%"></i></span></div>
       <div class="cell xp">${I.xp}<span class="n">${S.xp}</span><span class="k">XP</span></div>
-      <div class="cell streak" title="Problems cleared in a row without opening the full solution (best ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">streak</span></div>
-      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${PROBLEMS.length}</span><span class="k">cleared</span></div>`;
+      <div class="cell streak" title="Streak: problems cleared in a row without opening the full solution — resets when you reveal a solution (best so far ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">in a row</span></div>
+      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${PROBLEMS.length}</span><span class="k">cleared</span></div>
+      <div class="cell reset" id="hudreset" title="Clear your progress and start over"><button type="button" class="resetbtn" aria-haspopup="true">↺ <span class="k">reset</span></button>
+        <div class="resetmenu" hidden><p>Start over?</p><button type="button" data-r="page">This page only</button><button type="button" data-r="all">All of ATLAS</button><button type="button" data-r="no">Cancel</button><small>"This page" clears this topic's solved problems and drill scores; XP and level are shared across ATLAS and are only cleared by "All".</small></div></div>`;
+    const rc=h.querySelector("#hudreset"); if(rc){ const menu=rc.querySelector(".resetmenu"); rc.querySelector(".resetbtn").onclick=()=>{ menu.hidden=!menu.hidden; };
+      rc.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ const what=b.dataset.r; menu.hidden=true; if(what==="no") return;
+        try{ if(what==="all"){ Object.keys(localStorage).filter(k=>k.startsWith("dpl-")).forEach(k=>localStorage.removeItem(k)); }
+          else { S.solved[GAME_PAGE]=[]; save(); localStorage.removeItem("dpl-last-"+GAME_PAGE); if(typeof DRILL_KEY!=="undefined"&&DRILL_KEY) localStorage.removeItem(DRILL_KEY); Object.keys(localStorage).filter(k=>k.startsWith("dpl-")&&k.includes(GAME_PAGE.replace(/\.html$/,""))).forEach(k=>localStorage.removeItem(k)); } }catch(e){}
+        location.reload(); }); }
     if(bump) h.querySelectorAll(".cell").forEach(c=>{ if(bump.includes(c.classList[1])){ c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } });
   }
   function markNav(){ const s=solved(); document.querySelectorAll("#nav button[data-id]").forEach(b=>b.classList.toggle("solved",s.includes(b.dataset.id))); }
@@ -1964,7 +1983,8 @@ const GAME=(()=>{
   }
   function onReveal(){ const m=rec(); if(!m.revealed && !m.cleared){ m.revealed=true; if(S.streak){ S.streak=0; save(); hud(["streak"]); } } }
   function addXP(n,big,small){ S.xp=Math.max(0,S.xp+n); save(); hud(n>0?["xp","lvl"]:["xp"]); if(big) toast(big,small); }
-  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec};
+  function unsolve(id){ const s=solved(); const i=s.indexOf(id); if(i>=0) s.splice(i,1); try{ mem.delete(SL_VARS()); }catch(e){} save(); hud(["clr"]); markNav(); }
+  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec,unsolve};
 })();
 
 /* ===================== FLOW ANIMATION (control volumes) =====================
@@ -1976,10 +1996,14 @@ const FLOW=(()=>{
   const tcol=(t)=>{ t=Math.max(0,Math.min(1,t)); const r=Math.round(34+t*(255-34)), g=Math.round(211-t*(211-138)), b=Math.round(238-t*(238-61)); return `rgb(${r},${g},${b})`; };
   function nodeSVG(n){ const {x,y,w,h}=n; const c=[x+w/2,y+h/2]; let s="";
     switch(n.kind){
-      case "turbine": s=D.poly([[x,y+h*0.25],[x+w,y],[x+w,y+h],[x,y+h*0.75]],"body2",true); break;
-      case "compressor": case "pump": s=n.kind==="pump"?D.circ(c[0],c[1],Math.min(w,h)/2,"body2"):D.poly([[x,y],[x+w,y+h*0.25],[x+w,y+h*0.75],[x,y+h]],"body2",true); break;
-      case "nozzle": s=D.poly([[x,y],[x+w,y+h*0.3],[x+w,y+h*0.7],[x,y+h]],"body2",true); break;
-      case "diffuser": s=D.poly([[x,y+h*0.3],[x+w,y],[x+w,y+h],[x,y+h*0.7]],"body2",true); break;
+      /* flow devices: the silhouette follows the flow. Inlet/outlet widths as fractions of the box: compressor and nozzle shrink (large in → small out),
+         turbine and diffuser grow (small in → large out). n.dir sets the flow direction: "r" (default, left→right), "l", "u" (bottom→top), "d". */
+      case "turbine": case "compressor": case "nozzle": case "diffuser": {
+        const IO={turbine:[0.5,1],compressor:[1,0.5],nozzle:[1,0.4],diffuser:[0.4,1]}[n.kind]; const dir=n.dir||"r";
+        const P=(u,v)=>{ /* u: 0 = inlet end, 1 = outlet end; v: −0.5..0.5 across the flow */
+          if(dir==="r") return [x+u*w, c[1]+v*h]; if(dir==="l") return [x+(1-u)*w, c[1]+v*h]; if(dir==="u") return [c[0]+v*w, y+(1-u)*h]; return [c[0]+v*w, y+u*h]; };
+        s=D.poly([P(0,-IO[0]/2),P(1,-IO[1]/2),P(1,IO[1]/2),P(0,IO[0]/2)],"body2",true); break; }
+      case "pump": s=D.circ(c[0],c[1],Math.min(w,h)/2,"body2"); break;
       case "throttle": s=D.poly([[x,y],[x+w,y+h],[x+w,y],[x,y+h]],"body2",true)+D.line(c[0],y,c[0],y-10,"s"); break;
       case "hx": case "boiler": case "condenser": s=D.rect(x,y,w,h,"body2")+D.path(`M${x+8},${y+h*0.3} h${w-16} v${h*0.2} h-${w-16} v${h*0.2} h${w-16}`,"h"); break;
       case "tank": s=D.rect(x,y,w,h,"body2")+D.rect(x+4,y+h*0.4,w-8,h*0.6-4,"water"); break;
@@ -1988,6 +2012,14 @@ const FLOW=(()=>{
   function build(host,sp){ const W=sp.w||360,H=sp.h||220; host.innerHTML=D.svg((sp.cv?D.rect(sp.cv[0],sp.cv[1],sp.cv[2],sp.cv[3],"h"):"")+sp.nodes.map(nodeSVG).join("")+sp.streams.map(st=>`<path class="pipe" d="M${st.pts.map(p=>p.join(",")).join(" L")}"/>`).join("")+(sp.arrows||[]).map(a=>{ const dy=a.dir==="in"?1:-1; const cls=a.kind==="Q"?"f":"v"; return a.kind==="Q"?D.arrow(a.x,a.y-22*dy,a.x,a.y+22*dy,cls,a.label,a.x+8,a.y-10*dy,"start"):D.arrow(a.x,a.y-22*dy,a.x,a.y+22*dy,cls,a.label,a.x+8,a.y-10*dy,"start"); }).join("")+sp.streams.map(st=>st.label?D.text(st.pts[0][0],st.pts[0][1]-8,st.label,"start","tm"):"").join(""),W,H)+`<div class="readout">${(sp.readout||[]).map(r=>`<span>${r.label} = <b>${r.val}</b></span>`).join("")}</div>`;
     const svg=host.querySelector("svg"); svg.classList.add("flow"); D.tidy(svg);
     const paths=[...svg.querySelectorAll("path.pipe")]; const g=document.createElementNS(NS,"g"); svg.appendChild(g);
+    /* flow-direction chevrons: on the pipe just before each component inlet and just after each outlet, never inside a component;
+       a stream that touches no component gets one chevron at its midpoint */
+    const ga=document.createElementNS(NS,"g"); ga.setAttribute("class","flowdir"); svg.appendChild(ga);
+    const boxes=sp.nodes.map(n=>[n.x-2,n.y-2,n.x+n.w+2,n.y+n.h+2]); const inside=(P)=>boxes.some(b=>P.x>=b[0]&&P.x<=b[2]&&P.y>=b[1]&&P.y<=b[3]);
+    const chev=(pth,sAt)=>{ const L=pth.getTotalLength(); if(sAt<6||sAt>L-6) return; const P=pth.getPointAtLength(sAt), Q=pth.getPointAtLength(Math.min(L,sAt+4)), R=pth.getPointAtLength(Math.max(0,sAt-4)); if(inside(P)) return; const a=Math.atan2(Q.y-R.y,Q.x-R.x)*180/Math.PI; const t=document.createElementNS(NS,"path"); t.setAttribute("d","M-7,-5 L3,0 L-7,5"); t.setAttribute("transform",`translate(${P.x},${P.y}) rotate(${a})`); t.setAttribute("class","chev"); ga.appendChild(t); };
+    paths.forEach(pth=>{ const L=pth.getTotalLength(); if(L<30) return; let was=inside(pth.getPointAtLength(0)); let any=false;
+      for(let d=2;d<=L;d+=2){ const now=inside(pth.getPointAtLength(d)); if(now&&!was){ chev(pth,d-16); any=true; } if(!now&&was){ chev(pth,d+14); any=true; } was=now; }
+      if(!any&&!inside(pth.getPointAtLength(L/2))) chev(pth,L/2); });
     const parts=[]; sp.streams.forEach((st,i)=>{ const L=paths[i].getTotalLength(); const n=Math.max(3,Math.round(L/22*(st.rate||1))); for(let k=0;k<n;k++){ const c=document.createElementNS(NS,"circle"); c.setAttribute("r",st.r||3.2); c.setAttribute("class","part"); g.appendChild(c); parts.push({el:c,path:paths[i],L,off:k/n,st}); } });
     host._flow={parts,t0:performance.now(),raf:null,speed:1};
     function frame(ts){ const f=host._flow; const t=(ts-f.t0)/1000*f.speed; parts.forEach(p=>{ const u=(p.off+t*0.12*(p.st.speed||1))%1; const q=p.path.getPointAtLength(u*p.L); p.el.setAttribute("cx",q.x); p.el.setAttribute("cy",q.y); const T=p.st.T?p.st.T[0]+(p.st.T[1]-p.st.T[0])*u:0.5; p.el.setAttribute("fill",tcol(T)); const sz=p.st.size?p.st.size[0]+(p.st.size[1]-p.st.size[0])*u:1; p.el.setAttribute("r",(p.st.r||3.2)*sz); }); f.raf=requestAnimationFrame(frame); }
@@ -2034,6 +2066,7 @@ function renderSheet(){
       <div class="controls">
         <button class="btn primary" id="new" type="button">New numbers</button>
         <button class="btn" id="orig" type="button">Class example</button>
+        <button class="btn" id="preset" type="button" title="Forget this problem: clear your answers, unmark it as solved and go back to the class example">↺ Reset problem</button>
       </div>
     </div>
     <div class="variant">${state.isOriginal ? "Showing the class-example numbers" : "Practice version #"+(state.variant-1)+" · random givens"}${p.credit?` · <span class="credit">${p.credit}</span>`:""}</div>
@@ -2071,7 +2104,7 @@ function renderSheet(){
     <section id="mlab"></section>
     <section id="sol" class="solution" ${state.shown?"":"hidden"}></section>`;
 
-  $("#new").onclick=fresh; $("#orig").onclick=original;
+  $("#new").onclick=fresh; $("#orig").onclick=original; $("#preset").onclick=()=>{ if(typeof GAME!=="undefined"&&GAME.unsolve) GAME.unsolve(state.id); original(); if(typeof renderNav==="function") renderNav(); };
   $("#next").onclick=()=>{ state.shown=Math.min(state.shown+1, steps.length); drawSolution(p,v,r,ans,steps); };
   $("#all").onclick=()=>{ state.shown=steps.length; drawSolution(p,v,r,ans,steps); };
   $("#ansform").onsubmit=(e)=>{ e.preventDefault(); ans.forEach((a,i)=>check(a,i)); GAME.onCheck(ans); };

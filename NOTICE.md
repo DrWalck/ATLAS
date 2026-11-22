@@ -1,13 +1,12 @@
-# ATLAS — third-party content notice
+# ATLAS (Advancing Transformative Learning and Applied engineering Systems) — third-party content notice
 
 ## OpenSim musculoskeletal model (Biomechanics course)
 
 The Anatomy Explorer and the "On a real body" figure on the Biomechanics lab pages use bone geometry
-(pelvis, sacrum, femur, tibia, fibula) and lower-limb muscle attachment paths and Hill-type muscle
+(the complete skeleton: skull, mandible, vertebral column, ribs, sternum, clavicles, scapulae, humeri, radii, ulnae, carpals, hands, pelvis, sacrum, femora, patellae, tibiae, fibulae, tali, feet and toes) and lower-limb muscle attachment paths and Hill-type muscle
 parameters (maximum isometric force, optimal fibre length, tendon slack length, pennation angle) from
-the OpenSim model `RajagopalLaiUhlrich2023.osim` and its `Geometry/*.vtp` files. The meshes were
-converted to a compact JSON form and placed on the ATLAS figure; left-side femur and fibula meshes are
-mirror images of the right-side files.
+the OpenSim model `RajagopalLaiUhlrich2023.osim` and the `Geometry/*.vtp` files shipped with OpenSim 4.6. The meshes were decimated (vertex clustering),
+converted to a compact JSON form and placed on the ATLAS figure; where only one side ships, the other is a mirror image.
 
 Please cite the model authors when using this material:
 

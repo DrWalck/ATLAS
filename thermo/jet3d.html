@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jet 3D · ATLAS Thermodynamics</title>
+<title>X-Ray the Aircraft · ATLAS Thermodynamics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -511,7 +511,7 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 </head><body>
 <div class="wrap">
   <header class="top">
-    <div><a class="back" href="./">&larr; All topics</a><h1>Jet 3D: X-ray the Aircraft</h1></div>
+    <div><a class="back" href="./">&larr; All topics</a><h1>X-Ray the Aircraft</h1></div>
     <p>A generic twin-engine jet you can rotate, see through and take apart. The two engines run the <b>Brayton cycle</b>; the bleed-air duct carries compressor air forward to the environmental-control pack behind the pilot's seat, where the air cycle machine runs the <b>reverse Brayton cycle</b> to cool it for the cockpit. Click any part.</p>
   </header>
   <div class="jetlayout">
@@ -1062,7 +1062,7 @@ const JET3D=(()=>{
   function select(id,keepFocus){ state.sel=id; const el=$("#j3info"); const p=parts.find(x=>x.id===id);
     if(p&&!keepFocus){ if(p.group==="engine"||p.id==="bay") setFocus("brayton"); else if(p.group==="ecs") setFocus("reverse"); if(p.id!=="bay"&&p.id!=="pack"){ camGoal.active=true; camGoal.target=p.center.slice(); camGoal.dist=Math.max(2.5,Math.min(22,p.radius*3.2+1.5)); camGoal.phi=0.35; camGoal.theta=p.center[2]<-0.3?-0.8:0.9; } }
     if(!p){ if(!keepFocus) setFocus(null); el.innerHTML=`<p class="note">Click any part of the jet. Drag to rotate, scroll to zoom. Click the engine bay to x-ray the Brayton cycle, or the pack behind the seat to x-ray the reverse Brayton cycle; the <b>p</b> and <b>T</b> tags follow the throttle, altitude and Mach sliders.</p>`; return; }
-    el.innerHTML=`<h4>${p.name}</h4><p>${infoFor(p.id)}</p>${p.group==="engine"?`<p class="note">Station values for this component at any flight condition: see the <a href="jet.html">Jet Engine Lab</a> (turbofan tab).</p>`:p.group==="ecs"?`<p class="note">Pack states and the reverse-Brayton T–s diagram: see the <a href="jet.html">Jet Engine Lab</a> (air cycle machine tab).</p>`:""}<button type="button" class="btn small" id="j3clear">Show everything</button>`; $("#j3clear").onclick=()=>select(null); fixSubs(el); }
+    el.innerHTML=`<h4>${p.name}</h4><p>${infoFor(p.id)}</p>${p.group==="engine"?`<p class="note">Station values for this component at any flight condition: see the <a href="jet.html">Jet Engine Lab</a> (turbofan tab).</p>`:p.group==="ecs"?`<p class="note">Pack states and the reverse-Brayton T–s diagram: see the <a href="jet.html">Gas Turbine Cycles lab</a> (air cycle machine tab).</p>`:""}<button type="button" class="btn small" id="j3clear">Show everything</button>`; $("#j3clear").onclick=()=>select(null); fixSubs(el); }
   /* ---------- init ---------- */
   function resize(){ const r=canvas.getBoundingClientRect(); Wc=r.width; Hc=r.height; canvas.width=Math.round(Wc*devicePixelRatio); canvas.height=Math.round(Hc*devicePixelRatio); ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
   function init(){ canvas=$("#j3canvas"); ctx=canvas.getContext("2d"); buildJet(); initParticles(); resize(); window.addEventListener("resize",resize);

@@ -10,7 +10,13 @@ OFF = [0.062, 0.966, 0.0]
 raj = json.load(open('raj2023.json'))
 meshes = json.load(open('meshes.json'))
 
+BODY = {'r_patella': 'patella_r', 'l_patella': 'patella_l', 'r_talus': 'talus_r', 'l_talus': 'talus_l', 'r_foot': 'calcn_r', 'l_foot': 'calcn_l',
+        'r_bofoot': 'toes_r', 'l_bofoot': 'toes_l', 'hat_skull': 'torso', 'hat_jaw': 'torso', 'spine_cerv': 'torso', 'spine_thor': 'torso', 'spine_lumb': 'torso',
+        'ribs': 'torso', 'sternum': 'torso', 'scapula_r': 'torso', 'scapula_l': 'torso', 'clavicle_r': 'torso', 'clavicle_l': 'torso',
+        'humerus_rv': 'humerus_r', 'humerus_lv': 'humerus_l', 'radius_rv': 'radius_r', 'radius_lv': 'radius_l', 'ulna_rv': 'ulna_r', 'ulna_lv': 'ulna_l',
+        'carpals_r': 'hand_r', 'carpals_l': 'hand_l', 'hand_r': 'hand_r', 'hand_l': 'hand_l'}
 def body_of_mesh(name):
+    if name in BODY: return BODY[name]
     for b, info in raj['bodies'].items():
         if (name + '.vtp') in info['mesh']: return b
     raise KeyError(name)
@@ -19,12 +25,16 @@ def W(body, loc):
     o = raj['bodies'][body]['pos']
     return [round(o[i] + loc[i] + OFF[i], 4) for i in range(3)]
 
+# the ATLAS arm hangs a little further from the trunk than the OpenSim model's: shift the arm bodies so the real bones sit under the
+# procedural arm muscles and skin (shoulder, elbow and wrist centres matched to the ATLAS landmarks)
+SHIFT = {'humerus_r': [0.016, 0.011, 0.02], 'ulna_r': [0.012, 0.007, 0.05], 'radius_r': [0.012, 0.007, 0.05], 'hand_r': [0.038, -0.009, 0.035]}
+for k in list(SHIFT): SHIFT[k.replace('_r', '_l')] = [SHIFT[k][0], SHIFT[k][1], -SHIFT[k][2]]
 out_meshes = {}
 for name, m in meshes.items():
-    body = body_of_mesh(name)
+    body = body_of_mesh(name); sh = SHIFT.get(body, [0, 0, 0])
     v = m['v']; wv = []
     for i in range(0, len(v), 3):
-        wv += W(body, v[i:i+3])
+        p = W(body, v[i:i+3]); wv += [round(p[0]+sh[0], 4), round(p[1]+sh[1], 4), round(p[2]+sh[2], 4)]
     out_meshes[name] = {'v': wv, 'f': m['f']}
 
 # ATLAS muscle id → Rajagopal muscle names (right side); display names for heads/compartments

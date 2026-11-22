@@ -21,8 +21,15 @@ const GAME=(()=>{
     let n=0,tot=20,lab="drills"; if(typeof PROBLEMS!=="undefined"){ n=solved().length; tot=PROBLEMS.length; lab="problems"; } else { try{ const ss=JSON.parse(localStorage.getItem(DRILL_KEY))||{}; n=Math.min(ss.correct||0,20); }catch(e){} }
     h.innerHTML=`<div class="cell lvl"><span class="k">LVL</span><span class="n">${lvl()}</span><span class="xpbar" title="${S.xp%100}/100 XP to next level"><i style="width:${S.xp%100}%"></i></span></div>
       <div class="cell xp">${I.xp}<span class="n">${S.xp}</span><span class="k">XP</span></div>
-      <div class="cell streak" title="Problems cleared in a row without opening the full solution (best ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">streak</span></div>
-      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${tot}</span><span class="k">${lab}</span></div>`;
+      <div class="cell streak" title="Streak: problems cleared in a row without opening the full solution — resets when you reveal a solution (best so far ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">in a row</span></div>
+      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${tot}</span><span class="k">${lab}</span></div>
+      <div class="cell reset" id="hudreset" title="Clear your progress and start over"><button type="button" class="resetbtn" aria-haspopup="true">↺ <span class="k">reset</span></button>
+        <div class="resetmenu" hidden><p>Start over?</p><button type="button" data-r="page">This page only</button><button type="button" data-r="all">All of ATLAS</button><button type="button" data-r="no">Cancel</button><small>"This page" clears this topic's solved problems and drill scores; XP and level are shared across ATLAS and are only cleared by "All".</small></div></div>`;
+    const rc=h.querySelector("#hudreset"); if(rc){ const menu=rc.querySelector(".resetmenu"); rc.querySelector(".resetbtn").onclick=()=>{ menu.hidden=!menu.hidden; };
+      rc.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ const what=b.dataset.r; menu.hidden=true; if(what==="no") return;
+        try{ if(what==="all"){ Object.keys(localStorage).filter(k=>k.startsWith("dpl-")).forEach(k=>localStorage.removeItem(k)); }
+          else { S.solved[GAME_PAGE]=[]; save(); localStorage.removeItem("dpl-last-"+GAME_PAGE); if(typeof DRILL_KEY!=="undefined"&&DRILL_KEY) localStorage.removeItem(DRILL_KEY); Object.keys(localStorage).filter(k=>k.startsWith("dpl-")&&k.includes(GAME_PAGE.replace(/\.html$/,""))).forEach(k=>localStorage.removeItem(k)); } }catch(e){}
+        location.reload(); }); }
     if(bump) h.querySelectorAll(".cell").forEach(c=>{ if(bump.includes(c.classList[1])){ c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } });
   }
   function markNav(){}
@@ -65,6 +72,7 @@ const GAME=(()=>{
   }
   function onReveal(){ const m=rec(); if(!m.revealed && !m.cleared){ m.revealed=true; if(S.streak){ S.streak=0; save(); hud(["streak"]); } } }
   function addXP(n,big,small){ S.xp=Math.max(0,S.xp+n); save(); hud(n>0?["xp","lvl"]:["xp"]); if(big) toast(big,small); }
-  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec};
+  function unsolve(id){ const s=solved(); const i=s.indexOf(id); if(i>=0) s.splice(i,1); try{ mem.delete(SL_VARS()); }catch(e){} save(); hud(["clr"]); markNav(); }
+  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec,unsolve};
 })();
 

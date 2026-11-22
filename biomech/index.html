@@ -91,6 +91,7 @@ sub{font-size:.72em;line-height:0;vertical-align:-.25em}
         <li><a class="tblink" href="invdyn.html"><b>Σ</b> Inverse Dynamics Lab &rarr;</a></li>
         <li><a class="tblink" href="kinetics.html"><b>τ</b> Joint Kinetics Lab &rarr;</a></li>
         <li><a class="tblink" href="multi.html"><b>⛓</b> Multi-Joint Lab &rarr;</a></li>
+        <li><a class="tblink" href="tmj.html"><b>⌒</b> Jaw Motion &amp; Reconstruction Lab &rarr;</a></li>
         <li><a class="tblink" href="mtc.html"><b>∿</b> MTC &amp; Stability Lab &rarr;</a></li>
         <li><a class="tblink" href="capstone.html"><b>★</b> Capstone &amp; Final Review &rarr;</a></li>
       </ul>
@@ -230,6 +231,17 @@ const TOPICS = [
       ["Jump & landing, cycling, glass, wheelchair, gait viewer with a real measured stride (markers, force plates, EMG)", "interactive"],
       ["Final review drawn from every topic", "drills + ES 305 problems"]
     ]
+  },
+  {
+    file: "tmj.html",
+    group: "Applied project · lab + 8 problems",
+    title: "Jaw Motion & Reconstruction: Tracking the Paediatric Jaw, Designing Its Implants",
+    key: "biomech-tmj", pcount: 8,
+    problems: [
+      ["Sagittal TMJ: hinge phase, then the condyle slides down the eminence", "interactive"],
+      ["Clutch-marker tracking → rigid-body pose · mandible as a class III lever", "interactive"],
+      ["Fibula-flap reconstruction, plates & screws, TMJ implants, the growing jaw · the phased project plan", "drills + ES 305 problems"]
+    ]
   }
 ];
 
@@ -246,9 +258,11 @@ const LOOK = {
   "kinetics.html": ["#ffd23f","force"],
   "multi.html": ["#b58cff","multi"],
   "capstone.html": ["#ffd23f","target"],
+  "tmj.html":      ["#5fa8ff","tmj"],
   "#":           ["#5fa8ff","bio"]
 };
 const ICON = {
+  tmj:'<path d="M10 10c-2 10 2 22 10 26s16 2 20-4" /><path d="M14 34c6 2 12 2 18 0M8 12c4-6 12-8 18-4" opacity=".6"/><circle cx="12" cy="12" r="4"/><path d="M24 36v8" opacity=".6"/>',
   mtc:'<path d="M4 24h8"/><path d="M12 24c0-6 6-10 12-10s12 4 12 10-6 10-12 10-12-4-12-10z"/><path d="M36 24h8"/><path d="M18 20l3 4-3 4M27 20l-3 4 3 4" opacity=".6"/>',
   multi:'<circle cx="8" cy="38" r="4"/><path d="M10 35L22 18"/><circle cx="24" cy="16" r="3"/><path d="M26 14L40 8"/><circle cx="42" cy="7" r="3"/><path d="M30 40c6-8 10-18 10-28" opacity=".5" stroke-dasharray="3 3"/>',
   tissue:'<path d="M6 40C10 40 14 30 18 22s8-14 24-16"/><path d="M6 40c6-2 10-4 14-8M22 22c4 2 8 2 12 0" opacity=".6"/><circle cx="42" cy="6" r="3" fill="currentColor"/>',

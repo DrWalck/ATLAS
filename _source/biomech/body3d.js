@@ -30,6 +30,22 @@ const B3=(()=>{
     for(let i=0;i<n;i++){ if(i){ n1=norm(sub(n1,mul(tangents[i],n1[0]*tangents[i][0]+n1[1]*tangents[i][1]+n1[2]*tangents[i][2]))); } const n2=cross(n1,tangents[i]); const o=[]; const r=Math.max(R(i),1e-4); for(let k=0;k<seg;k++){ const a=2*Math.PI*k/seg; const v=add(add(pts[i],mul(n1,r*Math.cos(a))),mul(n2,r*Math.sin(a))); vc.set(v,pts[i]); o.push(v); } rings.push(o); }
     for(let k=0;k<n-1;k++){ const A=rings[k],B=rings[k+1]; for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([A[i],B[j],B[i]],[A[i],A[j],B[j]]); } }
     if(capEnds){ for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([pts[0],rings[0][j],rings[0][i]],[pts[n-1],rings[n-1][i],rings[n-1][j]]); } } };
+  const belly=(part,pts,rmax,seg=12,opt={})=>{ /* fusiform muscle belly: Catmull-Rom resampled path, elliptical section flattened against the limb/trunk, thin tendons at both ends.
+      opt: tend0/tend1 = tendon fraction at origin/insertion (0–0.5), bulge = where along the path the belly is thickest (0–1), flat = ellipse ratio (1 = round, 0.5 = wide ribbon), rt = tendon radius */
+    const n=pts.length; if(n<2) return; const tend0=opt.tend0??0.12, tend1=opt.tend1??0.2, bulge=opt.bulge??0.45, flat=opt.flat??0.72, rt=opt.rt??Math.max(0.0025,rmax*0.22), lift=opt.lift??0.55;
+    const cr=(p0,p1,p2,p3,t)=>{ const t2=t*t,t3=t2*t; return [0,1,2].map(k=>0.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3)); };
+    const seglen=[]; let total=0; for(let i=0;i<n-1;i++){ const l=Math.hypot(...sub(pts[i+1],pts[i])); seglen.push(l); total+=l; }
+    const N=Math.max(6,Math.min(26,Math.round(total/0.012))); const P=[],U=[]; let acc=0,i=0;
+    for(let k=0;k<=N;k++){ const d=total*k/N; while(i<n-2&&acc+seglen[i]<d){ acc+=seglen[i]; i++; } const t=seglen[i]>0?Math.min(1,(d-acc)/seglen[i]):0; P.push(cr(pts[Math.max(i-1,0)],pts[i],pts[i+1],pts[Math.min(i+2,n-1)],t)); U.push(k/N); }
+    /* radius profile: tendon → belly → tendon, belly peak at `bulge` */
+    const prof=U.map(u=>{ if(u<tend0) return rt; if(u>1-tend1) return rt; const v=(u-tend0)/(1-tend0-tend1); const w=v<bulge?v/bulge:(1-v)/(1-bulge); const b=Math.pow(Math.sin(Math.PI/2*Math.min(1,w)),0.8); return rt+(rmax-rt)*b; });
+    /* outward direction: away from the nearest body axis (trunk, thigh/shank line, upper-limb line) so the ellipse wraps around the limb */
+    const axisOf=(p)=>{ const z=Math.abs(p[2]); const zs=Math.sign(p[2])||1; if(p[1]>0.98&&z<0.17) return [p[0]*0.2,p[1],0]; if(z>0.17&&p[1]>0.7) return [-0.005,p[1],0.215*zs]; return [0,p[1],0.09*zs]; };
+    const tangents=P.map((p,k)=>norm(sub(P[Math.min(k+1,N)],P[Math.max(k-1,0)]))); const rings=[];
+    for(let k=0;k<=N;k++){ const T=tangents[k]; let o=sub(P[k],axisOf(P[k])); o=sub(o,mul(T,o[0]*T[0]+o[1]*T[1]+o[2]*T[2])); if(Math.hypot(...o)<1e-4) o=Math.abs(T[1])<0.9?[0,1,0]:[1,0,0]; const n1=norm(o); const n2=norm(cross(T,n1));
+      const r=prof[k]; const wide=r*(1+(1-flat)*0.9), thin=r*flat; const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centred on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
+    for(let k=0;k<N;k++){ const A=rings[k],B=rings[k+1]; for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([A[s],B[j],B[s]],[A[s],A[j],B[j]]); } }
+    for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([P[0],rings[0][j],rings[0][s]],[P[N],rings[N][s],rings[N][j]]); } };
   const box=(part,x0,y0,z0,x1,y1,z1)=>{ const p=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]; [[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]].forEach(q=>{ part.tris.push([p[q[0]],p[q[1]],p[q[2]]],[p[q[0]],p[q[2]],p[q[3]]]); }); };
   const sphere=(part,c,r,seg=12)=>{ const prof=[]; for(let i=0;i<=8;i++){ const a=-Math.PI/2+Math.PI*i/8; prof.push([r*Math.sin(a),r*Math.cos(a)]); } lathe(part,prof,seg,c,"y",1); };
   /* ---------- camera ---------- */
@@ -40,7 +56,7 @@ const B3=(()=>{
     const f=norm(sub(cam.target,eye)); const r=norm(cross(f,[0,1,0])); const u=cross(r,f); return {eye,f,r,u}; }
   function project(p,M){ const d=sub(p,M.eye); const x=d[0]*M.r[0]+d[1]*M.r[1]+d[2]*M.r[2], y=d[0]*M.u[0]+d[1]*M.u[1]+d[2]*M.u[2], z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; const s=(Hc/2)/Math.tan(cam.fov*Math.PI/360)/Math.max(z,0.05); return [Wc/2+x*s, Hc/2-y*s, z, s]; }
   const light=norm([0.4,0.9,0.6]);
-  const shade=(hex,k)=>{ const n=parseInt(hex.slice(1),16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255; return `rgb(${Math.round(r*k)},${Math.round(g*k)},${Math.round(b*k)})`; };
+  const shade=(hex,k,sp=0)=>{ const n=parseInt(hex.slice(1),16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255; const f=(c)=>Math.min(255,Math.round(c*k+(255-c*k)*sp)); return `rgb(${f(r)},${f(g)},${f(b)})`; };
   /* ---------- scene state ---------- */
   const S={sel:null,hover:null,alpha:{body:1},transform:null,overlays:[],drawn:[],alwaysRender:true,dirty:true};
   function render(){ const M=camMatrix(); ctx.clearRect(0,0,Wc,Hc); const list=[]; const T=S.transform||((v,part)=>v);
@@ -48,8 +64,9 @@ const B3=(()=>{
       for(const t of p.tris){ const w0=tf(t[0]),w1=tf(t[1]),w2=tf(t[2]); const a0=project(w0,M),a1=project(w1,M),a2=project(w2,M); if(a0[2]<0.1||a1[2]<0.1||a2[2]<0.1) continue;
         const n=norm(cross(sub(w1,w0),sub(w2,w0))); const toEye=norm(sub(M.eye,w0)); const facing=n[0]*toEye[0]+n[1]*toEye[1]+n[2]*toEye[2]; if(facing<0&&a>0.9&&!p.twoSided) continue;
         const area=Math.abs((a1[0]-a0[0])*(a2[1]-a0[1])-(a2[0]-a0[0])*(a1[1]-a0[1])); if(area<0.5) continue;
-        const k=0.5+0.5*Math.max(0,n[0]*light[0]+n[1]*light[1]+n[2]*light[2])*(facing<0?0.6:1);
-        list.push({z:(a0[2]+a1[2]+a2[2])/3,pts:[a0,a1,a2],col:shade(p.color,k),a:facing<0?a*0.5:a,part:p}); } }
+        const dl=Math.max(0,n[0]*light[0]+n[1]*light[1]+n[2]*light[2]); const k=(0.42+0.58*dl)*(facing<0?0.6:1);
+        const hv=norm(add(light,toEye)); const sp=(p.gloss&&facing>0)?p.gloss*Math.pow(Math.max(0,n[0]*hv[0]+n[1]*hv[1]+n[2]*hv[2]),18):0;
+        list.push({z:(a0[2]+a1[2]+a2[2])/3,pts:[a0,a1,a2],col:shade(p.color,k,sp),a:facing<0?a*0.5:a,part:p}); } }
     list.sort((u,v)=>v.z-u.z); S.drawn=list; const pulse=0.5+0.5*Math.sin(performance.now()/300);
     for(const t of list){ ctx.globalAlpha=t.a; ctx.fillStyle=t.col; ctx.beginPath(); ctx.moveTo(t.pts[0][0],t.pts[0][1]); ctx.lineTo(t.pts[1][0],t.pts[1][1]); ctx.lineTo(t.pts[2][0],t.pts[2][1]); ctx.closePath(); ctx.fill(); if(t.part.id===S.sel||(t.part.sid&&t.part.sid===S.sel)){ ctx.globalAlpha=0.5+0.5*pulse; ctx.strokeStyle="#ffd23f"; ctx.lineWidth=1; ctx.stroke(); } else if(t.a<0.9){ ctx.strokeStyle="rgba(200,220,255,.2)"; ctx.lineWidth=0.5; ctx.stroke(); } }
     ctx.globalAlpha=1; S.overlays.forEach(fn=>fn(ctx,M,project)); }
@@ -71,5 +88,5 @@ const B3=(()=>{
     canvas.addEventListener("wheel",e=>{ e.preventDefault(); goal.active=false; cam.dist=Math.max(0.6,Math.min(8,cam.dist*(1+Math.sign(e.deltaY)*0.08))); S.dirty=true; },{passive:false});
     document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{ const v=views[b.dataset.view]; flyTo(S.viewTarget?S.viewTarget.slice():cam.target.slice(),S.viewDist||v[2],v[0],v[1]); });
     let last=performance.now(); const loop=(now)=>{ const dt=Math.min(0.05,(now-last)/1000); last=now; try{ if(goal.active){ const k=Math.min(1,dt*4); cam.target=cam.target.map((c,i)=>c+(goal.target[i]-c)*k); cam.dist+=(goal.dist-cam.dist)*k; cam.phi+=(goal.phi-cam.phi)*k; let dth=goal.theta-cam.theta; dth=Math.atan2(Math.sin(dth),Math.cos(dth)); cam.theta+=dth*k; if(Math.abs(cam.dist-goal.dist)<0.005&&Math.abs(dth)<0.005) goal.active=false; } S.tick&&S.tick(dt); if(S.alwaysRender||S.dirty||goal.active||drag||(S.sel&&(now%400)<40)){ render(); S.dirty=false; } }catch(err){ console.warn(err); } requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
-  return {parts,addPart,lathe,capsule,tube,box,sphere,cam,S,init,flyTo,vc,vseg,arrow3,quad3,label3,rotAxis,add,sub,mul,norm,cross,views};
+  return {parts,addPart,lathe,capsule,tube,belly,box,sphere,cam,S,init,flyTo,vc,vseg,arrow3,quad3,label3,rotAxis,add,sub,mul,norm,cross,views};
 })();

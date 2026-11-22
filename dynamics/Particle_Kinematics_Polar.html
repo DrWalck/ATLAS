@@ -353,6 +353,17 @@ ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,
 .final .ans .k,.cgrid h4{text-transform:none;letter-spacing:.05em}
 :root:root:root{--zone:#22d3ee}
 /* GAME-CSS-END */
+
+.hud .cell.reset{padding:0;position:relative;background:transparent;border-style:dashed}
+.hud .resetbtn{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;color:var(--muted);font:inherit}
+.hud .resetbtn:hover{color:var(--ink)}
+.hud .resetmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;width:260px;background:#0d142b;border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:6px;font-family:var(--body);font-weight:400;letter-spacing:0;white-space:normal}
+.hud .resetmenu[hidden]{display:none}
+.hud .resetmenu p{margin:0 0 2px;font-weight:700}
+.hud .resetmenu button{font:inherit;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2,#141b33);color:var(--ink);cursor:pointer;text-align:left}
+.hud .resetmenu button[data-r="all"]{border-color:#ff5a5a;color:#ffb3a7}
+.hud .resetmenu button:hover{border-color:var(--accent)}
+.hud .resetmenu small{color:var(--muted);line-height:1.4}
 </style>
 </head><body>
 
@@ -1343,8 +1354,15 @@ const GAME=(()=>{
     const n=solved().filter(id=>PROBLEMS.some(p=>p.id===id)).length;
     h.innerHTML=`<div class="cell lvl"><span class="k">LVL</span><span class="n">${lvl()}</span><span class="xpbar" title="${S.xp%100}/100 XP to next level"><i style="width:${S.xp%100}%"></i></span></div>
       <div class="cell xp">${I.xp}<span class="n">${S.xp}</span><span class="k">XP</span></div>
-      <div class="cell streak" title="Problems cleared in a row without opening the full solution (best ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">streak</span></div>
-      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${PROBLEMS.length}</span><span class="k">cleared</span></div>`;
+      <div class="cell streak" title="Streak: problems cleared in a row without opening the full solution — resets when you reveal a solution (best so far ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">in a row</span></div>
+      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${PROBLEMS.length}</span><span class="k">cleared</span></div>
+      <div class="cell reset" id="hudreset" title="Clear your progress and start over"><button type="button" class="resetbtn" aria-haspopup="true">↺ <span class="k">reset</span></button>
+        <div class="resetmenu" hidden><p>Start over?</p><button type="button" data-r="page">This page only</button><button type="button" data-r="all">All of ATLAS</button><button type="button" data-r="no">Cancel</button><small>"This page" clears this topic's solved problems and drill scores; XP and level are shared across ATLAS and are only cleared by "All".</small></div></div>`;
+    const rc=h.querySelector("#hudreset"); if(rc){ const menu=rc.querySelector(".resetmenu"); rc.querySelector(".resetbtn").onclick=()=>{ menu.hidden=!menu.hidden; };
+      rc.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ const what=b.dataset.r; menu.hidden=true; if(what==="no") return;
+        try{ if(what==="all"){ Object.keys(localStorage).filter(k=>k.startsWith("dpl-")).forEach(k=>localStorage.removeItem(k)); }
+          else { S.solved[GAME_PAGE]=[]; save(); localStorage.removeItem("dpl-last-"+GAME_PAGE); if(typeof DRILL_KEY!=="undefined"&&DRILL_KEY) localStorage.removeItem(DRILL_KEY); Object.keys(localStorage).filter(k=>k.startsWith("dpl-")&&k.includes(GAME_PAGE.replace(/\.html$/,""))).forEach(k=>localStorage.removeItem(k)); } }catch(e){}
+        location.reload(); }); }
     if(bump) h.querySelectorAll(".cell").forEach(c=>{ if(bump.includes(c.classList[1])){ c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } });
   }
   function markNav(){ const s=solved(); document.querySelectorAll("#nav button[data-id]").forEach(b=>b.classList.toggle("solved",s.includes(b.dataset.id))); }
@@ -1387,7 +1405,8 @@ const GAME=(()=>{
   }
   function onReveal(){ const m=rec(); if(!m.revealed && !m.cleared){ m.revealed=true; if(S.streak){ S.streak=0; save(); hud(["streak"]); } } }
   function addXP(n,big,small){ S.xp=Math.max(0,S.xp+n); save(); hud(n>0?["xp","lvl"]:["xp"]); if(big) toast(big,small); }
-  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec};
+  function unsolve(id){ const s=solved(); const i=s.indexOf(id); if(i>=0) s.splice(i,1); try{ mem.delete(SL_VARS()); }catch(e){} save(); hud(["clr"]); markNav(); }
+  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec,unsolve};
 })();
 { const _rn=renderNav; renderNav=function(){ _rn(); GAME.markNav(); };
   const _ds=drawSolution; drawSolution=function(p,v,r,ans,steps){ _ds(p,v,r,ans,steps); if(state.shown>=steps.length) GAME.onReveal(); }; }
@@ -1422,6 +1441,7 @@ function renderSheet(){
       <div class="controls">
         <button class="btn primary" id="new" type="button">New numbers</button>
         <button class="btn" id="orig" type="button">Class example</button>
+        <button class="btn" id="preset" type="button" title="Forget this problem: clear your answers, unmark it as solved and go back to the class example">↺ Reset problem</button>
       </div>
     </div>
     <div class="variant">${state.isOriginal ? "Showing the numbers from the class notes" : "Practice version #"+(state.variant-1)+" · random givens"}</div>
@@ -1450,7 +1470,7 @@ function renderSheet(){
     <section id="mlab"></section>
     <section id="sol" class="solution" ${state.shown?"":"hidden"}></section>`;
 
-  $("#new").onclick=fresh; $("#orig").onclick=original;
+  $("#new").onclick=fresh; $("#orig").onclick=original; $("#preset").onclick=()=>{ if(typeof GAME!=="undefined"&&GAME.unsolve) GAME.unsolve(state.id); original(); if(typeof renderNav==="function") renderNav(); };
   $("#next").onclick=()=>{ state.shown=Math.min(state.shown+1, steps.length); drawSolution(p,v,r,ans,steps); };
   $("#all").onclick=()=>{ state.shown=steps.length; drawSolution(p,v,r,ans,steps); };
   $("#ansform").onsubmit=(e)=>{ e.preventDefault(); ans.forEach((a,i)=>check(a,i)); GAME.onCheck(ans); };

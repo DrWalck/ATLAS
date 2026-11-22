@@ -63,23 +63,24 @@ BCSS='''
 .playrow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:4px 0 8px}
 .btn.play{min-width:92px}.btn.play.on{background:#22d3ee;color:#04202a;border-color:#22d3ee}
 .chk{display:flex;align-items:center;gap:6px;font-size:.86rem;color:var(--muted);cursor:pointer}.chk input{accent-color:#ffb347}
-table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}table.mini th,table.mini td{padding:3px 6px;text-align:right;border-bottom:1px solid rgba(120,140,200,.18)}table.mini th:first-child,table.mini td:first-child{text-align:left}table.mini th{color:var(--muted);font-weight:600}details.osim summary{cursor:pointer}
+table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}table.mini.txt th,table.mini.txt td{text-align:left;vertical-align:top}table.mini th,table.mini td{padding:3px 6px;text-align:right;border-bottom:1px solid rgba(120,140,200,.18)}table.mini th:first-child,table.mini td:first-child{text-align:left}table.mini th{color:var(--muted);font-weight:600}details.osim summary{cursor:pointer}
 '''
 
 FIG_ASIDE="""
     <aside><div class="panel"><h4>On a real body</h4>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
-      <div class="xray" style="margin-top:6px"><button type="button" class="btn small" data-view="front">Front</button><button type="button" class="btn small" data-view="side">Side</button><button type="button" class="btn small" data-view="back">Back</button><button type="button" class="btn small" data-view="iso">Iso</button></div>
+      <div class="xray" style="margin-top:6px"><button type="button" class="btn small" data-view="front">Anterior</button><button type="button" class="btn small" data-view="side">Lateral</button><button type="button" class="btn small" data-view="back">Posterior</button><button type="button" class="btn small" data-view="iso">Oblique</button></div>
       <div class="ctl"><label>Skin <input type="range" id="figskin" min="0" max="1" step="0.05" value="0.3"></label><label>Muscles <input type="range" id="figmus" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="figbone" min="0" max="1" step="0.05" value="0.9"></label></div>
       <p class="note" id="fignote"></p>
       <small class="note">Drag to rotate, wheel to zoom. The body follows the simulation; highlighted muscles are the ones doing the work. Full model: <a href="anatomy.html">Anatomy Explorer</a>.</small></div></aside>"""
 def with_figure(body):
     return '<div class="figlayout"><section>'+body+'</section>'+FIG_ASIDE+'</div>'
-OSIMJS=open(os.path.join(W,'osim_data.js')).read()
+OSIMJS='/* OpenSim data loaded from osim_data.js */'
+import shutil; os.makedirs(OUT,exist_ok=True); shutil.copy(os.path.join(W,'osim_data.js'),os.path.join(OUT,'osim_data.js'))
 def fig_scripts(page):
     return '\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'figure.js')).read()+'\nconst FIG_PAGE="'+page+'";\n'+open(os.path.join(W,'fig_hooks.js')).read()
 def page(title,h1,blurb,body,scripts,zone):
-    html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>'+title+' · ATLAS Biomechanics</title>\n'+FONTS+'\n<style>\n'+css+':root:root:root{--zone:'+zone+'}\n'+BCSS+'</style>\n</head><body>\n<div class="wrap">\n  <header class="top">\n    <div><a class="back" href="./">&larr; All topics</a><h1>'+h1+'</h1></div>\n    <p>'+blurb+'</p>\n  </header>\n'+body+'\n</div>\n<script>\n'+scripts+'\n</script>\n</body></html>'
+    html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>'+title+' · ATLAS Biomechanics</title>\n'+FONTS+'\n<style>\n'+css+':root:root:root{--zone:'+zone+'}\n'+BCSS+'</style>\n</head><body>\n<div class="wrap">\n  <header class="top">\n    <div><a class="back" href="./">&larr; All topics</a><h1>'+h1+'</h1></div>\n    <p>'+blurb+'</p>\n  </header>\n'+body+'\n</div>\n<script src="osim_data.js"></script><script>\n'+scripts+'\n</script>\n</body></html>'
     return html
 def build_frames():
     body='''
@@ -87,7 +88,7 @@ def build_frames():
   <div class="jetlayout">
     <section>
       <div id="bscene"><canvas id="bcanvas"></canvas></div>
-      <div class="xray" style="margin-top:8px"><span class="note">View:</span><button type="button" class="btn small" data-view="front">Front</button><button type="button" class="btn small" data-view="side">Right side</button><button type="button" class="btn small" data-view="left">Left side</button><button type="button" class="btn small" data-view="back">Back</button><button type="button" class="btn small" data-view="iso">Iso</button><button type="button" class="btn small" data-view="top">Top</button></div>
+      <div class="xray" style="margin-top:8px"><span class="note">View:</span><button type="button" class="btn small" data-view="front">Anterior <span class="note">(front)</span></button><button type="button" class="btn small" data-view="side">Right lateral <span class="note">(right side)</span></button><button type="button" class="btn small" data-view="left">Left lateral <span class="note">(left side)</span></button><button type="button" class="btn small" data-view="back">Posterior <span class="note">(back)</span></button><button type="button" class="btn small" data-view="top">Superior <span class="note">(top)</span></button><button type="button" class="btn small" data-view="iso">Oblique <span class="note">(¾)</span></button></div>
       <div class="panel" id="explore" style="margin-top:12px"><div id="jointinfo"></div></div>
       <div class="panel" id="drills" style="margin-top:12px" hidden><h4>Drills</h4><p class="note">Random questions on planes, axes, joint types and degrees of freedom. The body animates the movement you are being asked about. +10 XP per correct answer.</p><button type="button" class="btn primary" id="drillstart">Start</button><div id="drill" style="margin-top:10px"></div></div>
       <div class="panel" id="reference" style="margin-top:12px" hidden><h4>Joints, types, movements, planes and axes</h4><div id="reftable"></div></div>
@@ -96,19 +97,21 @@ def build_frames():
       <div class="panel"><h4>Frames &amp; planes</h4>
         <div class="tog"><label><input type="checkbox" id="globalframe" checked> global frame</label><label><input type="checkbox" id="allframes"> all segment frames</label></div>
         <div class="tog" style="margin-top:6px"><label><input type="checkbox" id="pl-sagittal"><i style="background:#ff8a3d"></i> sagittal plane</label><label><input type="checkbox" id="pl-frontal"><i style="background:#22d3ee"></i> frontal plane</label><label><input type="checkbox" id="pl-transverse"><i style="background:#a78bfa"></i> transverse plane</label></div>
-        <div class="ctl" style="margin-top:8px"><label>Body transparency <input type="range" id="bodyalpha" min="0.1" max="1" step="0.05" value="1"></label></div>
+        <div class="xray" style="margin-top:10px"><span class="note">Show:</span><button type="button" class="btn small" data-preset="skin">Skin</button><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="bones">Skeleton</button><button type="button" class="btn small" data-preset="half">Half &amp; half</button></div>
+        <div class="ctl" style="margin-top:6px"><label>Skin <input type="range" id="lay-skin" min="0" max="1" step="0.05" value="0.35"></label><label>Muscles <input type="range" id="lay-muscles" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="lay-bones" min="0" max="1" step="0.05" value="1"></label></div>
+        <div class="tog"><label><input type="checkbox" id="split"> split view: skeleton on the subject\'s right, muscles on the left</label></div>
         <select id="jointsel"></select>
       </div>
       <div class="panel legend" style="margin-top:12px"><h4>ISB axes</h4>
         <small><b style="color:#ff5a5a">X</b> anterior–posterior (points forward). Frontal-plane movements rotate about X.</small>
         <small><b style="color:#7cff6b">Y</b> longitudinal / superior–inferior (points up, along the bone). Transverse-plane movements rotate about Y.</small>
         <small><b style="color:#5fa8ff">Z</b> medial–lateral (points to the subject's right). Sagittal-plane movements rotate about Z.</small>
-        <small style="margin-top:6px">Each segment carries its own local frame with the same letters; the global frame sits on the floor. Movements are named for the plane they happen <i>in</i>, and rotate <i>about</i> the axis perpendicular to that plane.</small>
+        <small style="margin-top:6px">Each segment carries its own local frame with the same letters at its centre of mass; the global frame sits at the pelvis origin (lower abdomen, between the ASIS). Movements are named for the plane they happen <i>in</i>, and rotate <i>about</i> the axis perpendicular to that plane.</small>
       </div>
       <div class="panel" style="margin-top:12px"><h4>Joint types</h4><small class="note">ball-and-socket (3 DOF) · condyloid / ellipsoid (2) · saddle (2) · hinge (1) · pivot (1) · plane / gliding (small slides) · modified hinge (1 + a little). Click any joint to see which it is.</small></div>
     </aside>
   </div>'''
-    scripts=fix+'\n'+OSIMJS+'\n'+game('biomech-frames','dpl-biomech-frames')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'frames_lab.js')).read()+'\nGAME.hud();'
+    scripts=fix+'\n'+OSIMJS+'\n'+game('biomech-frames','dpl-biomech-frames')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'figure.js')).read()+'\n'+open(os.path.join(W,'frames_lab.js')).read()+'\nGAME.hud();'
     html=page('Frames & Joints Lab','Frames &amp; Joints Lab','Rotate a 3-D body, switch on the cardinal planes and the global or segment frames, click any joint to see its type and degrees of freedom, and animate every osteokinematic movement in its plane about its axis. Then drill it.',body,scripts,'#7cff6b')
     open(os.path.join(OUT,'frames.html'),'w').write(html); print('built frames.html',len(html)//1024,'KB')
 
@@ -166,7 +169,7 @@ def build_anatomy():
   <div class="jetlayout">
     <section>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
-      <div class="xray" style="margin-top:8px"><span class="note">View:</span><button type="button" class="btn small" data-view="front">Front</button><button type="button" class="btn small" data-view="side">Right side</button><button type="button" class="btn small" data-view="left">Left side</button><button type="button" class="btn small" data-view="back">Back</button><button type="button" class="btn small" data-view="iso">Iso</button><button type="button" class="btn small" id="showall">Show all · reset</button></div>
+      <div class="xray" style="margin-top:8px"><span class="note">View:</span><button type="button" class="btn small" data-view="front">Anterior <span class="note">(front)</span></button><button type="button" class="btn small" data-view="side">Right lateral <span class="note">(right side)</span></button><button type="button" class="btn small" data-view="left">Left lateral <span class="note">(left side)</span></button><button type="button" class="btn small" data-view="back">Posterior <span class="note">(back)</span></button><button type="button" class="btn small" data-view="top">Superior <span class="note">(top)</span></button><button type="button" class="btn small" data-view="iso">Oblique <span class="note">(¾)</span></button><button type="button" class="btn small" id="showall">Show all · reset</button></div>
       <div class="panel" id="explore" style="margin-top:12px"><div id="ainfo"></div></div>
       <div class="panel" id="drills" style="margin-top:12px" hidden><h4>Drills</h4><p class="note">A structure is highlighted and isolated on the body — name it, give its origin/insertion/action, or pick the prime mover for a movement. Rotate the body if you need another view. +10 XP per correct answer.</p><button type="button" class="btn primary" id="andrillstart">Start</button><div id="andrill" style="margin-top:10px"></div></div>
       <div class="panel" id="reference" style="margin-top:12px" hidden><h4>Muscles: origin · insertion · action</h4><div id="areftable"></div></div>
@@ -279,9 +282,23 @@ def build_capstone():
     scripts=fix+'\n'+OSIMJS+'\n'+open(os.path.join(W,'gait_data.js')).read()+'\n'+game('biomech-capstone','dpl-biomech-capstone')+'\n'+open(os.path.join(W,'capstone_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'capstone_problems.js')).read()+'\nBP.init(); GAME.hud();'+fig_scripts('capstone')
     html=page('Movement Analysis Capstone','Putting It All Together: The Four-Step Movement Analysis','Build a hierarchical model and cross out what cannot be changed; see why more is not always better on the inverted U; balance an inverted-pendulum body by moving its centre of pressure; jump, land, pedal, lift a glass and push a wheelchair with the numbers attached; read a gait cycle; then take the final review that pulls from every topic in the course, and solve the capstone problems.',body,scripts,'#ffd23f')
     open(os.path.join(OUT,'capstone.html'),'w').write(html); print('built capstone.html',len(html)//1024,'KB')
+def build_tmj():
+    tabs=[("anat","TMJ & the two phases"),("track","Tracking jaw motion"),("lever","Bite force & joint load"),("impl","Reconstruction & implants"),("proj","The design project"),("drills","Drills · XP"),("problems","Problems")]
+    tabhtml='<div class="tabs" id="mtabs">'+''.join(f'<button type="button" class="tabbtn {"on" if i==0 else ""}" data-k="{k}">{n}</button>' for i,(k,n) in enumerate(tabs))+'</div>'
+    body=tabhtml+"""
+  <section class="panel mpane" id="anat"></section>
+  <section class="panel mpane" id="track" hidden></section>
+  <section class="panel mpane" id="lever" hidden></section>
+  <section class="panel mpane" id="impl" hidden></section>
+  <section class="panel mpane" id="proj" hidden></section>
+  <section class="panel mpane" id="drills" hidden><h4>Drills</h4><p class="note">Joint type and the two phases of opening, normal ranges, imaging choices, rigid-body tracking, the mandible lever, implant materials, wear and fatigue, and the growing jaw. +10 XP per correct answer.</p><button type="button" class="btn primary" id="jdrillstart">Start</button><div id="jdrill" style="margin-top:10px"></div></section>
+  <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
+    scripts=fix+'\n'+game('biomech-tmj','dpl-biomech-tmj')+'\n'+open(os.path.join(W,'tmj_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'tmj_problems.js')).read()+'\nBP.init(); GAME.hud(); TJ.init();'
+    html=page('Jaw Motion & Reconstruction','Jaw Motion &amp; Reconstruction: Tracking the Paediatric Jaw, Designing Its Implants','Open a sagittal jaw and watch the condyle hinge, then slide down the articular eminence; recover the mandible\'s pose from clutch markers and see what noise and skin artefact do to it; load the mandible as a class III lever to get bite force and joint reaction; check a reconstruction plate, its screws and a condylar stem against fatigue and wear; and read the phased plan for our project with a paediatric head and neck surgery partner (Theia for the fibula-donor leg, a chairside tracker with EMG and bite force in clinic, optical capture with a dental clutch for the jaw). Drills and ES 305 problems follow.',body,scripts,'#5fa8ff')
+    open(os.path.join(OUT,'tmj.html'),'w').write(html); print('built tmj.html',len(html)//1024,'KB')
 def build_home():
     h=open(os.path.join(W,'bhome.html')).read()
     html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'+h[:h.index('</style>')+8]+'</head><body>'+h[h.index('</style>')+8:]+'</body></html>'
     open(os.path.join(OUT,'index.html'),'w').write(html); print('built biomech index.html')
 if __name__=='__main__':
-    build_frames(); build_muscle(); build_arthro(); build_invdyn(); build_anatomy(); build_kinetics(); build_tissue(); build_multi(); build_mtc(); build_capstone(); build_home()
+    build_frames(); build_muscle(); build_arthro(); build_invdyn(); build_anatomy(); build_kinetics(); build_tissue(); build_multi(); build_mtc(); build_capstone(); build_tmj(); build_home()
