@@ -95,7 +95,7 @@ def build_frames():
     </section>
     <aside>
       <div class="panel"><h4>Frames &amp; planes</h4>
-        <div class="tog"><label><input type="checkbox" id="globalframe" checked> global frame</label><label><input type="checkbox" id="allframes"> all segment frames</label></div>
+        <div class="tog"><label><input type="checkbox" id="globalframe" checked> global frame</label><label><input type="checkbox" id="globalbeside" checked> draw it beside the body</label><label><input type="checkbox" id="allframes"> all segment frames</label><label><input type="checkbox" id="showjoints"> joint markers</label></div>
         <div class="tog" style="margin-top:6px"><label><input type="checkbox" id="pl-sagittal"><i style="background:#ff8a3d"></i> sagittal plane</label><label><input type="checkbox" id="pl-frontal"><i style="background:#22d3ee"></i> frontal plane</label><label><input type="checkbox" id="pl-transverse"><i style="background:#a78bfa"></i> transverse plane</label></div>
         <div class="xray" style="margin-top:10px"><span class="note">Show:</span><button type="button" class="btn small" data-preset="skin">Skin</button><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="bones">Skeleton</button><button type="button" class="btn small" data-preset="half">Half &amp; half</button></div>
         <div class="ctl" style="margin-top:6px"><label>Skin <input type="range" id="lay-skin" min="0" max="1" step="0.05" value="0.35"></label><label>Muscles <input type="range" id="lay-muscles" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="lay-bones" min="0" max="1" step="0.05" value="1"></label></div>

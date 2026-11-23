@@ -1,7 +1,7 @@
 const AN=(()=>{
   const $=(s)=>document.querySelector(s); const {add,mul}=B3; const {MUSCLES,BONES,JOINTS,L,COL}=ANM;
   /* ---------- build the scene ---------- */
-  const LAYER={skin:0.25,m1:1,m2:1,bone:1,joint:1}; let state={reg:"all",side:"both",iso:null,sel:null,focusLayer:null};
+  const LAYER={skin:0,m1:1,m2:1,bone:1,joint:0}; /* joint markers off by default; the Joints preset or slider turns them on */ let state={reg:"all",side:"both",iso:null,sel:null,focusLayer:null};
   const byId={}; const partsOf={};
   function alphaOf(p){ const base=LAYER[p.layer]; if(base<=0.02) return 0; let a=base;
     if(state.reg!=="all"&&p.reg&&p.reg!==state.reg&&p.layer!=="skin") a*=0.12;

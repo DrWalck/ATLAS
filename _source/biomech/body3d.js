@@ -32,18 +32,18 @@ const B3=(()=>{
     if(capEnds){ for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([pts[0],rings[0][j],rings[0][i]],[pts[n-1],rings[n-1][i],rings[n-1][j]]); } } };
   const belly=(part,pts,rmax,seg=12,opt={})=>{ /* fusiform muscle belly: Catmull-Rom resampled path, elliptical section flattened against the limb/trunk, thin tendons at both ends.
       opt: tend0/tend1 = tendon fraction at origin/insertion (0–0.5), bulge = where along the path the belly is thickest (0–1), flat = ellipse ratio (1 = round, 0.5 = wide ribbon), rt = tendon radius */
-    const n=pts.length; if(n<2) return; const tend0=opt.tend0??0.12, tend1=opt.tend1??0.2, bulge=opt.bulge??0.45, flat=opt.flat??0.72, rt=opt.rt??Math.max(0.0025,rmax*0.22), lift=opt.lift??0.55;
+    const n=pts.length; if(n<2) return; const tend0=opt.tend0??0.12, tend1=opt.tend1??0.2, bulge=opt.bulge??0.45, flat=opt.flat??0.72, rt=opt.rt??Math.max(0.0025,rmax*0.45), lift=opt.lift??0.35;
     const cr=(p0,p1,p2,p3,t)=>{ const t2=t*t,t3=t2*t; return [0,1,2].map(k=>0.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3)); };
     const seglen=[]; let total=0; for(let i=0;i<n-1;i++){ const l=Math.hypot(...sub(pts[i+1],pts[i])); seglen.push(l); total+=l; }
     const N=Math.max(6,Math.min(26,Math.round(total/0.012))); const P=[],U=[]; let acc=0,i=0;
     for(let k=0;k<=N;k++){ const d=total*k/N; while(i<n-2&&acc+seglen[i]<d){ acc+=seglen[i]; i++; } const t=seglen[i]>0?Math.min(1,(d-acc)/seglen[i]):0; P.push(cr(pts[Math.max(i-1,0)],pts[i],pts[i+1],pts[Math.min(i+2,n-1)],t)); U.push(k/N); }
     /* radius profile: tendon → belly → tendon, belly peak at `bulge` */
-    const prof=U.map(u=>{ if(u<tend0) return rt; if(u>1-tend1) return rt; const v=(u-tend0)/(1-tend0-tend1); const w=v<bulge?v/bulge:(1-v)/(1-bulge); const b=Math.pow(Math.sin(Math.PI/2*Math.min(1,w)),0.8); return rt+(rmax-rt)*b; });
+    const prof=U.map(u=>{ if(u<tend0) return rt; if(u>1-tend1) return rt; const v=(u-tend0)/(1-tend0-tend1); const w=v<bulge?v/bulge:(1-v)/(1-bulge); const b=Math.pow(Math.sin(Math.PI/2*Math.min(1,w)),1.4); return rt+(rmax-rt)*b; }); /* gentle taper, no pronounced bulge */
     /* outward direction: away from the nearest body axis (trunk, thigh/shank line, upper-limb line) so the ellipse wraps around the limb */
     const axisOf=(p)=>{ const z=Math.abs(p[2]); const zs=Math.sign(p[2])||1; if(p[1]>0.98&&z<0.17) return [p[0]*0.2,p[1],0]; if(z>0.17&&p[1]>0.7) return [-0.005,p[1],0.215*zs]; return [0,p[1],0.09*zs]; };
     const tangents=P.map((p,k)=>norm(sub(P[Math.min(k+1,N)],P[Math.max(k-1,0)]))); const rings=[];
     for(let k=0;k<=N;k++){ const T=tangents[k]; let o=sub(P[k],axisOf(P[k])); o=sub(o,mul(T,o[0]*T[0]+o[1]*T[1]+o[2]*T[2])); if(Math.hypot(...o)<1e-4) o=Math.abs(T[1])<0.9?[0,1,0]:[1,0,0]; const n1=norm(o); const n2=norm(cross(T,n1));
-      const r=prof[k]; const wide=r*(1+(1-flat)*0.9), thin=r*flat; const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centred on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
+      const r=prof[k]; const wide=r*(1+(1-flat)*0.5), thin=r*Math.max(flat,0.6); const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centred on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
     for(let k=0;k<N;k++){ const A=rings[k],B=rings[k+1]; for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([A[s],B[j],B[s]],[A[s],A[j],B[j]]); } }
     for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([P[0],rings[0][j],rings[0][s]],[P[N],rings[N][s],rings[N][j]]); } };
   const box=(part,x0,y0,z0,x1,y1,z1)=>{ const p=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]; [[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]].forEach(q=>{ part.tris.push([p[q[0]],p[q[1]],p[q[2]]],[p[q[0]],p[q[2]],p[q[3]]]); }); };

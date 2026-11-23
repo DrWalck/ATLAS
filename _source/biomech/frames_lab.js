@@ -5,7 +5,7 @@
    Angles: anatomical position = 0. Ranges are typical adult values (approximate; sources: AAOS, Norkin & White). */
 const FL=(()=>{
   const $=(s)=>document.querySelector(s); const {addPart,capsule,box,sphere,lathe,cam,S,arrow3,quad3,label3,rotAxis,add,sub,mul,norm}=B3;
-  const SKIN="#c9a98a", BONE="#dfe6f3", JOINT="#ffd23f";
+  const SKIN="#c9a98a", BONE="#dfe6f3", JOINT="#22d3ee";
   const AXIS={X:{name:"anterior–posterior",color:"#ff5a5a",v:[1,0,0]},Y:{name:"longitudinal (superior–inferior)",color:"#7cff6b",v:[0,1,0]},Z:{name:"medial–lateral",color:"#5fa8ff",v:[0,0,1]}};
   const PLANE={sagittal:{axis:"Z",color:"#ff8a3d",desc:"divides left from right; movements in it rotate about the medial–lateral (Z) axis"},frontal:{axis:"X",color:"#22d3ee",desc:"(coronal) divides front from back; movements in it rotate about the anterior–posterior (X) axis"},transverse:{axis:"Y",color:"#a78bfa",desc:"(horizontal) divides top from bottom; movements in it rotate about the longitudinal (Y) axis"}};
   /* ---------- skeleton: segments with proximal joint (pivot) and parent ---------- */
@@ -33,7 +33,7 @@ const FL=(()=>{
     const built=ANM.build((part)=>{ const l=part.layer; if(part.kind==="joint") return 0; const a=l==="skin"?U.layers.skin:(l==="m1"||l==="m2")?U.layers.muscles:U.layers.bones; return (U.split&&part.side)?(part.side>0?(l==="bone"?U.layers.bones:0):(l==="bone"?0:(l==="skin"?U.layers.skin:U.layers.muscles))):a; });
     B3.parts.forEach(p=>{ if(!p.segment) p.segment="rig"; });   /* every anatomical part goes through the segment transform (classified per vertex) */
     /* joint markers (own parts so they can be picked) */
-    JOINTS.forEach(j=>{ const p=addPart({id:"J_"+j.id,joint:j.id,segment:j.child,color:JOINT,alpha:0.95,name:j.name,noPick:false}); sphere(p,j.pos,j.r||0.022,8); });
+    JOINTS.forEach(j=>{ const p=addPart({id:"J_"+j.id,joint:j.id,segment:j.child,color:JOINT,alphaFn:()=>(U.showJoints||(U.joint&&U.joint.id===j.id))?0.95:0,name:j.name,noPick:false}); sphere(p,j.pos,(j.r||0.022)*0.9,8); }); /* joint markers hidden unless asked for; the selected joint shows as a small sphere */
   }
   /* which kinematic segment does a vertex of the anatomical body belong to? FIG classifies by position (and ring centre); refine for the frames chain */
   const segCache=new WeakMap();
@@ -103,7 +103,7 @@ const FL=(()=>{
   const cache={}; function transformAll(){ for(const id in SEG) cache[id]=segTransform(id); }
   const tfPoint=(segId,v)=>{ const f=cache[segId]; return f?f(v):v; };
   /* ---------- UI state ---------- */
-  const U={joint:null,mv:null,anim:null,showGlobal:true,showPlanes:{sagittal:false,frontal:false,transverse:false},showFrames:false,segFrames:new Set(),labels:true,layers:{skin:0.35,muscles:1,bones:1},split:false};
+  const U={joint:null,mv:null,anim:null,showGlobal:true,showPlanes:{sagittal:false,frontal:false,transverse:false},showFrames:false,segFrames:new Set(),labels:true,layers:{skin:0,muscles:1,bones:1},split:true,globalBeside:true,showJoints:false};
   const planeOf=(p)=>PLANE[p];
   function setMovement(j,i){ /* start oscillating animation of movement i of joint j */
     U.joint=j; U.mv=i; for(const k in angles) delete angles[k]; const m=j.mv[i]; if(m.pre) angles[j.id+"|"+m.pre.mv]=m.pre.ang;
@@ -115,7 +115,10 @@ const FL=(()=>{
   /* ---------- overlays: global frame, planes, local frames, joint callouts ---------- */
   function overlays(ctx,M,project){
     const O=(typeof OSIM!=="undefined")?[OSIM.off[0],OSIM.off[1],0]:[0.06,0.97,0];   /* global frame origin at the pelvis origin (lower abdomen, midway between the ASIS), as in the ISB / lab convention */
-    if(U.showGlobal){ ["X","Y","Z"].forEach(k=>{ const A=AXIS[k]; B3.arrow3(ctx,M,project,O,add(O,mul(A.v,0.26)),A.color,`${k} · ${A.name}`,2.5); }); B3.label3(ctx,M,project,O,"global frame · pelvis origin (ISB)","#eaf2ff",22); }
+    if(U.showGlobal){ const G=U.globalBeside?[O[0],O[1],O[2]+0.55]:O; /* drawn beside the body (to the subject's right) so it does not cover the pelvis; a dashed tie marks the true origin */
+      if(U.globalBeside){ const a=project(O,M),b=project(G,M); if(a[2]>0.1&&b[2]>0.1){ ctx.save(); ctx.strokeStyle="rgba(234,242,255,.5)"; ctx.setLineDash([4,4]); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); ctx.restore(); ctx.fillStyle="#eaf2ff"; ctx.beginPath(); ctx.arc(a[0],a[1],3,0,Math.PI*2); ctx.fill(); } }
+      ["X","Y","Z"].forEach(k=>{ const A=AXIS[k]; B3.arrow3(ctx,M,project,G,add(G,mul(A.v,0.2)),A.color,k,2.5); });
+      /* legend in the corner instead of labels over the body */ ctx.save(); ctx.font="600 12px 'Chakra Petch', sans-serif"; const rows=[["Global frame (ISB) · origin at the pelvis (dot)","#eaf2ff"],["X anterior–posterior","#ff5a5a"],["Y longitudinal (superior–inferior)","#7cff6b"],["Z medial–lateral (to the right)","#5fa8ff"]]; const w=Math.max(...rows.map(r=>ctx.measureText(r[0]).width))+16; ctx.fillStyle="rgba(5,10,24,.82)"; ctx.fillRect(10,10,w,rows.length*17+10); rows.forEach((r,i)=>{ ctx.fillStyle=r[1]; ctx.fillText(r[0],18,27+i*17); }); ctx.restore(); }
     /* cardinal planes through the body centre */
     const C=[0,0.95,0]; const ext=1.0;
     const planeQuad={sagittal:[[C[0],C[1]-ext,C[2]],[C[0]+0.5,C[1]-ext,C[2]],[C[0]+0.5,C[1]+ext*0.85,C[2]],[C[0],C[1]+ext*0.85,C[2]],[C[0]-0.5,C[1]+ext*0.85,C[2]],[C[0]-0.5,C[1]-ext,C[2]]],
@@ -174,11 +177,11 @@ const FL=(()=>{
     return {next}; })();
   /* ---------- init ---------- */
   function init(){ defineJoints(); buildBody(); transformAll();
-    B3.S.tick=tick; B3.S.overlays=[overlays]; B3.quad3=quadFill; B3.S.transform=(v,part)=>tfPoint(part.segment==="rig"?segFor(v,part):part.segment,v); B3.S.alwaysRender=true; B3.S.viewDist=2.7; B3.S.viewTarget=[0,0.88,0]; B3.cam.target=[0,0.88,0]; B3.cam.dist=2.7;
+    B3.S.tick=tick; B3.S.overlays=[overlays]; B3.quad3=quadFill; B3.S.transform=(v,part)=>tfPoint(part.segment==="rig"?segFor(v,part):part.segment,v); B3.S.alwaysRender=true; B3.S.viewDist=2.35; B3.S.viewTarget=[0,0.88,0]; B3.cam.target=[0,0.88,0]; B3.cam.dist=2.7;
     B3.init("#bcanvas",onPick);
     const sel=$("#jointsel"); sel.innerHTML=`<option value="">Jump to a joint…</option>`+JOINTS.map(j=>`<option value="${j.id}">${j.name}</option>`).join(""); sel.onchange=()=>{ const j=JOINTS.find(x=>x.id===sel.value); if(j) selectJoint(j); };
     for(const k in U.showPlanes){ const e=$("#pl-"+k); if(e) e.onchange=()=>{ U.showPlanes[k]=e.checked; }; }
-    $("#globalframe").onchange=(e)=>U.showGlobal=e.target.checked; $("#allframes").onchange=(e)=>U.showFrames=e.target.checked;
+    $("#globalframe").onchange=(e)=>U.showGlobal=e.target.checked; const gb=$("#globalbeside"); if(gb) gb.onchange=(e)=>U.globalBeside=e.target.checked; const sj=$("#showjoints"); if(sj) sj.onchange=(e)=>U.showJoints=e.target.checked; $("#allframes").onchange=(e)=>U.showFrames=e.target.checked;
     ["skin","muscles","bones"].forEach(k=>{ const e=$("#lay-"+k); if(e){ e.value=U.layers[k]; e.oninput=()=>{ U.layers[k]=+e.value; }; } }); const sp=$("#split"); if(sp) sp.onchange=()=>{ U.split=sp.checked; }; document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ const p=b.dataset.preset; U.split=false; if(p==="skin") U.layers={skin:1,muscles:1,bones:1}; if(p==="muscles") U.layers={skin:0,muscles:1,bones:1}; if(p==="bones") U.layers={skin:0,muscles:0,bones:1}; if(p==="half"){ U.layers={skin:0,muscles:1,bones:1}; U.split=true; } ["skin","muscles","bones"].forEach(k=>{ const e=$("#lay-"+k); if(e) e.value=U.layers[k]; }); if(sp) sp.checked=U.split; });
     $("#drillstart").onclick=()=>{ DR.next(); $("#drillstart").textContent="Skip →"; };
     document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#tabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); $("#explore").hidden=b.dataset.k!=="explore"; $("#drills").hidden=b.dataset.k!=="drills"; $("#reference").hidden=b.dataset.k!=="reference"; if(b.dataset.k==="reference") renderReference(); });
