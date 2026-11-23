@@ -1,0 +1,1033 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jaw Motion & Reconstruction · ATLAS Biomechanics</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap">
+<style>
+
+
+:root{
+  --bg:#eef1f5; --grid:rgba(29,79,145,.06); --surface:#ffffff; --surface-2:#f6f8fb;
+  --ink:#16202c; --muted:#5a6878; --line:#d5dce5;
+  --accent:#1d4f91; --accent-ink:#ffffff; --accent-soft:#e3ecf8;
+  --hl:#fbe7a1; --hl-ink:#3d2f00;
+  --good:#1f7a4d; --good-soft:#e1f3e9; --warn:#9a6200; --warn-soft:#fbf0dc; --bad:#b3261e; --bad-soft:#fbe5e3;
+  --plot-2:#c2571a;
+  --display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e131a; --grid:rgba(127,176,240,.05); --surface:#161e28; --surface-2:#1c2632;
+    --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3644;
+    --accent:#7fb0f0; --accent-ink:#0e131a; --accent-soft:#1f3350;
+    --hl:#4a3f17; --hl-ink:#fbe7a1;
+    --good:#5cc58e; --good-soft:#15301f; --warn:#e0a84a; --warn-soft:#33270f; --bad:#f08a80; --bad-soft:#3a1a18;
+    --plot-2:#f0a070;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e131a; --grid:rgba(127,176,240,.05); --surface:#161e28; --surface-2:#1c2632;
+  --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3644;
+  --accent:#7fb0f0; --accent-ink:#0e131a; --accent-soft:#1f3350;
+  --hl:#4a3f17; --hl-ink:#fbe7a1;
+  --good:#5cc58e; --good-soft:#15301f; --warn:#e0a84a; --warn-soft:#33270f; --bad:#f08a80; --bad-soft:#3a1a18;
+  --plot-2:#f0a070;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55;
+  padding-inline:16px; padding-block:0 48px;
+}
+.wrap{max-width:1120px;margin:0 auto}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;padding-block:28px 20px;border-bottom:2px solid var(--ink);margin-bottom:24px}
+header.top h1{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4vw,2.6rem);letter-spacing:.01em;line-height:1;margin:0;text-wrap:balance}
+.back{display:inline-block;font:600 .9rem var(--body);color:var(--accent);text-decoration:none;margin-bottom:8px}
+.back:hover{text-decoration:underline}
+.back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top p{margin:0;color:var(--muted);font-size:.95rem;max-width:52ch}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
+nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;gap:18px}
+.topic h2{font-family:var(--display);font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px}
+.topic ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.topic button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:8px;width:100%;padding:8px 10px;border-radius:6px;border:1px solid transparent}
+.topic button:hover{background:var(--surface)}
+.topic button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.topic button[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent)}
+.topic .pname{font-weight:600}
+.topic .ptag{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+.soon{font-size:.85rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+
+.concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
+.concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
+.concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
+.cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
+.cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
+.ceq{overflow-x:auto;font-size:1.05rem}
+main.sheet{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,3vw,32px);display:flex;flex-direction:column;gap:24px;min-width:0}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;font-size:.8rem;font-weight:600;color:var(--accent)}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.phead h2{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.2vw,2.1rem);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 .95rem/1 var(--body);padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.statement{font-size:1.08rem;max-width:68ch;margin:0}
+.num{font-family:var(--mono);font-size:.92em;background:var(--hl);color:var(--hl-ink);padding:0 .3em;border-radius:3px;white-space:nowrap}
+.variant{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.box{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--surface-2)}
+.box h3{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.box ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.box li{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.box li .v{font-family:var(--mono);font-size:.92rem}
+.method{font-size:.95rem;color:var(--muted);margin:0}
+.method b{color:var(--ink)}
+
+.answers h3{font-family:var(--display);font-size:1.15rem;margin:0 0 10px;font-weight:600}
+.arow{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(120px,1fr) 11rem;gap:10px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
+.arow label{font-weight:600}
+.arow .inp{display:flex;align-items:center;gap:6px}
+.arow input{width:100%;min-width:0;font:1rem var(--mono);padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.arow input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.arow .unit{font-family:var(--mono);font-size:.85rem;color:var(--muted);white-space:nowrap;min-width:4.2em}
+.chip{font:600 .8rem/1 var(--body);padding:6px 10px;border-radius:999px;white-space:nowrap;justify-self:start}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.idle{color:var(--muted)}
+.checkbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.hint{font-size:.85rem;color:var(--muted)}
+
+.solution{border-top:2px solid var(--ink);padding-top:20px;display:flex;flex-direction:column;gap:16px}
+.solution h3{font-family:var(--display);font-size:1.3rem;margin:0;font-weight:700}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:2rem minmax(0,1fr);gap:4px 10px}
+ol.steps li::before{content:counter(s);font-family:var(--mono);font-weight:600;color:var(--accent);border:1.5px solid var(--accent);border-radius:50%;width:1.7rem;height:1.7rem;display:grid;place-items:center;font-size:.8rem}
+.step-title{font-weight:600;align-self:center}
+.step-body{grid-column:2;display:flex;flex-direction:column;gap:6px;min-width:0}
+.eq{overflow-x:auto;padding:6px 0;font-size:1.12rem}
+.eq math{font-size:1.12em}
+.note{font-size:.92rem;color:var(--muted);margin:0}
+.final{display:flex;flex-wrap:wrap;gap:10px}
+.final .ans{border:2px solid var(--accent);border-radius:8px;padding:10px 14px;background:var(--accent-soft)}
+.final .ans .k{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--display);font-weight:600}
+.final .ans .val{font-family:var(--mono);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.plotwrap{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--surface-2)}
+.plotwrap figcaption{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+canvas{display:block;width:100%;height:260px}
+.takeaway{border-left:3px solid var(--hl);background:var(--surface-2);padding:10px 14px;border-radius:0 6px 6px 0;font-size:.95rem;margin:0}
+
+@media (max-width:780px){
+  .layout{grid-template-columns:1fr}
+  nav.problems{position:static}
+  .topic ul{flex-direction:row;flex-wrap:wrap}
+  .topic li{flex:1 1 150px}
+  .soon{display:none}
+  .arow{grid-template-columns:1fr auto}
+  .arow label{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:no-preference){
+  .solution{animation:rise .25s ease-out}
+  @keyframes rise{from{transform:translateY(6px)}to{transform:none}}
+}
+sub{font-size:.72em;line-height:0;vertical-align:-.25em}
+.eyebrow sub,.topic h2 sub{text-transform:none}
+/* SCHEM-CSS-START */
+.probtop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:18px;align-items:start}
+@media (max-width:900px){.probtop{grid-template-columns:1fr}}
+.schem{margin:0;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:8px 8px 4px}
+.schem figcaption{font-size:.74rem;color:var(--muted);text-align:right;margin-top:2px}
+.diag{width:100%;height:auto;display:block;overflow:visible}
+.diag .s,.diag .spr{stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.diag .thin{stroke:var(--ink);stroke-width:1.1;fill:none}
+.diag .h{stroke:var(--muted);stroke-width:1.3;fill:none;stroke-dasharray:5 4}
+.diag .h2{stroke:var(--muted);stroke-width:1.2;fill:none}
+.diag .hatch{stroke:var(--muted);stroke-width:1}
+.diag .v{stroke:var(--accent);stroke-width:2.2;fill:none}
+.diag .f{stroke:var(--plot-2);stroke-width:2.2;fill:none}
+.diag .body{fill:var(--accent-soft);stroke:var(--ink);stroke-width:1.6}
+.diag .body2{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.diag .pinb,.diag .pinc{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.diag .dotk{fill:var(--ink)} .diag .dotv{fill:var(--accent)} .diag .dotf{fill:var(--plot-2)}
+.diag .dimln{stroke:var(--muted);stroke-width:1} .diag .ext{stroke:var(--muted);stroke-width:.8;stroke-dasharray:2 3}
+.diag .ms{fill:var(--muted)} .diag .mv{fill:var(--accent)} .diag .mf{fill:var(--plot-2)}
+.diag text{font-family:var(--body);font-size:12.5px}
+.diag .t,.diag .ts{fill:var(--ink)} .diag .tv{fill:var(--accent);font-weight:600} .diag .tf{fill:var(--plot-2);font-weight:600} .diag .tm{fill:var(--muted)}
+/* SCHEM-CSS-END */
+/* ---------- Neon "game" theme (overrides everything above) ---------- */
+:root:root:root{
+  color-scheme:dark;
+  --bg:#060a14; --grid:rgba(34,211,238,.05); --surface:rgba(13,20,38,.86); --surface-2:#0e1730; --surface-3:#15213f;
+  --ink:#e9f1ff; --muted:#97a7c9; --line:#23345c;
+  --accent:#22d3ee; --accent-ink:#04121a; --accent-soft:rgba(34,211,238,.10);
+  --hl:rgba(255,210,63,.13); --hl-ink:#ffe27a;
+  --good:#7cff6b; --good-soft:rgba(124,255,107,.11); --warn:#ffd23f; --warn-soft:rgba(255,210,63,.12); --bad:#ff5c8a; --bad-soft:rgba(255,92,138,.13);
+  --plot-2:#ff8a3d; --mag:#ff4fd8; --vio:#8b5cf6;
+  --display:"Chakra Petch","Barlow Semi Condensed",system-ui,sans-serif;
+  --grad:linear-gradient(135deg,#22d3ee 0%,#8b5cf6 55%,#ff4fd8 100%);
+}
+html{background:#060a14}
+body{
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 5% -8%,rgba(139,92,246,.20),transparent 62%),
+    radial-gradient(800px 480px at 105% 0%,color-mix(in srgb,var(--zone) 20%,transparent),transparent 60%),
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:auto,auto,28px 28px,28px 28px;
+}
+::selection{background:rgba(34,211,238,.35)}
+
+/* header */
+header.top{border-bottom:none;position:relative;padding-block:26px 22px;align-items:flex-end}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--zone),#8b5cf6,transparent);box-shadow:0 0 14px var(--zone)}
+header.top h1{font-weight:700;letter-spacing:.02em;background:linear-gradient(90deg,#ffffff 20%,var(--zone));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.back{color:var(--zone);font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.8rem}
+header.top p{flex:1 1 320px}
+
+/* HUD */
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;flex:0 1 auto}
+.hud .cell{display:flex;align-items:center;gap:8px;background:rgba(10,16,32,.9);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-family:var(--display);font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.hud .cell svg{width:18px;height:18px;flex:none}
+.hud .k{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+.hud .n{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.hud .lvl{border-color:rgba(139,92,246,.6);box-shadow:0 0 16px -6px #8b5cf6}
+.hud .lvl .n{color:#c4b5fd}
+.hud .xpbar{width:84px;height:7px;border-radius:9px;background:#1a2648;overflow:hidden}
+.hud .xpbar i{display:block;height:100%;background:var(--grad);box-shadow:0 0 10px #22d3ee;transition:width .5s}
+.hud .streak .n{color:#ffb35c}.hud .streak svg{color:#ff8a3d;filter:drop-shadow(0 0 5px #ff8a3d)}
+.hud .clr .n{color:var(--good)}.hud .clr svg{color:var(--good);filter:drop-shadow(0 0 4px var(--good))}
+.hud .xp svg{color:#22d3ee;filter:drop-shadow(0 0 4px #22d3ee)}
+.hud .bump{animation:bump .5s ease-out}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* panels */
+.concepts,main.sheet{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 0 0 1px rgba(34,211,238,.04),0 24px 60px -24px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+main.sheet{border-top:2px solid color-mix(in srgb,var(--zone) 70%,transparent)}
+.concepts summary{font-family:var(--display);letter-spacing:.03em;color:#fff}
+.concepts summary::marker{color:var(--zone)}
+.cgrid h4{color:var(--zone)}
+.cgrid>div{background:rgba(8,14,30,.6);border:1px solid var(--line);border-radius:10px;padding:12px}
+
+/* nav */
+.topic h2{color:var(--zone);font-family:var(--display);letter-spacing:.14em}
+.topic button{border-radius:9px;transition:background .15s,box-shadow .15s}
+.topic button:hover{background:rgba(34,211,238,.06)}
+.topic button[aria-current="true"]{background:linear-gradient(90deg,color-mix(in srgb,var(--zone) 18%,transparent),rgba(13,20,38,.6));border-color:color-mix(in srgb,var(--zone) 45%,transparent);box-shadow:inset 3px 0 0 var(--zone),0 0 22px -10px var(--zone)}
+.topic .ptag{color:#8ea3cf}
+.topic button.solved .pname::after{content:"✓";display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-left:.45em;border-radius:50%;font-size:.72em;background:var(--good);color:#06210a;box-shadow:0 0 8px var(--good);vertical-align:.1em}
+.soon{border-top-color:var(--line)}
+
+/* problem sheet */
+.eyebrow{color:var(--zone);letter-spacing:.14em}
+.phead h2{color:#fff;letter-spacing:.01em}
+.variant{color:#8ea3cf}
+.btn{font-family:var(--display);letter-spacing:.05em;text-transform:uppercase;font-size:.84rem;padding:11px 15px;border-radius:9px;background:var(--surface-3);border:1px solid #2c4274;color:var(--ink);transition:transform .12s,box-shadow .15s,border-color .15s}
+.btn:hover{border-color:var(--accent);box-shadow:0 0 16px -4px var(--accent)}
+.btn.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#050b18;border-color:transparent;font-weight:700;box-shadow:0 0 18px -6px #22d3ee}
+.btn.primary:hover{filter:brightness(1.08);box-shadow:0 0 24px -4px #22d3ee}
+@media (prefers-reduced-motion:no-preference){.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}}
+.num{background:var(--hl);color:var(--hl-ink);border:1px solid rgba(255,210,63,.25);text-shadow:0 0 8px rgba(255,210,63,.35)}
+.box{background:rgba(8,14,30,.7);border-radius:12px;border-color:var(--line)}
+.cols .box:first-child{box-shadow:inset 0 2px 0 #22d3ee}
+.cols .box:first-child h3{color:#5eeaff}
+.cols .box:last-child{box-shadow:inset 0 2px 0 var(--mag)}
+.cols .box:last-child h3{color:#ff8be6}
+.box h3{letter-spacing:.14em}
+.box li .v{color:#ffe27a}
+.method b{color:#c4b5fd}
+.answers h3{font-family:var(--display);letter-spacing:.04em;color:#fff}
+.arow{border-top-color:var(--line)}
+.arow input{background:#08101f;border:1px solid #2c4274;border-radius:9px;color:#fff;transition:border-color .15s,box-shadow .15s}
+.arow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.18),0 0 18px -4px var(--accent)}
+.chip{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;border:1px solid transparent}
+.chip.good{border-color:rgba(124,255,107,.45);box-shadow:0 0 14px -4px var(--good);text-shadow:0 0 6px rgba(124,255,107,.6)}
+.chip.warn{border-color:rgba(255,210,63,.4)}
+.chip.bad{border-color:rgba(255,92,138,.45)}
+.chip.idle{border-color:var(--line)}
+@media (prefers-reduced-motion:no-preference){.chip.good,.chip.warn,.chip.bad{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.hint{color:#8ea3cf}
+
+/* solution */
+.solution{border-top:none;position:relative}
+.solution::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,#8b5cf6,var(--zone),transparent)}
+.solution h3{font-family:var(--display);letter-spacing:.04em;color:#fff}
+ol.steps li::before{color:#5eeaff;border:1.5px solid #22d3ee;background:rgba(34,211,238,.08);box-shadow:0 0 10px -2px #22d3ee}
+.final .ans{border:1px solid transparent;background:linear-gradient(#0c1530,#0c1530) padding-box,var(--grad) border-box;border-radius:12px;box-shadow:0 0 20px -8px #8b5cf6}
+.final .ans .val{color:#fff}
+.plotwrap{background:rgba(8,14,30,.75);border-radius:12px}
+.takeaway{border-left:3px solid var(--good);background:rgba(124,255,107,.06);border-radius:0 10px 10px 0}
+.takeaway b{color:var(--good)}
+
+/* schematic */
+.schem{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:12px;box-shadow:inset 0 0 30px rgba(34,211,238,.06),0 0 24px -12px #22d3ee}
+.schem figcaption{color:#7f93bd;letter-spacing:.04em}
+.diag .s{stroke:#d6e4ff}
+.diag .thin{stroke:#b8c9ee}
+.diag .spr{stroke:#a3e635;stroke-width:2.2;filter:url(#glow)}
+.diag .h{stroke:#6d82b3}
+.diag .h2{stroke:#b69cff}
+.diag .hatch{stroke:#4f6396}
+.diag .v{stroke:#22d3ee;stroke-width:2.6;filter:url(#glow)}
+.diag .f{stroke:#ff8a3d;stroke-width:2.6;filter:url(#glow)}
+.diag .body{fill:url(#gBody);stroke:#a5c4ff}
+.diag .body2{fill:url(#gBody2);stroke:#86a6e6}
+.diag .pinb{fill:#1c2a52;stroke:#a5c4ff}
+.diag .pinc{fill:#0b1226;stroke:#22d3ee}
+.diag .dotk{fill:#ffffff;filter:url(#glow)} .diag .dotv{fill:#22d3ee;filter:url(#glow)} .diag .dotf{fill:#ff8a3d;filter:url(#glow)}
+.diag .dimln{stroke:#b69cff} .diag .ext{stroke:#6d82b3}
+.diag .ms{fill:#b8c9ee} .diag .mv{fill:#22d3ee} .diag .mf{fill:#ff8a3d}
+.diag text{paint-order:stroke;stroke:#08101f;stroke-width:3.2px;stroke-linejoin:round}
+.diag .t,.diag .ts{fill:#f1f6ff} .diag .tv{fill:#67e8f9} .diag .tf{fill:#ffa468} .diag .tm{fill:#c9bcff}
+
+/* celebration */
+#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-140%);z-index:60;background:rgba(8,14,30,.95);border:1px solid transparent;background-image:linear-gradient(#0a1226,#0a1226),var(--grad);background-origin:border-box;background-clip:padding-box,border-box;border-radius:14px;padding:12px 20px;font-family:var(--display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;box-shadow:0 0 30px -6px #8b5cf6;transition:transform .35s cubic-bezier(.3,1.4,.5,1);display:flex;gap:12px;align-items:center;max-width:calc(100vw - 32px)}
+.toast.show{transform:translate(-50%,0)}
+.toast .plus{color:var(--good);text-shadow:0 0 10px var(--good)}
+.toast small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--muted);font-family:var(--body);font-size:.85rem}
+@media (max-width:780px){.hud{width:100%}.hud .cell{flex:1 1 auto;justify-content:center}}
+/* keep symbols like ma, Iα, a_t in their real case */
+.eyebrow,.topic h2{text-transform:none;letter-spacing:.06em;font-size:.86rem}
+.final .ans .k,.cgrid h4{text-transform:none;letter-spacing:.05em}
+:root:root:root{--zone:#22d3ee}
+/* ---------- hints ---------- */
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.hintcard{border:1px solid rgba(255,210,63,.35);background:rgba(255,210,63,.06);border-radius:10px;padding:10px 14px;font-size:.95rem}
+.hintcard .hk{display:block;font-family:var(--display);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#ffe27a;margin-bottom:3px}
+#hintbtn{border-color:rgba(255,210,63,.5);color:#ffe27a}
+#hintbtn:hover{box-shadow:0 0 16px -4px #ffd23f}
+#hintbtn:disabled{opacity:.5;cursor:default;box-shadow:none}
+/* ---------- meaning ---------- */
+.arow{grid-template-rows:auto auto}
+.sense{grid-column:1/-1;font-size:.9rem;color:#c9d6f2;padding:2px 0 4px;border-left:2px solid var(--good);padding-left:10px;margin-top:-2px}
+.sense .sk,.final .mean .sk{font-family:var(--display);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--good);margin-right:6px}
+.final .ans{max-width:100%}
+.final .mean{font-size:.82rem;color:#c9d6f2;margin-top:6px;max-width:30ch;line-height:1.35}
+/* ---------- MATLAB panel ---------- */
+#mlab:empty{display:none}
+.mlab{border:1px solid #2a3f70;border-radius:12px;background:rgba(8,14,30,.75);overflow:hidden}
+.mlab summary{cursor:pointer;padding:12px 16px;font-family:var(--display);font-weight:600;letter-spacing:.03em;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mlab summary::marker{color:#ff8a3d}
+.mlt{background:#ff8a3d;color:#1a0a00;font-size:.7rem;letter-spacing:.14em;padding:3px 8px;border-radius:6px;font-weight:700}
+.mlsub{color:var(--muted);font-weight:500;font-size:.85rem;letter-spacing:.02em}
+.mlbody{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.mlhelp{margin:0;font-size:.9rem;color:var(--muted)}
+.mlhelp code{font-family:var(--mono);font-size:.85em;color:#ffe27a;background:rgba(255,210,63,.1);padding:0 .3em;border-radius:3px}
+.mlcode{font-family:var(--mono);font-size:.86rem;line-height:1.75;background:#070c19;border:1px solid #1e2d52;border-radius:10px;padding:10px 0;overflow-x:auto;white-space:pre}
+.mlcode .cl{display:flex;gap:12px;padding:0 12px;min-height:1.75em}
+.mlcode .cl.err{background:rgba(255,92,138,.14);box-shadow:inset 3px 0 0 var(--bad)}
+.mlcode .ln{color:#3f5382;min-width:2ch;text-align:right;user-select:none;flex:none}
+.mlcode .ct{color:#d6e2ff;white-space:pre}
+.mlcode .c{color:#6ea86e;font-style:italic}
+.mlcode .s{color:#c39dff}
+.mlcode .n{color:#ffb35c}
+.mlcode .k{color:#5eeaff}
+.mlcode .f{color:#8ee7ff}
+.blank{position:relative;display:inline-flex;align-items:center;gap:2px;vertical-align:baseline}
+.mb{font:inherit;color:#fff;background:#0d1a3a;border:1px dashed #5a78c4;border-radius:6px;padding:0 8px;height:1.55em;line-height:1.55em;transition:border-color .15s,box-shadow .15s}
+.mb:focus{outline:none;border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.18)}
+.mb.ok{border-style:solid;border-color:var(--good);background:rgba(124,255,107,.1);box-shadow:0 0 10px -3px var(--good)}
+.mb.bad{border-style:solid;border-color:var(--bad);background:rgba(255,92,138,.1)}
+.mbh{font:700 .72rem var(--display);width:1.4em;height:1.4em;border-radius:50%;border:1px solid rgba(255,210,63,.6);background:rgba(255,210,63,.12);color:#ffe27a;cursor:pointer;padding:0;line-height:1}
+.mbh:hover{background:rgba(255,210,63,.3)}
+.mbtip{position:absolute;left:0;top:calc(100% + 6px);z-index:5;background:#141b33;border:1px solid rgba(255,210,63,.5);color:#ffe9a8;font:.8rem var(--body);line-height:1.35;padding:8px 10px;border-radius:8px;white-space:normal;width:max-content;max-width:min(360px,80vw);box-shadow:0 10px 30px -10px #000}
+.mlbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mlbar .hint.good{color:var(--good)}
+.mlout{border:1px solid #1e2d52;border-radius:10px;background:#03060f;overflow:hidden}
+.mlouth{font-family:var(--display);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:1px solid #1e2d52;background:#0a1226}
+.mlout pre{margin:0;padding:10px 12px;font:.86rem/1.5 var(--mono);color:#d6e2ff;white-space:pre-wrap;overflow-x:auto}
+.mlout pre.haserr{color:#ffb4c6}
+@media (max-width:600px){.mlcode{font-size:.8rem}.mb{max-width:60vw}}
+/* ---------- thermo sheet ---------- */
+.credit{color:#8ea3cf;font-style:italic}
+.sheetgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:760px){.sheetgrid{grid-template-columns:1.25fr 1fr}}
+.kl{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px;font-size:.95rem}
+.box .kl li{display:list-item;list-style:disc;justify-content:normal}
+.box .kl li span{display:inline}
+.box.find{box-shadow:inset 0 2px 0 var(--mag)}.box.find h3{color:#ff8be6}
+.box.kf:first-child{box-shadow:inset 0 2px 0 #22d3ee}.box.kf:first-child h3{color:#5eeaff}
+.schembox .schem{margin-top:4px}
+.secline{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.secline h3{font-family:var(--display);font-size:1.15rem;margin:0;color:#fff;letter-spacing:.03em}
+.btn.small{padding:7px 11px;font-size:.76rem}
+.props{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)}
+.pstate{border:1px solid #2a3f70;border-radius:10px;padding:10px 12px;margin-top:8px;background:#0a1226}
+.pshead{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:6px}
+.pshead b{font-family:var(--display);color:#fff}
+.pfix{color:#c9d6f2;font-size:.9rem}
+.pphase{font-family:var(--display);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#ffe27a;border:1px solid rgba(255,210,63,.4);border-radius:999px;padding:2px 8px}
+.ptab{border-collapse:collapse;width:100%;font-size:.92rem}
+.ptab td{padding:4px 8px;border-top:1px solid #1e2d52;vertical-align:top}
+.psym{font-family:var(--mono);color:#5eeaff;white-space:nowrap}
+.pval{font-family:var(--mono);color:#ffe27a;white-space:nowrap}
+.psrc{color:var(--muted);font-size:.85rem}
+.howbtn{all:unset;cursor:pointer;color:#c4b5fd;font-size:.8rem;text-decoration:underline dotted;margin-left:6px}
+.howlist{margin:4px 0 6px;padding-left:1.2em;font-size:.86rem;color:#c9d6f2;display:flex;flex-direction:column;gap:3px}
+.pnote{margin:6px 0 0;font-size:.88rem;color:var(--muted)}
+.pdiag{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)}
+.pdgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (min-width:860px){.pdgrid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.pvc{display:block;width:100%;height:300px;border-radius:10px}
+.spd{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.spd input{width:90px;accent-color:#22d3ee}
+.animbox{display:flex;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
+.pist{width:100%;max-width:240px;height:auto}
+.pist .cyl{fill:#0b1226;stroke:#a5c4ff;stroke-width:2}
+.pist .gas{stroke:none}
+.pist .pis{fill:url(#gBody2);fill:#334a7d;stroke:#a5c4ff;stroke-width:1.5}
+.pist .rod{fill:#4a5f96}
+.pist .wt{fill:#1c2a52;stroke:#ffd23f;stroke-width:1.5}
+.pist .pin{fill:#ff8a3d}
+.pist .ptxt{fill:#c9d6f2;font-size:11px;font-family:var(--body)}
+.pist .hin path{stroke:#ff8a3d;stroke-width:2;fill:none;filter:url(#glow)}
+.pist .hout path{stroke:#22d3ee;stroke-width:2;fill:none;filter:url(#glow)}
+.readout{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:.8rem;color:#c9d6f2;justify-content:center}
+.readout b{color:#ffe27a}
+.readout .pl{color:#7cff6b;font-family:var(--display)}
+.boxed{display:inline-block;border:1.5px solid var(--good);border-radius:8px;padding:4px 12px;margin-top:4px;background:rgba(124,255,107,.06)}
+.boxed math{font-size:1.1em}
+.box.comm{box-shadow:inset 0 2px 0 #ffd23f}.box.comm h3{color:#ffe27a}
+.box.refs{box-shadow:inset 0 2px 0 #a78bfa}.box.refs h3{color:#c4b5fd}
+.box.refs ol{padding-left:1.3em}.box.refs li{list-style:decimal}
+.diag .gas{fill:rgba(255,138,61,.22);stroke:none}
+.diag .water{fill:rgba(34,211,238,.12);stroke:none}
+.diag .wall{fill:rgba(255,210,63,.18);stroke:var(--ink);stroke-width:1.4}
+.ptable{border-collapse:collapse;margin:10px 0 0;font-family:var(--mono);font-size:.92rem}
+.ptable th,.ptable td{border:1px solid var(--line);padding:3px 10px;text-align:center}
+.ptable th{color:var(--muted);font-weight:600}
+.ptable td.q{color:#ff8be6;font-weight:700}
+.diag .hot{fill:rgba(255,138,61,.28);stroke:#ff8a3d;stroke-width:1.4}
+.diag .cold{fill:rgba(34,211,238,.22);stroke:#22d3ee;stroke-width:1.4}
+.diag .warm{fill:rgba(255,210,63,.22);stroke:#ffd23f;stroke-width:1.4}
+/* ---------- tables tool ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tabbtn{all:unset;cursor:pointer;font:600 .78rem var(--display);letter-spacing:.05em;text-transform:uppercase;padding:7px 11px;border-radius:8px;border:1px solid #2c4274;background:var(--surface-3);color:var(--ink)}
+.tabbtn.on{background:linear-gradient(135deg,#ffd23f,#ff8a3d);color:#1a0a00;border-color:transparent}
+.tblwrap{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#070c19}
+.dt{border-collapse:collapse;width:100%;font:.84rem var(--mono);white-space:nowrap}
+.dt th{position:sticky;top:0;background:#0f1a36;color:#5eeaff;padding:6px 8px;text-align:right;border-bottom:1px solid #2c4274;font-weight:600}
+.dt td{padding:3px 8px;text-align:right;border-bottom:1px solid #131d3a;color:#d6e2ff}
+.dt tr:hover td{background:rgba(34,211,238,.08)}
+.dt td:first-child,.dt th:first-child{text-align:left;color:#ffe27a;position:sticky;left:0;background:#0a1226}
+.dt .satrow td{color:#ffb35c}
+.blk{font-family:var(--display);color:#fff;margin:14px 8px 4px;font-size:.95rem;letter-spacing:.03em}
+.lookup{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7);display:flex;flex-direction:column;gap:10px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.lgrid label{display:flex;flex-direction:column;gap:3px;font:600 .72rem var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lgrid input,.lgrid select{font:.95rem var(--mono);padding:7px 9px;border-radius:8px;border:1px solid #2c4274;background:#08101f;color:#fff}
+.tlayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:1000px){.tlayout{grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr)}}
+
+/* ---------- concepts lab ---------- */
+.term{color:#ffe27a}
+.defq{margin:8px 0 0;font-size:1rem;color:#e9f1ff;border-left:3px solid #ffd23f;padding-left:10px}
+.opt.ok{border-color:var(--good);background:rgba(124,255,107,.1)}
+.efw{max-height:none}
+.eft{border-collapse:collapse;width:100%;font-size:.85rem}
+.eft th{background:#0f1a36;color:#5eeaff;padding:8px;text-align:left;border-bottom:1px solid #2c4274;font-family:var(--display);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.eft tbody th{color:#ffe27a;white-space:nowrap;text-transform:none;letter-spacing:0;font-size:.9rem}
+.eft td{padding:6px;border-bottom:1px solid #131d3a;vertical-align:top}
+.eft select{width:100%;max-width:220px;font:.82rem var(--body);padding:6px;border-radius:7px;border:1px dashed #5a78c4;background:#0d1a3a;color:#fff;white-space:normal}
+.eft select.ok{border:1px solid var(--good);background:rgba(124,255,107,.1)}
+.eft select.bad{border:1px solid var(--bad);background:rgba(255,92,138,.12)}
+.devgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:10px}
+@media (min-width:760px){.devgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.devfig{margin:0}
+.diag .wall{stroke:#a5c4ff;stroke-width:6}
+.diag .wt{fill:#1c2a52;stroke:#ffd23f;stroke-width:1.5}
+nav.problems .topic button{grid-template-columns:1fr;gap:2px}
+nav.problems .topic .ptag{white-space:normal;line-height:1.3}
+
+.flowbox{background:radial-gradient(120% 90% at 30% 20%,#122049,#070d1d 70%);border:1px solid #2a3f70;border-radius:10px;padding:8px}
+.flowbox svg{width:100%;max-width:640px;height:auto;display:block;margin:0 auto;overflow:visible}
+.flow .pipe{stroke:#3a4f86;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow .part{stroke:none;filter:url(#glow)}
+
+/* ===== Jet Engine Lab ===== */
+.jetlayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media(min-width:1100px){.jetlayout{grid-template-columns:minmax(0,1.6fr) minmax(300px,.9fr)}}
+#scene{position:relative;width:100%;aspect-ratio:1000/420;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
+#scene svg,#scene canvas{position:absolute;inset:0;width:100%;height:100%}
+#scene canvas{pointer-events:none}
+.part{transition:opacity .25s}
+.part.selected .skin,.part.selected .casing,.part.selected .blade,.part.selected .disk,.part.selected .liner,.part.selected .cone,.part.selected .abox{filter:drop-shadow(0 0 6px #ffd23f)}
+.skin{fill:none;stroke:#9fb3d6;stroke-width:3}
+.lip{fill:none;stroke:#9fb3d6;stroke-width:3}
+.casing{fill:none;stroke:#6f86b3;stroke-width:2.5}
+.shaftlp{fill:#3a4a6e;stroke:#8aa0c8;stroke-width:1}
+.shafthp{fill:#55679a;stroke:#a7b9dd;stroke-width:1}
+.spinner{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:1}
+.blade{fill:#8fa6d2;stroke:#dbe6ff;stroke-width:.6}
+.blade.fan{fill:#a9bde6}
+.blade.hot{fill:#d9a06b;stroke:#ffe1bf}
+.stator{fill:#55679a;stroke:#8aa0c8;stroke-width:.5}
+.disk{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:.8}
+.liner{fill:#3b2a1e;stroke:#f0b27a;stroke-width:1.2}
+.flame{opacity:.95}
+.fuel{fill:none;stroke:#ffd23f;stroke-width:2}
+.cone{fill:url(#gmetal);stroke:#b9c8e8;stroke-width:1}
+.plabel{font:600 11px "Chakra Petch",sans-serif;fill:#cfe0ff;letter-spacing:.03em}
+.plabel.small{font-size:9px}
+.stline{stroke:#ffd23f;stroke-width:1;stroke-dasharray:3 3;opacity:.8}
+.stbox{fill:rgba(5,10,24,.85);stroke:#ffd23f;stroke-width:.8}
+.stn-n{font:700 9px ui-monospace,monospace;fill:#ffd23f;text-anchor:middle}
+.stn-v{font:10px ui-monospace,monospace;fill:#eaf2ff;text-anchor:middle}
+.bypass{fill:none;stroke:#ff8a3d;stroke-width:4;stroke-dasharray:8 6;opacity:.7}
+.fanair{stroke:#a9bde6}
+.abox{fill:#1b2748;stroke:#8aa0c8;stroke-width:1.5}
+.hx .abox{fill:#13303a;stroke:#5fd3e6}
+.duct{fill:none;stroke:#6f86b3;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
+.ramduct{fill:none;stroke:#5fd3e6;stroke-width:6;opacity:.5}
+#legend{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.ro{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.ro span{color:var(--muted)} .ro b{font-family:ui-monospace,monospace;font-weight:600;color:#fff;text-align:right}
+.ctl label{display:block;margin:6px 0;font-size:.8rem;color:var(--muted)} .ctl label b{float:right;color:#fff;font-family:ui-monospace,monospace} .ctl input[type=range]{width:100%;accent-color:#ffd23f}
+.xray{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px} .xray select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:5px 8px;font:inherit}
+.btn.small{padding:5px 9px;font-size:.72rem}
+.xgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px} .xgrid label{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted)} .xgrid label span{flex:0 0 46%} .xgrid input{flex:1;accent-color:#5fd3e6;min-width:0}
+.panel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)} .panel h4{margin:0 0 6px;font-family:var(--display);color:#fff;letter-spacing:.03em}
+#controls h4{margin:10px 0 4px;font-family:var(--display);font-size:.9rem;color:#ffd23f}
+.ceq2{font-family:ui-monospace,monospace;font-size:.8rem;color:#eaf2ff;background:rgba(255,255,255,.04);border-left:3px solid #ffd23f;padding:6px 8px;margin:6px 0;border-radius:4px;overflow-x:auto}
+.cvt{width:100%;font-size:.8rem} .cvt th{text-align:left;color:var(--muted);font-weight:600} .cvt td{padding:3px 6px 3px 0;font-family:ui-monospace,monospace}
+#tscanvas{width:100%;height:260px;display:block;border:1px solid var(--line);border-radius:12px;background:rgba(8,14,30,.7)}
+
+#j3scene{position:relative;width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%);overflow:hidden}
+#j3canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+#j3select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit}
+
+.hud .cell.reset{padding:0;position:relative;background:transparent;border-style:dashed}
+.hud .resetbtn{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;color:var(--muted);font:inherit}
+.hud .resetbtn:hover{color:var(--ink)}
+.hud .resetmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;width:260px;background:#0d142b;border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:6px;font-family:var(--body);font-weight:400;letter-spacing:0;white-space:normal}
+.hud .resetmenu[hidden]{display:none}
+.hud .resetmenu p{margin:0 0 2px;font-weight:700}
+.hud .resetmenu button{font:inherit;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2,#141b33);color:var(--ink);cursor:pointer;text-align:left}
+.hud .resetmenu button[data-r="all"]{border-color:#ff5a5a;color:#ffb3a7}
+.hud .resetmenu button:hover{border-color:var(--accent)}
+.hud .resetmenu small{color:var(--muted);line-height:1.4}
+:root:root:root{--zone:#5fa8ff}
+
+/* ===== Biomechanics: frames & joints lab ===== */
+#bscene{position:relative;width:100%;aspect-ratio:16/10;}
+#bscene.tall{aspect-ratio:1/1}
+#bscene{border:1px solid var(--line);border-radius:14px;background:radial-gradient(ellipse at 50% 35%,#101a33,#070b16 70%);overflow:hidden}
+#bcanvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.jmeta{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.chip{display:inline-block;padding:3px 9px;border-radius:999px;border:1px solid #2c4274;background:var(--surface-3);font:600 .72rem var(--display);letter-spacing:.04em;color:#eaf2ff}
+.jt{width:100%;font-size:.82rem} .jt th{text-align:left;color:var(--muted);font-weight:600;padding:4px 6px 4px 0} .jt td{padding:5px 8px 5px 0;vertical-align:top;border-top:1px solid var(--line)} .jt tr.on td{background:rgba(255,210,63,.07)}
+.pl,.ax{display:inline-block;padding:1px 7px;border-radius:6px;border:1px solid var(--c);color:var(--c);font:600 .72rem ui-monospace,monospace;white-space:nowrap}
+.dq{font-size:1.05rem;margin:4px 0 10px;color:#fff} .dopts{display:grid;grid-template-columns:1fr 1fr;gap:8px} .dopt{text-align:left;white-space:normal}
+.dopt.good{outline:2px solid var(--good);box-shadow:0 0 12px var(--good)} .dopt.bad{outline:2px solid #ff5a5a} .dopt:disabled{opacity:.85}
+.dfb{margin-top:10px} .dstat{margin-top:8px;font-size:.78rem;color:var(--muted);font-family:ui-monospace,monospace}
+.fb{padding:8px 10px;border-radius:8px;margin:0 0 8px} .fb.good{background:rgba(124,255,107,.12);color:#d8ffd2} .fb.bad{background:rgba(255,90,90,.12);color:#ffd6d6}
+#jointsel{width:100%;background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit;margin-top:6px}
+.tog{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted)} .tog label{display:flex;align-items:center;gap:5px} .tog i{display:inline-block;width:10px;height:10px;border-radius:2px}
+.legend small{display:block;color:var(--muted);line-height:1.5}
+
+/* ===== Biomechanics: skeletal muscle lab ===== */
+.mpane{margin-top:12px}
+.mlsvg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:12px;background:radial-gradient(120% 90% at 30% 20%,#0f1a38,#070b16 70%)}
+.mlsvg .mlab{font:600 9.5px var(--display);fill:#c9d7ff;letter-spacing:.03em}
+.hierscene .mlsvg,.mpane>.mlsvg{max-width:860px;margin-inline:auto}
+.mlsvg .mlab.dim{fill:#8ea3cf}
+.hierbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
+.hierscene{margin:0 0 8px}
+.hierzoom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+.mpane p{max-width:72ch}
+.mpane input[type=range]{width:100%}
+.mpane select,aside select{width:100%;background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit;margin-top:4px}
+.hierbar label input{vertical-align:middle}
+.plain{list-style:disc;padding-left:1.2em} .box ul.plain{display:block} .box ul.plain li{display:list-item;margin:3px 0}
+.box ol.plain{margin:0;padding-left:1.2em} .box ol.plain li{display:list-item;margin:3px 0;font-size:.9rem;color:var(--muted)}
+.box.known li,.box.find li{display:block;padding:2px 0}
+.kf2{align-items:stretch}
+.schemsvg{width:100%;height:auto;display:block}
+.hints p{margin:0;padding:8px 10px;border-radius:8px;background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.25);font-size:.92rem}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
+.figlayout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+.figlayout>aside{position:sticky;top:12px}
+@media (max-width:1100px){.figlayout{grid-template-columns:1fr}.figlayout>aside{position:static}}
+.figlayout .layout{grid-template-columns:220px minmax(0,1fr);gap:16px}
+#fignote{min-height:3em}
+@media (max-width:900px){.layout{grid-template-columns:1fr}}
+.solution .note{font-size:.88rem;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px 4px 10px;margin:0 0 10px;border:1px solid var(--line,#2c4274);border-radius:999px;background:rgba(12,20,44,.7);width:max-content;max-width:100%}
+.seglab{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.segbtn{border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:999px;font:inherit;font-size:.86rem;cursor:pointer;transition:background .15s,color .15s}
+.segbtn:hover{color:var(--fg,#e8eefc);background:rgba(255,255,255,.05)}
+.segbtn.on{background:linear-gradient(135deg,#ffb347,#ff7a59);color:#1a1200;font-weight:700;box-shadow:0 2px 12px rgba(255,138,61,.35)}
+.playrow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:4px 0 8px}
+.btn.play{min-width:92px}.btn.play.on{background:#22d3ee;color:#04202a;border-color:#22d3ee}
+.chk{display:flex;align-items:center;gap:6px;font-size:.86rem;color:var(--muted);cursor:pointer}.chk input{accent-color:#ffb347}
+table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}table.mini.txt th,table.mini.txt td{text-align:left;vertical-align:top}table.mini th,table.mini td{padding:3px 6px;text-align:right;border-bottom:1px solid rgba(120,140,200,.18)}table.mini th:first-child,table.mini td:first-child{text-align:left}table.mini th{color:var(--muted);font-weight:600}details.osim summary{cursor:pointer}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div><a class="back" href="./">&larr; All topics</a><h1>Jaw Motion &amp; Reconstruction: Tracking the Paediatric Jaw, Designing Its Implants</h1></div>
+    <p>Open a sagittal jaw and watch the condyle hinge, then slide down the articular eminence; recover the mandible's pose from clutch markers and see what noise and skin artefact do to it; load the mandible as a class III lever to get bite force and joint reaction; check a reconstruction plate, its screws and a condylar stem against fatigue and wear; and read the phased plan for our project with a paediatric head and neck surgery partner (Theia for the fibula-donor leg, a chairside tracker with EMG and bite force in clinic, optical capture with a dental clutch for the jaw). Drills and ES 305 problems follow.</p>
+  </header>
+<div class="tabs" id="mtabs"><button type="button" class="tabbtn on" data-k="anat">TMJ & the two phases</button><button type="button" class="tabbtn " data-k="track">Tracking jaw motion</button><button type="button" class="tabbtn " data-k="lever">Bite force & joint load</button><button type="button" class="tabbtn " data-k="impl">Reconstruction & implants</button><button type="button" class="tabbtn " data-k="proj">The design project</button><button type="button" class="tabbtn " data-k="drills">Drills · XP</button><button type="button" class="tabbtn " data-k="problems">Problems</button></div>
+  <section class="panel mpane" id="anat"></section>
+  <section class="panel mpane" id="track" hidden></section>
+  <section class="panel mpane" id="lever" hidden></section>
+  <section class="panel mpane" id="impl" hidden></section>
+  <section class="panel mpane" id="proj" hidden></section>
+  <section class="panel mpane" id="drills" hidden><h4>Drills</h4><p class="note">Joint type and the two phases of opening, normal ranges, imaging choices, rigid-body tracking, the mandible lever, implant materials, wear and fatigue, and the growing jaw. +10 XP per correct answer.</p><button type="button" class="btn primary" id="jdrillstart">Start</button><div id="jdrill" style="margin-top:10px"></div></section>
+  <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>
+</div>
+<script src="osim_data.js"></script><script>
+function fixSubs(root){
+  if(!root) return;
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
+  while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
+  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+}
+const GAME_PAGE="biomech-tmj"; const DRILL_KEY="dpl-biomech-tmj";
+const SL_VARS=()=>window.__slvars||(window.__slvars={});
+/* ---------- Game layer: XP, levels, streak, cleared badges, celebration ---------- */
+const GAME=(()=>{
+  const KEY="dpl-game";
+  let S={xp:0,streak:0,best:0,solved:{},orig:{}};
+  try{ Object.assign(S,JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){}
+  const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} };
+  const mem=new WeakMap();                       /* per set of numbers: {earned:Set, revealed, cleared} */
+  const rec=()=>{ let m=mem.get(SL_VARS()); if(!m){ m={earned:new Set(),revealed:false,cleared:false}; mem.set(SL_VARS(),m);} return m; };
+  const solved=()=>S.solved[GAME_PAGE]||(S.solved[GAME_PAGE]=[]);
+  const lvl=()=>Math.floor(S.xp/100)+1;
+  const I={
+    xp:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    fire:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.2 1-3.8 2.3-5 .2 1.8 1 2.8 2.2 3.2C11 8.6 11.3 5 12 2z"/></svg>',
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12.5 5 5L20 6.5"/></svg>'
+  };
+  function hud(bump){
+    let h=document.getElementById("hud");
+    if(!h){ h=document.createElement("div"); h.className="hud"; h.id="hud"; h.setAttribute("aria-label","Your progress"); document.querySelector("header.top").appendChild(h); }
+    let n=0,tot=20,lab="drills"; if(typeof PROBLEMS!=="undefined"){ n=solved().length; tot=PROBLEMS.length; lab="problems"; } else { try{ const ss=JSON.parse(localStorage.getItem(DRILL_KEY))||{}; n=Math.min(ss.correct||0,20); }catch(e){} }
+    h.innerHTML=`<div class="cell lvl"><span class="k">LVL</span><span class="n">${lvl()}</span><span class="xpbar" title="${S.xp%100}/100 XP to next level"><i style="width:${S.xp%100}%"></i></span></div>
+      <div class="cell xp">${I.xp}<span class="n">${S.xp}</span><span class="k">XP</span></div>
+      <div class="cell streak" title="Streak: problems cleared in a row without opening the full solution — resets when you reveal a solution (best so far ${S.best})">${I.fire}<span class="n">${S.streak}</span><span class="k">in a row</span></div>
+      <div class="cell clr" title="Problems on this page you have fully solved">${I.ok}<span class="n">${n}/${tot}</span><span class="k">${lab}</span></div>
+      <div class="cell reset" id="hudreset" title="Clear your progress and start over"><button type="button" class="resetbtn" aria-haspopup="true">↺ <span class="k">reset</span></button>
+        <div class="resetmenu" hidden><p>Start over?</p><button type="button" data-r="page">This page only</button><button type="button" data-r="all">All of ATLAS</button><button type="button" data-r="no">Cancel</button><small>"This page" clears this topic's solved problems and drill scores; XP and level are shared across ATLAS and are only cleared by "All".</small></div></div>`;
+    const rc=h.querySelector("#hudreset"); if(rc){ const menu=rc.querySelector(".resetmenu"); rc.querySelector(".resetbtn").onclick=()=>{ menu.hidden=!menu.hidden; };
+      rc.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ const what=b.dataset.r; menu.hidden=true; if(what==="no") return;
+        try{ if(what==="all"){ Object.keys(localStorage).filter(k=>k.startsWith("dpl-")).forEach(k=>localStorage.removeItem(k)); }
+          else { S.solved[GAME_PAGE]=[]; save(); localStorage.removeItem("dpl-last-"+GAME_PAGE); if(typeof DRILL_KEY!=="undefined"&&DRILL_KEY) localStorage.removeItem(DRILL_KEY); Object.keys(localStorage).filter(k=>k.startsWith("dpl-")&&k.includes(GAME_PAGE.replace(/\.html$/,""))).forEach(k=>localStorage.removeItem(k)); } }catch(e){}
+        location.reload(); }); }
+    if(bump) h.querySelectorAll(".cell").forEach(c=>{ if(bump.includes(c.classList[1])){ c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } });
+  }
+  function markNav(){}
+  function toast(big,small){
+    let t=document.getElementById("toast"); if(!t){ t=document.createElement("div"); t.id="toast"; t.className="toast"; t.setAttribute("role","status"); document.body.appendChild(t); }
+    t.innerHTML=`<div>${big}${small?`<small>${small}</small>`:""}</div>`;
+    t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2600);
+  }
+  function burst(x,y){
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let cv=document.getElementById("fx"); if(!cv){ cv=document.createElement("canvas"); cv.id="fx"; document.body.appendChild(cv); }
+    const dpr=window.devicePixelRatio||1, W=innerWidth, H=innerHeight; cv.width=W*dpr; cv.height=H*dpr; const c=cv.getContext("2d"); c.scale(dpr,dpr);
+    const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
+    const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
+    let t0=null;
+    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+      P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
+      requestAnimationFrame(f); })(performance.now());
+  }
+  function onCheck(ans){
+    const m=rec(); let gain=0, allGood=true;
+    ans.forEach((a,i)=>{ const good=document.getElementById("c"+i).classList.contains("good"); if(!good) allGood=false; else if(!m.revealed && !m.earned.has(i)){ m.earned.add(i); gain+=10; } });
+    const origKey=GAME_PAGE+"|"+state.id;
+    if(state.isOriginal && S.orig[origKey]) gain=0;   /* the class example only pays XP once */
+    if(allGood && !m.cleared){
+      m.cleared=true;
+      if(!m.revealed){
+        if(!(state.isOriginal && S.orig[origKey])){ gain+=20; S.streak++; S.best=Math.max(S.best,S.streak); }
+        if(state.isOriginal) S.orig[origKey]=true;
+        const s=solved(); if(!s.includes(state.id)) s.push(state.id);
+      }
+      const before=lvl(); S.xp+=gain; save(); hud(["lvl","xp","streak","clr"]); markNav();
+      const b=document.querySelector('#ansform button[type="submit"]').getBoundingClientRect(); burst(b.left+b.width/2,b.top);
+      const up=lvl()>before;
+      toast(up?`Level up! <span class="plus">LVL ${lvl()}</span>`:`Stage clear <span class="plus">+${gain} XP</span>`,
+            m.revealed?"Solution was open, so no XP this time. Try New numbers!":(S.streak>1?`${S.streak} in a row. Keep it going with New numbers.`:"Press New numbers for another round."));
+      return;
+    }
+    if(gain){ S.xp+=gain; save(); hud(["xp","lvl"]); }
+  }
+  function onReveal(){ const m=rec(); if(!m.revealed && !m.cleared){ m.revealed=true; if(S.streak){ S.streak=0; save(); hud(["streak"]); } } }
+  function addXP(n,big,small){ S.xp=Math.max(0,S.xp+n); save(); hud(n>0?["xp","lvl"]:["xp"]); if(big) toast(big,small); }
+  function unsolve(id){ const s=solved(); const i=s.indexOf(id); if(i>=0) s.splice(i,1); try{ mem.delete(SL_VARS()); }catch(e){} save(); hud(["clr"]); markNav(); }
+  return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec,unsolve};
+})();
+
+
+/* ===================== JAW MOTION & TMJ IMPLANTS LAB =====================
+   Tabs: TMJ anatomy & the two phases of opening · tracking jaw motion (imaging + markers, rigid-body pose) · mandible as a lever
+   (bite force and joint reaction) · TMJ implants and the growing jaw · the two-phase design project · drills.
+   Representative values from the clinical/biomechanics literature (normal opening ≥ 40 mm, rotation phase ≈ first 20–25 mm, condylar
+   translation ≈ 10–15 mm, eminence inclination ≈ 30–45°, adult molar bite force ≈ 300–800 N, children ≈ 150–400 N). Written for ME 320;
+   the project tab follows the phased plan with the paediatric head and neck surgery partner (kept anonymous on the page) (Theia for the donor leg, chairside tracker + EMG + bite force in clinic, optical capture with a dental clutch for the jaw); no patient data.                     */
+const TJ=(()=>{
+  const $=(s)=>document.querySelector(s); const f=(x,d=1)=>isFinite(x)?(+x).toFixed(d):"—"; const R=(d)=>d*Math.PI/180; const D=(r)=>r*180/Math.PI;
+  let svgN=0; const svg=(w,h,inner,cls="")=>{ const uid="j"+(svgN++); return `<svg viewBox="0 0 ${w} ${h}" class="mlsvg ${cls}" preserveAspectRatio="xMidYMid meet">${inner.split("@@").join(uid)}</svg>`; };
+  const MK={"#7cff6b":"ahg","#22d3ee":"ahc","#ffd23f":"ahy","#ff8a3d":"aho","#ff5a5a":"ahr","#b58cff":"ahp"};
+  const ARROW=`<defs>${Object.entries(MK).map(([c,id])=>`<marker id="${id}@@" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join("")}</defs>`;
+  const arrow=(x1,y1,x2,y2,col,w=3)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" marker-end="url(#${MK[col]||"ahc"}@@)"/>`;
+  const txt=(x,y,s,o="")=>`<text x="${x}" y="${y}" class="mlab" ${o}>${s}</text>`;
+  const seg=(label,opts,cur,attr)=>`<div class="seg"><span class="seglab">${label}</span>${opts.map(([v,t])=>`<button type="button" class="segbtn ${v===cur?"on":""}" ${attr}="${v}">${t}</button>`).join("")}</div>`;
+  const playBtn=(id,on)=>`<button type="button" class="btn small play ${on?"on":""}" id="${id}" title="play / pause">${on?"❚❚ Pause":"▶ Play"}</button>`;
+  const animator=(getState,setValue,draw,min,max,speed)=>{ let raf=null,dir=1,last=0; const step=(t)=>{ const S=getState(); if(!S.play){ raf=null; return; } const dt=last?(t-last)/1000:0; last=t; let v=S.val+dir*speed*dt; if(v>max){ v=max; dir=-1; } if(v<min){ v=min; dir=1; } setValue(v); draw(); raf=requestAnimationFrame(step); }; return {start(){ if(!raf){ last=0; raf=requestAnimationFrame(step); } },stop(){ if(raf) cancelAnimationFrame(raf); raf=null; }}; };
+
+  /* ---------- sagittal mandible model (mm, skull frame: x anterior, y superior, origin at the closed-mouth condyle centre) ----------
+     Opening is rotation about the condyle for the first `rotLim` mm of interincisal distance, then the condyle also translates down the
+     articular eminence (slope `slope`) while rotation continues. Incisor point I sits ~`Lc` mm from the condyle (adult ≈ 90 mm).            */
+  const JAW={Lc:90,rotLim:22,slope:38,transMax:13,maxOpen:48};
+  function jawPose(open,J=JAW){ /* interincisal opening (mm) → {theta (deg), trans (mm along eminence), condyle, incisor, icr} */
+    const o=Math.min(open,J.maxOpen); const r=J.Lc; const th1=Math.min(o,J.rotLim)/r; /* rad: rotation-only phase, arc ≈ chord */
+    const extra=Math.max(0,o-J.rotLim); const t=J.transMax*Math.min(1,extra/(J.maxOpen-J.rotLim)); /* translation grows with the second phase */
+    const th=th1+0.7*extra/r; /* beyond the hinge phase the extra opening is shared between continued rotation and the condylar slide */
+    const C=[t*Math.cos(R(J.slope)),-t*Math.sin(R(J.slope))]; /* condyle: anterior and inferior along the eminence */
+    const a0=R(-12); /* closed-mouth angle of the condyle→incisor line below the horizontal */
+    const I=[C[0]+r*Math.cos(a0-th),C[1]+r*Math.sin(a0-th)]; const I0=[r*Math.cos(a0),r*Math.sin(a0)];
+    const gap=Math.hypot(I[0]-I0[0],I[1]-I0[1]);
+    return {theta:D(th),trans:t,C,I,I0,gap,phase:o<=J.rotLim?"rotation (hinge) phase":"rotation + translation (gliding) phase"}; }
+  const MAND=(r)=>[[0,0],[-7,-10],[-6,-36],[0,-54],[r*0.45,-60],[r*0.88,-48],[r*1.02,-30],[r,-18],[r*0.9,-19],[r*0.6,-21],[r*0.3,-22],[r*0.2,-18],[r*0.15,-4],[r*0.1,-9],[6,-4]]; /* mandible outline in its own frame (closed): condyle, ramus, angle, body, chin, alveolar ridge, coronoid, notch */
+  let an={open:12,play:false,showICR:true,showDisc:true,envelope:false};
+  const anim=animator(()=>({play:an.play,val:an.open}),(v)=>{ an.open=v; },()=>renderAnat(),0,JAW.maxOpen,22);
+  function renderAnat(){ const el=$("#anat"); const P=jawPose(an.open); const sc=2.7; const ox=190, oy=90; const X=(x)=>ox+x*sc, Y=(y)=>oy-y*sc;
+    const emin=`<path d="M${X(-18)} ${Y(8)} Q ${X(-10)} ${Y(13)} ${X(0)} ${Y(12)} Q ${X(8)} ${Y(11)} ${X(12)} ${Y(5)} L ${X(24)} ${Y(-5)} L ${X(34)} ${Y(-8)}" fill="none" stroke="#e8e2d2" stroke-width="5" stroke-linecap="round"/>`;
+    const fossa=txt(X(-30),Y(20),"glenoid fossa",'style="fill:#c9d7ff;font-size:11px"')+txt(X(16),Y(1),"articular eminence",'style="fill:#c9d7ff;font-size:11px"');
+    const C=P.C; const a=R(-12)-R(P.theta);
+    const ramus=(()=>{ const r=JAW.Lc; const pts=MAND(r);
+      const rot=([x,y])=>{ const c=Math.cos(-R(P.theta)),s=Math.sin(-R(P.theta)); return [C[0]+x*c-y*s,C[1]+x*s+y*c]; };
+      const q=pts.map(rot).map(([x,y])=>`${X(x)},${Y(y)}`).join(" "); return `<polygon points="${q}" fill="#e8e2d2" fill-opacity=".85" stroke="#fff" stroke-width="1"/>`; })();
+    const cond=`<circle cx="${X(C[0])}" cy="${Y(C[1])}" r="${7*sc/3.2}" fill="#f6f1e4" stroke="#fff"/>`;
+    const disc=an.showDisc?`<path d="M${X(C[0]-9)} ${Y(C[1]+8)} Q ${X(C[0]+1)} ${Y(C[1]+13)} ${X(C[0]+10)} ${Y(C[1]+6)}" fill="none" stroke="#22d3ee" stroke-width="4" stroke-linecap="round"/>${txt(X(C[0]+13),Y(C[1]+12),"disc",'style="fill:#22d3ee;font-size:11px"')}`:"";
+    const skullTeeth=`<rect x="${X(46)}" y="${Y(-14)}" width="${46*sc}" height="${4*sc}" fill="#f6f1e4" stroke="#fff"/>${txt(X(48),Y(-11),"maxillary teeth (fixed)",'style="fill:#c9d7ff;font-size:10px"')}`;
+    const inc=`<circle cx="${X(P.I[0])}" cy="${Y(P.I[1])}" r="4" fill="#ffd23f"/>${txt(X(P.I[0])+8,Y(P.I[1])+5,`opening ${f(P.gap)} mm`,'style="fill:#ffd23f;font-size:12px"')}`;
+    const icr=an.showICR?`<circle cx="${X(C[0])}" cy="${Y(C[1])}" r="3" fill="#ff5a5a"/>${P.trans>0.3?arrow(X(0),Y(0),X(C[0]),Y(C[1]),"#ff5a5a",2):""}${txt(X(C[0])-110,Y(C[1])+28,`condyle slide ${f(P.trans)} mm`,'style="fill:#ff5a5a;font-size:11px"')}`:"";
+    const env=an.envelope?(()=>{ const pts=[]; for(let o=0;o<=JAW.maxOpen;o+=2){ const p=jawPose(o); pts.push(`${X(p.I[0])},${Y(p.I[1])}`); } const back=[]; for(let o=JAW.maxOpen;o>=0;o-=4){ const p=jawPose(o); back.push(`${X(p.I[0]-6-o*0.12)},${Y(p.I[1]+1)}`); } return `<polyline points="${pts.join(" ")}" fill="none" stroke="#b58cff" stroke-width="2" stroke-dasharray="5 4"/><polyline points="${back.join(" ")}" fill="none" stroke="#b58cff" stroke-width="1.5" stroke-dasharray="2 4"/>${txt(X(JAW.Lc-30),Y(-70),"Posselt-type envelope: incisor path (sagittal)",'style="fill:#b58cff;font-size:11px"')}`; })():"";
+    const dial=`<g transform="translate(${X(C[0])},${Y(C[1])})"><path d="M${22*Math.cos(R(-12))} ${-22*Math.sin(R(-12))} A 22 22 0 0 1 ${22*Math.cos(a)} ${-22*Math.sin(a)}" fill="none" stroke="#7cff6b" stroke-width="2"/></g>${txt(X(C[0])-62,Y(C[1])+62,`θ = ${f(P.theta)}°`,'style="fill:#7cff6b;font-size:12px"')}`;
+    el.innerHTML=`<div class="two"><div>${svg(560,330,ARROW+env+emin+fossa+skullTeeth+ramus+cond+disc+dial+icr+inc)}</div>
+      <div><h4>Two joints, two phases</h4><p>The temporomandibular joint is a <b>ginglymoarthrodial</b> joint: a hinge (ginglymus) and a sliding joint (arthrodia) stacked in one capsule, separated by a fibrocartilage <b>disc</b>. Both TMJs are linked by the mandible, so they always move together (a bicondylar joint).</p>
+      <p><b>Phase 1 — rotation.</b> For roughly the first 20–25 mm of interincisal opening the condyle spins in the glenoid fossa under the disc (lower joint space). The instantaneous centre of rotation is near the condyle centre.</p>
+      <p><b>Phase 2 — translation.</b> To open wider, the condyle–disc complex slides forward and down the articular eminence (upper joint space), typically 10–15 mm along a slope of about 30–45°. Rotation continues at the same time, so the instantaneous axis migrates. Normal maximum opening is ≈ 40–55 mm; less than 40 mm in an adult is restricted.</p>
+      <p class="note">Current state: <b>${P.phase}</b>. Lateral excursion (≈ 8–12 mm each side) and protrusion (≈ 8–10 mm) are the other two clinical motions; the Posselt envelope is the border path of the incisor point in the sagittal plane.</p>
+      <label class="note">Opening <b id="jopenv">${f(an.open)} mm</b><input type="range" id="jopen" min="0" max="${JAW.maxOpen}" step="0.5" value="${an.open}"></label>
+      <div class="playrow">${playBtn("jplay",an.play)}<label class="chk"><input type="checkbox" id="jicr" ${an.showICR?"checked":""}> condyle path</label><label class="chk"><input type="checkbox" id="jdisc" ${an.showDisc?"checked":""}> disc</label><label class="chk"><input type="checkbox" id="jenv" ${an.envelope?"checked":""}> incisor envelope</label></div>
+      <table class="mini"><tr><th>Quantity</th><th>Value</th></tr><tr><td>Rotation θ</td><td>${f(P.theta)}°</td></tr><tr><td>Condylar translation</td><td>${f(P.trans)} mm along the eminence (${f(P.trans*Math.cos(R(JAW.slope)))} mm anterior, ${f(P.trans*Math.sin(R(JAW.slope)))} mm inferior)</td></tr><tr><td>Interincisal opening</td><td>${f(P.gap)} mm</td></tr><tr><td>Model</td><td>condyle→incisor ${JAW.Lc} mm · rotation-only to ${JAW.rotLim} mm · eminence ${JAW.slope}°</td></tr></table></div></div>`;
+    $("#jopen").oninput=(e)=>{ an.open=+e.target.value; renderAnat(); };
+    $("#jplay").onclick=()=>{ an.play=!an.play; if(an.play) anim.start(); else anim.stop(); renderAnat(); };
+    $("#jicr").onchange=(e)=>{ an.showICR=e.target.checked; renderAnat(); }; $("#jdisc").onchange=(e)=>{ an.showDisc=e.target.checked; renderAnat(); }; $("#jenv").onchange=(e)=>{ an.envelope=e.target.checked; renderAnat(); };
+    fixSubs(el); }
+
+  /* ---------- 2. tracking jaw motion: imaging + markers, rigid-body pose ---------- */
+  const METHODS=[
+    ["CT / CBCT","Bone geometry: condyle, fossa, eminence, dentition. Sub-millimetre voxels; CBCT uses a lower dose than medical CT.","Static only; ionising radiation (a real constraint for children); soft tissue and the disc are poorly seen."],
+    ["MRI","The disc, capsule, muscles and marrow; no ionising radiation. Cine or 'dynamic' MRI can capture slow opening sequences.","Lower spatial resolution than CT for bone; long scans; motion must be slow and repeated for cine sequences."],
+    ["Optical motion capture","Markers on a tooth-borne splint (mandible) and a headband or glasses (skull); 100–500 Hz; full 6-DOF path of any mandibular point once the splint is registered to the CT.","Line of sight; marker cluster must be rigid with the bone (skin markers slide 2–5 mm over the jaw); needs a calibrated multi-camera volume."],
+    ["Electromagnetic / ultrasonic jaw trackers","Small sensor on the lower incisors, receiver on the head; portable, used chairside.","Metal in the room distorts EM fields; usually tracks one point (incisor) plus orientation."],
+    ["Video / depth camera (markerless)","No hardware on the patient; attractive for children.","Tracks the skin, not the bone; accuracy of a few millimetres; occlusion by lips."]];
+  let tr={theta:14,tx:6,ty:-4,noise:0,skin:0};
+  const MARK=[[22,-26],[58,-30],[38,-48]]; /* splint markers in the mandible frame (mm), condyle at origin when closed */
+  const kabsch2=(P,Q)=>{ /* least-squares rigid fit P→Q in 2-D: returns {theta,t} */ const n=P.length; const cp=[0,0],cq=[0,0]; P.forEach((p,i)=>{ cp[0]+=p[0]/n; cp[1]+=p[1]/n; cq[0]+=Q[i][0]/n; cq[1]+=Q[i][1]/n; });
+    let sxx=0,sxy=0,syx=0,syy=0; P.forEach((p,i)=>{ const a=[p[0]-cp[0],p[1]-cp[1]], b=[Q[i][0]-cq[0],Q[i][1]-cq[1]]; sxx+=a[0]*b[0]; sxy+=a[0]*b[1]; syx+=a[1]*b[0]; syy+=a[1]*b[1]; });
+    const th=Math.atan2(sxy-syx,sxx+syy); const c=Math.cos(th),s=Math.sin(th); return {theta:D(th),t:[cq[0]-(c*cp[0]-s*cp[1]),cq[1]-(s*cp[0]+c*cp[1])]}; };
+  function renderTrack(){ const el=$("#track"); const c=Math.cos(R(-tr.theta)),s=Math.sin(R(-tr.theta)); /* opening = clockwise in the sagittal view (x anterior, y up) */
+    const rnd=()=>(Math.random()*2-1)*tr.noise; const Q=MARK.map(([x,y],i)=>[tr.tx+c*x-s*y+rnd()+(i===2?tr.skin:0),tr.ty+s*x+c*y+rnd()+(i===2?-tr.skin*0.6:0)]);
+    const fit=kabsch2(MARK,Q); const Cfit=fit.t; const Ctrue=[tr.tx,tr.ty]; const errC=Math.hypot(Cfit[0]-Ctrue[0],Cfit[1]-Ctrue[1]);
+    const sc=4.6, ox=70, oy=50; const X=(x)=>ox+x*sc, Y=(y)=>oy-y*sc;
+    const dots=(M,col,lab)=>M.map(([x,y],i)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${col}"/>${txt(X(x)+7,Y(y)-6,lab+(i+1),`style="fill:${col};font-size:11px"`)}`).join("");
+    const tri=(M,col)=>`<polygon points="${M.map(([x,y])=>`${X(x)},${Y(y)}`).join(" ")}" fill="none" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    const g=svg(560,340,ARROW+`<line x1="${X(-12)}" y1="${Y(0)}" x2="${X(92)}" y2="${Y(0)}" stroke="#2c4274"/><line x1="${X(0)}" y1="${Y(6)}" x2="${X(0)}" y2="${Y(-40)}" stroke="#2c4274"/>${txt(X(80),Y(0)-6,"x (anterior)",'style="fill:#c9d7ff;font-size:11px"')}${txt(X(0)+6,Y(4),"y (superior)",'style="fill:#c9d7ff;font-size:11px"')}`+tri(MARK,"#9fd8ff")+dots(MARK,"#9fd8ff","P")+tri(Q,"#ffd23f")+dots(Q,"#ffd23f","P'")+`<circle cx="${X(0)}" cy="${Y(0)}" r="4" fill="#ff5a5a"/>${txt(X(0)-62,Y(0)+18,"condyle (closed)",'style="fill:#ff5a5a;font-size:11px"')}<circle cx="${X(Cfit[0])}" cy="${Y(Cfit[1])}" r="4" fill="none" stroke="#7cff6b" stroke-width="2"/>${txt(X(Cfit[0])+8,Y(Cfit[1])+16,"condyle from the fit",'style="fill:#7cff6b;font-size:11px"')}`);
+    el.innerHTML=`<div class="two"><div>${g}<p class="note">Three splint markers in the skull frame before (blue) and after (yellow) a movement. The least-squares rigid-body fit (Kabsch / SVD) recovers the rotation and the translation of the condyle — the same method the gait lab uses for a thigh marker cluster.</p></div>
+      <div><h4>From markers to joint kinematics</h4><p>A rigid body in the plane has 3 degrees of freedom (6 in 3-D). With ≥ 2 markers (≥ 3 non-collinear in 3-D) you can solve for the pose that best maps the marker cluster from one frame to another, then carry <i>any</i> point of the bone — the condyle centre from the CT — along with it. That is how a motion-capture trial becomes a condylar path.</p>
+      <label class="note">True rotation θ <b>${f(tr.theta)}°</b><input type="range" id="trth" min="0" max="30" step="0.5" value="${tr.theta}"></label>
+      <label class="note">True condyle slide, anterior <b>${f(tr.tx)} mm</b><input type="range" id="trtx" min="0" max="14" step="0.5" value="${tr.tx}"></label>
+      <label class="note">True condyle slide, inferior <b>${f(-tr.ty)} mm</b><input type="range" id="trty" min="-10" max="0" step="0.5" value="${tr.ty}"></label>
+      <label class="note">Marker noise (± mm) <b>${f(tr.noise)} mm</b><input type="range" id="trn" min="0" max="2" step="0.1" value="${tr.noise}"></label>
+      <label class="note">Skin-marker artefact on P3 (mm) <b>${f(tr.skin)} mm</b><input type="range" id="trs" min="0" max="8" step="0.5" value="${tr.skin}"></label>
+      <table class="mini"><tr><th></th><th>True</th><th>Recovered</th></tr><tr><td>θ</td><td>${f(tr.theta)}°</td><td>${f(-fit.theta)}°</td></tr><tr><td>Condyle (x, y)</td><td>(${f(tr.tx)}, ${f(tr.ty)}) mm</td><td>(${f(Cfit[0])}, ${f(Cfit[1])}) mm</td></tr><tr><td>Condyle position error</td><td colspan="2"><b>${f(errC,2)} mm</b></td></tr></table>
+      <p class="note">Noise averages out across markers; a marker that moves with the skin instead of the bone does not — it biases the whole fit. Hence tooth-borne splints for the mandible and a tight headband or glasses frame for the skull.</p>
+      <button type="button" class="btn small" id="trre">Re-sample noise</button></div></div>
+      <h4 style="margin-top:14px">Ways to see and track the jaw</h4><table class="mini txt"><tr><th>Method</th><th>What it gives</th><th>Limits</th></tr>${METHODS.map(m=>`<tr><td><b>${m[0]}</b></td><td>${m[1]}</td><td>${m[2]}</td></tr>`).join("")}</table>
+      <p class="note">A full kinematic model combines them: CT/CBCT for the bone surfaces and joint centres, MRI for the disc and soft tissue, and marker tracking for the motion. Everything is expressed in a skull frame (e.g. the Frankfort horizontal through the orbitale and porion points) and a mandible frame built from the two condylion points and the menton, following ISB-style conventions.</p>`;
+    $("#trth").oninput=(e)=>{ tr.theta=+e.target.value; renderTrack(); }; $("#trtx").oninput=(e)=>{ tr.tx=+e.target.value; renderTrack(); }; $("#trty").oninput=(e)=>{ tr.ty=+e.target.value; renderTrack(); };
+    $("#trn").oninput=(e)=>{ tr.noise=+e.target.value; renderTrack(); }; $("#trs").oninput=(e)=>{ tr.skin=+e.target.value; renderTrack(); }; $("#trre").onclick=renderTrack; fixSubs(el); }
+
+  /* ---------- 3. mandible as a lever: bite force and joint reaction ---------- */
+  const BITE={inc:{n:"Incisors",b:85},pre:{n:"Premolars",b:60},mol:{n:"First molar",b:45}}; /* bite point distance anterior to the condyle (mm) */
+  let lv={Fm:400,Ft:250,bite:"mol"};
+  const LEV={am:30,at:12,phiT:70}; /* masseter+medial pterygoid resultant 30 mm anterior of the condyle, near-vertical; temporalis 12 mm anterior, pulling up and back at 70° to the horizontal */
+  function lever(v){ const b=BITE[v.bite].b; const Tx=-v.Ft*Math.cos(R(LEV.phiT)), Ty=v.Ft*Math.sin(R(LEV.phiT)); /* temporalis: posterior (−x) and superior */
+    const Fb=(v.Fm*LEV.am+Ty*LEV.at)/b; /* moments about the condyle: muscles (ccw, +) = bite (cw) */
+    const Ry=Fb-v.Fm-Ty, Rx=-Tx; /* ΣF = 0 on the mandible: R is the force of the skull on the condyle */
+    return {b,Tx,Ty,Fb,Rx,Ry,Rmag:Math.hypot(Rx,Ry),ratio:Math.hypot(Rx,Ry)/Fb}; }
+  function renderLever(){ const el=$("#lever"); const r=lever(lv); const sc=3.0, ox=90, oy=70; const X=(x)=>ox+x*sc, Y=(y)=>oy-y*sc; const kN=(F)=>F/7;
+    const body=`<polygon points="${MAND(100).map(([x,y])=>`${X(x)},${Y(y)}`).join(" ")}" fill="#e8e2d2" fill-opacity=".9" stroke="#fff"/><circle cx="${X(0)}" cy="${Y(0)}" r="7" fill="#f6f1e4" stroke="#fff"/>`;
+    const Fm=arrow(X(LEV.am),Y(-30),X(LEV.am),Y(-30)-kN(lv.Fm),"#ff8a3d")+txt(X(LEV.am)+6,Y(-30)-kN(lv.Fm)-4,`Fm = ${lv.Fm} N (masseter + medial pterygoid)`,'style="fill:#ff8a3d;font-size:11px"');
+    const Ft=arrow(X(LEV.at),Y(-8),X(LEV.at)+kN(lv.Ft)*Math.cos(R(180-LEV.phiT)),Y(-8)-kN(lv.Ft)*Math.sin(R(LEV.phiT)),"#ffd23f")+txt(X(LEV.at)-10,Y(-8)-kN(lv.Ft)*Math.sin(R(LEV.phiT))-8,`Ft = ${lv.Ft} N (temporalis, ${LEV.phiT}°)`,'style="fill:#ffd23f;font-size:11px"');
+    const Fb=arrow(X(r.b),Y(-18)-kN(r.Fb)-6,X(r.b),Y(-18)-6,"#7cff6b")+txt(X(r.b)-30,Y(-66),`bite Fb = ${f(r.Fb,0)} N on the ${BITE[lv.bite].n.toLowerCase()}`,'style="fill:#7cff6b;font-size:11px"');
+    const Rr=arrow(X(0)-kN(r.Rx),Y(0)+kN(r.Ry),X(0),Y(0),"#ff5a5a")+txt(X(0)-70,Y(0)+kN(-r.Ry)+16,`joint reaction R = ${f(r.Rmag,0)} N`,'style="fill:#ff5a5a;font-size:11px"');
+    el.innerHTML=`<div class="two"><div>${svg(560,300,ARROW+`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(110)}" y2="${Y(0)}" stroke="#2c4274" stroke-dasharray="4 4"/>`+body+Fm+Ft+Fb+Rr)}<p class="note">Free-body diagram of the mandible in the sagittal plane (one side shown; forces are totals for both sides). The jaw is a <b>class III lever</b>: the fulcrum (TMJ) is at one end, the muscle effort acts between the fulcrum and the load (the bite).</p></div>
+      <div><h4>Set the muscles and the bite point</h4>
+      <label class="note">Masseter + medial pterygoid F_m <b>${lv.Fm} N</b><input type="range" id="lvfm" min="100" max="900" step="10" value="${lv.Fm}"></label>
+      <label class="note">Temporalis F_t <b>${lv.Ft} N</b><input type="range" id="lvft" min="0" max="600" step="10" value="${lv.Ft}"></label>
+      ${seg("Bite point",Object.entries(BITE).map(([k,v])=>[k,`${v.n} (${v.b} mm)`]),lv.bite,"data-bite")}
+      <table class="mini"><tr><th>Equilibrium</th><th>Result</th></tr><tr><td>ΣM<sub>condyle</sub> = 0</td><td>F_b = (F_m·${LEV.am} + F_t sin${LEV.phiT}°·${LEV.at}) / ${r.b} = <b>${f(r.Fb,0)} N</b></td></tr><tr><td>ΣF_x = 0</td><td>R_x = ${f(r.Rx,0)} N (anterior)</td></tr><tr><td>ΣF_y = 0</td><td>R_y = ${f(r.Ry,0)} N (${r.Ry<0?"skull pushes down on the condyle":"skull pulls up — not possible, the joint would unload"})</td></tr><tr><td>|R| / F_b</td><td><b>${f(r.ratio,2)}</b></td></tr></table>
+      <p class="note">Move the bite forward (incisors) and the same muscle effort gives a smaller bite force but a <i>larger</i> joint load — the lever arm ratio works against you. Adult maximal molar bite forces are typically 300–800 N; children aged 6–12 produce roughly 150–400 N, and bite force rises with age, muscle cross-section and dental development. Implant designers use these loads, multiplied by the number of chewing cycles a day (on the order of a thousand or more), to set strength and fatigue targets.</p></div></div>`;
+    $("#lvfm").oninput=(e)=>{ lv.Fm=+e.target.value; renderLever(); }; $("#lvft").oninput=(e)=>{ lv.Ft=+e.target.value; renderLever(); }; el.querySelectorAll("[data-bite]").forEach(b=>b.onclick=()=>{ lv.bite=b.dataset.bite; renderLever(); }); fixSubs(el); }
+
+  /* ---------- 4. implants and the growing jaw ---------- */
+  let im={d:6,e:8,F:300,Se:500,cyc:1500,view:"recon"};
+  function stem(v){ const A=Math.PI*v.d*v.d/4, I=Math.PI*Math.pow(v.d,4)/64; const M=v.F*v.e; const sb=M*(v.d/2)/I, sa=v.F/A; const s=sb+sa; return {A,I,M,sb,sa,s,fos:v.Se/s,peryear:v.cyc*365}; }
+  function renderImpl(){ const el=$("#impl"); const r=stem(im);
+    const pic=svg(420,300,`<path d="M40 60 Q 120 20 210 60 L 230 70 Q 150 110 60 90 Z" fill="#9fd8ff" fill-opacity=".9" stroke="#fff"/><text x="240" y="40" class="mlab" style="fill:#9fd8ff;font-size:11px">fossa component</text><text x="240" y="54" class="mlab" style="fill:#9fd8ff;font-size:11px">(UHMWPE on a metal backing)</text>
+      <circle cx="140" cy="100" r="22" fill="#cfcfd6" stroke="#fff"/><text x="170" y="98" class="mlab" style="fill:#c9d7ff;font-size:11px">condylar head (CoCr alloy)</text>
+      <path d="M128 118 L 118 150 L 112 250 L 96 258 L 96 268 L 150 268 L 150 258 L 136 250 L 150 150 L 152 118 Z" fill="#dcdce4" stroke="#fff"/><text x="160" y="190" class="mlab" style="fill:#c9d7ff;font-size:11px">ramus plate / stem (Ti alloy),</text><text x="160" y="204" class="mlab" style="fill:#c9d7ff;font-size:11px">fixed to the ramus with screws</text>
+      ${[170,200,230].map(y=>`<circle cx="124" cy="${y}" r="4" fill="#ffd23f"/>`).join("")}<text x="20" y="290" class="mlab" style="fill:#c9d7ff;font-size:10px">schematic of a total TMJ replacement (not a specific device)</text>`);
+    const tabs=seg("Topic",[["recon","Mandible reconstruction"],["tjr","Total joint replacement"],["ped","The growing jaw"],["mat","Materials, wear & fatigue"]],im.view,"data-iv");
+    const body=im.view==="recon"?`<p>In a child, the usual reason to rebuild the jaw is a <b>tumour of the mandible</b> — an ameloblastoma or a desmoid tumour, for example — removed with a segment of bone. The defect is bridged with a <b>fibula free flap</b>: a length of the patient's own fibula, with its blood vessels, cut into pieces and fixed with a titanium <b>reconstruction plate and screws</b>, then re-attached to the neck vessels. The surgeons plan the cuts on the CT with virtual surgical planning and 3-D-printed cutting guides, so the engineering starts before the operation.</p>
+      <p><b>Two surgical sites, two sets of mechanics.</b> The new jaw must carry bite loads through plates and screws while the bone unites and, in a child, keep growing; the donor leg has lost its fibula, which matters for the ankle (the lateral malleolus is kept, but the shaft is gone) and for gait — altered walking has been reported in about half of children after a fibula harvest for jaw reconstruction. A full outcome study therefore tracks the jaw and the leg.</p>
+      <p><b>What the engineer measures.</b> Opening, lateral excursion and protrusion; the condylar path when a condyle is preserved; chewing-side preference; muscle activity (EMG of masseter and temporalis) and bite force on each side; and, for the leg, walking symmetry and ankle function. Repeated over 3, 6 and 12 months and then yearly, these numbers show whether function returns and whether the reconstruction keeps pace with growth — things a CT cannot show without more radiation.</p>
+      <p class="note">The plate check in the <i>Materials, wear &amp; fatigue</i> topic and problem 8 treat the reconstruction plate as a beam loaded by the bite moment at the defect; screw pull-out limits what a thin paediatric cortex can hold.</p>`
+      :im.view==="tjr"?`<p>An alloplastic <b>total TMJ replacement</b> has two parts: a <b>fossa component</b> (an ultra-high-molecular-weight polyethylene bearing surface, usually on a metal backing fixed to the zygomatic arch) and a <b>condylar / ramus component</b> (a cobalt–chromium head on a titanium-alloy plate screwed to the lateral ramus). It restores the hinge; the sliding phase is largely lost, so maximal opening after replacement is typically smaller than in a healthy joint, and lateral excursion toward the opposite side is reduced because the lateral pterygoid no longer pulls on a native condyle.</p>
+      <p><b>Stock vs patient-specific.</b> Stock systems come in a few sizes and are shaped to fit at surgery; patient-specific systems are designed on the patient's CT (often from a 3-D-printed skull model) so the plate matches the ramus and the fossa matches the arch — the reason imaging and a reliable motion record come first in any design project.</p>
+      <p><b>Common indications.</b> Ankylosis (bony fusion of the joint), end-stage degenerative or inflammatory joint disease, condylar resorption, loss of the condyle after tumour resection or trauma, and failed previous surgery. The engineering goals are a stable, pain-free hinge; adequate opening for eating, speech and dental care; and a device that survives decades of chewing cycles.</p>`
+      :im.view==="ped"?`<p>Children are not small adults here. The <b>condylar cartilage is a growth site</b>: the mandible lengthens from the condyle through adolescence, and the ramus height, chin position and dental occlusion all depend on it. An implanted joint does not grow, so an alloplastic joint in a young child would be outgrown — most total-joint systems are intended for skeletally mature patients, with paediatric use reserved for selected cases (for example recurrent ankylosis after failed grafts) and planned revisions.</p>
+      <p><b>Reconstruction options that can grow.</b> A <b>costochondral graft</b> (a piece of rib with its cartilage cap) is the classic autogenous reconstruction of a child's condyle because the cartilage cap can keep growing — but its growth is unpredictable (too little, or sometimes too much). <b>Distraction osteogenesis</b> lengthens the mandible slowly (about 1 mm/day) by pulling apart a surgical cut with an external or internal device while new bone forms in the gap; it is the mainstay for mandibular hypoplasia in conditions such as hemifacial microsomia and Pierre Robin sequence.</p>
+      <p><b>Why motion tracking matters for children.</b> Growth, surgery and ankylosis change the joint over time, so serial measurements of opening, deviation on opening, lateral excursion and condylar translation document function with no radiation at all — something CT cannot do repeatedly in a child. A tracked kinematic record also tells a designer what motion a future device or graft must allow, and gives a baseline to judge outcomes against.</p>`
+      :`<p><b>Bearing couple.</b> Metal (CoCr) on UHMWPE is the standard orthopaedic couple. Wear debris from polyethylene drives inflammation and bone loss (osteolysis) around hip implants, so wear rate — Archard's law, V = k·F·s — sets the service life. The TMJ is helped by low sliding distances per cycle (a few millimetres in the hinge phase) and loads far below those in the hip.</p>
+      <p><b>Fatigue.</b> Chewing applies on the order of a thousand or more load cycles a day — roughly half a million to a million a year — so the condylar stem must stay below the material's fatigue (endurance) strength, not just its yield strength, at the stress concentrations around screw holes and the neck of the head. Titanium alloys have a usable endurance limit (≈ 500 MPa for polished Ti-6Al-4V in rotating bending, much lower with notches or corrosion); the design check below is the bending-plus-axial stress at the stem.</p>
+      <div class="two"><div><label class="note">Stem diameter d <b>${im.d} mm</b><input type="range" id="imd" min="4" max="10" step="0.5" value="${im.d}"></label><label class="note">Load offset e (head centre to stem axis) <b>${im.e} mm</b><input type="range" id="ime" min="2" max="16" step="0.5" value="${im.e}"></label><label class="note">Joint load F <b>${im.F} N</b><input type="range" id="imf" min="50" max="800" step="10" value="${im.F}"></label><label class="note">Endurance strength S_e <b>${im.Se} MPa</b><input type="range" id="imse" min="150" max="600" step="10" value="${im.Se}"></label><label class="note">Chewing cycles per day <b>${im.cyc}</b><input type="range" id="imc" min="500" max="3000" step="100" value="${im.cyc}"></label></div>
+      <div><table class="mini"><tr><th>Stem check</th><th></th></tr><tr><td>Bending moment M = F·e</td><td>${f(r.M/1000,2)} N·m</td></tr><tr><td>σ_bend = 32M/(πd³)</td><td>${f(r.sb,0)} MPa</td></tr><tr><td>σ_axial = 4F/(πd²)</td><td>${f(r.sa,1)} MPa</td></tr><tr><td>σ_max</td><td><b>${f(r.s,0)} MPa</b></td></tr><tr><td>Fatigue factor of safety S_e/σ_max</td><td><b style="color:${r.fos>=2?"#7cff6b":r.fos>=1?"#ffd23f":"#ff5a5a"}">${f(r.fos,2)}</b></td></tr><tr><td>Load cycles per year</td><td>${(r.peryear/1e3).toFixed(0)} × 10³ (10 years ≈ ${(r.peryear*10/1e6).toFixed(1)} million)</td></tr></table><p class="note">A notch factor of 2–3 at a screw hole would divide the allowable stress accordingly; this is why real stems are much stouter than the minimum that static strength suggests.</p></div></div>`;
+    el.innerHTML=`<div class="two"><div>${pic}</div><div>${tabs}${body}</div></div>`;
+    el.querySelectorAll("[data-iv]").forEach(b=>b.onclick=()=>{ im.view=b.dataset.iv; renderImpl(); });
+    ["imd","ime","imf","imse","imc"].forEach(id=>{ const e=$("#"+id); if(e) e.oninput=(ev)=>{ im[{imd:"d",ime:"e",imf:"F",imse:"Se",imc:"cyc"}[id]]=+ev.target.value; renderImpl(); }; }); fixSubs(el); }
+
+  /* ---------- 5. the two-phase project brief ---------- */
+  function renderProj(){ const el=$("#proj"); el.innerHTML=`<p>Our biomechanics lab is working with a <b>paediatric head and neck surgery programme</b> in Central Florida (a cranio-oncology service that reconstructs children's jaws after tumour surgery) on measuring how a child's jaw moves and works after mandible reconstruction. The practice already plans surgery on CT with CAD/CAM, prints patient-specific guides and implants, and uses optical navigation in the operating room; what nobody measures yet is <i>function</i> afterwards — opening, excursion, muscle use, bite force — and how it changes as the child grows. That gap is the project.</p>
+      <div class="two"><div>
+      <h4>The tools on the table</h4><table class="mini txt"><tr><th>System</th><th>What it does</th><th>Jaw?</th></tr>
+      <tr><td><b>Theia3D</b> (markerless, in the rehab centre in the same building)</td><td>Full-body pose from synchronised video, no markers — ideal for children walking</td><td>No — the head is one segment, no mandible. Covers the <b>fibula donor leg</b> (gait).</td></tr>
+      <tr><td><b>Chairside jaw tracker</b> (e.g. MODJAW)</td><td>Records mandibular motion and the hinge axis, overlays it on the patient's CT/CBCT and intraoral scan</td><td>Motion only — no force, no EMG; add a bite-force sensor and surface EMG for loads.</td></tr>
+      <tr><td><b>Optical marker capture</b> (Vicon, Qualisys, OptiTrack…)</td><td>Tracks reflective markers at hundreds of Hz with analogue sync for EMG and force</td><td>Yes, with custom hardware: a tooth-borne <b>dental clutch</b> carrying markers and a rigid <b>head frame</b>; the jaw model is built in software.</td></tr>
+      <tr><td><b>EMG + bite force</b> (e.g. Trigno Mini sensors, a bite transducer)</td><td>Muscle activity of masseter/temporalis and the load the jaw produces</td><td>Needed for joint-load estimates; synchronise with the motion.</td></tr></table>
+      <p class="note">Our portable biomechanics lab has 8 Vero v2.2 cameras, 4 mm markers, Trigno Mini EMG with a trigger module, Nexus and OpenSim — enough to build and validate the jaw model and run a pilot at the clinic.</p></div>
+      <div><h4>The phased plan</h4><table class="mini txt"><tr><th>Phase</th><th>What happens</th><th>Scans</th></tr>
+      <tr><td><b>0A</b> — now, no new capital</td><td>Theia gait for fibula-donor legs at the rehab centre; design and print a child-sized dental clutch and head frame; file the IRB protocol (assent for children, a dentist for mixed dentition)</td><td>None new — confirm which scans the team routinely takes and whether de-identified copies can be shared</td></tr>
+      <tr><td><b>0B</b> — if the portable lab is available</td><td>Build the Vicon jaw model (skull segment from the head frame, jaw segment from the clutch, labelling template, pipeline that outputs jaw motion relative to the skull); validate on adult volunteers; small paediatric pilot at the clinic with the portable cameras and EMG</td><td>CT/CBCT to register the clutch to the bone</td></tr>
+      <tr><td><b>1</b> — in clinic</td><td>Chairside jaw tracker plus mini EMG and a bite-force sensor: 15-minute sessions in routine visits at 3, 6 and 12 months, then yearly</td><td>CT or CBCT plus an intraoral scan (tracker overlays motion on the child's own bone and teeth)</td></tr>
+      <tr><td><b>2</b> — grant-funded</td><td>Installed optical capture with analogue sync; musculoskeletal (OpenSim) and finite-element models of the reconstructed jaw, plates and screws; the Phase 0B model and pipeline carry over</td><td>CT/CBCT for bone and hardware geometry; MRI optional, for the disc and muscle shapes</td></tr></table>
+      <p class="note">Why phased: paediatric head and neck tumours are rare, so numbers are small and a grant (an NIDCR R21-type exploratory award is the classic route) is far stronger with pilot data. Go/no-go gates sit between phases.</p></div></div>
+      <h4 style="margin-top:12px">What a student team owns</h4><table class="mini txt"><tr><th>Work package</th><th>Skills from this course</th></tr>
+      <tr><td>Dental clutch and head frame design; registration of markers to the CT</td><td>Global vs local frames (ISB), rigid-body pose, helical axis — Frames &amp; Joints Lab and this lab</td></tr><tr><td>Jaw model in Nexus/OpenSim; filtering; soft-tissue artefact; validation on adults</td><td>Sampling and filtering — Inverse Dynamics Lab; tracking tab here</td></tr><tr><td>Joint and plate loads from bite force and EMG</td><td>Free-body diagrams, moment equilibrium — Joint Kinetics Lab; PCSA and Hill model — Muscle and MTC Labs</td></tr><tr><td>Plate, screw and implant strength, fatigue and wear</td><td>This lab and strength of materials</td></tr><tr><td>Donor-leg gait with Theia; ankle function</td><td>Gait analysis — Capstone; Theia's markerless output vs marker data</td></tr><tr><td>Growth as an outcome</td><td>Condylar growth site, bone healing — Tissue Lab; serial measurements</td></tr></table>
+      <h4 style="margin-top:12px">Ground rules for a clinical partnership</h4><p>Patient imaging and motion data are protected health information: work only with de-identified data under the IRB protocol, a reliance agreement between the institutions and a data-use agreement; keep raw data on approved storage; never put a patient's images in a report or presentation without the surgeon's sign-off. Equipment brought into the hospital goes through clinical engineering, IT and infection control, and students need credentialing to work in a paediatric clinic. Engineers provide measurements and designs; the surgeon makes the clinical decisions. Document every assumption (bite force, material properties, growth) so a clinician can challenge it.</p>`; fixSubs(el); }
+
+  /* ---------- drills ---------- */
+  const DR=(()=>{ const KEY="dpl-biomech-tmj"; let St={done:0,correct:0,streak:0,best:0}; try{ Object.assign(St,JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){} const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(St)); }catch(e){} };
+    const pick=(a)=>a[Math.floor(Math.random()*a.length)]; const shuffle=(a)=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+    const Q=[
+      ()=>({q:"The TMJ is described as ginglymoarthrodial because it…",opts:shuffle(["both hinges (rotates) and glides (translates)","only rotates","only glides","is a ball-and-socket joint"]),ans:"both hinges (rotates) and glides (translates)",why:"Ginglymus = hinge, arthrodia = gliding; the disc separates the two joint spaces."}),
+      ()=>({q:"During the first ≈ 20–25 mm of mouth opening the condyle mainly…",opts:shuffle(["rotates in the glenoid fossa","slides forward down the eminence","moves backward","moves laterally"]),ans:"rotates in the glenoid fossa",why:"Rotation (hinge) phase first; translation takes over for wider opening."}),
+      ()=>({q:"Wide opening (beyond ≈ 25 mm) requires the condyle–disc complex to…",opts:shuffle(["translate anteriorly and inferiorly along the articular eminence","translate posteriorly","stop moving","rotate about the incisors"]),ans:"translate anteriorly and inferiorly along the articular eminence",why:"Typically 10–15 mm along a 30–45° slope, with rotation continuing."}),
+      ()=>({q:"A normal adult maximal interincisal opening is about…",opts:shuffle(["40–55 mm","15–20 mm","70–80 mm","5–10 mm"]),ans:"40–55 mm",why:"Less than 40 mm is considered restricted in an adult."}),
+      ()=>({q:"Which imaging modality shows the TMJ disc best?",opts:shuffle(["MRI","CT","plain radiograph","optical motion capture"]),ans:"MRI",why:"MRI images soft tissue; CT/CBCT is for bone."}),
+      ()=>({q:"Why is repeated CT a particular concern in a paediatric jaw study?",opts:shuffle(["ionising radiation dose accumulates in a growing child","CT cannot image bone","CT scanners are too small","children have no condyles"]),ans:"ionising radiation dose accumulates in a growing child",why:"CBCT lowers the dose; MRI and marker tracking use none."}),
+      ()=>({q:"To track the mandible as a rigid body in 3-D you need at least…",opts:shuffle(["three non-collinear markers fixed to the bone (or a splint)","one marker","two markers","markers on the skin only"]),ans:"three non-collinear markers fixed to the bone (or a splint)",why:"Six degrees of freedom need three non-collinear points; skin markers slide relative to the bone."}),
+      ()=>({q:"A marker that slides with the skin rather than the bone will…",opts:shuffle(["bias the rigid-body fit (soft-tissue artefact)","average out like random noise","improve the fit","have no effect"]),ans:"bias the rigid-body fit (soft-tissue artefact)",why:"Noise averages over markers; a systematic marker displacement does not."}),
+      ()=>({q:"The mandible during biting acts as which class of lever?",opts:shuffle(["class III — effort between the fulcrum (TMJ) and the load (bite)","class I — fulcrum between effort and load","class II — load between fulcrum and effort","it is not a lever"]),ans:"class III — effort between the fulcrum (TMJ) and the load (bite)",why:"Muscles insert closer to the joint than the teeth, so bite force is smaller than muscle force."}),
+      ()=>({q:"Moving the bite point from the molars to the incisors (same muscle effort)…",opts:shuffle(["lowers the bite force and raises the joint load","raises the bite force","does not change the joint load","unloads the muscles"]),ans:"lowers the bite force and raises the joint load",why:"Longer load arm → smaller bite force; the joint carries the difference."}),
+      ()=>({q:"A typical maximal molar bite force in a healthy adult is on the order of…",opts:shuffle(["several hundred newtons (≈ 300–800 N)","10–20 N","5 000 N","1 N"]),ans:"several hundred newtons (≈ 300–800 N)",why:"Children aged 6–12 produce roughly 150–400 N."}),
+      ()=>({q:"The bearing surface of the fossa component of a TMJ total joint replacement is usually…",opts:shuffle(["UHMWPE (polyethylene) on a metal backing","solid cobalt–chromium","bone cement","silicone"]),ans:"UHMWPE (polyethylene) on a metal backing",why:"Metal (CoCr) on polyethylene, as in hip and knee replacements."}),
+      ()=>({q:"After a total TMJ replacement, maximal opening is usually…",opts:shuffle(["smaller than normal because the translation phase is largely lost","larger than normal","unchanged","zero"]),ans:"smaller than normal because the translation phase is largely lost",why:"The device is a hinge; lateral pterygoid-driven translation is lost."}),
+      ()=>({q:"The main reason alloplastic TMJ replacements are avoided in young children is that…",opts:shuffle(["the implant cannot grow with the mandible (condylar growth site)","children cannot chew","the materials are toxic to children","children have no TMJ"]),ans:"the implant cannot grow with the mandible (condylar growth site)",why:"Growing reconstructions (costochondral graft, distraction osteogenesis) are preferred; TJR for selected cases with planned revision."}),
+      ()=>({q:"A costochondral graft is used to rebuild a child's condyle because…",opts:shuffle(["its cartilage cap can keep growing","it is made of metal","it never needs revision","it has no donor site"]),ans:"its cartilage cap can keep growing",why:"Growth is unpredictable (too little or too much), which is its main drawback."}),
+      ()=>({q:"Distraction osteogenesis lengthens the mandible by…",opts:shuffle(["slowly separating a surgical cut (~1 mm/day) while new bone forms in the gap","inserting a metal joint","removing bone","wearing a brace"]),ans:"slowly separating a surgical cut (~1 mm/day) while new bone forms in the gap",why:"Used for mandibular hypoplasia such as hemifacial microsomia."}),
+      ()=>({q:"Archard's wear law V = k·F·s says polyethylene wear volume grows with…",opts:shuffle(["load and sliding distance","time only","temperature only","the elastic modulus"]),ans:"load and sliding distance",why:"The TMJ is helped by small sliding distances and modest loads."}),
+      ()=>({q:"For a condylar stem loaded a million times a year the governing material property is the…",opts:shuffle(["fatigue (endurance) strength","ultimate tensile strength only","hardness","density"]),ans:"fatigue (endurance) strength",why:"Cyclic loading well below yield can still crack a stem at a notch."}),
+      ()=>{ const Fm=pick([300,400,500]), a=30, b=pick([45,60,90]); const Fb=Fm*a/b; return {q:`Vertical muscle force ${Fm} N acts ${a} mm anterior of the condyle; the bite point is ${b} mm anterior. Bite force?`,opts:shuffle([`${Fb.toFixed(0)} N`,`${(Fm*b/a).toFixed(0)} N`,`${Fm} N`,`${(Fm-Fb).toFixed(0)} N`]),ans:`${Fb.toFixed(0)} N`,why:`Moments about the condyle: F_b = F_m·a/b = ${Fm}·${a}/${b} = ${Fb.toFixed(0)} N; the joint carries F_m − F_b = ${(Fm-Fb).toFixed(0)} N.`}; },
+      ()=>{ const r=90, o=pick([10,15,20]); const th=o/r*180/Math.PI; return {q:`Rotation-only opening of ${o} mm at the incisors, ${r} mm from the condyle: rotation angle?`,opts:shuffle([`${th.toFixed(1)}°`,`${(th*2).toFixed(1)}°`,`${(o).toFixed(1)}°`,`${(th/2).toFixed(1)}°`]),ans:`${th.toFixed(1)}°`,why:`θ ≈ s/r = ${o}/${r} = ${(o/r).toFixed(3)} rad = ${th.toFixed(1)}°.`}; },
+      ()=>({q:"Why can a markerless full-body system such as Theia3D not track the jaw?",opts:shuffle(["its body model treats the head as one segment with no mandible","it has too many cameras","it only works outdoors","it cannot see children"]),ans:"its body model treats the head as one segment with no mandible",why:"It still covers the fibula-donor leg (gait) at no extra cost; the jaw needs its own tools."}),
+      ()=>({q:"To track the mandible with an optical marker system you attach markers to…",opts:shuffle(["a tooth-borne dental clutch, with a rigid head frame to subtract head motion","the lips","the chin skin","the ears"]),ans:"a tooth-borne dental clutch, with a rigid head frame to subtract head motion",why:"Skin markers slide several millimetres over the jaw; the clutch moves with the teeth and bone."}),
+      ()=>({q:"A chairside jaw tracker records motion and the hinge axis but not…",opts:shuffle(["muscle activity or bite force — add EMG and a bite sensor","opening distance","lateral excursion","the condylar path"]),ans:"muscle activity or bite force — add EMG and a bite sensor",why:"Loads on the joint, plates and screws need force and EMG, synchronised with the motion."}),
+      ()=>({q:"The bone used to rebuild a child's mandible after tumour resection usually comes from the…",opts:shuffle(["fibula (free flap with its blood vessels)","skull","rib only","pelvis only"]),ans:"fibula (free flap with its blood vessels)",why:"Hence two surgical sites — jaw and leg — and two sets of outcomes to measure."}),
+      ()=>({q:"Which phase of the plan needs no new scans at all?",opts:shuffle(["Phase 0 — Theia gait and clutch design","Phase 1 — chairside tracker","Phase 2 — finite-element models","every phase needs a new CT"]),ans:"Phase 0 — Theia gait and clutch design",why:"Phase 1 uses the routine CT/CBCT plus an intraoral scan; Phase 2 uses CT/CBCT for geometry with MRI optional. No phase adds radiation."}),
+      ()=>({q:"Patient-specific TMJ implants are designed from…",opts:shuffle(["the patient's CT (often via a 3-D-printed skull model)","a standard size chart","an MRI of the disc only","a photograph"]),ans:"the patient's CT (often via a 3-D-printed skull model)",why:"Hence imaging and registration come first in a design project."}),
+      ()=>({q:"Patient imaging and motion data in a clinical collaboration must be…",opts:shuffle(["de-identified and handled under IRB approval and a data agreement","posted to the team's shared drive","shown in the final presentation with names","emailed freely"]),ans:"de-identified and handled under IRB approval and a data agreement",why:"Protected health information; the surgeon signs off on any image used."})];
+    let cur=null; function next(){ cur=pick(Q)(); const el=$("#jdrill"); el.innerHTML=`<div class="dq">${cur.q}</div><div class="dopts">${shuffle(cur.opts).map(o=>`<button type="button" class="btn dopt" data-o="${o.replace(/"/g,"&quot;")}">${o}</button>`).join("")}</div><div class="dfb" id="jdfb"></div><div class="dstat">Answered ${St.done} · correct ${St.correct} · in a row ${St.streak} (best ${St.best})</div>`; el.querySelectorAll(".dopt").forEach(b=>b.onclick=()=>answer(b.dataset.o,b)); fixSubs(el); }
+    function answer(o,b){ const ok=o===cur.ans; St.done++; if(ok){ St.correct++; St.streak++; St.best=Math.max(St.best,St.streak); } else St.streak=0; save(); $("#jdrill").querySelectorAll(".dopt").forEach(x=>{ x.disabled=true; if(x.dataset.o===cur.ans) x.classList.add("good"); else if(x===b&&!ok) x.classList.add("bad"); }); $("#jdfb").innerHTML=`<p class="${ok?"fb good":"fb bad"}">${ok?"Correct.":"Not quite — the answer is <b>"+cur.ans+"</b>."} ${cur.why}</p><button type="button" class="btn primary small" id="jnext">Next question →</button>`; $("#jnext").onclick=next; const ds=$("#jdrill .dstat"); if(ds) ds.textContent=`Answered ${St.done} · correct ${St.correct} · in a row ${St.streak} (best ${St.best})`; if(typeof GAME!=="undefined"&&ok) GAME.addXP(10,St.streak>1?`+10 XP · ${St.streak} in a row`:"+10 XP"); }
+    return {next}; })();
+
+  function init(){ renderAnat(); renderTrack(); renderLever(); renderImpl(); renderProj();
+    document.querySelectorAll("#mtabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#mtabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); document.querySelectorAll(".mpane").forEach(p=>p.hidden=p.id!==b.dataset.k); });
+    $("#jdrillstart").onclick=()=>{ DR.next(); $("#jdrillstart").textContent="Skip →"; }; }
+  return {init,jawPose,lever,stem,kabsch2,JAW};
+})();
+
+/* ===================== BIOPROB: lean problem engine for ATLAS Biomechanics =====================
+   PROBLEMS entries: {id,name,tag,level:"short"|"full",group,original,randomize(),solve(v),statement(v,r),known(v,r)[],find[],
+   schematic(v,r) -> svg string (optional),assumptions[],steps(v,r)[{t,eq,note}],comments(v,r)[],references[],
+   answers(v,r)[{label,unit,val,scale?}],hints(v,r)[3],takeaway}. Numbers in text use N(x,"unit"). 1 % tolerance.      */
+const fmt=(x,sig=4)=>{ if(!isFinite(x)) return "—"; if(Math.abs(x)<1e-12) return "0"; return String(Number(x.toPrecision(sig))); };
+const N=(x,unit="",sig=4)=>`<span class="num">${fmt(x,sig)}${unit?"&nbsp;"+unit:""}</span>`;
+const pick=(min,max,step)=>{ const n=Math.round((max-min)/step); return +(min+step*Math.floor(Math.random()*(n+1))).toFixed(6); };
+const subs=(h)=>String(h).replace(/([^\s_(>"=])_([A-Za-z0-9]+|[θαωρμ∞])/g,"$1<sub>$2</sub>");
+const state={id:null,vars:null,isOriginal:true,shown:false,hintsUsed:0};
+const BP=(()=>{
+  const $=(s)=>document.querySelector(s);
+  const cur=()=>PROBLEMS.find(p=>p.id===state.id);
+  function nav(){ const el=$("#pnav"); const groups=[...new Set(PROBLEMS.map(p=>p.group))]; const solved=(typeof GAME!=="undefined"&&GAME.S.solved[GAME_PAGE])||[];
+    el.innerHTML=groups.map(g=>`<div class="topic"><h2>${g}</h2>`+PROBLEMS.filter(p=>p.group===g).map(p=>`<button type="button" data-id="${p.id}" aria-current="${p.id===state.id}" class="${solved.includes(p.id)?"solved":""}"><span class="pname">${p.name}</span><span class="ptag">${p.level==="full"?"full":"quick"}</span></button>`).join("")+`</div>`).join("");
+    el.querySelectorAll("button").forEach(b=>b.onclick=()=>{ state.id=b.dataset.id; state.vars={...cur().original}; state.isOriginal=true; state.shown=false; state.hintsUsed=0; window.__slvars={}; render(); }); }
+  function render(){ const p=cur(); const v=state.vars, r=p.solve(v); const ans=p.answers(v,r); const full=p.level==="full"; window.__slvars=window.__slvars||{};
+    const sheet=$("#psheet");
+    sheet.innerHTML=`<header class="phead"><div class="eyebrow">${p.group} · ${p.tag} · ${full?"full set-up (Known → Find → Schematic → Assumptions → Analysis → Comments → References)":"quick problem"}</div><h2>${p.name}</h2>
+      <div class="controls"><button type="button" class="btn primary" id="newnums">New numbers</button><button type="button" class="btn" id="orig">Class example</button><button type="button" class="btn" id="preset" title="Forget this problem: clear your answers, unmark it as solved and go back to the class example">↺ Reset problem</button>${p.credit?`<span class="note">${p.credit}</span>`:""}</div></header>
+      <section class="statement"><p>${p.statement(v,r)}</p></section>
+      ${full?`<div class="cols"><div class="box known"><h3>Known</h3><ul>${p.known(v,r).map(k=>`<li>${k}</li>`).join("")}</ul></div><div class="box find"><h3>Find</h3><ul>${p.find.map(k=>`<li>${k}</li>`).join("")}</ul></div></div>
+      <div class="cols kf2">${p.schematic?`<figure class="schem">${p.schematic(v,r)}<figcaption>Schematic</figcaption></figure>`:""}${p.assumptions?`<div class="box assume"><h3>Assumptions</h3><ul class="plain">${p.assumptions.map(a=>`<li>${a}</li>`).join("")}</ul></div>`:""}</div>`:""}
+      <form id="ansform" class="answers" autocomplete="off"><h3>Your answers</h3>${ans.map((a,i)=>`<div class="arow"><label for="a${i}">${a.label}</label><input id="a${i}" inputmode="decimal" placeholder="e.g. 12.3"><span class="unit">${a.unit}</span><span class="chip idle" id="c${i}">not checked</span></div>`).join("")}
+        <div class="controls"><button class="btn primary" type="submit">Check answers</button><button type="button" class="btn" id="hintbtn">Hint (−5 XP)</button><button type="button" class="btn" id="showsol">${state.shown?"Hide":"Show"} full solution</button><span class="hint">Correct within 1 %.</span></div><div class="hints" id="hints" ${state.hintsUsed?"":"hidden"}>${p.hints(v,r).slice(0,state.hintsUsed).map((h,i)=>`<p><b>Hint ${i+1}.</b> ${h}</p>`).join("")}</div></form>
+      <section id="sol" class="solution" ${state.shown?"":"hidden"}><h3>Analysis</h3><ol class="steps">${p.steps(v,r).map(s=>`<li><div class="step-title">${s.t}</div><div class="step-body"><div class="eq">${subs(s.eq)}</div>${s.note?`<div class="note">${s.note}</div>`:""}</div></li>`).join("")}</ol>
+        <div class="final">${ans.map(a=>`<div class="ans"><div class="k">${a.label}</div><div class="val">${fmt(a.val)} ${a.unit}</div></div>`).join("")}</div>
+        ${p.comments?`<div class="box comments"><h3>Comments</h3><ul class="plain">${p.comments(v,r).map(c=>`<li>${c}</li>`).join("")}</ul></div>`:""}${p.references?`<div class="box refs"><h3>References</h3><ol class="plain">${p.references.map(c=>`<li>${c}</li>`).join("")}</ol></div>`:""}
+        ${p.takeaway?`<p class="takeaway"><b>Takeaway.</b> ${p.takeaway}</p>`:""}</section>`;
+    $("#newnums").onclick=()=>{ state.vars=p.randomize(); state.isOriginal=false; state.shown=false; state.hintsUsed=0; window.__slvars={}; render(); };
+    $("#orig").onclick=()=>{ state.vars={...p.original}; state.isOriginal=true; state.shown=false; state.hintsUsed=0; window.__slvars={}; render(); };
+    $("#preset").onclick=()=>{ if(typeof GAME!=="undefined"&&GAME.unsolve) GAME.unsolve(state.id); state.vars={...p.original}; state.isOriginal=true; state.shown=false; state.hintsUsed=0; window.__slvars={}; nav(); render(); };
+    $("#showsol").onclick=()=>{ state.shown=!state.shown; if(state.shown&&typeof GAME!=="undefined") GAME.onReveal(); $("#sol").hidden=!state.shown; $("#showsol").textContent=(state.shown?"Hide":"Show")+" full solution"; if(state.shown) $("#sol").scrollIntoView({behavior:"smooth",block:"start"}); };
+    $("#hintbtn").onclick=()=>{ const hs=p.hints(v,r); if(state.hintsUsed>=hs.length) return; state.hintsUsed++; if(typeof GAME!=="undefined") GAME.addXP(-5,"Hint "+state.hintsUsed,"−5 XP"); const hb=$("#hints"); hb.hidden=false; hb.innerHTML=hs.slice(0,state.hintsUsed).map((h,i)=>`<p><b>Hint ${i+1}.</b> ${h}</p>`).join(""); fixSubs(hb); };
+    $("#ansform").onsubmit=(e)=>{ e.preventDefault(); ans.forEach((a,i)=>{ const inp=$("#a"+i), chip=$("#c"+i); const x=parseFloat(inp.value.replace(",",".")); if(!isFinite(x)){ chip.className="chip idle"; chip.textContent="enter a number"; return; } const tol=0.01*Math.max(Math.abs(a.val),a.scale||0); const err=Math.abs(x-a.val); if(err<=tol+1e-12){ chip.className="chip good"; chip.textContent="correct"; } else { chip.className="chip bad"; chip.textContent=err<=3*tol?"close — check rounding/units":"not yet"; } }); if(typeof GAME!=="undefined") GAME.onCheck(ans); nav(); };
+    nav(); fixSubs(sheet); }
+  function init(){ state.id=PROBLEMS[0].id; state.vars={...PROBLEMS[0].original}; render(); }
+  return {init,render,cur};
+})();
+
+/* ===================== JAW MOTION & TMJ IMPLANTS: problem bank (ES 305 format) ===================== */
+const deg=(r)=>r*180/Math.PI; const R=(d)=>d*Math.PI/180;
+const sv=(inner)=>`<svg class="schemsvg" viewBox="0 0 600 240">${inner}</svg>`;
+const PROBLEMS=[
+ {id:"openphase",name:"Hinge Phase: Opening Angle from Interincisal Distance",tag:"rotation phase",level:"short",group:"Jaw kinematics",
+  original:{o:20,r:90},
+  randomize(){ return {o:pick(12,25,1),r:pick(80,100,2)}; },
+  solve(v){ const th=v.o/v.r; const chord=2*v.r*Math.sin(th/2); return {th,thd:deg(th),chord,err:v.o-chord,w:deg(th)/0.5}; },
+  statement:(v,r)=>`During the hinge phase of mouth opening the condyle rotates in the fossa without sliding. The incisor edge is ${N(v.r,"mm")} from the condyle centre and the mouth opens ${N(v.o,"mm")} at the incisors (arc length). (a) Through what angle has the mandible rotated, in rad and degrees? (b) What is the straight-line (chord) distance between the closed and open incisor positions, and how much does it differ from the arc? (c) If this opening takes 0.5 s, what is the mean angular velocity in deg/s?`,
+  answers:(v,r)=>[{label:"(a) θ, rad",unit:"rad",val:r.th},{label:"(a) θ, deg",unit:"°",val:r.thd},{label:"(b) chord",unit:"mm",val:r.chord},{label:"(b) arc − chord",unit:"mm",val:r.err},{label:"(c) ω",unit:"deg/s",val:r.w}],
+  hints:(v,r)=>["Arc length s = r·θ with θ in radians.","Chord = 2 r sin(θ/2).","Mean angular velocity = Δθ/Δt."],
+  steps:(v,r)=>[{t:"Rotation angle",eq:`θ = s/r = ${v.o}/${v.r} = <b>${fmt(r.th)} rad</b> = <b>${fmt(r.thd)}°</b>`},{t:"Chord",eq:`c = 2·${v.r}·sin(${fmt(r.thd)}°/2) = <b>${fmt(r.chord)} mm</b>; arc − chord = ${fmt(r.err,2)} mm (small-angle: the difference is negligible for a goniometer or a ruler)`},{t:"Angular velocity",eq:`ω = ${fmt(r.thd)}° / 0.5 s = <b>${fmt(r.w)} deg/s</b>`}],
+  takeaway:"In the hinge phase the incisor opening is simply r·θ about the condyle; a 20 mm opening is only about 13° of rotation."},
+ {id:"condpath",name:"Gliding Phase: Condylar Translation Along the Eminence",tag:"translation phase",level:"short",group:"Jaw kinematics",
+  original:{t:12,slope:38,r:90,extra:20},
+  randomize(){ return {t:pick(8,15,0.5),slope:pick(30,45,1),r:pick(80,100,2),extra:pick(15,28,1)}; },
+  solve(v){ const ax=v.t*Math.cos(R(v.slope)), ay=v.t*Math.sin(R(v.slope)); const dropInc=ay; const rotPart=v.extra-dropInc; const th=rotPart>0?deg(rotPart/v.r):0; return {ax,ay,rotPart,th}; },
+  statement:(v,r)=>`Beyond the hinge phase the condyle–disc complex slides ${N(v.t,"mm")} down the articular eminence, which is inclined ${N(v.slope,"°")} to the horizontal. (a) Find the anterior and inferior components of the condylar translation. (b) The incisor point is ${N(v.r,"mm")} from the condyle. If the total additional opening in this phase is ${N(v.extra,"mm")}, and the inferior component of the slide carries the whole mandible down by that amount, how much of the additional opening must come from further rotation, and through what extra angle?`,
+  answers:(v,r)=>[{label:"(a) anterior",unit:"mm",val:r.ax},{label:"(a) inferior",unit:"mm",val:r.ay},{label:"(b) opening from rotation",unit:"mm",val:r.rotPart},{label:"(b) extra angle",unit:"°",val:r.th}],
+  hints:(v,r)=>["Resolve the slide along and perpendicular to the horizontal: t cos α anterior, t sin α inferior.","Translation moves every point of the mandible equally — the inferior component opens the incisors directly.","The rest of the opening is r·Δθ."],
+  steps:(v,r)=>[{t:"Translation components",eq:`anterior = ${v.t} cos ${v.slope}° = <b>${fmt(r.ax)} mm</b>; inferior = ${v.t} sin ${v.slope}° = <b>${fmt(r.ay)} mm</b>`},{t:"Opening from rotation",eq:`${v.extra} − ${fmt(r.ay)} = <b>${fmt(r.rotPart)} mm</b>`},{t:"Extra rotation",eq:`Δθ = ${fmt(r.rotPart)}/${v.r} = ${fmt(r.rotPart/v.r)} rad = <b>${fmt(r.th)}°</b>`}],
+  takeaway:"Wide opening is rotation plus a translation of the condyle down the eminence; a hinge-only implant loses the second part, which is why opening after total joint replacement is reduced."},
+ {id:"jawlever",name:"The Mandible as a Lever: Bite Force and Joint Reaction",tag:"free-body diagram",level:"full",group:"Loads on the joint",
+  credit:"Standard two-dimensional lever model of the mandible (e.g. Hylander; Koolstra & van Eijden); numbers are representative, not patient data.",
+  original:{Fm:400,am:30,Ft:250,phi:70,at:12,b:45},
+  randomize(){ return {Fm:pick(250,600,10),am:pick(26,34,1),Ft:pick(150,350,10),phi:pick(60,80,2),at:pick(10,15,1),b:pick(45,90,5)}; },
+  solve(v){ const Tx=-v.Ft*Math.cos(R(v.phi)), Ty=v.Ft*Math.sin(R(v.phi)); const Fb=(v.Fm*v.am+Ty*v.at)/v.b; const Ry=Fb-v.Fm-Ty, Rx=-Tx; const Rm=Math.hypot(Rx,Ry); return {Tx,Ty,Fb,Rx,Ry,Rm,ratio:Rm/Fb,Rside:Rm/2}; },
+  statement:(v,r)=>`A sagittal-plane free-body diagram of the mandible: the combined masseter + medial pterygoid force ${N(v.Fm,"N")} acts vertically upward ${N(v.am,"mm")} anterior to the condyle centre; the temporalis pulls with ${N(v.Ft,"N")} at ${N(v.phi,"°")} above the horizontal, directed upward and backward, ${N(v.at,"mm")} anterior to the condyle. The patient bites on a bolus ${N(v.b,"mm")} anterior to the condyle (vertical bite force). Forces are totals for both sides. Find (a) the bite force, (b) the horizontal and vertical components of the joint reaction force on the condyle, (c) its magnitude and the ratio of joint load to bite force, and (d) the load on each TMJ if the two sides share equally.`,
+  known:(v,r)=>[`F_m = ${v.Fm} N vertical, ${v.am} mm anterior of the condyle`,`F_t = ${v.Ft} N at ${v.phi}° (up and back), ${v.at} mm anterior`,`Bite point ${v.b} mm anterior; bite force vertical`,`Quasi-static; sagittal plane; both sides summed`],
+  find:["(a) F_b","(b) R_x, R_y","(c) |R| and |R|/F_b","(d) load per joint"],
+  schematic:(v,r)=>sv(`<path d="M80 60 L74 150 L120 170 L420 190 L480 150 L470 100 L300 80 L130 70 Z" fill="#e8e2d2" fill-opacity=".85" stroke="#fff"/><circle cx="80" cy="60" r="9" fill="#f6f1e4" stroke="#fff"/><text x="40" y="40" font-size="11" fill="#ff5a5a">R (joint)</text><line x1="${80+v.am*3.6}" y1="75" x2="${80+v.am*3.6}" y2="15" stroke="#ff8a3d" stroke-width="3"/><text x="${86+v.am*3.6}" y="26" font-size="11" fill="#ff8a3d">F_m = ${v.Fm} N</text><line x1="${80+v.at*3.6}" y1="72" x2="${80+v.at*3.6-40*Math.cos(R(v.phi))}" y2="${72-40*Math.sin(R(v.phi))}" stroke="#ffd23f" stroke-width="3"/><text x="${40+v.at*3.6-40*Math.cos(R(v.phi))}" y="${64-40*Math.sin(R(v.phi))}" font-size="11" fill="#ffd23f">F_t = ${v.Ft} N, ${v.phi}°</text><line x1="${80+v.b*3.6}" y1="95" x2="${80+v.b*3.6}" y2="150" stroke="#7cff6b" stroke-width="3"/><text x="${86+v.b*3.6}" y="165" font-size="11" fill="#7cff6b">F_b (bite), ${v.b} mm</text><text x="300" y="225" font-size="11" fill="#c9d7ff" text-anchor="middle">x anterior →, y up; moments about the condyle centre</text>`),
+  assumptions:["Two-dimensional, quasi-static equilibrium (no inertia during a bite).","The two TMJs share the reaction equally (symmetric bite).","Muscle lines of action are straight and fixed at the stated positions and angles.","Bite force is vertical; friction at the teeth neglected."],
+  answers:(v,r)=>[{label:"(a) F_b",unit:"N",val:r.Fb},{label:"(b) R_x",unit:"N",val:r.Rx},{label:"(b) R_y",unit:"N",val:r.Ry},{label:"(c) |R|",unit:"N",val:r.Rm},{label:"(c) |R|/F_b",unit:"—",val:r.ratio},{label:"(d) per joint",unit:"N",val:r.Rside}],
+  hints:(v,r)=>["Take moments about the condyle so the unknown reaction drops out; only F_m, the vertical part of F_t and F_b have moment arms.","Then ΣF_x = 0 gives R_x (only the temporalis has a horizontal component) and ΣF_y = 0 gives R_y.","A negative R_y means the skull pushes down on the condyle — the expected direction: the joint is in compression."],
+  steps:(v,r)=>[{t:"Temporalis components",eq:`F_tx = −${v.Ft} cos ${v.phi}° = ${fmt(r.Tx)} N (posterior); F_ty = ${v.Ft} sin ${v.phi}° = ${fmt(r.Ty)} N (up)`},{t:"Moments about the condyle (ccw +)",eq:`F_m·${v.am} + F_ty·${v.at} − F_b·${v.b} = 0 → F_b = (${v.Fm}·${v.am} + ${fmt(r.Ty)}·${v.at}) / ${v.b} = <b>${fmt(r.Fb)} N</b>`},{t:"ΣF_x = 0",eq:`R_x + F_tx = 0 → R_x = <b>${fmt(r.Rx)} N</b> (anterior push of the fossa/eminence on the condyle)`},{t:"ΣF_y = 0",eq:`R_y + F_m + F_ty − F_b = 0 → R_y = ${fmt(r.Fb)} − ${v.Fm} − ${fmt(r.Ty)} = <b>${fmt(r.Ry)} N</b> (downward on the condyle: compression)`},{t:"Magnitude and ratio",eq:`|R| = √(R_x² + R_y²) = <b>${fmt(r.Rm)} N</b>; |R|/F_b = <b>${fmt(r.ratio,3)}</b>; per joint ≈ <b>${fmt(r.Rside)} N</b>`}],
+  comments:(v,r)=>["The joint load is a sizeable fraction of the bite force at the molars and exceeds it for incisor biting — the lever arm ratio decides.","Implant design loads come from this kind of model multiplied over the chewing cycles of a lifetime; growth changes the lever arms, which matters in children."],
+  references:["ME 320 joint kinetics: free-body diagrams and moment equilibrium.","Koolstra JH, van Eijden TMGJ (1992) Application and validation of a three-dimensional mathematical model of the human masticatory system in vivo. J Biomech 25:175–187."],
+  takeaway:"Moments about the joint give the bite force; the force sums give the joint reaction. A class III lever pays for its speed with high joint loads."},
+ {id:"markerpose",name:"Rigid-Body Pose from Splint Markers",tag:"tracking → kinematics",level:"full",group:"Tracking jaw motion",
+  credit:"Rigid-body pose recovery as used in motion-capture laboratories (least-squares / Kabsch fit); planar version for hand calculation.",
+  original:{p1x:10,p1y:-20,p2x:40,p2y:-28,q1x:9.5,q1y:-25.9,q2x:36.4,q2y:-41.4,cx:0,cy:0,ix:88,iy:-22},
+  randomize(){ const th=R(pick(8,22,1)); const tx=pick(2,10,0.5), ty=-pick(1,7,0.5); const p1=[pick(5,15,1),-pick(15,25,1)], p2=[pick(35,45,1),-pick(24,32,1)]; const rot=(p)=>[tx+Math.cos(-th)*p[0]-Math.sin(-th)*p[1],ty+Math.sin(-th)*p[0]+Math.cos(-th)*p[1]]; const q1=rot(p1),q2=rot(p2); return {p1x:p1[0],p1y:p1[1],p2x:p2[0],p2y:p2[1],q1x:+q1[0].toFixed(1),q1y:+q1[1].toFixed(1),q2x:+q2[0].toFixed(1),q2y:+q2[1].toFixed(1),cx:0,cy:0,ix:pick(85,95,1),iy:-pick(18,26,1)}; },
+  solve(v){ const a0=Math.atan2(v.p2y-v.p1y,v.p2x-v.p1x), a1=Math.atan2(v.q2y-v.q1y,v.q2x-v.q1x); let th=a1-a0; if(th>Math.PI) th-=2*Math.PI; if(th<-Math.PI) th+=2*Math.PI; const c=Math.cos(th),s=Math.sin(th);
+    const map=(x,y)=>[v.q1x+c*(x-v.p1x)-s*(y-v.p1y),v.q1y+s*(x-v.p1x)+c*(y-v.p1y)]; const C=map(v.cx,v.cy), I=map(v.ix,v.iy); const open=Math.hypot(I[0]-v.ix,I[1]-v.iy); const slide=Math.hypot(C[0]-v.cx,C[1]-v.cy); const L0=Math.hypot(v.p2x-v.p1x,v.p2y-v.p1y), L1=Math.hypot(v.q2x-v.q1x,v.q2y-v.q1y);
+    return {th,thd:deg(th),C,I,open,slide,L0,L1,rigid:L1-L0}; },
+  statement:(v,r)=>`Two markers on a tooth-borne splint are located in the skull frame (x anterior, y superior, mm) with the mouth closed at P₁ = (${v.p1x}, ${v.p1y}) and P₂ = (${v.p2x}, ${v.p2y}); the condyle centre from the CT is at C = (${v.cx}, ${v.cy}) and the incisor point at I = (${v.ix}, ${v.iy}), both in the same frame. In a later frame the markers are at P₁′ = (${v.q1x}, ${v.q1y}) and P₂′ = (${v.q2x}, ${v.q2y}). (a) Check that the marker pair behaved as a rigid body. (b) Find the rotation of the mandible (sign: opening is clockwise in this view, i.e. negative). (c) Carry the condyle centre and the incisor point to the new frame. (d) How far has the condyle slid, and what is the interincisal opening?`,
+  known:(v,r)=>[`P₁, P₂ (closed) and P₁′, P₂′ (later frame), skull frame, mm`,`C = (${v.cx}, ${v.cy}), I = (${v.ix}, ${v.iy}) rigidly attached to the mandible`,`Planar (sagittal) motion`],
+  find:["(a) |P₂−P₁| before and after","(b) θ","(c) C′, I′","(d) condyle slide, incisor opening"],
+  schematic:(v,r)=>{ const X=(x)=>80+x*4.5, Y=(y)=>60-y*4.5; const dot=(x,y,col,l)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${col}"/><text x="${X(x)+7}" y="${Y(y)-6}" font-size="11" fill="${col}">${l}</text>`; return sv(`<line x1="${X(-10)}" y1="${Y(0)}" x2="${X(100)}" y2="${Y(0)}" stroke="#2c4274"/><line x1="${X(0)}" y1="${Y(10)}" x2="${X(0)}" y2="${Y(-45)}" stroke="#2c4274"/><line x1="${X(v.p1x)}" y1="${Y(v.p1y)}" x2="${X(v.p2x)}" y2="${Y(v.p2y)}" stroke="#9fd8ff" stroke-dasharray="4 3"/><line x1="${X(v.q1x)}" y1="${Y(v.q1y)}" x2="${X(v.q2x)}" y2="${Y(v.q2y)}" stroke="#ffd23f" stroke-dasharray="4 3"/>${dot(v.p1x,v.p1y,"#9fd8ff","P₁")}${dot(v.p2x,v.p2y,"#9fd8ff","P₂")}${dot(v.q1x,v.q1y,"#ffd23f","P₁′")}${dot(v.q2x,v.q2y,"#ffd23f","P₂′")}${dot(v.cx,v.cy,"#ff5a5a","C")}${dot(v.ix,v.iy,"#7cff6b","I")}${dot(r.C[0],r.C[1],"#ff8a3d","C′")}${dot(r.I[0],r.I[1],"#b58cff","I′")}<text x="300" y="228" font-size="11" fill="#c9d7ff" text-anchor="middle">skull frame: x anterior, y superior (mm)</text>`); },
+  assumptions:["The splint is rigid with the mandible (no slip on the teeth).","Planar motion in the sagittal plane; both markers lie in that plane.","Marker coordinates are exact (noise treated in the lab)."],
+  answers:(v,r)=>[{label:"(a) |P₂−P₁| closed",unit:"mm",val:r.L0},{label:"(a) |P₂′−P₁′|",unit:"mm",val:r.L1},{label:"(b) θ",unit:"°",val:r.thd},{label:"(c) C′x",unit:"mm",val:r.C[0]},{label:"(c) C′y",unit:"mm",val:r.C[1]},{label:"(c) I′x",unit:"mm",val:r.I[0]},{label:"(c) I′y",unit:"mm",val:r.I[1]},{label:"(d) condyle slide",unit:"mm",val:r.slide},{label:"(d) opening",unit:"mm",val:r.open}],
+  hints:(v,r)=>["A rigid body keeps distances: compare |P₂−P₁| before and after.","Rotation = change in the direction angle of the P₁→P₂ line (atan2 of the differences).","Any point Q moves to Q′ = P₁′ + R(θ)(Q − P₁): rotate the lever arm from P₁, then add P₁′."],
+  steps:(v,r)=>[{t:"Rigidity check",eq:`|P₂−P₁| = ${fmt(r.L0)} mm; |P₂′−P₁′| = ${fmt(r.L1)} mm (difference ${fmt(r.rigid,2)} mm → rigid within rounding)`},{t:"Rotation",eq:`θ = atan2(${v.q2y}−${v.q1y}, ${v.q2x}−${v.q1x}) − atan2(${v.p2y}−${v.p1y}, ${v.p2x}−${v.p1x}) = <b>${fmt(r.thd)}°</b> (negative = clockwise = opening)`},{t:"Carry the condyle",eq:`C′ = P₁′ + R(θ)(C − P₁) = (<b>${fmt(r.C[0])}, ${fmt(r.C[1])}</b>) mm`},{t:"Carry the incisor point",eq:`I′ = P₁′ + R(θ)(I − P₁) = (<b>${fmt(r.I[0])}, ${fmt(r.I[1])}</b>) mm`},{t:"Slide and opening",eq:`condyle slide = |C′ − C| = <b>${fmt(r.slide)} mm</b>; opening = |I′ − I| = <b>${fmt(r.open)} mm</b>`}],
+  comments:(v,r)=>["With three or more markers you use a least-squares fit instead of one pair; the idea is the same.","The condyle centre is never a marker — it is a CT landmark carried along by the splint's pose. Registration error between the splint and the CT goes straight into the condylar path."],
+  references:["Söderkvist I, Wedin PÅ (1993) Determining the movements of the skeleton using well-configured markers. J Biomech 26:1473–1477."],
+  takeaway:"Markers give the pose of a rigid body; anatomy (from imaging) tells you which point of that body is the joint. Keep the two registered and the kinematics follow."},
+ {id:"voxel",name:"How Imaging Resolution Limits a Joint-Centre Estimate",tag:"uncertainty",level:"short",group:"Tracking jaw motion",
+  original:{vox:0.3,L:90,rc:10},
+  randomize(){ return {vox:pick(0.2,0.6,0.05),L:pick(80,100,2),rc:pick(8,12,0.5)}; },
+  solve(v){ const dth=deg(v.vox/v.L); const dpos=Math.hypot(v.vox,v.vox); return {dth,dpos,cond:v.vox+R(dth)*v.rc}; },
+  statement:(v,r)=>`A condyle centre is located from a CT with isotropic voxels of ${N(v.vox,"mm")}; the incisor point is ${N(v.L,"mm")} away and is used to define the mandible's orientation. (a) If each landmark is uncertain by one voxel, what is the resulting orientation uncertainty in degrees? (b) If both coordinates of a landmark are off by one voxel, what is its position error? (c) The condylar head has radius ${N(v.rc,"mm")}. If the centre is off by one voxel and the orientation by the angle in (a), by how much can the predicted position of a point on the condylar surface be wrong (worst case, add the two)?`,
+  answers:(v,r)=>[{label:"(a) Δθ",unit:"°",val:r.dth},{label:"(b) position error",unit:"mm",val:r.dpos},{label:"(c) surface-point error",unit:"mm",val:r.cond}],
+  hints:(v,r)=>["Small angle: Δθ ≈ Δy / L.","Two perpendicular errors add as a vector: √(Δx² + Δy²).","A rotation error Δθ moves a point at radius r by r·Δθ (radians)."],
+  steps:(v,r)=>[{t:"Orientation uncertainty",eq:`Δθ ≈ ${v.vox}/${v.L} = ${fmt(v.vox/v.L)} rad = <b>${fmt(r.dth)}°</b>`},{t:"Landmark position error",eq:`√(${v.vox}² + ${v.vox}²) = <b>${fmt(r.dpos)} mm</b>`},{t:"Surface point",eq:`${v.vox} + ${v.rc}·${fmt(v.vox/v.L)} = <b>${fmt(r.cond)} mm</b>`}],
+  takeaway:"Sub-millimetre voxels give tenths of a degree in orientation — good — but every error in the imaging lands in the kinematic model; report it alongside the motion."},
+ {id:"stemfatigue",name:"Condylar Stem: Bending Stress and Fatigue Safety Factor",tag:"implant strength",level:"full",group:"Implant design",
+  credit:"Strength-of-materials check of a cantilevered condylar component; material values are typical handbook numbers for a titanium alloy, not a specific device.",
+  original:{F:300,e:8,d:6,Se:500,kf:2.2,cyc:1500,yrs:20},
+  randomize(){ return {F:pick(150,500,10),e:pick(5,14,0.5),d:pick(5,9,0.5),Se:pick(400,560,10),kf:pick(1.6,3,0.1),cyc:pick(1000,2500,100),yrs:pick(10,30,5)}; },
+  solve(v){ const A=Math.PI*v.d*v.d/4, I=Math.PI*Math.pow(v.d,4)/64; const M=v.F*v.e; const sb=M*(v.d/2)/I, sa=v.F/A; const s=sb+sa; const fos=v.Se/s, fosk=v.Se/(v.kf*s); const n=v.cyc*365*v.yrs; const dmin=Math.cbrt(32*M*v.kf*2/(Math.PI*v.Se)); return {A,I,M,sb,sa,s,fos,fosk,n,dmin}; },
+  statement:(v,r)=>`A condylar component carries a joint reaction of ${N(v.F,"N")} whose line of action is offset ${N(v.e,"mm")} from the axis of the stem (diameter ${N(v.d,"mm")}) where it meets the ramus plate. The titanium alloy has an endurance strength of ${N(v.Se,"MPa")} for a polished specimen; the screw-hole region has a fatigue stress-concentration factor K_f = ${N(v.kf)}. The patient chews ${N(v.cyc,"cycles/day")}. Find (a) the bending moment, (b) the bending and axial stresses and their sum, (c) the fatigue safety factor without and with K_f, (d) the number of load cycles over ${N(v.yrs,"years")}, and (e) the minimum stem diameter for a fatigue safety factor of 2 with K_f (bending only).`,
+  known:(v,r)=>[`F = ${v.F} N at offset e = ${v.e} mm`,`d = ${v.d} mm, circular section`,`S_e = ${v.Se} MPa (polished), K_f = ${v.kf}`,`${v.cyc} cycles/day for ${v.yrs} years`],
+  find:["(a) M","(b) σ_b, σ_a, σ_max","(c) n = S_e/σ_max, with and without K_f","(d) N cycles","(e) d_min for n = 2 with K_f"],
+  schematic:(v,r)=>sv(`<circle cx="150" cy="70" r="30" fill="#cfcfd6" stroke="#fff"/><rect x="138" y="100" width="${v.d*4}" height="100" fill="#dcdce4" stroke="#fff"/><line x1="${150+v.e*4}" y1="20" x2="${150+v.e*4}" y2="60" stroke="#ff5a5a" stroke-width="3"/><text x="${158+v.e*4}" y="40" font-size="11" fill="#ff5a5a">F = ${v.F} N</text><line x1="150" y1="70" x2="${150+v.e*4}" y2="70" stroke="#ffd23f" stroke-dasharray="3 3"/><text x="150" y="88" font-size="11" fill="#ffd23f">e = ${v.e} mm</text><text x="${150+v.d*2+10}" y="160" font-size="11" fill="#c9d7ff">stem d = ${v.d} mm</text><circle cx="150" cy="185" r="5" fill="#ffd23f"/><text x="165" y="190" font-size="11" fill="#ffd23f">screw hole (K_f = ${v.kf})</text><text x="420" y="60" font-size="12" fill="#c9d7ff">σ = Mc/I + F/A</text><text x="420" y="80" font-size="12" fill="#c9d7ff">= 32M/(πd³) + 4F/(πd²)</text><text x="420" y="110" font-size="12" fill="#c9d7ff">n = S_e / (K_f σ)</text>`),
+  assumptions:["The joint load is applied as a static-equivalent peak each chewing cycle (fully reversed loading is conservative here: the real cycle is zero-to-peak).","Linear elastic stem; the section at the plate carries bending plus axial load.","No corrosion fatigue or fretting at the screws (these lower S_e further in service)."],
+  answers:(v,r)=>[{label:"(a) M",unit:"N·mm",val:r.M},{label:"(b) σ_b",unit:"MPa",val:r.sb},{label:"(b) σ_a",unit:"MPa",val:r.sa},{label:"(b) σ_max",unit:"MPa",val:r.s},{label:"(c) n (polished)",unit:"—",val:r.fos},{label:"(c) n with K_f",unit:"—",val:r.fosk},{label:"(d) N",unit:"cycles",val:r.n},{label:"(e) d_min",unit:"mm",val:r.dmin}],
+  hints:(v,r)=>["M = F·e; for a solid circle I = πd⁴/64 and c = d/2, so σ_b = 32M/(πd³).","Add the axial stress 4F/(πd²); both are compressive on one side and the bending is tensile on the other — use the sum for the worst fibre.","Safety factor n = S_e/(K_f σ). For d_min set n = 2 and solve 32M/(πd³) = S_e/(2K_f)."],
+  steps:(v,r)=>[{t:"Moment",eq:`M = ${v.F} × ${v.e} = <b>${fmt(r.M)} N·mm</b>`},{t:"Stresses",eq:`σ_b = 32·${fmt(r.M)}/(π·${v.d}³) = <b>${fmt(r.sb)} MPa</b>; σ_a = 4·${v.F}/(π·${v.d}²) = <b>${fmt(r.sa)} MPa</b>; σ_max = <b>${fmt(r.s)} MPa</b>`},{t:"Fatigue safety factors",eq:`n = ${v.Se}/${fmt(r.s)} = <b>${fmt(r.fos)}</b>; with K_f: n = ${v.Se}/(${v.kf}·${fmt(r.s)}) = <b>${fmt(r.fosk)}</b>`},{t:"Cycles",eq:`N = ${v.cyc} × 365 × ${v.yrs} = <b>${fmt(r.n)}</b> (well into the high-cycle regime: the endurance limit governs)`},{t:"Minimum diameter",eq:`32M/(πd³) = S_e/(2K_f) → d = [64 M K_f/(π S_e)]^{1/3} = <b>${fmt(r.dmin)} mm</b>`}],
+  comments:(v,r)=>["Reducing the offset e (a head that sits close to the plate) is as effective as thickening the stem — moment, not force, drives the stress.","Children: a smaller jaw means a smaller stem but, if an alloplastic joint is used, the bite force grows with age — design for the adult load the device will eventually see, or plan the revision."],
+  references:["Shigley's Mechanical Engineering Design: fatigue strength, stress-concentration factors.","Mercuri LG (ed.), Temporomandibular Joint Total Joint Replacement — TMJ TJR, Springer 2016 (device concepts and loading)."],
+  takeaway:"Fatigue, not static strength, sizes an implant that is loaded a million times a year; stress concentrations at screw holes decide where it fails."},
+ {id:"pewear",name:"Polyethylene Wear of the Fossa Component",tag:"Archard wear",level:"short",group:"Implant design",
+  original:{k:1.0e-7,F:150,s:0.010,cyc:1500,yrs:10,A:80},
+  randomize(){ return {k:pick(0.5,2,0.1)*1e-7,F:pick(100,250,10),s:pick(0.006,0.014,0.001),cyc:pick(1000,2500,100),yrs:pick(5,20,1),A:pick(60,120,5)}; },
+  solve(v){ const N=v.cyc*365*v.yrs; const S=N*v.s; const V=v.k*v.F*S; const h=V/v.A; return {N,S,V,h,rate:V/v.yrs}; },
+  statement:(v,r)=>`Archard's law gives the wear volume of a polyethylene bearing as V = k·F·s, with k = ${N(v.k*1e7,"× 10⁻⁷ mm³/(N·m)")} for UHMWPE sliding on cobalt–chromium, F the mean joint load and s the total sliding distance. The fossa component carries a mean load of ${N(v.F,"N")} while the condylar head slides ${N(v.s*1000,"mm")} per chewing cycle, ${N(v.cyc,"cycles/day")}, for ${N(v.yrs,"years")}. (a) Find the total number of cycles and the total sliding distance in metres. (b) Find the wear volume and the yearly wear rate. (c) If the wear is spread over a contact patch of ${N(v.A,"mm²")}, what is the average thickness lost?`,
+  answers:(v,r)=>[{label:"(a) N",unit:"cycles",val:r.N},{label:"(a) s",unit:"m",val:r.S},{label:"(b) V",unit:"mm³",val:r.V},{label:"(b) rate",unit:"mm³/yr",val:r.rate},{label:"(c) thickness",unit:"mm",val:r.h}],
+  hints:(v,r)=>["Total sliding distance = cycles × distance per cycle; keep it in metres to match k.","V = k F s gives mm³ directly with these units.","Thickness = volume ÷ area."],
+  steps:(v,r)=>[{t:"Cycles and distance",eq:`N = ${v.cyc} × 365 × ${v.yrs} = <b>${fmt(r.N)}</b>; s = N × ${v.s} m = <b>${fmt(r.S)} m</b>`},{t:"Wear volume",eq:`V = ${v.k.toExponential(1)} × ${v.F} × ${fmt(r.S)} = <b>${fmt(r.V)} mm³</b> → ${fmt(r.rate)} mm³ per year`},{t:"Thickness",eq:`h = ${fmt(r.V)} / ${v.A} = <b>${fmt(r.h)} mm</b>`}],
+  takeaway:"Small sliding distances and modest loads keep TMJ polyethylene wear far below a hip's tens of mm³ per year — one reason the hinge-dominated design survives; the debris, not the lost thickness, is what matters biologically."},
+ {id:"reconplate",name:"Reconstruction Plate Bridging a Mandibular Defect",tag:"plate & screws",level:"full",group:"Implant design",
+  credit:"Beam model of a titanium reconstruction plate across a segmental defect; dimensions are typical of a 2.4 mm locking plate system, loads are representative paediatric bite forces.",
+  original:{Fb:120,L:30,w:6,t:2.4,Sy:880,Se:450,ds:2.4,Lc:1.5,tau:60,n:4},
+  randomize(){ return {Fb:pick(80,200,10),L:pick(20,40,1),w:pick(5,8,0.5),t:pick(2,3,0.1),Sy:pick(800,950,10),Se:pick(380,520,10),ds:pick(2,2.7,0.1),Lc:pick(1,2.5,0.1),tau:pick(40,80,5),n:pick(3,6,1)}; },
+  solve(v){ const M=v.Fb*v.L; const Z=v.t*v.w*v.w/6; const sig=M/Z; const fy=v.Sy/sig, ff=v.Se/sig; const As=Math.PI*v.ds*v.Lc; const Fpull=v.tau*As; const d=8; /* screw rows 8 mm apart on each side carry the moment as a couple */ const Fs=M/((v.n/2)*d); const fs=Fpull/Fs; return {M,Z,sig,fy,ff,As,Fpull,Fs,fs}; },
+  statement:(v,r)=>`A titanium reconstruction plate bridges a segmental defect in a child's mandible after a tumour resection and a fibula free-flap. Until the bone unites the plate alone carries the bite: a bite force of ${N(v.Fb,"N")} acts ${N(v.L,"mm")} anterior of the defect, bending the plate in the sagittal plane. The plate lies on the lateral cortex with its ${N(v.w,"mm")} width running vertically and is ${N(v.t,"mm")} thick, so the bite moment bends it about its strong axis; the alloy has yield strength ${N(v.Sy,"MPa")} and endurance strength ${N(v.Se,"MPa")}. On each side of the defect ${N(v.n/2)} locking screws (diameter ${N(v.ds,"mm")}) engage ${N(v.Lc,"mm")} of cortical bone whose shear strength is ${N(v.tau,"MPa")}; the screw rows are 8 mm apart so the moment is carried as a couple between them. Find (a) the bending moment at the defect, (b) the section modulus and bending stress in the plate, (c) the static and fatigue safety factors of the plate, (d) the pull-out capacity of one screw, and (e) the force per screw from the moment couple and the safety factor against pull-out.`,
+  known:(v,r)=>[`F_b = ${v.Fb} N at L = ${v.L} mm from the defect`,`Plate w = ${v.w} mm (vertical), t = ${v.t} mm (bending about the strong axis)`,`S_y = ${v.Sy} MPa, S_e = ${v.Se} MPa`,`${v.n/2} screws per side, d = ${v.ds} mm, cortical engagement ${v.Lc} mm, τ_bone = ${v.tau} MPa, rows 8 mm apart`],
+  find:["(a) M","(b) Z = t w²/6, σ = M/Z","(c) n_y = S_y/σ, n_f = S_e/σ","(d) F_pull = τ π d L_c","(e) F_screw = M/(N_side·8 mm), n_s"],
+  schematic:(v,r)=>sv(`<path d="M40 60 L40 150 L120 170 L200 160 L200 110" fill="#e8e2d2" stroke="#fff"/><path d="M320 110 L320 160 L420 170 L520 150 L560 60" fill="#e8e2d2" stroke="#fff"/><rect x="200" y="112" width="120" height="48" fill="#5fa8ff" fill-opacity=".25" stroke="#5fa8ff" stroke-dasharray="4 3"/><text x="260" y="185" font-size="11" fill="#5fa8ff" text-anchor="middle">fibula segment / defect</text><rect x="120" y="120" width="280" height="${v.t*3}" fill="#dcdce4" stroke="#fff"/>${[135,160,185].slice(0,v.n/2).map(x=>`<circle cx="${x}" cy="${120+v.t*1.5}" r="4" fill="#ffd23f"/>`).join("")}${[385,360,335].slice(0,v.n/2).map(x=>`<circle cx="${x}" cy="${120+v.t*1.5}" r="4" fill="#ffd23f"/>`).join("")}<line x1="${260+v.L*3}" y1="60" x2="${260+v.L*3}" y2="110" stroke="#7cff6b" stroke-width="3"/><text x="${266+v.L*3}" y="80" font-size="11" fill="#7cff6b">F_b = ${v.Fb} N</text><text x="300" y="40" font-size="11" fill="#c9d7ff" text-anchor="middle">plate ${v.w} × ${v.t} mm, bite ${v.L} mm from the defect</text><text x="150" y="215" font-size="11" fill="#ffd23f">locking screws, ${v.ds} mm, ${v.Lc} mm cortex</text>`),
+  assumptions:["No load sharing with the graft until union: the plate carries the whole bite moment.","Pure bending about the plate's strong axis (sagittal bite moment); stress concentrations at screw holes ignored (apply K_f for a real design).","Screws resist the moment as a force couple between the two rows, shared equally among the screws of a row; pull-out limited by bone shear over the engaged cortex."],
+  answers:(v,r)=>[{label:"(a) M",unit:"N·mm",val:r.M},{label:"(b) Z",unit:"mm³",val:r.Z},{label:"(b) σ",unit:"MPa",val:r.sig},{label:"(c) n_y",unit:"—",val:r.fy},{label:"(c) n_f",unit:"—",val:r.ff},{label:"(d) F_pull",unit:"N",val:r.Fpull},{label:"(e) F_screw",unit:"N",val:r.Fs},{label:"(e) n_s",unit:"—",val:r.fs}],
+  hints:(v,r)=>["M = F·L at the defect; Z = t w²/6 for a rectangle with its width w in the plane of bending.","Safety factors divide the strength by the working stress — use S_e for the repeated bite.","Pull-out: the bone fails in shear over the cylinder π d L_c around the screw; the couple force is M divided by the row spacing, split among the screws in a row."],
+  steps:(v,r)=>[{t:"Moment at the defect",eq:`M = ${v.Fb} × ${v.L} = <b>${fmt(r.M)} N·mm</b>`},{t:"Section modulus and stress",eq:`Z = ${v.t}·${v.w}²/6 = <b>${fmt(r.Z)} mm³</b>; σ = M/Z = <b>${fmt(r.sig)} MPa</b>`},{t:"Plate safety factors",eq:`n_y = ${v.Sy}/${fmt(r.sig)} = <b>${fmt(r.fy)}</b>; n_f = ${v.Se}/${fmt(r.sig)} = <b>${fmt(r.ff)}</b>`},{t:"Screw pull-out capacity",eq:`F_pull = ${v.tau} × π × ${v.ds} × ${v.Lc} = <b>${fmt(r.Fpull)} N</b>`},{t:"Force per screw and safety",eq:`F_screw = M / (${v.n/2} × 8) = <b>${fmt(r.Fs)} N</b>; n_s = ${fmt(r.Fpull)}/${fmt(r.Fs)} = <b>${fmt(r.fs)}</b>`}],
+  comments:(v,r)=>["The plate itself is rarely the weak link; the screws in a thin paediatric cortex are. Bicortical engagement, more screws or a longer plate lower F_screw.","Plates do not grow: in a child the fixation may need removal or revision as the mandible lengthens — another reason to follow function and growth with repeated, radiation-free measurements."],
+  references:["Strength of materials: bending of rectangular sections; screw pull-out as shear over the engaged thread cylinder.","Clinical context: fibula free-flap mandible reconstruction in children with virtual surgical planning (published case reports from paediatric head and neck surgery programmes)."],
+  takeaway:"Bite moment ÷ section modulus gives the plate stress; bite moment ÷ screw-row spacing gives what the screws must hold. Design the screws for the child's cortex, and plan for growth."}
+];
+
+BP.init(); GAME.hud(); TJ.init();
+</script>
+</body></html>
