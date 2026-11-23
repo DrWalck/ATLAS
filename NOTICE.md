@@ -36,3 +36,7 @@ processing (Harrington 2007 hip-centre regression, 6 Hz low-pass filtering, Wint
 Newton–Euler inverse dynamics) was done for ATLAS with `_source/biomech/osim/exp/make_gait_data.py` and is a planar
 teaching reduction, not the OpenSim inverse-kinematics/inverse-dynamics solution. The data are redistributed under the
 Apache License 2.0 terms of the OpenSim model distribution; cite Rajagopal et al. (2016) when using them.
+
+## Z-Anatomy 3-D atlas (Anatomy Explorer and Frames & Joints Lab body)
+
+The muscle, tendon, bone, cartilage and ligament surfaces shown in `biomech/anatomy.html` and `biomech/frames.html` (file `biomech/zanatomy.bin`) are derived from the **Z-Anatomy** open-source 3-D atlas of human anatomy (https://github.com/Z-Anatomy and https://z-anatomy.com), itself built on the BodyParts3D dataset. Z-Anatomy is released under the **Creative Commons Attribution-ShareAlike 4.0 International** licence (CC BY-SA 4.0). For ATLAS the skeletal and muscular systems were exported from the Z-Anatomy Blender template as glTF, decimated (vertex clustering with light smoothing on sheet muscles), re-expressed in ISB axes and packed into a compact binary; structure names are kept as published by Z-Anatomy. Under CC BY-SA 4.0 this derived mesh file is itself available under the same licence; the ATLAS text, code and problem sets are separate works. Sutures, bursae, fasciae and tendon sheaths were omitted.

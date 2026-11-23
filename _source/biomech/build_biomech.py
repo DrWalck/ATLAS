@@ -76,7 +76,7 @@ FIG_ASIDE="""
 def with_figure(body):
     return '<div class="figlayout"><section>'+body+'</section>'+FIG_ASIDE+'</div>'
 OSIMJS='/* OpenSim data loaded from osim_data.js */'
-import shutil; os.makedirs(OUT,exist_ok=True); shutil.copy(os.path.join(W,'osim_data.js'),os.path.join(OUT,'osim_data.js'))
+import shutil; os.makedirs(OUT,exist_ok=True); shutil.copy(os.path.join(W,'osim_data.js'),os.path.join(OUT,'osim_data.js')); shutil.copy(os.path.join(W,'zanatomy.bin'),os.path.join(OUT,'zanatomy.bin'))
 def fig_scripts(page):
     return '\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'figure.js')).read()+'\nconst FIG_PAGE="'+page+'";\n'+open(os.path.join(W,'fig_hooks.js')).read()
 def page(title,h1,blurb,body,scripts,zone):
@@ -111,7 +111,7 @@ def build_frames():
       <div class="panel" style="margin-top:12px"><h4>Joint types</h4><small class="note">ball-and-socket (3 DOF) · condyloid / ellipsoid (2) · saddle (2) · hinge (1) · pivot (1) · plane / gliding (small slides) · modified hinge (1 + a little). Click any joint to see which it is.</small></div>
     </aside>
   </div>'''
-    scripts=fix+'\n'+OSIMJS+'\n'+game('biomech-frames','dpl-biomech-frames')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'figure.js')).read()+'\n'+open(os.path.join(W,'frames_lab.js')).read()+'\nGAME.hud();'
+    scripts=fix+'\n'+OSIMJS+'\n'+game('biomech-frames','dpl-biomech-frames')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'gl3d.js')).read()+'\n'+open(os.path.join(W,'za_map.js')).read()+'\n'+open(os.path.join(W,'frames_lab.js')).read()+'\nGAME.hud();'
     html=page('Frames & Joints Lab','Frames &amp; Joints Lab','Rotate a 3-D body, switch on the cardinal planes and the global or segment frames, click any joint to see its type and degrees of freedom, and animate every osteokinematic movement in its plane about its axis. Then drill it.',body,scripts,'#7cff6b')
     open(os.path.join(OUT,'frames.html'),'w').write(html); print('built frames.html',len(html)//1024,'KB')
 
@@ -173,12 +173,13 @@ def build_anatomy():
       <div class="panel" id="explore" style="margin-top:12px"><div id="ainfo"></div></div>
       <div class="panel" id="drills" style="margin-top:12px" hidden><h4>Drills</h4><p class="note">A structure is highlighted and isolated on the body — name it, give its origin/insertion/action, or pick the prime mover for a movement. Rotate the body if you need another view. +10 XP per correct answer.</p><button type="button" class="btn primary" id="andrillstart">Start</button><div id="andrill" style="margin-top:10px"></div></div>
       <div class="panel" id="reference" style="margin-top:12px" hidden><h4>Muscles: origin · insertion · action</h4><div id="areftable"></div></div>
+      <p class="note" style="margin-top:10px">Body surfaces: <a href="https://github.com/Z-Anatomy" target="_blank" rel="noopener">Z-Anatomy</a> open-source 3-D atlas (CC BY-SA 4.0), decimated for the web; structure notes from the ME 320 course; muscle parameters from the OpenSim Rajagopal model. See NOTICE.md.</p>
     </section>
     <aside>
       <div class="panel"><h4>Peel back the layers</h4>
-        <div class="xray"><button type="button" class="btn small" data-preset="skin">Skin</button><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="deep">Deep muscles</button><button type="button" class="btn small" data-preset="skeleton">Skeleton</button><button type="button" class="btn small" data-preset="joints">Joints</button></div>
+        <div class="xray"><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="deep">Deep muscles</button><button type="button" class="btn small" data-preset="skeleton">Skeleton</button><button type="button" class="btn small" data-preset="half">Half &amp; half</button><button type="button" class="btn small" data-preset="joints">Joints</button><button type="button" class="btn small" data-preset="skin">Everything</button></div>
         <div class="ctl" style="margin-top:6px">
-          <label>Skin <input type="range" id="lay-skin" min="0" max="1" step="0.05"></label>
+          <label>Ligaments &amp; retinacula <input type="range" id="lay-skin" min="0" max="1" step="0.05"></label>
           <label>Superficial muscles <input type="range" id="lay-m1" min="0" max="1" step="0.05"></label>
           <label>Deep muscles <input type="range" id="lay-m2" min="0" max="1" step="0.05"></label>
           <label>Bones <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
@@ -192,8 +193,8 @@ def build_anatomy():
       <div class="panel legend" style="margin-top:12px"><h4>Colours</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b8413a"></i> superficial muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8e2f3a"></i> deep muscle</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e8e2d2"></i> bone &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#22d3ee"></i> joint centre &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d9b38c"></i> skin</small><small style="margin-top:6px">Pelvis, sacrum, femur, tibia and fibula are the bone meshes of the open-source OpenSim lower-limb model, and the lower-limb muscles are drawn along that model's attachment paths with its Hill-type parameters (Rajagopal et al. 2016; Lai et al. 2017; Uhlrich et al. 2022 — OpenSim, Apache 2.0; see NOTICE). Everything else is the original ATLAS model built from anatomical dimensions; those shapes are schematic. Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's).</small></div>
     </aside>
   </div>"""
-    scripts=fix+'\n'+OSIMJS+'\n'+game('biomech-anatomy','dpl-biomech-anatomy')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'anatomy.js')).read()+'\nGAME.hud();'
-    html=page('Anatomy Explorer','Anatomy Explorer: Peel Back the Body','Skin, superficial muscles, deep muscles, skeleton and joints of the whole body — fade each layer in and out, click any structure for its origin, insertion, action, joints and planes, isolate it, and drill until the names stick.',body,scripts,'#ff5a8a')
+    scripts=fix+'\n'+OSIMJS+'\n'+game('biomech-anatomy','dpl-biomech-anatomy')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'gl3d.js')).read()+'\n'+open(os.path.join(W,'za_map.js')).read()+'\n'+open(os.path.join(W,'anatomy_gl.js')).read()+'\nGAME.hud();'
+    html=page('Anatomy Explorer','Anatomy Explorer: Peel Back the Body','Real muscle, tendon, bone, cartilage and ligament surfaces of the whole body (Z-Anatomy atlas) — fade each layer in and out, split the body into skeleton and muscles, click any structure for its origin, insertion, action, joints and planes, isolate it, and drill until the names stick.',body,scripts,'#ff5a8a')
     open(os.path.join(OUT,'anatomy.html'),'w').write(html); print('built anatomy.html',len(html)//1024,'KB')
 
 def build_kinetics():
