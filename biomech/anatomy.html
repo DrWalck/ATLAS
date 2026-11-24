@@ -680,10 +680,13 @@ const GL3=(()=>{
     gl.useProgram(prog); gl.uniformMatrix4fv(loc.uPV,false,PV); gl.uniform1f(loc.uQ,q); gl.uniform3fv(loc.uEye,M.eye); gl.uniform3fv(loc.uL,S.light);
     const pulse=0.55+0.45*Math.sin(performance.now()/300); const opaque=[],trans=[];
     const all=S.loaded?S.parts.concat(S.extras):S.extras; for(const p of all){ const a=p.extra?(p.alpha):partAlpha(p); if(a<=0.02) continue; p._a=a; (a>=0.98?opaque:trans).push(p); }
-    let bound=null; const draw=(p)=>{ const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(loc); bound=b; } gl.uniformMatrix4fv(loc.uM,false,p.M||I4); gl.uniform3fv(loc.uCol,p.col); gl.uniform1f(loc.uA,p._a); gl.uniform1f(loc.uGloss,p.gloss); gl.uniform1f(loc.uHi,(S.sel&&p.sid&&p.sid===S.sel)||p.hi||(S.hover&&p===S.hover)?pulse:0); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); };
+    let bound=null, offOn=false; gl.disable(gl.POLYGON_OFFSET_FILL); const draw=(p)=>{ const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(loc); bound=b; } const po=(p.c==="tendon"||p.c==="lig"); if(po!==offOn){ offOn=po; if(po){ gl.enable(gl.POLYGON_OFFSET_FILL); gl.polygonOffset(-2,-4); } else gl.disable(gl.POLYGON_OFFSET_FILL); } /* thin tendon sheets (iliotibial tract, aponeuroses) sit on the muscle surface: pull them forward in depth so they do not z-fight into speckles */ gl.uniformMatrix4fv(loc.uM,false,modelM(p)); gl.uniform3fv(loc.uCol,p.col); gl.uniform1f(loc.uA,p._a); gl.uniform1f(loc.uGloss,p.gloss); gl.uniform1f(loc.uHi,(S.sel&&p.sid&&p.sid===S.sel)||p.hi||(S.hover&&p===S.hover)?pulse:0); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); };
     gl.depthMask(true); opaque.forEach(draw);
     if(trans.length){ trans.forEach(p=>{ const c=p.M?mulM(p.M,p.center):p.center; const d=sub(c,M.eye); p._z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; }); trans.sort((a,b)=>b._z-a._z); gl.depthMask(false); trans.forEach(draw); gl.depthMask(true); }
     octx.clearRect(0,0,W/dpr,H/dpr); S.overlays.forEach(fn=>fn(octx,M,project)); }
+  /* model matrix: optional pose (p.M) composed with a small shrink about the part's own centre (p.shrink, e.g. 0.97 for bones so they do not poke through the muscles that wrap them) */
+  const mulMat=(A,B)=>{ const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=A[k*4+j]*B[i*4+k]; o[i*4+j]=s; } return o; };
+  function modelM(p){ const k=p.shrink; if(!k||k===1) return p.M||I4; if(p._shK!==k){ const c=p.center; p._shM=new Float32Array([k,0,0,0, 0,k,0,0, 0,0,k,0, c[0]*(1-k),c[1]*(1-k),c[2]*(1-k),1]); p._shK=k; } return p.M?mulMat(p.M,p._shM):p._shM; }
   const mulM=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12], m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13], m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];
   /* ---------- picking (ID render) ---------- */
   function pickAt(x,y){ if(!gl) return null; const M=camMatrix(); const PV=pv(M); if(!fbo){ fbo=gl.createFramebuffer(); fbtex=gl.createTexture(); fbrb=gl.createRenderbuffer(); }
@@ -691,7 +694,7 @@ const GL3=(()=>{
     gl.bindRenderbuffer(gl.RENDERBUFFER,fbrb); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,W,H); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,fbrb);
     gl.viewport(0,0,W,H); gl.disable(gl.BLEND); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.useProgram(pick); gl.uniformMatrix4fv(ploc.uPV,false,PV); gl.uniform1f(ploc.uQ,q);
     let bound=null; const all=S.loaded?S.parts.concat(S.extras):S.extras;
-    for(const p of all){ const a=p.extra?p.alpha:partAlpha(p); if(a<0.15||p.noPick) continue; const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(ploc); bound=b; } const id=(p.extra?(1e6+ (p.i-1e6)):p.i)+1; gl.uniform3f(ploc.uId,(id&255)/255,((id>>8)&255)/255,((id>>16)&255)/255); gl.uniformMatrix4fv(ploc.uM,false,p.M||I4); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); }
+    for(const p of all){ const a=p.extra?p.alpha:partAlpha(p); if(a<0.15||p.noPick) continue; const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(ploc); bound=b; } const id=(p.extra?(1e6+ (p.i-1e6)):p.i)+1; gl.uniform3f(ploc.uId,(id&255)/255,((id>>8)&255)/255,((id>>16)&255)/255); gl.uniformMatrix4fv(ploc.uM,false,modelM(p)); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); }
     const px=new Uint8Array(4); gl.readPixels(Math.round(x*dpr),Math.round(H-y*dpr),1,1,gl.RGBA,gl.UNSIGNED_BYTE,px); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.enable(gl.BLEND); const id=px[0]|(px[1]<<8)|(px[2]<<16); if(!id) return null; return id>1e6?S.extras[id-1-1e6]:S.parts[id-1]; }
   /* ---------- overlay helpers (2-D canvas on top) ---------- */
   function arrow3(ctx,M,proj,a,b,color,label,width=2){ const A=project(a),B=project(b); if(A[2]<0.1||B[2]<0.1) return; ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width; ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke(); const ang=Math.atan2(B[1]-A[1],B[0]-A[0]); ctx.beginPath(); ctx.moveTo(B[0],B[1]); ctx.lineTo(B[0]-9*Math.cos(ang-0.4),B[1]-9*Math.sin(ang-0.4)); ctx.lineTo(B[0]-9*Math.cos(ang+0.4),B[1]-9*Math.sin(ang+0.4)); ctx.closePath(); ctx.fill(); if(label){ ctx.font="700 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(label).width+8; ctx.fillStyle="rgba(5,10,24,.85)"; ctx.fillRect(B[0]+6,B[1]-16,w,18); ctx.fillStyle=color; ctx.fillText(label,B[0]+10,B[1]-3); } }
@@ -1150,8 +1153,9 @@ const AN=(()=>{
     $("#ainfo").querySelectorAll("[data-sel]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); select(a.dataset.sel); });
     fixSubs($("#ainfo")); dirty(); }
   const KEYS=["lig","m1","m2","bone","joint"]; const SL={lig:"lay-skin",m1:"lay-m1",m2:"lay-m2",bone:"lay-bone",joint:"lay-joint"};
-  function applyLayerUI(){ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) LAYER[k]=+el.value; }); tintCartilage(); dirty(); }
-  const syncSliders=()=>{ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) el.value=LAYER[k]; }); tintCartilage(); };
+  function applyLayerUI(){ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) LAYER[k]=+el.value; }); tintCartilage(); shrinkBones(); dirty(); }
+  const syncSliders=()=>{ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) el.value=LAYER[k]; }); tintCartilage(); shrinkBones(); };
+  const shrinkBones=()=>parts.forEach(p=>{ if(p.c==="bone"||p.c==="cart") p.shrink=(LAYER.m1>0.5||LAYER.m2>0.5)?0.965:1; });
   const PRESET={skin:{lig:1,m1:1,m2:1,bone:1,joint:0},muscles:{lig:0,m1:1,m2:1,bone:1,joint:0},deep:{lig:0,m1:0.08,m2:1,bone:1,joint:0},skeleton:{lig:0,m1:0,m2:0,bone:1,joint:0},joints:{lig:0,m1:0,m2:0,bone:0.45,joint:1},half:{lig:0,m1:1,m2:1,bone:1,joint:0}};
   function fillList(){ const sel=$("#astruct"); const q=($("#asearch").value||"").toLowerCase(); const grp=(label,items)=>items.length?`<optgroup label="${label}">${items.map(x=>`<option value="${x.id}">${x.n}</option>`).join("")}</optgroup>`:"";
     const f=(arr)=>arr.filter(x=>(state.reg==="all"||x.reg===state.reg)&&(!q||x.n.toLowerCase().includes(q)));
@@ -1183,7 +1187,7 @@ const AN=(()=>{
   function init(){ GL3.S.alphaFn=alphaOf; GL3.S.viewDist=2.9; GL3.S.viewTarget=[0,0.88,0]; GL3.cam.target=[0,0.88,0]; GL3.cam.dist=2.9; GL3.cam.theta=Math.PI/2; GL3.cam.phi=0.08;
     GL3.init("#bcanvas",(p)=>{ if(!p) return; select(p.sid||("za:"+p.n)); });
     const note=$("#bscene"); const ld=document.createElement("div"); ld.className="note"; ld.style.cssText="position:absolute;left:12px;top:12px"; ld.textContent="loading the body (6 MB)…"; note.appendChild(ld);
-    GL3.load("zanatomy.bin").then(ps=>{ parts=ps; tagParts(); ld.remove(); fillList(); dirty(); }).catch(e=>{ ld.textContent="Could not load the body mesh: "+e.message; });
+    GL3.load("zanatomy.bin").then(ps=>{ parts=ps; tagParts(); parts.forEach(p=>{ if(p.c==="bone"||p.c==="cart") p.shrink=LAYER.m1>0.5?0.965:1; }); ld.remove(); fillList(); dirty(); }).catch(e=>{ ld.textContent="Could not load the body mesh: "+e.message; });
     document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#tabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); ["explore","drills","reference"].forEach(k=>$("#"+k).hidden=k!==b.dataset.k); });
     KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el){ el.value=LAYER[k]; el.oninput=applyLayerUI; } });
     document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ Object.assign(LAYER,PRESET[b.dataset.preset]||{}); syncSliders(); state.iso=null; state.split=b.dataset.preset==="half"; dirty(); if(state.sel) select(state.sel,false); });

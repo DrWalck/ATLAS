@@ -46,8 +46,9 @@ const AN=(()=>{
     $("#ainfo").querySelectorAll("[data-sel]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); select(a.dataset.sel); });
     fixSubs($("#ainfo")); dirty(); }
   const KEYS=["lig","m1","m2","bone","joint"]; const SL={lig:"lay-skin",m1:"lay-m1",m2:"lay-m2",bone:"lay-bone",joint:"lay-joint"};
-  function applyLayerUI(){ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) LAYER[k]=+el.value; }); tintCartilage(); dirty(); }
-  const syncSliders=()=>{ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) el.value=LAYER[k]; }); tintCartilage(); };
+  function applyLayerUI(){ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) LAYER[k]=+el.value; }); tintCartilage(); shrinkBones(); dirty(); }
+  const syncSliders=()=>{ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) el.value=LAYER[k]; }); tintCartilage(); shrinkBones(); };
+  const shrinkBones=()=>parts.forEach(p=>{ if(p.c==="bone"||p.c==="cart") p.shrink=(LAYER.m1>0.5||LAYER.m2>0.5)?0.965:1; });
   const PRESET={skin:{lig:1,m1:1,m2:1,bone:1,joint:0},muscles:{lig:0,m1:1,m2:1,bone:1,joint:0},deep:{lig:0,m1:0.08,m2:1,bone:1,joint:0},skeleton:{lig:0,m1:0,m2:0,bone:1,joint:0},joints:{lig:0,m1:0,m2:0,bone:0.45,joint:1},half:{lig:0,m1:1,m2:1,bone:1,joint:0}};
   function fillList(){ const sel=$("#astruct"); const q=($("#asearch").value||"").toLowerCase(); const grp=(label,items)=>items.length?`<optgroup label="${label}">${items.map(x=>`<option value="${x.id}">${x.n}</option>`).join("")}</optgroup>`:"";
     const f=(arr)=>arr.filter(x=>(state.reg==="all"||x.reg===state.reg)&&(!q||x.n.toLowerCase().includes(q)));
@@ -79,7 +80,7 @@ const AN=(()=>{
   function init(){ GL3.S.alphaFn=alphaOf; GL3.S.viewDist=2.9; GL3.S.viewTarget=[0,0.88,0]; GL3.cam.target=[0,0.88,0]; GL3.cam.dist=2.9; GL3.cam.theta=Math.PI/2; GL3.cam.phi=0.08;
     GL3.init("#bcanvas",(p)=>{ if(!p) return; select(p.sid||("za:"+p.n)); });
     const note=$("#bscene"); const ld=document.createElement("div"); ld.className="note"; ld.style.cssText="position:absolute;left:12px;top:12px"; ld.textContent="loading the body (6 MB)…"; note.appendChild(ld);
-    GL3.load("zanatomy.bin").then(ps=>{ parts=ps; tagParts(); ld.remove(); fillList(); dirty(); }).catch(e=>{ ld.textContent="Could not load the body mesh: "+e.message; });
+    GL3.load("zanatomy.bin").then(ps=>{ parts=ps; tagParts(); parts.forEach(p=>{ if(p.c==="bone"||p.c==="cart") p.shrink=LAYER.m1>0.5?0.965:1; }); ld.remove(); fillList(); dirty(); }).catch(e=>{ ld.textContent="Could not load the body mesh: "+e.message; });
     document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#tabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); ["explore","drills","reference"].forEach(k=>$("#"+k).hidden=k!==b.dataset.k); });
     KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el){ el.value=LAYER[k]; el.oninput=applyLayerUI; } });
     document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ Object.assign(LAYER,PRESET[b.dataset.preset]||{}); syncSliders(); state.iso=null; state.split=b.dataset.preset==="half"; dirty(); if(state.sel) select(state.sel,false); });

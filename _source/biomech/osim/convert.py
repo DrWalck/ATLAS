@@ -46,7 +46,8 @@ for name,prims in parts:
         ext=P.max(0)-P.min(0); diag=np.linalg.norm(ext); thin=np.sort(ext)[0]
         a=P[I[:,0]],P[I[:,1]],P[I[:,2]]; fn=np.cross(a[1]-a[0],a[2]-a[0]); area=0.5*np.linalg.norm(fn,axis=1).sum(); vol=abs(np.einsum('ij,ij->i',a[0],fn).sum()/6); tmean=2*vol/max(area,1e-9)  # mean shell thickness
         cell=min(0.007,max(0.0022,min(diag/40,thin/1.6))) if c!='muscle' else min(0.007,max(0.002,min(diag/35,thin/2.6)))
-        if c=='muscle' and area>0.015 and tmean<0.009 and 'Diaphragm' not in name: cell=min(cell,max(0.0022,tmean/1.8))   # thin sheets (obliques, serratus, intercostals) need cells well below their thickness or the two faces merge
+        if c=='muscle' and area>0.015 and tmean<0.009 and 'Diaphragm' not in name: cell=min(cell,max(0.0022,tmean/1.8))
+        if c in ('tendon','lig') and area>0.006 and tmean<0.006: cell=min(cell,max(0.0018,tmean/1.8))   # iliotibial tract, aponeuroses, retinacula: thin sheets too   # thin sheets (obliques, serratus, intercostals) need cells well below their thickness or the two faces merge
         tri_in+=len(I); V,T=cluster(P,I,cell)
         if len(T)==0: continue
         if c in ('muscle','tendon','lig'): V=smooth(V,T,2,0.5)
