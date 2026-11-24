@@ -1,5 +1,5 @@
 /* ===================== ZA_RIG: kinematic rig for the Z-Anatomy body =====================
-   Shared by the Frames lab and the posable figure: which body segment each mesh part belongs to, and the joint-centre
+   Shared by the Frames lab and the posable figure: which body segment each mesh part belongs to, and the joint-center
    landmarks measured on the skeleton (header 'lm' of zanatomy.bin, right side; the left is mirrored in z). */
 const ZA_RIG=(()=>{
   const BONESEG={skull:"head",mand:"jaw",cerv:"neck",thor:"trunk",lumb:"trunk",sacr:"pelvis",ribs:"trunk",stern:"trunk",pelv:"pelvis",clav:"scap",scap:"scap",hum:"uarm",rad:"farm",uln:"farm",carp:"hand",fem:"thigh",pat:"thigh",tib:"shank",fib:"shank",tars:"foot"};

@@ -2197,7 +2197,7 @@ SCEN.push(
   id:"bowling_setup", group:"Particle vs rigid body", name:"Bowling Ball: Slip to Roll", tag:"kinetic friction spins it up",
   original:{ m:7, r:0.11, v0:8, mu:0.15 },
   randomize(){ return { m:pick(4,8,0.5), r:pick(0.1,0.12,0.005), v0:pick(4,12,0.5), mu:pick(0.05,0.3,0.05) }; },
-  statement:(v)=>`A bowling ball (solid sphere, ${N(v.m,"kg")}, radius ${N(v.r,"m")}) is released sliding along the lane at ${N(v.v0,"m/s")} with no spin. The coefficient of kinetic friction with the lane is ${N(v.mu)}. Find how long it slides before it rolls without slipping, its speed at that moment, and how far it has travelled.`,
+  statement:(v)=>`A bowling ball (solid sphere, ${N(v.m,"kg")}, radius ${N(v.r,"m")}) is released sliding along the lane at ${N(v.v0,"m/s")} with no spin. The coefficient of kinetic friction with the lane is ${N(v.mu)}. Find how long it slides before it rolls without slipping, its speed at that moment, and how far it has traveled.`,
   diagram(v){ const gl=170, R=40, C=[80,gl-R], K=[80,gl], Tp=[80,gl-2*R], Lm=[200,gl];
     const svg=D.ground(15,345,gl)+D.circ(C[0],C[1],R,"body")+D.dot(C[0],C[1],2.5)+D.text(C[0]-10,C[1]-8,"G","end")+D.arrow(C[0]+R+6,C[1],C[0]+R+60,C[1],"v",`v₀ = ${nf(v.v0)} m/s`)
       +D.text(C[0],C[1]-R-12,"ω₀ = 0","middle","tv")+D.text(Tp[0]-12,Tp[1]+2,"T","end","tm")+D.dot(K[0],K[1],3.5,"dotf")+D.text(K[0]-12,K[1]+12,"C","end","tf")
@@ -2424,7 +2424,7 @@ const GAME=(()=>{
 
 /* ===================== SETUP LAB ENGINE =====================
    Scenarios come from SCEN (see SETUPSPEC.md). No solving: the student makes the
-   modelling decisions — particle vs rigid body, coordinate system, origin, axes,
+   modeling decisions — particle vs rigid body, coordinate system, origin, axes,
    principle — and gets a reason for every choice.                               */
 const BANK={
   model:{ q:"Model: particle or rigid body?", opts:["Particle","Rigid body","Either — rigid body treated as a particle at G"] },

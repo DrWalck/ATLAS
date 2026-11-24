@@ -14,7 +14,7 @@ const AN=(()=>{
     if(state.iso){ const hit=p.sid?p.sid===state.iso:("za:"+p.n)===state.iso; a=hit?1:(p.layer==="bone"?Math.min(a,0.3):Math.min(a,0.06)); }
     return a; }
   const dirty=()=>{ GL3.S.dirty=true; };
-  /* joints: the Joints view lights up the articular cartilage of the real skeleton (Z-Anatomy keeps it as separate surfaces); joint centres for
+  /* joints: the Joints view lights up the articular cartilage of the real skeleton (Z-Anatomy keeps it as separate surfaces); joint centers for
      fly-to and labels come from the bones themselves (header landmarks), falling back to the ATLAS positions */
   const LMKEY={hip:"HIP",knee:"KN",ank:"AN",gh:"GH",elb:"EL",wr:"WR",mcp:"MCP",cmc1:"CMC",sc:"SC",ac:"AC",stj:"SCAP",pru:"RU",ao:"AO",aa:"AA",tmj:"TMJ",sub:"SUB",mid:"MID",mtp1:"MTP",ivd:"L5S1"};
   function jointPos(j,s=1){ const lm=GL3.S.lm; const k=LMKEY[j.id]; let p=(lm&&k&&lm[k])?lm[k].slice():j.pos.slice(); if(j.id==="pf"&&lm) p=[lm.KN[0]+0.045,lm.KN[1]+0.02,lm.KN[2]]; if(j.id==="ptf"&&lm) p=[lm.KN[0]-0.01,lm.KN[1]-0.03,lm.KN[2]+0.04]; if(j.id==="dru"&&lm) p=[lm.WR[0]-0.01,lm.WR[1]+0.01,lm.WR[2]-0.03]; if(j.id==="si"&&lm) p=[lm.L5S1[0]-0.03,lm.L5S1[1]-0.03,0.045]; if(j.id==="ps"&&lm) p=[lm.ASIS[0]-0.02,lm.HIP[1]-0.03,0]; p[2]*=s; return p; }

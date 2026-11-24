@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build meshes.json for ATLAS from the OpenSim Geometry folder (staged at GEO).
 Run: python3 -I make_meshes.py
-Each mesh is stored in its OpenSim body frame (metres); make_osim_data.py places it on the ATLAS body.
+Each mesh is stored in its OpenSim body frame (meters); make_osim_data.py places it on the ATLAS body.
 """
 import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

@@ -3,7 +3,7 @@
 
 usage: python3 -I vtp2json.py out.json name=path.vtp [name=path.vtp ...] [mirror:newname=name ...]
 
-Each mesh → {"v":[x,y,z,...] (metres, 4 dp), "f":[i,j,k,...] (triangles, outward CCW winding)}.
+Each mesh → {"v":[x,y,z,...] (meters, 4 dp), "f":[i,j,k,...] (triangles, outward CCW winding)}.
 Quads/polygons are fan-triangulated.  Winding is checked with the signed volume and flipped
 if the mesh is inside-out.  mirror:l_x=r_x produces a z-mirrored copy with corrected winding.
 """

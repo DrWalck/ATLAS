@@ -565,7 +565,7 @@ const PROBLEMS = [
   steps(v,r){ return [
     {t:"Required normal acceleration in m/s²", eq:T`a_n=${fmt(v.n)}\,g=${fmt(v.n)}(${fmt(g)})=${fmt(r.an)}\ \text{m/s}^2`},
     {t:"Normal acceleration on a circle, in terms of ω", eq:T`a_n=\frac{v^2}{r}=\frac{(r\omega)^2}{r}=r\omega^2\;\Rightarrow\;\omega=\sqrt{\frac{a_n}{r}}=\sqrt{\frac{${fmt(r.an)}}{${fmt(r.r)}}}=${fmt(r.w)}\ \text{rad/s}`,
-      note:"r must be in metres to match g in m/s²."},
+      note:"r must be in meters to match g in m/s²."},
     {t:"Convert to rpm", eq:T`\omega=${fmt(r.w)}\,\tfrac{\text{rad}}{\text{s}}\cdot\tfrac{1\ \text{rev}}{2\pi\ \text{rad}}\cdot\tfrac{60\ \text{s}}{1\ \text{min}}=${fmt(r.rpm)}\ \text{rpm}`},
     {t:"Spin-up: α = dω/dt with α constant", eq:T`\int_0^{\omega}d\omega=\int_0^{\tau}\alpha\,dt\;\Rightarrow\;\omega=\alpha\tau\;\Rightarrow\;\alpha=\frac{${fmt(r.w)}}{${fmt(v.tau)}}=${fmt(r.al)}\ \text{rad/s}^2`},
     {t:"Revolutions: ω = dθ/dt", eq:T`\int_0^{\theta}d\theta=\int_0^{\tau}\alpha t\,dt\;\Rightarrow\;\theta=\tfrac12\alpha\tau^2=\tfrac12(${fmt(r.al)})(${fmt(v.tau)})^2=${fmt(r.th)}\ \text{rad}=${fmt(r.revs)}\ \text{rev}`},
@@ -1135,7 +1135,7 @@ fprintf('v_A = %.2f m/s  (%.1f mph)\\n', v_A_SI, v_A_SI*2.23694);
 fprintf('just before A: a_n = 0;  just after A: a_n = %.3f m/s^2, |a| = %.3f m/s^2\\n', a_n_SI, a_mag);`,
   hints:(v,r)=>[
     "Treat the straight as constant-acceleration kinematics from rest to get a_t. On the straight ρ → ∞ so a_n = 0; the instant the path curves, a_n = v²/ρ switches on.",
-    "Key equations: L = ½ a_t t² → a_t = 2L/t²; v_A = a_t t; a_n = v_A²/ρ. Convert miles to metres at the end (1 mi = 1609.34 m).",
+    "Key equations: L = ½ a_t t² → a_t = 2L/t²; v_A = a_t t; a_n = v_A²/ρ. Convert miles to meters at the end (1 mi = 1609.34 m).",
     `a_t = 2(${fmt(v.L)})/${fmt(v.t)}² = ${fmt(r.at_mi,4)} mi/s², v_A = a_t·${fmt(v.t)} = ${fmt(r.vA_mi,4)} mi/s, a_n = v_A²/${fmt(v.rho)}. Multiply each by 1609.34.`],
 },
 
@@ -1186,7 +1186,7 @@ r   = r_mm/1000;         % m (must match g in m/s^2)
 a_n = n*g;               % m/s^2
 
 % ---- Circular motion: a_n = v^2/r = r*omega^2 ----
-omega = {{sqrt(a_n/r) || Solve a_n = r*omega^2 for omega (r in metres).}};       % rad/s
+omega = {{sqrt(a_n/r) || Solve a_n = r*omega^2 for omega (r in meters).}};       % rad/s
 rpm   = {{omega*60/(2*pi) || 1 rev = 2*pi rad and 1 min = 60 s.}};       % rev/min
 
 % ---- Spin-up with constant angular acceleration: omega = alpha*tau ----
@@ -1203,7 +1203,7 @@ fprintf('Required omega = %.2f rad/s = %.0f rpm\\n', omega, rpm);
 fprintf('Spin-up: alpha = %.4f rad/s^2, %.1f revolutions in %g s\\n', alpha, revs, tau);
 fprintf('a_t during spin-up = %.4f m/s^2 vs a_n at full speed = %.0f m/s^2\\n', a_t, a_n);`,
   hints:(v,r)=>[
-    "The sample runs on a circle, so a_n = v²/r = rω². Only the g-load and radius are given, so solve that for ω (put r in metres!) and convert to rpm. Spin-up is constant angular acceleration: the angular equations look exactly like straight-line constant-a kinematics, with θ, ω, α in place of s, v, a.",
+    "The sample runs on a circle, so a_n = v²/r = rω². Only the g-load and radius are given, so solve that for ω (put r in meters!) and convert to rpm. Spin-up is constant angular acceleration: the angular equations look exactly like straight-line constant-a kinematics, with θ, ω, α in place of s, v, a.",
     "Key equations: rω² = n·g → ω = √(ng/r); rpm = ω·60/(2π); α = ω/τ; θ = ½ατ²; revolutions = θ/(2π).",
     `a_n = ${fmt(v.n)}(9.81) = ${fmt(r.an)} m/s², so ω = √(${fmt(r.an)}/${fmt(r.r)}) = ${fmt(r.w)} rad/s. Convert with 60/(2π); then α = ${fmt(r.w)}/${fmt(v.tau)} and θ = ½α(${fmt(v.tau)})².`],
   sense:(v,r)=>[null, `reaches ${fmt(r.rpm,3)} rpm in ${fmt(v.tau/60,2)} min`, `about ${fmt(r.revs/v.tau,3)} rev/s averaged over the spin-up`],

@@ -918,7 +918,7 @@ const JET3D=(()=>{
       lathe(noz,[[-8.2,0.6],[-8.9,0.46],[-9.1,0.42],[-9.5,0.5]],16,0,cy,z);
     });
     /* ---- ECS pack behind the cockpit: open bootstrap air cycle (reverse Brayton) ---- */
-    const PY=0.45;                                                                  /* pack centreline height */
+    const PY=0.45;                                                                  /* pack centerline height */
     const bleed=addPart({id:"bleed",name:"Bleed-air duct (compressor exit → ECS pack)",group:"ecs",color:COL.duct,alpha:1});
     const bleedPath=[[-2.9,0.1,0.85],[-2.2,0.45,0.75],[-1.0,0.6,0.4],[-0.4,0.6,-0.1],[-0.1,PY,-0.3]]; tube(bleed,bleedPath,0.09,8); bleed.path=bleedPath;
     const pack=addPart({id:"pack",name:"ECS pack bay (behind the cockpit)",group:"ecs",color:COL.cabin,alpha:0.2}); box(pack,2.1,-0.1,-0.7,-0.3,1.0,0.7);

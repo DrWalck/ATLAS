@@ -1685,7 +1685,7 @@ fprintf('omega_A = %.3f rad/s, omega_B = %.3f rad/s, omega_C = %.3f rad/s  (CCW 
 fprintf('Friction impulses: J1 = %.3f N*s, J2 = %.3f N*s\\n', J1, J2);
 fprintf('Check rim speeds: %.3f, %.3f, %.3f m/s\\n', r_A*omega_A, abs(r_B*omega_B), r_C*omega_C);`,
   hints:(v,r)=>[
-    "The friction forces at the contacts are unknown functions of time, so use angular impulse–momentum about each fixed axle: ∫ΣM dt = I Δω. Call the two friction impulses J₁ and J₂; each acts on two disks in opposite directions. That gives 3 equations with 5 unknowns; the last two come from no-slip at the end: rim speeds match, with neighbouring disks turning opposite ways. Total angular momentum is NOT conserved (the axles push on the disks), so do not just add H's.",
+    "The friction forces at the contacts are unknown functions of time, so use angular impulse–momentum about each fixed axle: ∫ΣM dt = I Δω. Call the two friction impulses J₁ and J₂; each acts on two disks in opposite directions. That gives 3 equations with 5 unknowns; the last two come from no-slip at the end: rim speeds match, with neighboring disks turning opposite ways. Total angular momentum is NOT conserved (the axles push on the disks), so do not just add H's.",
     "Key equations: r_A J₁ = I_A (ω_A − ω₀); r_B J₁ − r_B J₂ = I_B ω_B; −r_C J₂ = I_C ω_C; r_A ω_A + r_B ω_B = 0; r_B ω_B + r_C ω_C = 0. I = ½ m r² for each disk.",
     `I_A = ½(${fmt(v.mA)})(${fmt(v.rA)})² = ${fmt(r.IA)}, I_B = ${fmt(r.IB)}, I_C = ${fmt(r.IC)} kg·m². Row (1): ${fmt(r.IA)} ω_A − ${fmt(v.rA)} J₁ = ${fmt(r.IA*v.w0)}; no-slip: ${fmt(v.rA)} ω_A + ${fmt(v.rB)} ω_B = 0. Solve the 5 × 5.`],
 },

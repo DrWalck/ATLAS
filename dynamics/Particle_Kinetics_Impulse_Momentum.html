@@ -764,7 +764,7 @@ const PROBLEMS = [
     {t:"At the apsides the velocity is purely transverse", eq:T`v_r=\dot r=0\;\Rightarrow\;v_\theta=v\quad\text{at both } r_p \text{ and } r_a`},
     {t:"Conserve H_O between perigee and apogee", eq:T`m r_p v_p=m r_a v_a\;\Rightarrow\;v_a=v_p\frac{r_p}{r_a}=${fmt(r.vp)}\Big(\frac{${fmt(v.rp)}}{${fmt(v.ra)}}\Big)=${fmt(r.va)}\ \text{km/s}`,
       note:"The mass cancels and the ratio of radii is unit-free, so km can stay km here."},
-    {t:"Angular momentum (convert to metres)", eq:T`H_O=m r_p v_p=(${fmt(v.m)})(${fx(r.rpm)})(${fmt(r.vpm)})=${fx(r.H)}\ \text{kg·m}^2\text{/s}`,
+    {t:"Angular momentum (convert to meters)", eq:T`H_O=m r_p v_p=(${fmt(v.m)})(${fx(r.rpm)})(${fmt(r.vpm)})=${fx(r.H)}\ \text{kg·m}^2\text{/s}`,
       note:`Check at apogee: (${fmt(v.m)})(${sci(r.ram)})(${fmt(r.vam)}) gives the same value.`}
   ];},
   takeaway:"Kepler's second law in disguise: a central force cannot change angular momentum, so r v_θ is the same everywhere on the orbit. The spacecraft is slowest at apogee and fastest at perigee in exactly the inverse ratio of the radii.",
@@ -1723,7 +1723,7 @@ fprintf('Angular momentum about the center of Earth: H_O = %.4e kg*m^2/s\\n', H_
 fprintf('Speed at apogee: v_a = %.4f km/s  (v_a/v_p = %.4f)\\n', v_a, ratio);
 fprintf('Semi-major axis a = %.0f km, eccentricity e = %.4f\\n', a/1000, e);`,
   hints:(v,r)=>[
-    "Only gravity acts and it always points at Earth's center, so its moment about O is zero and H_O is constant everywhere on the orbit (no need for the gravitational constant or Earth's mass). At the two apsides the radial velocity is zero, so the whole speed is transverse: H_O = m r v at both points. Watch the units for H_O: convert km and km/s to metres.",
+    "Only gravity acts and it always points at Earth's center, so its moment about O is zero and H_O is constant everywhere on the orbit (no need for the gravitational constant or Earth's mass). At the two apsides the radial velocity is zero, so the whole speed is transverse: H_O = m r v at both points. Watch the units for H_O: convert km and km/s to meters.",
     "Key equations: ΣM_O = 0 → H_O = m r v_θ = const;  at apsides v_θ = v, so m r_p v_p = m r_a v_a → v_a = v_p r_p/r_a;  H_O = m r_p v_p.",
     `v_a = ${fmt(r.vp)}(${fmt(v.rp)}/${fmt(v.ra)}) km/s (the ratio is unit-free). For H_O use SI: ${fmt(v.m)} × ${sci(r.rpm)} m × ${fmt(r.vpm)} m/s.`],
   sense:(v,r)=>[`${fmt(100*r.va/r.vp,3)}% of the perigee speed; apogee is ${fmt(v.ra/v.rp,3)}× farther out`, `the same at apogee: ${fmt(v.m)} kg × ${sci(r.ram,3)} m × ${fmt(r.vam,4)} m/s`],

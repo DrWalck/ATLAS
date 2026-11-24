@@ -10,8 +10,8 @@ const B3=(()=>{
   const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
   const rotAxis=(v,ax,ang)=>{ /* Rodrigues: rotate v about unit axis ax by ang (rad) */ const c=Math.cos(ang),s=Math.sin(ang); const k=norm(ax); const d=k[0]*v[0]+k[1]*v[1]+k[2]*v[2]; const cx=cross(k,v); return [v[0]*c+cx[0]*s+k[0]*d*(1-c), v[1]*c+cx[1]*s+k[1]*d*(1-c), v[2]*c+cx[2]*s+k[2]*d*(1-c)]; };
   /* ---------- geometry builders (vertices in anatomical-position world coordinates) ---------- */
-  const parts=[]; const addPart=(p)=>{ p.tris=p.tris||[]; parts.push(p); return p; }; const vc=new WeakMap(); /* vertex → ring centre, for skinning */ const vseg=new WeakMap(); /* vertex → forced body segment (mesh bones) */
-  const lathe=(part,profile,seg,c,axis,dir)=>{ /* profile [[t,r]] along 'axis' from centre c; dir = +1/-1 along the axis */
+  const parts=[]; const addPart=(p)=>{ p.tris=p.tris||[]; parts.push(p); return p; }; const vc=new WeakMap(); /* vertex → ring center, for skinning */ const vseg=new WeakMap(); /* vertex → forced body segment (mesh bones) */
+  const lathe=(part,profile,seg,c,axis,dir)=>{ /* profile [[t,r]] along 'axis' from center c; dir = +1/-1 along the axis */
     const ring=(t,r,r2)=>{ const o=[]; const cc=c.slice(); if(axis==="y") cc[1]+=t*(dir||1); else if(axis==="x") cc[0]+=t*(dir||1); else cc[2]+=t*(dir||1); for(let i=0;i<seg;i++){ const a=2*Math.PI*i/seg; const u=r*Math.cos(a),v=(r2??r)*Math.sin(a); const p=c.slice(); if(axis==="y"){ p[1]+=t*(dir||1); p[0]+=u; p[2]+=v; } else if(axis==="x"){ p[0]+=t*(dir||1); p[1]+=u; p[2]+=v; } else { p[2]+=t*(dir||1); p[0]+=u; p[1]+=v; } vc.set(p,cc); o.push(p); } return o; };
     const rings=profile.map(([t,r,r2])=>ring(t,Math.max(r,1e-4),r2==null?null:Math.max(r2,1e-4)));
     for(let k=0;k<rings.length-1;k++){ const A=rings[k],B=rings[k+1]; for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([A[i],B[i],B[j]],[A[i],B[j],A[j]]); } }
@@ -43,7 +43,7 @@ const B3=(()=>{
     const axisOf=(p)=>{ const z=Math.abs(p[2]); const zs=Math.sign(p[2])||1; if(p[1]>0.98&&z<0.17) return [p[0]*0.2,p[1],0]; if(z>0.17&&p[1]>0.7) return [-0.005,p[1],0.215*zs]; return [0,p[1],0.09*zs]; };
     const tangents=P.map((p,k)=>norm(sub(P[Math.min(k+1,N)],P[Math.max(k-1,0)]))); const rings=[];
     for(let k=0;k<=N;k++){ const T=tangents[k]; let o=sub(P[k],axisOf(P[k])); o=sub(o,mul(T,o[0]*T[0]+o[1]*T[1]+o[2]*T[2])); if(Math.hypot(...o)<1e-4) o=Math.abs(T[1])<0.9?[0,1,0]:[1,0,0]; const n1=norm(o); const n2=norm(cross(T,n1));
-      const r=prof[k]; const wide=r*(1+(1-flat)*0.5), thin=r*Math.max(flat,0.6); const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centred on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
+      const r=prof[k]; const wide=r*(1+(1-flat)*0.5), thin=r*Math.max(flat,0.6); const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centerd on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
     for(let k=0;k<N;k++){ const A=rings[k],B=rings[k+1]; for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([A[s],B[j],B[s]],[A[s],A[j],B[j]]); } }
     for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([P[0],rings[0][j],rings[0][s]],[P[N],rings[N][s],rings[N][j]]); } };
   const box=(part,x0,y0,z0,x1,y1,z1)=>{ const p=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]; [[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]].forEach(q=>{ part.tris.push([p[q[0]],p[q[1]],p[q[2]]],[p[q[0]],p[q[2]],p[q[3]]]); }); };

@@ -1282,7 +1282,7 @@ fprintf('Cable diameter  d   = %.2f mm (F.S. = %.1f on yield)\\n', d_mm, FS);`,
     "Isolate the buoy and draw the FBD: only three vertical forces act — buoyancy up, weight down, cable down. It is at rest, so they balance. Buoyancy is the weight of the water the sphere displaces.",
     "Key equations: F_b = ρ_water·(πD³/6)·g; T_c = F_b − F_G; σ_allow = σ_y/F.S. and A_c = T_c/σ_allow = πd²/4.",
     `V = π(${fmt(v.D)})³/6 = ${fmt(r.Vb)} m³, so F_b = 1000 × ${fmt(r.Vb)} × 9.81 N. Then σ_allow = ${fmt(v.sy)}/${fmt(v.SF)} = ${fmt(r.sig/1e6)} MPa — keep it in N/m² when you divide.`],
-  sense:(v,r)=>[`the buoy displaces ${fmt(r.Vb*1000,3)} L of water — that much water weighs ${fmt(r.Fb/9.81,3)} kg`, `${fmt(100*r.Tc/r.Fb,2)}% of the buoyant force; the rest is cancelled by the buoy's own weight`, `about the diameter of a ${r.dmm<8?"pencil":r.dmm<14?"finger":"garden hose"} — thin, because steel is strong in tension`]
+  sense:(v,r)=>[`the buoy displaces ${fmt(r.Vb*1000,3)} L of water — that much water weighs ${fmt(r.Fb/9.81,3)} kg`, `${fmt(100*r.Tc/r.Fb,2)}% of the buoyant force; the rest is canceled by the buoy's own weight`, `about the diameter of a ${r.dmm<8?"pencil":r.dmm<14?"finger":"garden hose"} — thin, because steel is strong in tension`]
 }
 };
 

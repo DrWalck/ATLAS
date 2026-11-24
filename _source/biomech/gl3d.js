@@ -3,7 +3,7 @@
    one draw range per part. API mirrors the old canvas renderer (B3) where the explorer and labs use it:
      GL3.load(url).then(parts)  GL3.init(canvasSelector,onPick)  GL3.S{sel,dirty,overlays,alphaFn,alwaysRender}  GL3.cam  GL3.flyTo
      GL3.views  GL3.project(p)  GL3.label3/arrow3 (2-D overlay canvas)  part.M (optional 4×4 model matrix for posing)
-   Mesh: Z-Anatomy (CC BY-SA 4.0), decimated; coordinates in metres, ISB axes (X anterior, Y up, Z to the subject's right).      */
+   Mesh: Z-Anatomy (CC BY-SA 4.0), decimated; coordinates in meters, ISB axes (X anterior, Y up, Z to the subject's right).      */
 const GL3=(()=>{
   const GEOMCACHE={}; /* url -> promise of parsed geometry, shared by every instance on the page */
   function makeInstance(){
@@ -30,10 +30,10 @@ const GL3=(()=>{
   async function load(url){ if(!GEOMCACHE[url]) GEOMCACHE[url]=fetch(url).then(r=>r.arrayBuffer()).then(parse); const g=await GEOMCACHE[url]; const hdr=g.hdr; q=hdr.q;
     S.parts=hdr.parts.map((p,i)=>({i,n:p.n,s:p.s,c:p.c,vo:p.vo,vc:p.vc,io:p.io,ic:p.ic,bb:p.bb,center:[(p.bb[0]+p.bb[3])/2,(p.bb[1]+p.bb[4])/2,(p.bb[2]+p.bb[5])/2],side:p.s==="R"?1:p.s==="L"?-1:0,
       col:CAT[p.c].col.slice(),gloss:CAT[p.c].gloss,alpha:1,M:null,sid:null,layer:p.c==="muscle"||p.c==="tendon"?"m1":p.c==="lig"?"lig":"bone",reg:null,kind:p.c}));
-    /* slight per-muscle colour variation so neighbouring bellies read as separate */
+    /* slight per-muscle color variation so neighboring bellies read as separate */
     S.parts.forEach(p=>{ if(p.c==="muscle"){ let h=0; for(const ch of p.n) h=(h*31+ch.charCodeAt(0))&0xffff; const t=(h%100)/100; p.col=[0.60+0.14*t,0.18+0.06*(1-t),0.15+0.04*t]; } });
     S.credit=hdr.credit; S.lm=hdr.lm||null; S.geom={pos:g.pos,nrm:g.nrm,gidx:g.gidx}; S.loaded=true; if(gl) upload(); S.dirty=true; return S.parts; }
-  /* ---------- extra geometry built at run time (ligament tubes, markers): float positions in metres + uint32 indices ---------- */
+  /* ---------- extra geometry built at run time (ligament tubes, markers): float positions in meters + uint32 indices ---------- */
   let xvbo=null,xnbo=null,xibo=null; S.extras=[];
   function setExtras(list){ /* list: [{name,V:Float32Array(xyz...),N:Float32Array,I:Uint32Array,col,alpha,gloss,M}] */ S.extras=[]; if(!list.length){ S.dirty=true; return; }
     let nv=0,ni=0; list.forEach(e=>{ nv+=e.V.length/3; ni+=e.I.length; }); const P=new Int16Array(nv*3), N=new Int8Array(nv*3), I=new Uint32Array(ni); let vo=0,io=0;
@@ -63,7 +63,7 @@ const GL3=(()=>{
     gl.depthMask(true); opaque.forEach(draw);
     if(trans.length){ trans.forEach(p=>{ const c=p.M?mulM(p.M,p.center):p.center; const d=sub(c,M.eye); p._z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; }); trans.sort((a,b)=>b._z-a._z); gl.depthMask(false); trans.forEach(draw); gl.depthMask(true); }
     octx.clearRect(0,0,W/dpr,H/dpr); S.overlays.forEach(fn=>fn(octx,M,project)); }
-  /* model matrix: optional pose (p.M) composed with a small shrink about the part's own centre (p.shrink, e.g. 0.97 for bones so they do not poke through the muscles that wrap them) */
+  /* model matrix: optional pose (p.M) composed with a small shrink about the part's own center (p.shrink, e.g. 0.97 for bones so they do not poke through the muscles that wrap them) */
   const mulMat=(A,B)=>{ const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=A[k*4+j]*B[i*4+k]; o[i*4+j]=s; } return o; };
   function modelM(p){ const k=p.shrink; if(!k||k===1) return p.M||I4; if(p._shK!==k){ const c=p.center; p._shM=new Float32Array([k,0,0,0, 0,k,0,0, 0,0,k,0, c[0]*(1-k),c[1]*(1-k),c[2]*(1-k),1]); p._shK=k; } return p.M?mulMat(p.M,p._shM):p._shM; }
   const mulM=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12], m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13], m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];

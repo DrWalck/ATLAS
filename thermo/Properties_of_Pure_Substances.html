@@ -731,7 +731,7 @@ const PROBLEMS = [
     {title:"(a) Water",fixed:`p = ${fmt(v.Pa)} bar, v = ${fmt(v.va)} m³/kg`,phase:r.A.phase,items:[
       {sym:"v_f(p)",val:r.A.sat.vf,unit:"m³/kg",table:"W-2",how:[PROPS.satHow(r.A.sat,"vf","v_f")]},{sym:"v_g(p)",val:r.A.sat.vg,unit:"m³/kg",table:"W-2",how:[PROPS.satHow(r.A.sat,"vg","v_g")]},{sym:"T = T_sat(p)",val:r.Ta,unit:"°C",table:"W-2",how:r.A.how}],note:"v_f < v < v_g → two-phase mixture; T is the saturation temperature at p."},
     {title:"(b) R-134a",fixed:`p = ${fmt(v.Pb)} bar, T = ${fmt(v.Tb)} °C`,phase:r.B.phase,items:[
-      {sym:"p_sat(T)",val:r.SB.P,unit:"bar",table:"R134a-1",how:[PROPS.satHow(r.SB,"P","p_sat")]},{sym:"v",val:r.vb,unit:"m³/kg",table:r.B.table,how:r.B.how}],note:`p = ${fmt(v.Pb)} bar is not a table block: locate T = ${fmt(v.Tb)} °C in the two neighbouring blocks and interpolate in p.`},
+      {sym:"p_sat(T)",val:r.SB.P,unit:"bar",table:"R134a-1",how:[PROPS.satHow(r.SB,"P","p_sat")]},{sym:"v",val:r.vb,unit:"m³/kg",table:r.B.table,how:r.B.how}],note:`p = ${fmt(v.Pb)} bar is not a table block: locate T = ${fmt(v.Tb)} °C in the two neighboring blocks and interpolate in p.`},
     {title:"(c) R-134a",fixed:`p = ${fmt(v.Pc)} bar, T = ${fmt(v.Tc)} °C`,phase:r.C.phase,items:[
       {sym:"T_sat(p)",val:r.SC.T,unit:"°C",table:"R134a-2",how:[PROPS.satHow(r.SC,"T","T_sat")]},{sym:"v",val:r.vc,unit:"m³/kg",table:r.C.table,how:r.C.how}],note:`p = ${fmt(v.Pc)} bar is a table block: interpolate in T between the rows that bracket ${fmt(v.Tc)} °C.`}],
   answers:(v,r)=>[{label:"(a) T",unit:"°C",val:r.Ta},{label:"(b) v",unit:"m³/kg",val:r.vb},{label:"(c) v",unit:"m³/kg",val:r.vc}],
@@ -833,7 +833,7 @@ const PROBLEMS = [
   properties:(v,r)=>[
     {title:"State 1",fixed:`p₁ = ${fmt(v.p1)} bar, T₁ = ${fmt(v.T1)} °C`,phase:r.S1.phase,items:[{sym:"T_sat(p₁)",val:r.Tsat,unit:"°C",table:"W-2"},{sym:"v₁",val:r.v1,unit:"m³/kg",table:r.S1.table,how:r.S1.how},{sym:"m = V₁/v₁",val:r.m,unit:"kg",table:""}]},
     {title:"State 3",fixed:`p₃ = ${fmt(v.r*v.p1)} bar, v₃ = v₁ = ${fmt(r.v1)} m³/kg`,phase:r.S3.phase,items:[{sym:"T₃",val:r.T3,unit:"°C",table:r.S3.table,how:r.S3.how}],note:"Search the p₃ block of Table W-3 for the row pair that brackets v₃ and interpolate for T."},
-    {title:"State 5",fixed:`T₅ = ${fmt(v.T1)} °C, v₅ = ${fmt(v.r)} v₁ = ${fmt(v.r*r.v1)} m³/kg`,phase:r.S5.phase,items:[{sym:"p₅",val:r.p5,unit:"bar",table:r.S5.table,how:r.S5.how}],note:"Read v at T₅ in the neighbouring pressure blocks of Table W-3 and interpolate in p for the block that gives v₅."},
+    {title:"State 5",fixed:`T₅ = ${fmt(v.T1)} °C, v₅ = ${fmt(v.r)} v₁ = ${fmt(v.r*r.v1)} m³/kg`,phase:r.S5.phase,items:[{sym:"p₅",val:r.p5,unit:"bar",table:r.S5.table,how:r.S5.how}],note:"Read v at T₅ in the neighboring pressure blocks of Table W-3 and interpolate in p for the block that gives v₅."},
     {title:"States 2 and 4 (for the sketch)",fixed:`2: p₂ = ${fmt(v.r*v.p1)} bar, T₁ · 4: p₁, v₄ = ${fmt(v.r)} v₁`,phase:"superheated vapor",items:[{sym:"v₂",val:r.S2.v,unit:"m³/kg",table:r.S2.table,how:r.S2.how},{sym:"T₄",val:r.T4,unit:"°C",table:r.S4.table,how:r.S4.how}]}],
   answers:(v,r)=>[{label:"T₃",unit:"°C",val:r.T3},{label:"p₅",unit:"bar",val:r.p5},{label:"W₁₃",unit:"kJ",val:0,scale:r.W14},{label:"W₁₄",unit:"kJ",val:r.W14}],
   analysis(v,r){ return [
@@ -1715,7 +1715,7 @@ fprintf('W12 < 0 (compression along the isotherm), W15 > 0 (expansion along the 
   hints:(v,r)=>[
     "Sketch first: from state 1 an isotherm runs up-left to 2 and down-right to 5, a vertical line rises to 3 and a horizontal line runs right to 4. Work is the area under each path, positive when the volume grows. Only the horizontal leg needs a number.",
     "Key equations: W₁₃ = 0; W₁₄ = p₁(V₄ − V₁) with 1 bar·m³ = 100 kJ. State 3: (p₃, v₃ = v₁) → T₃ from Table W-3; state 5: (T₁, v₅ = r v₁) → p₅ from Table W-3.",
-    `W₁₄ = ${fmt(v.p1)}(100)(${fmt(r.V4)} − ${fmt(v.V1)}) kJ. For T₃, find the temperature where v = ${fmt(r.v1)} m³/kg in the ${fmt(r.s3.pA)} and ${fmt(r.s3.pB)} bar blocks of Table W-3 and interpolate to ${fmt(v.r*v.p1)} bar; for p₅, find v = ${fmt(v.r*r.v1)} m³/kg on the ${fmt(v.T1)} °C rows of neighbouring blocks.`],
+    `W₁₄ = ${fmt(v.p1)}(100)(${fmt(r.V4)} − ${fmt(v.V1)}) kJ. For T₃, find the temperature where v = ${fmt(r.v1)} m³/kg in the ${fmt(r.s3.pA)} and ${fmt(r.s3.pB)} bar blocks of Table W-3 and interpolate to ${fmt(v.r*v.p1)} bar; for p₅, find v = ${fmt(v.r*r.v1)} m³/kg on the ${fmt(v.T1)} °C rows of neighboring blocks.`],
   sense:(v,r)=>[`${fmt(r.T3-v.T1,3)} °C hotter than state 1 for a ${fmt(100*(v.r-1),2)}% pressure rise at fixed v`, `close to p₁/${fmt(v.r)} = ${fmt(v.p1/v.r,3)} bar, the ideal-gas guess`, "zero — a vertical line has no area under it", `${fmt(r.W14/3600,2)} kWh — the rectangle under the isobar`]
 },
 isobaric_expansion:{

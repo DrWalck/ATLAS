@@ -18,7 +18,7 @@ const JAW3D=(()=>{
   function update(){ if(!ready) return; const k=kin(); Mj=k.M; parts.forEach(p=>{ if(p._jaw) p.M=Mj; }); R.S.dirty=true; }
   function alphaOf(p){ if(p._jaw||p._skull) return 1; if(p._mus) return st.showMuscles?(cutSet().has(p._musName)?0.12:0.85):0; return 0; }
   function cutSet(){ const F=JAWDATA.force[st.system]; const s=new Set(); JAWDATA.muscles.forEach((m,i)=>{ if(F[i]===0) s.add(m.n); }); return s; }
-  /* study coordinates (mm, origin at the ICR; x lateral, y up, z anterior) → ATLAS metres */
+  /* study coordinates (mm, origin at the ICR; x lateral, y up, z anterior) → ATLAS meters */
   const P=(c)=>[T[0]+c[2]/1000, T[1]+c[1]/1000, T[2]+c[0]/1000];
   function overlays(ctx,M,project){ if(!ready||!st.showLines) return; const F=JAWDATA.force[st.system]; const full=JAWDATA.force.healthy;
     JAWDATA.muscles.forEach((m,i)=>{ if(/lateral pterygoid/.test(m.n)) return; const o=P(m.org), ins=apply(Mj,P(m.ins)); const A=project(o),B=project(ins); if(A[2]<0.1||B[2]<0.1) return; const cut=F[i]===0, partial=F[i]>0&&F[i]<full[i];

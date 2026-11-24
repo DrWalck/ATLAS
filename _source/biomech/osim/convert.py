@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Z-Anatomy GLB (Blender export) -> ATLAS compact body mesh (zanatomy.bin + header). Coordinates: ATLAS = (z, y, -x) of the glTF export, metres."""
+"""Z-Anatomy GLB (Blender export) -> ATLAS compact body mesh (zanatomy.bin + header). Coordinates: ATLAS = (z, y, -x) of the glTF export, meters."""
 import sys, json, re, numpy as np, struct
 sys.path.insert(0,'.'); from glbread import load
 SRC='/mnt/user-data/uploads/ZAnatomy/zanatomy_muscles_bones.glb'

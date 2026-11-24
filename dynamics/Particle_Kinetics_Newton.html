@@ -2018,7 +2018,7 @@ fprintf('omega = %.4e rad/s\\n', omega);
 fprintf('Orbital speed:  v = %.1f m/s  (%.3f km/s)\\n', v, v/1000);
 fprintf('Period:         T = %.4e s = %.2f days\\n', T, T_days);`,
   hints:(v,r)=>[
-    "A circular orbit means r is constant, so ṙ = r̈ = 0 and a_r = −rω². The only force is gravity GM_E m/r², inward. Setting ΣF_r = m a_r gives ω; the mass of the Moon cancels. Work in metres, then convert the period to days at the end.",
+    "A circular orbit means r is constant, so ṙ = r̈ = 0 and a_r = −rω². The only force is gravity GM_E m/r², inward. Setting ΣF_r = m a_r gives ω; the mass of the Moon cancels. Work in meters, then convert the period to days at the end.",
     "Key equations: −GM_E m/r² = m(0 − rω²) → ω = √(GM_E/r³);  v = rω = √(GM_E/r);  T = 2π/ω = 2πr/v.",
     `r = ${fmt(v.rkm)} km = ${sci(r.r)} m. ω² = 3.986×10¹⁴/(${sci(r.r)})³, then v = rω and T = 2π/ω seconds; divide by 86 400 for days.`],
   sense:(v,r)=>[`${fmt(r.vel/1000,3)} km/s, about Mach ${fmt(r.vel/343,2)}; the real Moon averages 1.02 km/s`,
@@ -2034,7 +2034,7 @@ h_km = ${v.hkm};         % altitude above the surface, km
 R_E  = 6.371e6;          % Earth's radius, m
 mu   = 3.986e14;         % G*M_E, m^3/s^2
 
-% ---- Orbit radius is measured from Earth's CENTER, in metres ----
+% ---- Orbit radius is measured from Earth's CENTER, in meters ----
 r = {{R_E + h_km*1000 || Add the altitude (converted to m) to Earth's radius.}};   % m
 
 % ---- Radial equation, r constant: -mu m/r^2 = -m r omega^2 ----
@@ -2049,7 +2049,7 @@ fprintf('Orbit radius:   r = %.4e m\\n', r);
 fprintf('Orbital speed:  v = %.1f m/s  (%.2f km/s)\\n', v, v/1000);
 fprintf('Period:         T = %.1f s = %.2f min\\n', T, T_min);`,
   hints:(v,r)=>[
-    "Same idea as the Moon: circular orbit, so ṙ = r̈ = 0 and gravity alone supplies m r ω². The trap is r: it is the distance from Earth's center, R_E + h, in metres, not the altitude.",
+    "Same idea as the Moon: circular orbit, so ṙ = r̈ = 0 and gravity alone supplies m r ω². The trap is r: it is the distance from Earth's center, R_E + h, in meters, not the altitude.",
     "Key equations: r = R_E + h;  μ_E/r² = rω² → ω = √(μ_E/r³);  v = rω = √(μ_E/r);  T = 2πr/v.",
     `r = 6.371×10⁶ + ${fmt(v.hkm)}×10³ = ${sci(r.r)} m. Then v = √(3.986×10¹⁴/${sci(r.r)}) and T = 2π(${sci(r.r)})/v seconds; divide by 60.`],
   sense:(v,r)=>[`${fmt(r.vel/1000,3)} km/s, about ${fmt(r.vel/343,2)}× the speed of sound; the ISS does 7.66 km/s`,

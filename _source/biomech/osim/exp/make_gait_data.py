@@ -2,7 +2,7 @@
 """Build biomech/gait_data.js from the OpenSim Rajagopal example walking trial (subject11, free-speed walking):
    grf_walk.mot (force plates, 2000 Hz), motion_capture_walk.trc (41 markers, 100 Hz), emg_walk_raw.anc (10 EMG channels, 2000 Hz).
 One right-side gait cycle (right heel strike → next right heel strike) is extracted and time-normalised to 0–100 %.
-Sagittal joint angles come from a planar link-segment reading of the markers (hip centre by the Harrington 2007 regression).
+Sagittal joint angles come from a planar link-segment reading of the markers (hip center by the Harrington 2007 regression).
 Run with: python3 -I make_gait_data.py
 """
 import numpy as np, json
@@ -17,7 +17,7 @@ tg = G[:, 0]
 def gc(n): return G[:, cols.index(n)]
 fy_r, fx_r, fz_r = gc('ground_force_r_vy'), gc('ground_force_r_vx'), gc('ground_force_r_vz')
 fy_l, fx_l = gc('ground_force_l_vy'), gc('ground_force_l_vx')
-px_r, pz_r = gc('ground_force_r_px'), gc('ground_force_r_pz')   # COP (metres; the file switches to a parked value off-plate)
+px_r, pz_r = gc('ground_force_r_px'), gc('ground_force_r_pz')   # COP (meters; the file switches to a parked value off-plate)
 def onsets(f, thr=20):
     on = f > thr; idx = np.where(np.diff(on.astype(int)) != 0)[0]; return [(tg[i+1], bool(on[i+1])) for i in idx]
 ev = onsets(fy_r); HS1 = ev[0][0]; TO1 = ev[1][0]; HS2 = ev[2][0]
@@ -74,7 +74,7 @@ ankle = ankle - foot_off
 jm = {'hip': rs(hip, tm), 'knee': rs(knee, tm), 'ankle': rs(ankle, tm), 'pelvis_tilt': rs(pelvis_tilt, tm)}
 for k, v in jm.items(): print(f'{k:12s} min {v.min():7.1f} max {v.max():7.1f}')
 speed = (HJC[-1, 0]-HJC[0, 0])/(tm[-1]-tm[0]); print(f'walking speed {speed:.2f} m/s, stride {speed*T:.2f} m')
-# joint centres (sagittal, metres) and COP for the link-segment picture; x relative to hip at heel strike
+# joint centers (sagittal, meters) and COP for the link-segment picture; x relative to hip at heel strike
 jc = {k: {'x': rs(P[:, 0], tm).tolist(), 'y': rs(P[:, 1], tm).tolist()} for k, P in [('hip', HJC), ('knee', KN), ('ankle', AN), ('heel', HE), ('toe', TO)]}
 cop = {'x': np.where(rs(fy_r) > 0.02*BW, rs(px_r), np.nan).tolist()}
 
@@ -127,7 +127,7 @@ for k in EMGN:
 
 data = {
   'source': 'OpenSim Rajagopal example data: subject11, free-speed over-ground walking trial 03 (force plates 2000 Hz, 41 markers 100 Hz, 10 surface EMG channels 2000 Hz). Side analysed: right.',
-  'credit': 'Experimental data distributed with the Rajagopal et al. (2016) full-body model (OpenSim, Apache 2.0); collected at the Stanford Neuromuscular Biomechanics Lab. Joint angles here are a planar marker-based reading made for teaching (Harrington 2007 hip centre; 6 Hz low-pass), not the OpenSim IK solution.',
+  'credit': 'Experimental data distributed with the Rajagopal et al. (2016) full-body model (OpenSim, Apache 2.0); collected at the Stanford Neuromuscular Biomechanics Lab. Joint angles here are a planar marker-based reading made for teaching (Harrington 2007 hip center; 6 Hz low-pass), not the OpenSim IK solution.',
   'T': round(float(T), 4), 'BW': round(float(BW), 1), 'mass': round(float(mass), 1), 'speed': round(float(speed), 2),
   'events': {'toe_off': round(float((TO1-HS1)/T*100), 1), 'opp_hs': round(float((LHS-HS1)/T*100), 1), 'opp_to': round(float((LTO-HS1)/T*100), 1)},
   'pct': pct.tolist(),

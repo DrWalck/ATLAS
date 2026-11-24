@@ -1261,7 +1261,7 @@ t2 = {{sqrt(2*h/g) || Solve h - (1/2)*g*t^2 = 0 for t.}};        % s
 v2 = {{v0 + a*t2 || Integrate a = dv/dt once from the release state.}};        % m/s
 r2 = {{r0 + v0*t2 + 0.5*a*t2^2 || Integrate v(t) = v0 + a*t from the release position.}};        % m
 
-% ---- i equation: horizontal distance travelled ----
+% ---- i equation: horizontal distance traveled ----
 d = r2(1);                  % m
 v_imp = {{norm(v2) || Magnitude of the impact velocity vector.}};      % m/s, impact speed
 

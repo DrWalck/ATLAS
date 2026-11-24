@@ -1,7 +1,7 @@
 /* ===================== FIGURE (WebGL): posable Z-Anatomy body for the simulations =====================
    Same API as the old procedural figure: mount(canvasSel,opts), setPose({hipR,kneeR,ankR,hipL,kneeL,ankL,trunk,trunkBend,trunkRot,head,
    shR,shL,shAbdR,shAbdL,elR,elL,wrR,wrL,hipAbdR,hipAbdL,pelvisTilt,rootX,rootY,rootZ}), highlight(ids,dim,side), layers({...}),
-   pose(), jointWorld(name,side), C (joint centres). Angles in degrees, sagittal plane unless noted: hip/shoulder/elbow/trunk/head
+   pose(), jointWorld(name,side), C (joint centers). Angles in degrees, sagittal plane unless noted: hip/shoulder/elbow/trunk/head
    flexion +, knee flexion +, ankle dorsiflexion +. Every mesh part is attached to one segment (ZA_RIG) and posed with a 4×4 matrix. */
 const FIG=(()=>{
   function makeFigure(){

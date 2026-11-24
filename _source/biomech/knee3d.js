@@ -1,5 +1,5 @@
 /* ===================== KNEE3D: the convex–concave rule on the real right knee =====================
-   Femur, patella, tibia and fibula from the Z-Anatomy mesh. The moving bone rotates by θ about the femoral condyle centre
+   Femur, patella, tibia and fibula from the Z-Anatomy mesh. The moving bone rotates by θ about the femoral condyle center
    (the healthy case: roll fully compensated by glide) plus a translation of (1 − glide)·r·θ along the plateau in the roll direction
    (pure roll when glide = 0), so the bones never pass through each other: with too little glide the joint simply rolls apart.
    Convex moves = closed chain (squat): femur on a fixed tibia, roll posterior / glide anterior.
@@ -14,9 +14,9 @@ const KNEE3D=(()=>{
   const apply=(M,p)=>[M[0]*p[0]+M[4]*p[1]+M[8]*p[2]+M[12],M[1]*p[0]+M[5]*p[1]+M[9]*p[2]+M[13],M[2]*p[0]+M[6]*p[1]+M[10]*p[2]+M[14]];
   let Mf=null,Mt=null,Cc=null,P0=null,base=null;
   function update(){ if(!ready) return; const th=rad(st.theta); const g=st.glide; const K=LM.KN; Cc=[K[0]-0.004,K[1]+r,K[2]]; P0=[Cc[0],Cc[1]-r,Cc[2]];
-    if(st.mover==="convex"){ base=null; /* standing: femur rotates by +θ about the condyle centre (hip goes back = flexion) and rolls posteriorly by rθ, glide brings (g·rθ) back */
+    if(st.mover==="convex"){ base=null; /* standing: femur rotates by +θ about the condyle center (hip goes back = flexion) and rolls posteriorly by rθ, glide brings (g·rθ) back */
       const roll=-(1-g)*r*th; Mf=mulM(trans([roll,0,0]),rotZ(th,Cc)); Mt=null; }
-    else { /* seated: whole knee turned so the femur points backwards; the tibia swings by −θ about the condyle centre and its concave plateau rolls posteriorly by (1−g)·rθ along its own tangent */
+    else { /* seated: whole knee turned so the femur points backwards; the tibia swings by −θ about the condyle center and its concave plateau rolls posteriorly by (1−g)·rθ along its own tangent */
       base=rotZ(Math.PI/2,Cc); const roll=(1-g)*r*th; const dirx=Math.cos(-th),diry=Math.sin(-th); /* tangent direction after the rotation, in the seated frame the plateau's forward direction is (cos,sin) of the swing */
       const local=mulM(trans([ -roll*Math.cos(th), -roll*Math.sin(th),0]),rotZ(-th,Cc)); Mt=mulM(base,local); Mf=base; }
     parts.forEach(p=>{ if(p.n==="Tibia"||p.n==="Fibula") p.M=Mt; else p.M=Mf; }); R.S.dirty=true; }
@@ -24,8 +24,8 @@ const KNEE3D=(()=>{
   function alphaOf(p){ return (p.side>0&&KEEP.test(p.n))?1:0; }
   function overlays(ctx,M,project){ if(!ready) return; const th=rad(st.theta); const K=LM.KN; const moving=st.mover==="convex"?Mf:Mt; const fixedM=st.mover==="convex"?null:Mf;
     const tfm=(p,Mx)=>Mx?apply(Mx,p):p; const P=tfm(P0,moving); /* the point of the moving surface that started in contact */
-    /* current contact: the lowest point of the condyle over the plateau ≈ the condyle centre dropped by r (convex) / the plateau point under the centre (concave) */
-    const centre=tfm(Cc,moving); const contact=st.mover==="convex"?[centre[0],centre[1]-r,centre[2]]:tfm([Cc[0],Cc[1]-r,Cc[2]],fixedM);
+    /* current contact: the lowest point of the condyle over the plateau ≈ the condyle center dropped by r (convex) / the plateau point under the center (concave) */
+    const center=tfm(Cc,moving); const contact=st.mover==="convex"?[center[0],center[1]-r,center[2]]:tfm([Cc[0],Cc[1]-r,Cc[2]],fixedM);
     const dir=Math.sign(st.theta)||1; const sx=st.mover==="convex"?-dir:-dir; /* roll direction of the moving bone (posterior for flexion) */
     const rollFrom=tfm([Cc[0],Cc[1]+0.05,Cc[2]+0.03],moving), rollTo=tfm([Cc[0]+sx*0.045,Cc[1]+0.05,Cc[2]+0.03],moving);
     R.arrow3(ctx,M,project,rollFrom,rollTo,"#7cff6b","roll (bone direction)",3);

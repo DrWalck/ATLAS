@@ -1599,10 +1599,10 @@ n_C = n_B;                           % rpm
 % ---- Mesh C-D ----
 n_D = {{n_C*N_C/N_D || Same rule for the second mesh: w_D = w_C*N_C/N_D.}};           % rpm
 
-% ---- Overall ratio and the tooth speed on D (needs rad/s and metres) ----
+% ---- Overall ratio and the tooth speed on D (needs rad/s and meters) ----
 ratio   = {{n_A/n_D || Speed ratio input/output = (N_B/N_A)*(N_D/N_C).}};              % omega_A / omega_D
 w_D     = {{n_D*2*pi/60 || Convert rpm to rad/s: multiply by 2*pi/60.}};       % rad/s
-v_tooth = {{r_D/1000*w_D || A point on the pitch circle moves at r*omega (r in metres).}};       % m/s
+v_tooth = {{r_D/1000*w_D || A point on the pitch circle moves at r*omega (r in meters).}};       % m/s
 
 fprintf('Pitch-line speed at the A-B mesh: %.3f m/s\\n', v_P);
 fprintf('n_B = n_C = %.1f rpm,  n_D = %.2f rpm\\n', n_B, n_D);

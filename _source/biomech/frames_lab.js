@@ -1,7 +1,7 @@
 /* ===================== FRAMES & JOINTS LAB =====================
    Global frame (ISB): X anterior, Y superior (longitudinal), Z to the subject's right (medial–lateral).
    Cardinal planes: sagittal (X–Y, normal Z), frontal/coronal (Y–Z, normal X), transverse (X–Z, normal Y).
-   Osteokinematic movements rotate a distal segment about one of those axes through the joint centre.
+   Osteokinematic movements rotate a distal segment about one of those axes through the joint center.
    Angles: anatomical position = 0. Ranges are typical adult values (approximate; sources: AAOS, Norkin & White). */
 const FL=(()=>{
   const $=(s)=>document.querySelector(s); const {rotAxis,add,sub,mul,norm}=B3; /* vector helpers; the body is rendered by GL3 (Z-Anatomy mesh) */
@@ -11,7 +11,7 @@ const FL=(()=>{
   /* ---------- skeleton: segments with proximal joint (pivot) and parent ---------- */
   const SEG={};  /* id -> {name, parent, pivot, end, parts:[], side} */
   const seg=(id,name,parent,pivot,end,side)=>{ SEG[id]={id,name,parent,pivot,end,side:side||null,parts:[]}; return SEG[id]; };
-  /* landmarks: joint centres measured on the Z-Anatomy skeleton (right side; header 'lm' of zanatomy.bin), mirrored for the left */
+  /* landmarks: joint centers measured on the Z-Anatomy skeleton (right side; header 'lm' of zanatomy.bin), mirrored for the left */
   let LMK=null; const P=(k,z=1)=>{ const p=LMK[k]; return [p[0],p[1],p[2]*z]; }; const PC=(k)=>[LMK[k][0],LMK[k][1],0];
   function buildBody(){
     seg("pelvis","Pelvis",null,[LMK.HIP[0],LMK.HIP[1],0],[LMK.HIP[0],LMK.HIP[1]+0.1,0]); seg("trunk","Trunk (thorax & lumbar spine)","pelvis",PC("L5S1"),PC("C7")); seg("neck","Neck (cervical spine)","trunk",PC("C7"),PC("AA")); seg("head","Head","neck",PC("AO"),PC("HEADTOP")); seg("jaw","Mandible","head",PC("TMJ"),PC("CHIN"));
@@ -99,7 +99,7 @@ const FL=(()=>{
     U.joint=j; U.mv=i; for(const k in angles) delete angles[k]; const m=j.mv[i]; if(m.pre) angles[j.id+"|"+m.pre.mv]=m.pre.ang;
     U.anim={j,i,t:0}; U.showPlanes={sagittal:false,frontal:false,transverse:false}; if(!U.quiz) U.showPlanes[m.plane]=true; renderPanel(); }
   function tick(dt){ if(U.anim){ U.anim.t+=dt; const m=U.anim.j.mv[U.anim.i]; const [a,b]=m.rng; const mid=(a+b)/2, amp=(b-a)/2; angles[U.anim.j.id+"|"+U.anim.i]=mid+amp*Math.sin(U.anim.t*1.2-Math.PI/2); } transformAll(); updateMatrices(); }
-  /* segment centre of mass as a fraction of the segment length from the proximal end (Dempster via Winter 2009) */
+  /* segment center of mass as a fraction of the segment length from the proximal end (Dempster via Winter 2009) */
   const COMF={trunk:0.50,head:0.50,neck:0.5,pelvis:0.5,uarm:0.436,farm:0.430,hand:0.506,fing:0.5,thumb:0.5,thigh:0.433,shank:0.433,foot:0.50,toes:0.5,scap:0.5,jaw:0.5};
   const segCOM=(s)=>{ const f=COMF[s.id.replace(/[RL]$/,"")]??0.45; return add(s.pivot,mul(sub(s.end,s.pivot),f)); };
   /* ---------- overlays: global frame, planes, local frames, joint callouts ---------- */
@@ -109,7 +109,7 @@ const FL=(()=>{
       if(U.globalBeside){ const a=project(O,M),b=project(G,M); if(a[2]>0.1&&b[2]>0.1){ ctx.save(); ctx.strokeStyle="rgba(234,242,255,.5)"; ctx.setLineDash([4,4]); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); ctx.restore(); ctx.fillStyle="#eaf2ff"; ctx.beginPath(); ctx.arc(a[0],a[1],3,0,Math.PI*2); ctx.fill(); } }
       ["X","Y","Z"].forEach(k=>{ const A=AXIS[k]; GL3.arrow3(ctx,M,project,G,add(G,mul(A.v,0.2)),A.color,k,2.5); });
       /* legend in the corner instead of labels over the body */ ctx.save(); ctx.font="600 12px 'Chakra Petch', sans-serif"; const rows=[["Global frame (ISB) · origin at the pelvis (dot)","#eaf2ff"],["X anterior–posterior","#ff5a5a"],["Y longitudinal (superior–inferior)","#7cff6b"],["Z medial–lateral (to the right)","#5fa8ff"]]; const w=Math.max(...rows.map(r=>ctx.measureText(r[0]).width))+16; ctx.fillStyle="rgba(5,10,24,.82)"; ctx.fillRect(10,10,w,rows.length*17+10); rows.forEach((r,i)=>{ ctx.fillStyle=r[1]; ctx.fillText(r[0],18,27+i*17); }); ctx.restore(); }
-    /* cardinal planes through the body centre */
+    /* cardinal planes through the body center */
     const C=[0,0.95,0]; const ext=1.0;
     const planeQuad={sagittal:[[C[0],C[1]-ext,C[2]],[C[0]+0.5,C[1]-ext,C[2]],[C[0]+0.5,C[1]+ext*0.85,C[2]],[C[0],C[1]+ext*0.85,C[2]],[C[0]-0.5,C[1]+ext*0.85,C[2]],[C[0]-0.5,C[1]-ext,C[2]]],
       frontal:[[C[0],C[1]-ext,C[2]-0.9],[C[0],C[1]-ext,C[2]+0.9],[C[0],C[1]+ext*0.85,C[2]+0.9],[C[0],C[1]+ext*0.85,C[2]-0.9]],
@@ -134,7 +134,7 @@ const FL=(()=>{
   function renderPanel(){ const el=$("#jointinfo"); if(U.quiz){ el.innerHTML=`<p class="note">Drill in progress — the joint panel is hidden so it doesn't give the answer away.</p>`; return; } const j=U.joint; if(!j){ el.innerHTML=`<p class="note">Click a yellow joint marker or a body segment, or pick a joint from the list. Each joint shows its type, degrees of freedom and the osteokinematic movements it allows, with the plane and axis of each. Press a movement to animate it.</p>`; return; }
     el.innerHTML=`<h4>${j.name}</h4><div class="jmeta"><span class="chip">${j.type}</span><span class="chip">${j.dof} DOF</span></div><p class="note">${j.note}</p>
       <table class="ptab jt"><thead><tr><th>Movement</th><th>Plane</th><th>Axis</th><th>Typical range</th><th></th></tr></thead><tbody>${j.mv.map((m,i)=>`<tr class="${U.mv===i?"on":""}"><td>${m.n}</td><td><span class="pl" style="--c:${PLANE[m.plane].color}">${m.plane}</span></td><td><span class="ax" style="--c:${AXIS[m.axis].color}">${m.axis} · ${AXIS[m.axis].name}</span>${m.translation?" (translation)":""}</td><td>${m.rom||""}</td><td><button type="button" class="btn small" data-mv="${i}">${U.mv===i?"■ stop":"▶ animate"}</button></td></tr>`).join("")}</tbody></table>
-      <p class="note">Frame reminder: each segment's local frame sits at its <b>centre of mass</b>; its <b>Y</b> axis is longitudinal (along the bone), <b>X</b> points anterior, <b>Z</b> points to the subject's right. The global frame sits at the pelvis origin. Movements <i>in</i> a plane rotate <i>about</i> the axis perpendicular to it.</p>
+      <p class="note">Frame reminder: each segment's local frame sits at its <b>center of mass</b>; its <b>Y</b> axis is longitudinal (along the bone), <b>X</b> points anterior, <b>Z</b> points to the subject's right. The global frame sits at the pelvis origin. Movements <i>in</i> a plane rotate <i>about</i> the axis perpendicular to it.</p>
       <div class="xray"><button type="button" class="btn small" id="segframe">${U.segFrames.has(j.child)?"Hide":"Show"} the ${SEG[j.child].name} local frame</button><button type="button" class="btn small" id="clearsel">Clear</button></div>`;
     el.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.mv; if(U.mv===i&&U.anim){ U.anim=null; U.mv=null; for(const k in angles) delete angles[k]; renderPanel(); } else setMovement(j,i); });
     $("#segframe").onclick=()=>{ const c=j.child; if(U.segFrames.has(c)) U.segFrames.delete(c); else U.segFrames.add(c); renderPanel(); };

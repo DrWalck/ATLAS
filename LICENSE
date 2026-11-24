@@ -10,9 +10,9 @@ https://drwalck.github.io/ATLAS/ (together "the Application") — is the
 copyrighted work of the author. It is published so that it can be used, not
 so that it can be copied.
 
-1. Grant of licence
+1. Grant of license
    The author grants students, instructors and individual users a limited,
-   non-exclusive, non-transferable, revocable licence to access and use the
+   non-exclusive, non-transferable, revocable license to access and use the
    Application free of charge for personal study, teaching and research,
    through its official hosted address (https://drwalck.github.io/ATLAS/).
    Linking to the Application, assigning it in a course and showing it in a
@@ -29,7 +29,7 @@ so that it can be copied.
    (c) sell, rent, sublicense, bundle, or charge any fee for access to the
        Application or any derivative of it, or use it to build, train or
        market a commercial product or service;
-   (d) remove, hide or alter any copyright, licence or attribution notice.
+   (d) remove, hide or alter any copyright, license or attribution notice.
    Instructors who would like to adapt ATLAS for their own course may ask the
    author for a written permission; it is normally given freely for
    non-commercial teaching.
@@ -41,7 +41,7 @@ so that it can be copied.
    creation; the commit history of this repository is the dated record of
    that creation.
 
-4. Third-party components (each under its own licence; see NOTICE.md)
+4. Third-party components (each under its own license; see NOTICE.md)
    The restrictions above apply to the author's own work. The following
    components are redistributed under their own terms, which continue to
    govern them:
