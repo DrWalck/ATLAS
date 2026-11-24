@@ -1,0 +1,64 @@
+ATLAS — Advancing Transformative Learning and Applied engineering Systems
+PROPRIETARY WEB APPLICATION LICENSE
+
+Copyright (c) 2026 Dr. Christine Walck (ERBaL Lab, Embry-Riddle Aeronautical
+University). All rights reserved.
+
+ATLAS — the web pages, lab simulators, 3-D viewers, problem generators,
+drills, figures, text, page design and source code in this repository and at
+https://drwalck.github.io/ATLAS/ (together "the Application") — is the
+copyrighted work of the author. It is published so that it can be used, not
+so that it can be copied.
+
+1. Grant of licence
+   The author grants students, instructors and individual users a limited,
+   non-exclusive, non-transferable, revocable licence to access and use the
+   Application free of charge for personal study, teaching and research,
+   through its official hosted address (https://drwalck.github.io/ATLAS/).
+   Linking to the Application, assigning it in a course and showing it in a
+   class are expressly permitted and encouraged.
+
+2. Restrictions
+   Except as permitted in section 1 or by written permission of the author,
+   you may NOT:
+   (a) copy, clone, fork for redistribution, download, scrape or mirror the
+       HTML, CSS, JavaScript, data files, figures or problem-generation logic,
+       or host any part of the Application elsewhere;
+   (b) modify, adapt, translate or create derivative versions of the
+       Application or its content;
+   (c) sell, rent, sublicense, bundle, or charge any fee for access to the
+       Application or any derivative of it, or use it to build, train or
+       market a commercial product or service;
+   (d) remove, hide or alter any copyright, licence or attribution notice.
+   Instructors who would like to adapt ATLAS for their own course may ask the
+   author for a written permission; it is normally given freely for
+   non-commercial teaching.
+
+3. Ownership
+   All intellectual-property rights in the Application remain exclusively
+   with the author. The name ATLAS and the ATLAS logo may not be used to
+   endorse or name any other product. Copyright arises automatically on
+   creation; the commit history of this repository is the dated record of
+   that creation.
+
+4. Third-party components (each under its own licence; see NOTICE.md)
+   The restrictions above apply to the author's own work. The following
+   components are redistributed under their own terms, which continue to
+   govern them:
+   - Z-Anatomy 3-D atlas meshes, as adapted in biomech/zanatomy.bin:
+     Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0). That mesh
+     file remains freely usable under CC BY-SA 4.0 with attribution.
+   - OpenSim Rajagopal et al. musculoskeletal model, bone geometry and
+     example experimental data (biomech/osim_data.js, biomech/gait_data.js):
+     Apache License 2.0.
+   - Lecture and laboratory material credited on individual pages remains
+     the property of its named authors.
+
+5. Disclaimer
+   THE APPLICATION IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING ACCURACY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY ARISING FROM ITS USE. ATLAS is a teaching tool,
+   not medical, clinical or engineering advice.
+
+Contact for permissions: christine.walck@erau.edu
