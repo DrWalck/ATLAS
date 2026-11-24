@@ -27,23 +27,7 @@ const FL=(()=>{
       seg("foot"+s,`Foot (talus, hindfoot & midfoot, ${L})`,"shank"+s,P("AN",z),P("MTP",z),s);
       seg("toes"+s,`Toes (${L})`,"foot"+s,P("MTP",z),P("TOE",z),s); };
     side("R"); side("L"); }
-  /* which kinematic segment does a mesh part belong to? bones by name; muscles, tendons and ligaments by where their centre lies */
-  const BONESEG={skull:"head",mand:"jaw",cerv:"neck",thor:"trunk",lumb:"trunk",sacr:"pelvis",ribs:"trunk",stern:"trunk",pelv:"pelvis",clav:"scap",scap:"scap",hum:"uarm",rad:"farm",uln:"farm",carp:"hand",fem:"thigh",pat:"thigh",tib:"shank",fib:"shank",tars:"foot"};
-  function segOfPart(p){ const c=p.center; const side=p.side>0?"R":p.side<0?"L":(c[2]>=0?"R":"L"); const id=ZA_MAP.idOf(p); const withSide=(k)=>/^(head|jaw|neck|trunk|pelvis)$/.test(k)?k:k+side;
-    if(id&&BONESEG[id]) return withSide(BONESEG[id]);
-    if(id==="meta") return /metacarpal/.test(p.n)?"hand"+side:(/first finger/.test(p.n)?"thumb"+side:"fing"+side);
-    if(id==="mtt") return /metatarsal|Sesamoid/.test(p.n)?"foot"+side:"toes"+side;
-    if(/^(Hyoid|Thyroid cartilage|Cricoid|Arytenoid|Corniculate)/.test(p.n)) return "neck";
-    const az=Math.abs(c[2]);
-    if(c[1]>LMK.AO[1]+0.015&&az<0.12) return /masseter|pterygoid|Mentalis|Orbicularis oris|Depressor|Lower lip|Platysma/i.test(p.n)&&c[1]<LMK.TMJ[1]?"jaw":"head";
-    if(az>0.13&&c[1]>0.66){ if(c[1]>LMK.EL[1]+0.015) return "uarm"+side; if(c[1]>LMK.WR[1]+0.01) return "farm"+side; return "hand"+side; }
-    if(c[1]<=LMK.HIP[1]+0.01&&c[1]>LMK.KN[1]+0.01&&az>0.02) return "thigh"+side;
-    if(c[1]<=LMK.KN[1]+0.01&&c[1]>LMK.AN[1]+0.015) return "shank"+side;
-    if(c[1]<=LMK.AN[1]+0.015) return c[0]>LMK.MTP[0]?"toes"+side:"foot"+side;
-    if(c[1]>LMK.C7[1]-0.01&&az<0.09) return "neck";
-    if(c[1]<LMK.L5S1[1]-0.01||/^(Gluteus|Piriformis|Obturator|Gemellus|Quadratus femoris|Iliacus|Psoas|Pubo|Iliococcygeus|Coccygeus|Levator ani)/.test(p.n)) return "pelvis";
-    if(az>0.12&&c[1]>LMK.GH[1]-0.12&&/deltoid|Teres|Coracobrachialis|triceps|biceps brachii|Subscapularis|Infraspinatus|Supraspinatus/i.test(p.n)) return "uarm"+side;
-    return "trunk"; }
+  const segOfPart=(p)=>ZA_RIG.segOfPart(p,LMK);
   function assignSegments(parts){ parts.forEach(p=>{ p.segment=segOfPart(p); }); }
   /* 4×4 column-major matrix of a segment's current pose, from the point transform (affine) */
   const segM={};
@@ -109,7 +93,7 @@ const FL=(()=>{
   const cache={}; function transformAll(){ for(const id in SEG) cache[id]=segTransform(id); }
   const tfPoint=(segId,v)=>{ const f=cache[segId]; return f?f(v):v; };
   /* ---------- UI state ---------- */
-  const U={joint:null,mv:null,anim:null,showGlobal:true,showPlanes:{sagittal:false,frontal:false,transverse:false},showFrames:false,segFrames:new Set(),labels:true,layers:{skin:0,muscles:1,bones:1},split:true,globalBeside:true,showJoints:false};
+  const U={typeSet:null,joint:null,mv:null,anim:null,showGlobal:true,showPlanes:{sagittal:false,frontal:false,transverse:false},showFrames:false,segFrames:new Set(),labels:true,layers:{skin:0,muscles:1,bones:1},split:true,globalBeside:true,showJoints:false};
   const planeOf=(p)=>PLANE[p];
   function setMovement(j,i){ /* start oscillating animation of movement i of joint j */
     U.joint=j; U.mv=i; for(const k in angles) delete angles[k]; const m=j.mv[i]; if(m.pre) angles[j.id+"|"+m.pre.mv]=m.pre.ang;
@@ -139,7 +123,7 @@ const FL=(()=>{
     else if(U.anim){ const j=U.anim.j, m=j.mv[U.anim.i]; const A=AXIS[m.axis]; const o=j.pos; if(!m.translation){ ctx.setLineDash([6,5]); GL3.arrow3(ctx,M,project,add(o,mul(A.v,-0.25)),add(o,mul(A.v,0.25)),A.color,`axis: ${m.axis} · ${A.name}`,2.5); ctx.setLineDash([]); } else { GL3.arrow3(ctx,M,project,o,add(o,mul(m.tr,0.15)),"#ffd23f",`translation along ${m.axis}`,2.5); }
       const a=angles[j.id+"|"+U.anim.i]||0; GL3.label3(ctx,M,project,tfPoint(j.child,SEG[j.child].end),`${m.n.split(" / ")[0]}… ${m.translation?(a*1000).toFixed(0)+" mm":a.toFixed(0)+"°"}`,"#ffd23f",-16); }
     else if(U.joint&&U.labels){ GL3.label3(ctx,M,project,tfPoint(U.joint.child,U.joint.pos),U.joint.name,"#ffd23f",-18); }
-    JOINTS.forEach(j=>{ if(U.showJoints||(U.joint&&U.joint.id===j.id)) GL3.dot3(ctx,M,project,tfPoint(j.child,j.pos),U.joint&&U.joint.id===j.id?"#22d3ee":"rgba(34,211,238,.75)",U.joint&&U.joint.id===j.id?6:4); });
+    JOINTS.forEach(j=>{ const typed=U.typeSet&&U.typeSet.has(j.id); const selj=U.joint&&U.joint.id===j.id; if(U.showJoints||typed||selj){ const p=tfPoint(j.child,j.pos); if(typed||selj){ const P=project(p); if(P[2]>0.1){ const r=Math.max(9,(j.r||0.02)*P[3]*1.3); ctx.strokeStyle="#22d3ee"; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.arc(P[0],P[1],r,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); } } GL3.dot3(ctx,M,project,p,selj?"#22d3ee":"rgba(34,211,238,.75)",selj?6:4); } });
   }
   function fixColor(ctx,col,q,M,project,k){ /* plane name tag at the top edge */ const top=q.reduce((a,b)=>b[1]>a[1]?b:a); GL3.label3(ctx,M,project,top,`${k} plane`,col,-10); }
   /* rgba from hex */
@@ -183,7 +167,7 @@ const FL=(()=>{
       if(typeof GAME!=="undefined"){ if(ok) GAME.addXP(10,St.streak>1?`+10 XP · ${St.streak} in a row`:"+10 XP"); else GAME.addXP(0); } }
     return {next}; })();
   /* ---------- init ---------- */
-  function alphaOf(p){ const isBone=p.c==="bone"||p.c==="cart"; const a=isBone?U.layers.bones:U.layers.muscles; if(!U.split||p.side===0) return a; return p.side>0?(isBone?U.layers.bones:0):(isBone?0:U.layers.muscles); }
+  function alphaOf(p){ const isBone=p.c==="bone"||p.c==="cart"; if(p.c==="lig") return U.layers.skin; const a=isBone?U.layers.bones:U.layers.muscles; if(!U.split||p.side===0) return a; return p.side>0?(isBone?U.layers.bones:0):(isBone?0:U.layers.muscles); }
   function init(){
     GL3.S.alphaFn=alphaOf; GL3.S.alwaysRender=true; GL3.S.viewDist=2.6; GL3.S.viewTarget=[0,0.88,0]; GL3.cam.target=[0,0.88,0]; GL3.cam.dist=2.7; GL3.cam.theta=0.95; GL3.cam.phi=0.2;
     GL3.init("#bcanvas",onPick);
@@ -195,10 +179,16 @@ const FL=(()=>{
     $("#globalframe").onchange=(e)=>U.showGlobal=e.target.checked; const gb=$("#globalbeside"); if(gb) gb.onchange=(e)=>U.globalBeside=e.target.checked; const sj=$("#showjoints"); if(sj) sj.onchange=(e)=>U.showJoints=e.target.checked; $("#allframes").onchange=(e)=>U.showFrames=e.target.checked;
     ["skin","muscles","bones"].forEach(k=>{ const e=$("#lay-"+k); if(e){ e.value=U.layers[k]; e.oninput=()=>{ U.layers[k]=+e.value; }; } }); const sp=$("#split"); if(sp) sp.onchange=()=>{ U.split=sp.checked; }; document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ const p=b.dataset.preset; U.split=false; if(p==="skin") U.layers={skin:1,muscles:1,bones:1}; if(p==="muscles") U.layers={skin:0,muscles:1,bones:1}; if(p==="bones") U.layers={skin:0,muscles:0,bones:1}; if(p==="half"){ U.layers={skin:0,muscles:1,bones:1}; U.split=true; } ["skin","muscles","bones"].forEach(k=>{ const e=$("#lay-"+k); if(e) e.value=U.layers[k]; }); if(sp) sp.checked=U.split; });
     $("#drillstart").onclick=()=>{ DR.next(); $("#drillstart").textContent="Skip →"; };
+    document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>GL3.view(b.dataset.view));
+    document.querySelectorAll("[data-jtype]").forEach(b=>b.onclick=()=>{ const t=b.dataset.jtype; const on=b.classList.contains("on"); document.querySelectorAll("[data-jtype]").forEach(x=>x.classList.remove("on")); const list=$("#jtypelist");
+      if(on){ U.typeSet=null; list.textContent="Pick a type to light up every joint of that kind on the body."; return; }
+      b.classList.add("on"); const hits=JOINTS.filter(j=>j.type.toLowerCase().startsWith(t)||(t==="plane"&&/^plane/.test(j.type))||(t==="modified hinge"&&/^modified hinge/.test(j.type))); U.typeSet=new Set(hits.map(j=>j.id)); const seen=new Set();
+      list.innerHTML=hits.filter(j=>{ const n=j.name.replace(/ \((left|right)\)/,""); if(seen.has(n)) return false; seen.add(n); return true; }).map(j=>`<a href="#" data-jid="${j.id}">${j.name.replace(/ \((left|right)\)/,"")}</a>`).join(" · ")||"none in this body";
+      list.querySelectorAll("[data-jid]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); const j=JOINTS.find(x=>x.id===a.dataset.jid); if(j) selectJoint(j); }); GL3.flyTo([0,0.88,0],2.7); });
     document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#tabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); $("#explore").hidden=b.dataset.k!=="explore"; $("#drills").hidden=b.dataset.k!=="drills"; $("#reference").hidden=b.dataset.k!=="reference"; if(b.dataset.k==="reference") renderReference(); });
     renderPanel(); syncToggles(); }
   function renderReference(){ const el=$("#reftable"); if(el.dataset.done) return; el.dataset.done=1; const seen=new Set(); const rows=JOINTS.filter(j=>{ const b=j.name.replace(/ \((left|right)\)/,""); if(seen.has(b)) return false; seen.add(b); return true; });
-    el.innerHTML=`<table class="ptab jt"><thead><tr><th>Joint</th><th>Type</th><th>DOF</th><th>Movements · plane · axis · typical range</th></tr></thead><tbody>${rows.map(j=>`<tr><td><b>${j.name.replace(/ \((left|right)\)/,"")}</b></td><td>${j.type}</td><td>${j.dof}</td><td>${j.mv.map(m=>`<div>${m.n} — <span class="pl" style="--c:${PLANE[m.plane].color}">${m.plane}</span> · <span class="ax" style="--c:${AXIS[m.axis].color}">${m.axis}</span> ${m.rom?"· "+m.rom:""}</div>`).join("")}</td></tr>`).join("")}</tbody></table><p class="note">Ranges are typical adult values and vary with age, sex, and measurement method (AAOS; Norkin &amp; White, <i>Measurement of Joint Motion</i>). Plane and axis follow the ISB recommendation (Wu et al., J. Biomech. 2002, 2005).</p>`; fixSubs(el); }
+    el.innerHTML=`<table class="ptab jt"><thead><tr><th>Joint</th><th>Type</th><th>DOF</th><th>Movements · plane · axis · typical range</th></tr></thead><tbody>${rows.map(j=>`<tr><td><a href="#" data-jid="${j.id}"><b>${j.name.replace(/ \((left|right)\)/,"")}</b></a></td><td>${j.type}</td><td>${j.dof}</td><td>${j.mv.map(m=>`<div>${m.n} — <span class="pl" style="--c:${PLANE[m.plane].color}">${m.plane}</span> · <span class="ax" style="--c:${AXIS[m.axis].color}">${m.axis}</span> ${m.rom?"· "+m.rom:""}</div>`).join("")}</td></tr>`).join("")}</tbody></table><p class="note">Ranges are typical adult values and vary with age, sex, and measurement method (AAOS; Norkin &amp; White, <i>Measurement of Joint Motion</i>). Plane and axis follow the ISB recommendation (Wu et al., J. Biomech. 2002, 2005).</p>`; fixSubs(el); el.querySelectorAll("[data-jid]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); document.querySelector('#tabs [data-k="explore"]').click(); const j=JOINTS.find(x=>x.id===a.dataset.jid); if(j) selectJoint(j); window.scrollTo({top:0,behavior:"smooth"}); }); }
   return {init,JOINTS,SEG,U,selectJoint,setMovement,angles};
 })();
 FL.init();

@@ -592,7 +592,7 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
     <aside><div class="panel"><h4>On a real body</h4>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
       <div class="xray" style="margin-top:6px"><button type="button" class="btn small" data-view="front">Anterior</button><button type="button" class="btn small" data-view="side">Lateral</button><button type="button" class="btn small" data-view="back">Posterior</button><button type="button" class="btn small" data-view="iso">Oblique</button></div>
-      <div class="ctl"><label>Skin <input type="range" id="figskin" min="0" max="1" step="0.05" value="0.3"></label><label>Muscles <input type="range" id="figmus" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="figbone" min="0" max="1" step="0.05" value="0.9"></label></div>
+      <div class="ctl"><label>Ligaments &amp; retinacula <input type="range" id="figskin" min="0" max="1" step="0.05" value="0"></label><label>Muscles <input type="range" id="figmus" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="figbone" min="0" max="1" step="0.05" value="0.9"></label></div>
       <p class="note" id="fignote"></p>
       <small class="note">Drag to rotate, wheel to zoom. The body follows the simulation; highlighted muscles are the ones doing the work. Full model: <a href="anatomy.html">Anatomy Explorer</a>.</small></div></aside></div>
 </div>
@@ -605,6 +605,155 @@ function fixSubs(root){
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
   nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
 }
+/* ===================== GL3: WebGL body renderer for the Z-Anatomy mesh =====================
+   Loads biomech/zanatomy.bin (ATLAS format: 'ZANA' + JSON header + int16 positions (×q m) + int8 normals + uint16 local indices),
+   one draw range per part. API mirrors the old canvas renderer (B3) where the explorer and labs use it:
+     GL3.load(url).then(parts)  GL3.init(canvasSelector,onPick)  GL3.S{sel,dirty,overlays,alphaFn,alwaysRender}  GL3.cam  GL3.flyTo
+     GL3.views  GL3.project(p)  GL3.label3/arrow3 (2-D overlay canvas)  part.M (optional 4×4 model matrix for posing)
+   Mesh: Z-Anatomy (CC BY-SA 4.0), decimated; coordinates in metres, ISB axes (X anterior, Y up, Z to the subject's right).      */
+const GL3=(()=>{
+  const GEOMCACHE={}; /* url -> promise of parsed geometry, shared by every instance on the page */
+  function makeInstance(){
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]; const norm=(v)=>{ const l=Math.hypot(v[0],v[1],v[2])||1; return [v[0]/l,v[1]/l,v[2]/l]; };
+  const CAT={bone:{col:[0.93,0.90,0.84],gloss:0.25},cart:{col:[0.80,0.86,0.90],gloss:0.35},muscle:{col:[0.62,0.18,0.15],gloss:0.5},tendon:{col:[0.92,0.88,0.78],gloss:0.3},lig:{col:[0.85,0.80,0.66],gloss:0.3}};
+  const cam={theta:Math.PI/2,phi:0.1,dist:2.6,target:[0,0.9,0],fov:34};
+  const views={front:[Math.PI/2,0.12,2.6],side:[0,0.1,2.6],left:[Math.PI,0.1,2.6],back:[-Math.PI/2,0.12,2.6],iso:[0.95,0.25,2.6],top:[0.9,1.35,2.4]};
+  const S={sel:null,hover:null,dirty:true,overlays:[],alphaFn:null,alwaysRender:false,viewDist:2.6,viewTarget:[0,0.9,0],parts:[],loaded:false,light:[0.35,0.8,0.55]};
+  let gl,canvas,ov,octx,W=0,H=0,dpr=1,prog,pick,vbo,nbo,ibo,q=1e-4,onPickCb=null,loc={},ploc={},fbo=null,fbtex=null,fbrb=null;
+  const VS=`attribute vec3 aP; attribute vec3 aN; uniform mat4 uPV; uniform mat4 uM; uniform float uQ; varying vec3 vN; varying vec3 vW;
+    void main(){ vec4 w=uM*vec4(aP*uQ,1.0); vW=w.xyz; vN=normalize(mat3(uM)*aN); gl_Position=uPV*w; }`;
+  const FS=`precision mediump float; varying vec3 vN; varying vec3 vW; uniform vec3 uCol; uniform float uA; uniform vec3 uEye; uniform vec3 uL; uniform float uGloss; uniform float uHi;
+    void main(){ vec3 n=normalize(vN); vec3 v=normalize(uEye-vW); if(dot(n,v)<0.0) n=-n; vec3 l=normalize(uL); vec3 l2=normalize(vec3(-0.6,0.3,-0.5));
+      float d=max(dot(n,l),0.0)*0.85+max(dot(n,l2),0.0)*0.35; vec3 h=normalize(l+v); float sp=pow(max(dot(n,h),0.0),28.0)*uGloss; float rim=pow(1.0-max(dot(n,v),0.0),3.0)*0.18;
+      vec3 c=uCol*(0.30+d)+vec3(sp)+vec3(rim)*uCol; c=mix(c,vec3(1.0,0.85,0.35),uHi*0.55)+uHi*0.15; gl_FragColor=vec4(c,uA); }`;
+  const PFS=`precision mediump float; uniform vec3 uId; void main(){ gl_FragColor=vec4(uId,1.0); }`;
+  function shader(vs,fs){ const p=gl.createProgram(); [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]].forEach(([t,s])=>{ const sh=gl.createShader(t); gl.shaderSource(sh,s); gl.compileShader(sh); if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(sh)); gl.attachShader(p,sh); }); gl.linkProgram(p); return p; }
+  /* ---------- loading ---------- */
+  function parse(buf){ const dv=new DataView(buf); if(String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3))!=="ZANA") throw new Error("bad mesh file");
+    const hl=dv.getUint32(4,true); const hdr=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,8,hl))); let off=8+hl;
+    const pos=new Int16Array(buf,off,hdr.nv*3); off+=hdr.nv*6; const nrm=new Int8Array(buf,off,hdr.nv*3); off+=hdr.nv*3; off+=(4-off%4)%4; const idx=new Uint16Array(buf,off,hdr.ni);
+    const gidx=new Uint32Array(hdr.ni); hdr.parts.forEach(p=>{ for(let k=0;k<p.ic;k++) gidx[p.io+k]=idx[p.io+k]+p.vo; }); return {hdr,pos,nrm,gidx}; }
+  async function load(url){ if(!GEOMCACHE[url]) GEOMCACHE[url]=fetch(url).then(r=>r.arrayBuffer()).then(parse); const g=await GEOMCACHE[url]; const hdr=g.hdr; q=hdr.q;
+    S.parts=hdr.parts.map((p,i)=>({i,n:p.n,s:p.s,c:p.c,vo:p.vo,vc:p.vc,io:p.io,ic:p.ic,bb:p.bb,center:[(p.bb[0]+p.bb[3])/2,(p.bb[1]+p.bb[4])/2,(p.bb[2]+p.bb[5])/2],side:p.s==="R"?1:p.s==="L"?-1:0,
+      col:CAT[p.c].col.slice(),gloss:CAT[p.c].gloss,alpha:1,M:null,sid:null,layer:p.c==="muscle"||p.c==="tendon"?"m1":p.c==="lig"?"lig":"bone",reg:null,kind:p.c}));
+    /* slight per-muscle colour variation so neighbouring bellies read as separate */
+    S.parts.forEach(p=>{ if(p.c==="muscle"){ let h=0; for(const ch of p.n) h=(h*31+ch.charCodeAt(0))&0xffff; const t=(h%100)/100; p.col=[0.60+0.14*t,0.18+0.06*(1-t),0.15+0.04*t]; } });
+    S.credit=hdr.credit; S.lm=hdr.lm||null; S.geom={pos:g.pos,nrm:g.nrm,gidx:g.gidx}; S.loaded=true; if(gl) upload(); S.dirty=true; return S.parts; }
+  /* ---------- extra geometry built at run time (ligament tubes, markers): float positions in metres + uint32 indices ---------- */
+  let xvbo=null,xnbo=null,xibo=null; S.extras=[];
+  function setExtras(list){ /* list: [{name,V:Float32Array(xyz...),N:Float32Array,I:Uint32Array,col,alpha,gloss,M}] */ S.extras=[]; if(!list.length){ S.dirty=true; return; }
+    let nv=0,ni=0; list.forEach(e=>{ nv+=e.V.length/3; ni+=e.I.length; }); const P=new Int16Array(nv*3), N=new Int8Array(nv*3), I=new Uint32Array(ni); let vo=0,io=0;
+    list.forEach((e,k)=>{ for(let i=0;i<e.V.length;i++){ P[vo*3+i]=Math.max(-32767,Math.min(32767,Math.round(e.V[i]/q))); N[vo*3+i]=Math.round(e.N[i]*127); } for(let i=0;i<e.I.length;i++) I[io+i]=e.I[i]+vo;
+      let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9]; for(let i=0;i<e.V.length;i+=3){ for(let k2=0;k2<3;k2++){ mn[k2]=Math.min(mn[k2],e.V[i+k2]); mx[k2]=Math.max(mx[k2],e.V[i+k2]); } }
+      S.extras.push({i:1e6+k,extra:true,n:e.name||"extra",c:e.c||"lig",s:"C",side:0,vo,vc:e.V.length/3,io,ic:e.I.length,bb:[...mn,...mx],center:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2],col:e.col||[0.9,0.85,0.7],gloss:e.gloss??0.3,alpha:e.alpha??1,M:e.M||null,sid:e.sid||null,layer:"lig",kind:"extra",noPick:e.noPick||false}); vo+=e.V.length/3; io+=e.I.length; });
+    if(gl){ if(!xvbo){ xvbo=gl.createBuffer(); xnbo=gl.createBuffer(); xibo=gl.createBuffer(); } gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.bufferData(gl.ARRAY_BUFFER,P,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.bufferData(gl.ARRAY_BUFFER,N,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,I,gl.DYNAMIC_DRAW); }
+    S._xraw={P,N,I}; S.dirty=true; }
+  function upload(){ if(S._xraw){ const r=S._xraw; xvbo=gl.createBuffer(); xnbo=gl.createBuffer(); xibo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.bufferData(gl.ARRAY_BUFFER,r.P,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.bufferData(gl.ARRAY_BUFFER,r.N,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,r.I,gl.DYNAMIC_DRAW); } const g=S.geom; vbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.bufferData(gl.ARRAY_BUFFER,g.pos,gl.STATIC_DRAW); nbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,nbo); gl.bufferData(gl.ARRAY_BUFFER,g.nrm,gl.STATIC_DRAW); ibo=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.gidx,gl.STATIC_DRAW); }
+  /* ---------- camera ---------- */
+  function camMatrix(){ const ct=Math.cos(cam.theta),st=Math.sin(cam.theta),cp=Math.cos(cam.phi),sp=Math.sin(cam.phi); const eye=[cam.target[0]+cam.dist*cp*st,cam.target[1]+cam.dist*sp,cam.target[2]+cam.dist*cp*ct];
+    const f=norm(sub(cam.target,eye)); const r=norm(cross(f,[0,1,0])); const u=cross(r,f); return {eye,f,r,u}; }
+  function pv(M){ const aspect=W/H, fy=1/Math.tan(cam.fov*Math.PI/360), n=0.05, fa=20; const P=[fy/aspect,0,0,0, 0,fy,0,0, 0,0,(fa+n)/(n-fa),-1, 0,0,2*fa*n/(n-fa),0];
+    const e=M.eye,r=M.r,u=M.u,f=M.f; const V=[r[0],u[0],-f[0],0, r[1],u[1],-f[1],0, r[2],u[2],-f[2],0, -(r[0]*e[0]+r[1]*e[1]+r[2]*e[2]),-(u[0]*e[0]+u[1]*e[1]+u[2]*e[2]),(f[0]*e[0]+f[1]*e[1]+f[2]*e[2]),1];
+    const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=P[k*4+j]*V[i*4+k]; o[i*4+j]=s; } return o; }
+  function project(p,M){ M=M&&M.eye?M:camMatrix(); const d=sub(p,M.eye); const x=d[0]*M.r[0]+d[1]*M.r[1]+d[2]*M.r[2], y=d[0]*M.u[0]+d[1]*M.u[1]+d[2]*M.u[2], z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; const s=(H/dpr/2)/Math.tan(cam.fov*Math.PI/360)/Math.max(z,0.05); return [W/dpr/2+x*s,H/dpr/2-y*s,z,s]; }
+  const I4=new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+  /* ---------- render ---------- */
+  function partAlpha(p){ let a=S.alphaFn?S.alphaFn(p):p.alpha; return Math.max(0,Math.min(1,a)); }
+  function bindMain(L){ gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.enableVertexAttribArray(L.aP); gl.vertexAttribPointer(L.aP,3,gl.SHORT,false,0,0); if(L.aN>=0){ gl.bindBuffer(gl.ARRAY_BUFFER,nbo); gl.enableVertexAttribArray(L.aN); gl.vertexAttribPointer(L.aN,3,gl.BYTE,true,0,0); } gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo); }
+  function bindExtra(L){ gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.enableVertexAttribArray(L.aP); gl.vertexAttribPointer(L.aP,3,gl.SHORT,false,0,0); if(L.aN>=0){ gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.enableVertexAttribArray(L.aN); gl.vertexAttribPointer(L.aN,3,gl.BYTE,true,0,0); } gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); }
+  function render(){ if(!gl||!(S.loaded||S.extras.length)) return; const M=camMatrix(); const PV=pv(M); gl.viewport(0,0,W,H); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(prog); gl.uniformMatrix4fv(loc.uPV,false,PV); gl.uniform1f(loc.uQ,q); gl.uniform3fv(loc.uEye,M.eye); gl.uniform3fv(loc.uL,S.light);
+    const pulse=0.55+0.45*Math.sin(performance.now()/300); const opaque=[],trans=[];
+    const all=S.loaded?S.parts.concat(S.extras):S.extras; for(const p of all){ const a=p.extra?(p.alpha):partAlpha(p); if(a<=0.02) continue; p._a=a; (a>=0.98?opaque:trans).push(p); }
+    let bound=null; const draw=(p)=>{ const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(loc); bound=b; } gl.uniformMatrix4fv(loc.uM,false,p.M||I4); gl.uniform3fv(loc.uCol,p.col); gl.uniform1f(loc.uA,p._a); gl.uniform1f(loc.uGloss,p.gloss); gl.uniform1f(loc.uHi,(S.sel&&p.sid&&p.sid===S.sel)||p.hi||(S.hover&&p===S.hover)?pulse:0); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); };
+    gl.depthMask(true); opaque.forEach(draw);
+    if(trans.length){ trans.forEach(p=>{ const c=p.M?mulM(p.M,p.center):p.center; const d=sub(c,M.eye); p._z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; }); trans.sort((a,b)=>b._z-a._z); gl.depthMask(false); trans.forEach(draw); gl.depthMask(true); }
+    octx.clearRect(0,0,W/dpr,H/dpr); S.overlays.forEach(fn=>fn(octx,M,project)); }
+  const mulM=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12], m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13], m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];
+  /* ---------- picking (ID render) ---------- */
+  function pickAt(x,y){ if(!gl) return null; const M=camMatrix(); const PV=pv(M); if(!fbo){ fbo=gl.createFramebuffer(); fbtex=gl.createTexture(); fbrb=gl.createRenderbuffer(); }
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fbo); gl.bindTexture(gl.TEXTURE_2D,fbtex); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,null); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,fbtex,0);
+    gl.bindRenderbuffer(gl.RENDERBUFFER,fbrb); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,W,H); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,fbrb);
+    gl.viewport(0,0,W,H); gl.disable(gl.BLEND); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.useProgram(pick); gl.uniformMatrix4fv(ploc.uPV,false,PV); gl.uniform1f(ploc.uQ,q);
+    let bound=null; const all=S.loaded?S.parts.concat(S.extras):S.extras;
+    for(const p of all){ const a=p.extra?p.alpha:partAlpha(p); if(a<0.15||p.noPick) continue; const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(ploc); bound=b; } const id=(p.extra?(1e6+ (p.i-1e6)):p.i)+1; gl.uniform3f(ploc.uId,(id&255)/255,((id>>8)&255)/255,((id>>16)&255)/255); gl.uniformMatrix4fv(ploc.uM,false,p.M||I4); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); }
+    const px=new Uint8Array(4); gl.readPixels(Math.round(x*dpr),Math.round(H-y*dpr),1,1,gl.RGBA,gl.UNSIGNED_BYTE,px); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.enable(gl.BLEND); const id=px[0]|(px[1]<<8)|(px[2]<<16); if(!id) return null; return id>1e6?S.extras[id-1-1e6]:S.parts[id-1]; }
+  /* ---------- overlay helpers (2-D canvas on top) ---------- */
+  function arrow3(ctx,M,proj,a,b,color,label,width=2){ const A=project(a),B=project(b); if(A[2]<0.1||B[2]<0.1) return; ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width; ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke(); const ang=Math.atan2(B[1]-A[1],B[0]-A[0]); ctx.beginPath(); ctx.moveTo(B[0],B[1]); ctx.lineTo(B[0]-9*Math.cos(ang-0.4),B[1]-9*Math.sin(ang-0.4)); ctx.lineTo(B[0]-9*Math.cos(ang+0.4),B[1]-9*Math.sin(ang+0.4)); ctx.closePath(); ctx.fill(); if(label){ ctx.font="700 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(label).width+8; ctx.fillStyle="rgba(5,10,24,.85)"; ctx.fillRect(B[0]+6,B[1]-16,w,18); ctx.fillStyle=color; ctx.fillText(label,B[0]+10,B[1]-3); } }
+  function label3(ctx,M,proj,p,txt,color="#ffd23f",dy=-14){ const P=project(p); if(P[2]<0.1) return; ctx.font="600 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(txt).width+10; ctx.fillStyle="rgba(5,10,24,.88)"; ctx.strokeStyle=color; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(P[0]-w/2,P[1]+dy-14,w,18,4):ctx.rect(P[0]-w/2,P[1]+dy-14,w,18); ctx.fill(); ctx.stroke(); ctx.fillStyle=color; ctx.textAlign="center"; ctx.fillText(txt,P[0],P[1]+dy-1); ctx.textAlign="left"; ctx.beginPath(); ctx.arc(P[0],P[1],2.5,0,Math.PI*2); ctx.fill(); }
+  function quad3(ctx,M,proj,pts,fill,stroke){ const P=pts.map(p=>project(p)); if(P.some(p=>p[2]<0.1)) return; ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.beginPath(); P.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  function dot3(ctx,M,proj,p,color,r=4){ const P=project(p); if(P[2]<0.1) return; ctx.fillStyle=color; ctx.beginPath(); ctx.arc(P[0],P[1],r,0,Math.PI*2); ctx.fill(); }
+  /* ---------- init, input, animation ---------- */
+  let fly=null, lastT=0;
+  function flyTo(target,dist,theta,phi){ fly={t0:performance.now(),a:{...cam,target:cam.target.slice()},b:{target,dist:dist??cam.dist,theta:theta??cam.theta,phi:phi??cam.phi}}; S.dirty=true; }
+  function tick(){ if(fly){ const u=Math.min(1,(performance.now()-fly.t0)/700); const e=u<.5?2*u*u:-1+(4-2*u)*u; cam.dist=fly.a.dist+(fly.b.dist-fly.a.dist)*e; cam.theta=fly.a.theta+(fly.b.theta-fly.a.theta)*e; cam.phi=fly.a.phi+(fly.b.phi-fly.a.phi)*e; cam.target=[0,1,2].map(i=>fly.a.target[i]+(fly.b.target[i]-fly.a.target[i])*e); if(u>=1) fly=null; S.dirty=true; }
+    const now=performance.now(); const dt=lastT?Math.min(0.1,(now-lastT)/1000):0; lastT=now; if(S.tick) S.tick(dt); if(S.dirty||S.alwaysRender||S.sel||S.hover){ render(); S.dirty=false; } requestAnimationFrame(tick); }
+  function resize(){ dpr=Math.min(2,window.devicePixelRatio||1); const r=canvas.getBoundingClientRect(); W=Math.max(1,Math.round(r.width*dpr)); H=Math.max(1,Math.round(r.height*dpr)); canvas.width=W; canvas.height=H; ov.width=W; ov.height=H; ov.style.width=r.width+"px"; ov.style.height=r.height+"px"; octx.setTransform(dpr,0,0,dpr,0,0); S.dirty=true; }
+  function init(sel,onPick){ canvas=document.querySelector(sel); onPickCb=onPick; const wrap=canvas.parentElement; if(getComputedStyle(wrap).position==="static") wrap.style.position="relative";
+    ov=document.createElement("canvas"); ov.style.cssText="position:absolute;left:0;top:0;pointer-events:none"; canvas.insertAdjacentElement("afterend",ov); octx=ov.getContext("2d");
+    gl=canvas.getContext("webgl",{antialias:true,alpha:true,premultipliedAlpha:false}); if(!gl){ canvas.insertAdjacentHTML("afterend","<p class='note'>WebGL is not available in this browser.</p>"); return; }
+    gl.getExtension("OES_element_index_uint"); prog=shader(VS,FS); pick=shader(VS,PFS); ["uPV","uM","uQ","uCol","uA","uEye","uL","uGloss","uHi"].forEach(k=>loc[k]=gl.getUniformLocation(prog,k)); loc.aP=gl.getAttribLocation(prog,"aP"); loc.aN=gl.getAttribLocation(prog,"aN");
+    ["uPV","uM","uQ","uId"].forEach(k=>ploc[k]=gl.getUniformLocation(pick,k)); ploc.aP=gl.getAttribLocation(pick,"aP"); ploc.aN=-1; if(S.loaded||S._xraw) upload();
+    resize(); window.addEventListener("resize",resize); if(window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
+    let drag=null,moved=0; const pos=(e)=>{ const r=canvas.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
+    let hook=null;
+    canvas.addEventListener("pointerdown",(e)=>{ drag=pos(e); moved=0; canvas.setPointerCapture(e.pointerId); hook=null; if(S.dragHook){ const part=pickAt(drag[0],drag[1]); hook=S.dragHook(part)||null; } });
+    canvas.addEventListener("pointermove",(e)=>{ if(!drag) return; const p=pos(e); const dx=p[0]-drag[0],dy=p[1]-drag[1]; moved+=Math.abs(dx)+Math.abs(dy); if(hook){ hook(dx,dy); drag=p; S.dirty=true; return; } if(e.shiftKey||e.buttons===4){ const M=camMatrix(); const k=cam.dist*0.0016; cam.target=add(cam.target,add(mul(M.r,-dx*k),mul(M.u,dy*k))); } else { cam.theta-=dx*0.008; cam.phi=Math.max(-1.45,Math.min(1.45,cam.phi+dy*0.008)); } drag=p; fly=null; S.dirty=true; });
+    canvas.addEventListener("pointerup",(e)=>{ if(hook){ hook=null; drag=null; return; } if(drag&&moved<6&&onPickCb){ const p=pos(e); onPickCb(pickAt(p[0],p[1])); } drag=null; });
+    canvas.addEventListener("wheel",(e)=>{ e.preventDefault(); cam.dist=Math.max(S.minDist||0.3,Math.min(6,cam.dist*(1+Math.sign(e.deltaY)*0.1))); fly=null; S.dirty=true; },{passive:false});
+    canvas.addEventListener("dblclick",(e)=>{ const p=pos(e); const part=pickAt(p[0],p[1]); if(part) flyTo(part.M?mulM(part.M,part.center):part.center,Math.max(0.5,cam.dist*0.6)); });
+    const host=canvas.parentElement&&canvas.parentElement.parentElement; if(host) host.querySelectorAll("[data-view]").forEach(b=>{ if(!b._gl3){ b._gl3=true; b.addEventListener("click",()=>view(b.dataset.view)); } });
+    requestAnimationFrame(tick); }
+  function view(k){ const v=views[k]; if(!v) return; flyTo(S.viewTarget.slice(),S.viewDist,v[0],v[1]); }
+  return {load,init,S,cam,views,view,flyTo,project,arrow3,label3,quad3,dot3,pickAt,setExtras,add,sub,mul,norm,cross,CAT,mulM};
+  }
+  const main=makeInstance(); main.create=makeInstance; return main;
+})();
+
+/* Z-Anatomy part names → ATLAS structure ids (ANM.MUSCLES / ANM.BONES). A part that matches no pattern keeps its Z-Anatomy name. */
+const ZA_MAP=(()=>{
+  const M=[["scm",/^Sternocleidomastoid/],["scal",/^Scalenus/],["trap",/trapezius muscle/],["ls",/^Levator scapulae/],["rhomb",/^Rhomboid/],["delt",/deltoid muscle$/],["pecmaj",/pectoralis major/],["pecmin",/^Pectoralis minor/],["serr",/^Serratus anterior/],["lat",/^Latissimus dorsi/],
+    ["es",/^(Iliocostalis|Longissimus|Spinalis)/],["ql",/^Quadratus lumborum/],["ra",/^Rectus abdominis/],["eo",/^External abdominal oblique/],["io",/^Internal abdominal oblique/],["ta",/^Transversus abdominis/],
+    ["ssp",/^Supraspinatus/],["isp",/^Infraspinatus/],["tmin",/^Teres minor/],["tmaj",/^Teres major/],["subs",/^Subscapularis/],["cb",/^Coracobrachialis/],["bic",/head of biceps brachii/],["brach",/^Brachialis/],["tri",/head of triceps brachii/],["brd",/^Brachioradialis/],
+    ["flexg",/^(Flexor carpi radialis|Palmaris longus|\w+ head of flexor carpi ulnaris|.*head of flexor digitorum superficialis)/],["extg",/^(Extensor carpi radialis|Extensor digitorum$|\w+ head of extensor carpi ulnaris|Extensor digiti minimi$)/],["pt",/pronator teres/],["sup",/^Supinator/],
+    ["ilps",/^(Psoas major|Iliacus muscle)/],["gmax",/^Gluteus maximus/],["gmed",/^Gluteus medius/],["gmin",/^Gluteus minimus/],["pir",/^Piriformis muscle/],["tfl",/^(Tensor fasciae latae|Iliotibial tract)/],["sart",/^Sartorius/],["rf",/^Rectus femoris/],["vl",/^Vastus lateralis/],["vm",/^Vastus medialis/],["vi",/^Vastus intermedius/],
+    ["al",/^Adductor longus/],["ab",/^Adductor brevis/],["am",/Adductor (magnus|minimus)/],["grac",/^Gracilis/],["pect",/^Pectineus/],["bf",/head of biceps femoris/],["st",/^Semitendinosus/],["sm",/^Semimembranosus muscle/],["pop",/^Popliteus/],
+    ["ta_",/^Tibialis anterior/],["edl",/extensor digitorum longus/i],["ehl",/^Extensor hallucis longus/],["fl",/^Fibularis longus/],["fb",/^Fibularis brevis/],["gas",/head of gastrocnemius/],["sol",/^Soleus/],["tp",/^Tibialis posterior/],["fhl",/^Flexor hallucis longus/],["fdl",/^Flexor digitorum longus/]];
+  const B=[["mand",/^(Mandible|Lower .*(incisor|canine|molar|premolar))/],["skull",/^(Frontal bone|Parietal|Occipital|Temporal bone|Sphenoid|Ethmoid|Zygomatic|Nasal bone|Lacrimal|Palatine|Vomer|Maxilla|Inferior nasal concha|Sinus of|Upper .*(incisor|canine|molar|premolar)|Incus|Malleus|Stapes)/],
+    ["cerv",/^(Atlas|Axis|Vertebra C)/],["thor",/^Vertebra T/],["lumb",/^Vertebra L/],["sacr",/^(Sacrum|Coccyx)/],["ribs",/( rib$|^Costal cartilage)/],["stern",/(sternum|^Xiphoid)/],["clav",/^Clavicle/],["scap",/^Scapula/],["hum",/^Humerus/],["rad",/^Radius/],["uln",/^Ulna/],
+    ["carp",/^(Capitate|Hamate|Lunate|Pisiform|Scaphoid|Trapezium|Trapezoid|Triquetrum) bone/],["meta",/(metacarpal bone|phalanx of .* finger of hand)/],["pelv",/^Hip bone/],["fem",/^Femur/],["pat",/^Patella/],["tib",/^Tibia/],["fib",/^Fibula/],
+    ["tars",/^(Talus|Calcaneus|Navicular bone|Cuboid bone|.*cuneiform bone)/],["mtt",/(metatarsal bone|phalanx of .* finger of foot|Sesamoid bones of foot)/]];
+  function idOf(part){ const list=(part.c==="muscle"||part.c==="tendon")?M:(part.c==="bone"||part.c==="cart")?B:[]; for(const [id,re] of list) if(re.test(part.n)) return id; return null; }
+  function regionOf(part){ const c=part.center; if(c[1]>1.47) return "head"; if(Math.abs(c[2])>0.17&&c[1]>0.7) return "upper"; if(c[1]<0.96||/^(Hip bone|Gluteus|Piriformis|Iliacus|Psoas|Obturator|Gemellus|Quadratus femoris|Tensor fasciae)/.test(part.n)) return "lower"; return "trunk"; }
+  return {idOf,regionOf};
+})();
+
+/* ===================== ZA_RIG: kinematic rig for the Z-Anatomy body =====================
+   Shared by the Frames lab and the posable figure: which body segment each mesh part belongs to, and the joint-centre
+   landmarks measured on the skeleton (header 'lm' of zanatomy.bin, right side; the left is mirrored in z). */
+const ZA_RIG=(()=>{
+  const BONESEG={skull:"head",mand:"jaw",cerv:"neck",thor:"trunk",lumb:"trunk",sacr:"pelvis",ribs:"trunk",stern:"trunk",pelv:"pelvis",clav:"scap",scap:"scap",hum:"uarm",rad:"farm",uln:"farm",carp:"hand",fem:"thigh",pat:"thigh",tib:"shank",fib:"shank",tars:"foot"};
+  function segOfPart(p,LMK){ const c=p.center; const side=p.side>0?"R":p.side<0?"L":(c[2]>=0?"R":"L"); const id=ZA_MAP.idOf(p); const withSide=(k)=>/^(head|jaw|neck|trunk|pelvis)$/.test(k)?k:k+side;
+    if(id&&BONESEG[id]) return withSide(BONESEG[id]);
+    if(id==="meta") return /metacarpal/.test(p.n)?"hand"+side:(/first finger/.test(p.n)?"thumb"+side:"fing"+side);
+    if(id==="mtt") return /metatarsal|Sesamoid/.test(p.n)?"foot"+side:"toes"+side;
+    if(/^(Hyoid|Thyroid cartilage|Cricoid|Arytenoid|Corniculate)/.test(p.n)) return "neck";
+    const az=Math.abs(c[2]);
+    if(c[1]>LMK.AO[1]+0.015&&az<0.12) return /masseter|pterygoid|Mentalis|Orbicularis oris|Depressor|Platysma/i.test(p.n)&&c[1]<LMK.TMJ[1]?"jaw":"head";
+    if(az>0.13&&c[1]>0.66){ if(c[1]>LMK.EL[1]+0.015) return "uarm"+side; if(c[1]>LMK.WR[1]+0.01) return "farm"+side; return "hand"+side; }
+    if(c[1]<=LMK.HIP[1]+0.01&&c[1]>LMK.KN[1]+0.01&&az>0.02) return "thigh"+side;
+    if(c[1]<=LMK.KN[1]+0.01&&c[1]>LMK.AN[1]+0.015) return "shank"+side;
+    if(c[1]<=LMK.AN[1]+0.015) return c[0]>LMK.MTP[0]?"toes"+side:"foot"+side;
+    if(c[1]>LMK.C7[1]-0.01&&az<0.09) return "neck";
+    if(c[1]<LMK.L5S1[1]-0.01||/^(Gluteus|Piriformis|Obturator|Gemellus|Quadratus femoris|Iliacus|Psoas|Pubo|Iliococcygeus|Coccygeus|Levator ani)/.test(p.n)) return "pelvis";
+    if(az>0.12&&c[1]>LMK.GH[1]-0.12&&/deltoid|Teres|Coracobrachialis|triceps|biceps brachii|Subscapularis|Infraspinatus|Supraspinatus/i.test(p.n)) return "uarm"+side;
+    return "trunk"; }
+  /* 4×4 column-major matrix from an affine point transform f */
+  function matrixOf(f){ const o=f([0,0,0]); const d=(v)=>{ const w=f(v); return [w[0]-o[0],w[1]-o[1],w[2]-o[2]]; }; const ex=d([1,0,0]),ey=d([0,1,0]),ez=d([0,0,1]); return new Float32Array([ex[0],ex[1],ex[2],0, ey[0],ey[1],ey[2],0, ez[0],ez[1],ez[2],0, o[0],o[1],o[2],1]); }
+  return {segOfPart,matrixOf,BONESEG};
+})();
+
 /* OpenSim data loaded from osim_data.js */
 const GAME_PAGE="biomech-muscle"; const DRILL_KEY="dpl-biomech-muscle";
 const SL_VARS=()=>window.__slvars||(window.__slvars={});
@@ -1252,61 +1401,50 @@ const ANM=(()=>{
   return {MUSCLES,BONES,JOINTS,L,COL,build,pathsOf,HAS_OSIM};
 })();
 
-/* ===================== FIGURE: posable anatomical body for the simulations =====================
-   Uses the ANM model (skin, muscles, bones, joints) and rigs it with a kinematic chain. Vertices are skinned to the body
-   segment they lie in (anatomical position), so a bi-articular muscle stretches between its two segments when posed.
-   Angles in degrees, sagittal plane unless noted: hip/shoulder/elbow/trunk/head flexion +, knee flexion +, ankle dorsiflexion +. */
+/* ===================== FIGURE (WebGL): posable Z-Anatomy body for the simulations =====================
+   Same API as the old procedural figure: mount(canvasSel,opts), setPose({hipR,kneeR,ankR,hipL,kneeL,ankL,trunk,trunkBend,trunkRot,head,
+   shR,shL,shAbdR,shAbdL,elR,elL,wrR,wrL,hipAbdR,hipAbdL,pelvisTilt,rootX,rootY,rootZ}), highlight(ids,dim,side), layers({...}),
+   pose(), jointWorld(name,side), C (joint centres). Angles in degrees, sagittal plane unless noted: hip/shoulder/elbow/trunk/head
+   flexion +, knee flexion +, ankle dorsiflexion +. Every mesh part is attached to one segment (ZA_RIG) and posed with a 4×4 matrix. */
 const FIG=(()=>{
-  const {rotAxis,add,sub,mul}=B3; const rad=(d)=>d*Math.PI/180;
-  const L=ANM.L;
-  /* joint centres (right side); left mirrored */
-  const C={trunk:[-0.01,1.00,0],head:[-0.02,1.50,0],sh:[-0.02,1.43,0.19],el:[-0.01,1.14,0.21],wr:[0.0,0.875,0.235],hip:[0,0.92,0.09],knee:[0,0.48,0.09],ank:[0,0.08,0.085]}; if(typeof OSIM!=="undefined"){ const j=OSIM.joints; C.hip=[j.hip_r[0],j.hip_r[1],0.09]; C.knee=[j.walker_knee_r[0],j.walker_knee_r[1],0.09]; C.ank=[j.ankle_r[0],j.ankle_r[1],0.085]; }
-  const Z=[0,0,1],X=[1,0,0],Y=[0,1,0];
-  let pose={};
+  const {rotAxis,add,sub,mul}=B3; const rad=(d)=>d*Math.PI/180; const Z=[0,0,1],X=[1,0,0],Y=[0,1,0];
+  const R=GL3.create(); let LMK=null; const C={}; let parts=[]; let pose={}; let pending=null; let ready=false;
   const P=(k)=>pose[k]||0;
-  const LAYER={skin:0.35,m1:1,m2:1,bone:0.9,joint:0}; let hl=new Set(); let dimOthers=false; let hlSide=null;
-  /* segment of a vertex in the anatomical position */
-  const segCache=new WeakMap();
-  function segOf(v){ let s=segCache.get(v); if(s) return s; const fs=B3.vseg.get(v); if(fs){ segCache.set(v,fs); return fs; } const c=B3.vc.get(v)||v; const x=c[0],y=c[1],z=c[2],az=Math.abs(z),side=z>=0?"R":"L";
-    if(az>0.17&&y<1.49){ s=y>1.145?"uarm"+side:y>0.875?"farm"+side:"hand"+side; }
-    else if(y>1.50&&az<0.13){ s="head"; }
-    else if(y<0.09&&az>0.02){ s="foot"+side; }
-    else if(y<0.475&&az>0.02){ s="shank"+side; }
-    else if((y<0.86&&az>0.02)||(y<0.90&&az>0.075)||(y<0.94&&az>0.15)){ s="thigh"+side; }
-    else if(y<1.03&&y>=0.84){ s="pelvis"; }
-    else if(y>=1.03){ s="trunk"; }
-    else s="pelvis";
-    segCache.set(v,s); return s; }
-  const PARENT={head:"trunk",trunk:"pelvis",uarmR:"trunk",uarmL:"trunk",farmR:"uarmR",farmL:"uarmL",handR:"farmR",handL:"farmL",thighR:"pelvis",thighL:"pelvis",shankR:"thighR",shankL:"thighL",footR:"shankR",footL:"shankL",pelvis:null};
+  const LAYER={skin:0,m1:1,m2:1,bone:1,joint:0,lig:0}; let hl=new Set(); let dimOthers=false; let hlSide=null; let onReady=[];
+  const PARENT={head:"neck",jaw:"head",neck:"trunk",trunk:"pelvis",scapR:"trunk",scapL:"trunk",uarmR:"scapR",uarmL:"scapL",farmR:"uarmR",farmL:"uarmL",handR:"farmR",handL:"farmL",fingR:"handR",fingL:"handL",thumbR:"handR",thumbL:"handL",thighR:"pelvis",thighL:"pelvis",shankR:"thighR",shankL:"thighL",footR:"shankR",footL:"shankL",toesR:"footR",toesL:"footL",pelvis:null};
   const mirror=(c,side)=>side==="L"?[c[0],c[1],-c[2]]:c;
-  function local(seg,p){ /* apply this segment's own rotation about its proximal joint */
-    const side=seg.endsWith("L")?"L":"R"; const base=seg.replace(/[RL]$/,"");
+  function setLandmarks(lm){ LMK=lm; C.hip=lm.HIP; C.knee=lm.KN; C.ank=lm.AN; C.sh=lm.GH; C.el=lm.EL; C.wr=lm.WR; C.trunk=lm.L5S1; C.head=lm.AO; C.pelvis=[lm.HIP[0],lm.HIP[1],0]; C.mtp=lm.MTP; C.mcp=lm.MCP; }
+  function local(seg,p){ const side=seg.endsWith("L")?"L":"R"; const base=seg.replace(/[RL]$/,"");
     const rot=(c,ax,deg)=>deg?add(c,rotAxis(sub(p,c),ax,rad(deg))):p;
     switch(base){
-      case "pelvis": { let q=rot([0,0.92,0],Z,-P("pelvisTilt")); return add(q,[P("rootX")||0,P("rootY")||0,P("rootZ")||0]); }
+      case "pelvis": { let q=rot(C.pelvis,Z,-P("pelvisTilt")); return add(q,[P("rootX")||0,P("rootY")||0,P("rootZ")||0]); }
       case "trunk": { let q=p; q=add(C.trunk,rotAxis(sub(q,C.trunk),Z,-rad(P("trunk")))); if(P("trunkBend")) q=add(C.trunk,rotAxis(sub(q,C.trunk),X,rad(P("trunkBend")))); if(P("trunkRot")) q=add(C.trunk,rotAxis(sub(q,C.trunk),Y,rad(P("trunkRot")))); return q; }
       case "head": return rot(C.head,Z,-P("head"));
       case "uarm": { const c=mirror(C.sh,side); let q=p; const ab=P("shAbd"+side); if(ab) q=add(c,rotAxis(sub(q,c),X,rad(side==="R"?-ab:ab))); return add(c,rotAxis(sub(q,c),Z,rad(P("sh"+side)))); }
-      case "farm": return rot(mirror(C.el,side),Z,P("el"+side));
+      case "farm": { const c=mirror(C.el,side); let q=p; const pro=P("pro"+side); if(pro){ const w=mirror(C.wr,side); const ax=sub(w,c); const l=Math.hypot(ax[0],ax[1],ax[2])||1; q=add(c,rotAxis(sub(q,c),[ax[0]/l,ax[1]/l,ax[2]/l],rad(side==="R"?-pro:pro))); } return add(c,rotAxis(sub(q,c),Z,rad(P("el"+side)))); }
       case "hand": return rot(mirror(C.wr,side),Z,P("wr"+side));
       case "thigh": { const c=mirror(C.hip,side); let q=p; const ab=P("hipAbd"+side); if(ab) q=add(c,rotAxis(sub(q,c),X,rad(side==="R"?-ab:ab))); return add(c,rotAxis(sub(q,c),Z,rad(P("hip"+side)))); }
       case "shank": return rot(mirror(C.knee,side),Z,-P("knee"+side));
       case "foot": return rot(mirror(C.ank,side),Z,P("ank"+side));
+      case "toes": return rot(mirror(C.mtp,side),Z,P("toe"+side));
     } return p; }
   function tf(seg,p){ let q=local(seg,p); const par=PARENT[seg]; return par?tf(par,q):q; }
-  const transform=(v,part)=>tf(segOf(v),v);
-  function alphaOf(p){ let a=LAYER[p.layer]??1; if(a<=0.02) return 0; if(hl.size&&p.kind==="muscle"){ a=(hl.has(p.sid)&&(!hlSide||(hlSide==="R"?p.side>0:p.side<0)))?1:(dimOthers?Math.min(a,0.12):a); } if(hl.size&&dimOthers&&p.kind==="skin") a=Math.min(a,0.15); return a; }
-  let byId={}, partsOf={};
-  function mount(canvasSel,opts={}){ const r=ANM.build(alphaOf); byId=r.byId; partsOf=r.partsOf; B3.parts.forEach(p=>{ p.segment="rig"; }); B3.S.transform=transform; B3.S.alwaysRender=false;
-    Object.assign(LAYER,opts.layers||{}); B3.cam.target=opts.target||[0,0.95,0]; B3.cam.dist=opts.dist||2.6; B3.cam.theta=opts.theta??0; B3.cam.phi=opts.phi??0.08; B3.S.viewDist=B3.cam.dist; B3.S.viewTarget=B3.cam.target.slice();
-    B3.init(canvasSel,opts.onPick||null); groundFix(); B3.S.dirty=true; }
+  const segM={};
+  function updateMatrices(){ if(!ready) return; for(const seg in PARENT){ segM[seg]=ZA_RIG.matrixOf((v)=>tf(seg,v)); } parts.forEach(p=>{ p.M=segM[p.segment]||null; if(p.extra&&p.segment) p.M=segM[p.segment]||null; }); R.S.dirty=true; }
+  function alphaOf(p){ const isBone=p.c==="bone"||p.c==="cart"; let a=isBone?LAYER.bone:p.c==="lig"?LAYER.lig:(p.layer==="m2"?LAYER.m2:LAYER.m1); if(a<=0.02) return 0;
+    if(hl.size&&(p.c==="muscle"||p.c==="tendon")){ const on=p.sid&&hl.has(p.sid)&&(!hlSide||(hlSide==="R"?p.side>0:p.side<0)); p.hi=!!on; a=on?1:(dimOthers?Math.min(a,0.12):a); } else p.hi=false;
+    return a; }
+  function mount(canvasSel,opts={}){ Object.assign(LAYER,opts.layers||{}); R.S.alphaFn=alphaOf; R.S.alwaysRender=false; R.cam.target=opts.target||[0,0.95,0]; R.cam.dist=opts.dist||2.6; R.cam.theta=opts.theta??0; R.cam.phi=opts.phi??0.08; R.S.viewDist=R.cam.dist; R.S.viewTarget=R.cam.target.slice();
+    R.init(canvasSel,opts.onPick||null); const cv=document.querySelector(canvasSel); const ld=document.createElement("div"); ld.className="note"; ld.style.cssText="position:absolute;left:10px;bottom:8px;pointer-events:none"; ld.textContent="loading the body…"; cv.parentElement.appendChild(ld);
+    R.load("zanatomy.bin").then(ps=>{ parts=ps; setLandmarks(R.S.lm); parts.forEach(p=>{ p.sid=ZA_MAP.idOf(p); const e=p.sid&&typeof ANM!=="undefined"&&ANM.MUSCLES.find(m=>m.id===p.sid); if(e) p.layer=e.lay===1?"m1":"m2"; p.segment=ZA_RIG.segOfPart(p,LMK); }); ready=true; ld.remove(); if(pending) setPose(pending.p,pending.o); else updateMatrices(); onReady.forEach(f=>f()); onReady=[]; }).catch(e=>{ ld.textContent="Could not load the body: "+e.message; }); }
   /* keep the lowest foot point on the floor */
-  function groundFix(){ const pts=[[-0.07,0.03,0.09],[0.20,0.02,0.09],[0,0.0,0.09],[-0.07,0.03,-0.09],[0.20,0.02,-0.09],[0,0.0,-0.09]]; pose.rootY=0; let minY=Infinity; pts.forEach(p=>{ const q=tf(segOf(p),p); minY=Math.min(minY,q[1]); }); pose.rootY=-minY; }
-  function setPose(p,{fixGround=true}={}){ pose={...p}; if(fixGround) groundFix(); B3.S.dirty=true; }
-  function highlight(ids,dim=true,side=null){ hl=new Set(ids||[]); dimOthers=dim; hlSide=side; B3.S.dirty=true; }
-  function layers(l){ Object.assign(LAYER,l); B3.S.dirty=true; }
-  const jointWorld=(name,side="R")=>{ const c=mirror(C[name],side); const seg={sh:"uarm",el:"farm",wr:"hand",hip:"thigh",knee:"shank",ank:"foot"}[name]; return tf(seg?seg+side:name,c); };
-  return {mount,setPose,highlight,layers,pose:()=>pose,LAYER,jointWorld,C,segOf};
+  function groundFix(){ if(!ready) return; const pts=[LMK.AN,LMK.MTP,LMK.TOE,[LMK.AN[0]-0.05,0.01,LMK.AN[2]]]; pose.rootY=0; let minY=Infinity; pts.forEach(p=>{ ["R","L"].forEach(s=>{ const q=tf(s==="R"?"footR":"footL",mirror(p,s)); minY=Math.min(minY,q[1]); const t=tf(s==="R"?"toesR":"toesL",mirror(p,s)); minY=Math.min(minY,t[1]); }); }); pose.rootY=-minY+0.005; }
+  function setPose(p,{fixGround=true}={}){ if(!ready){ pending={p,o:{fixGround}}; return; } pose={...p}; if(fixGround) groundFix(); updateMatrices(); }
+  function highlight(ids,dim=true,side=null){ hl=new Set(ids||[]); dimOthers=dim; hlSide=side; R.S.dirty=true; }
+  function layers(l){ Object.assign(LAYER,l); R.S.dirty=true; }
+  const jointWorld=(name,side="R")=>{ if(!ready) return [0,0,0]; const c=mirror(C[name],side); const seg={sh:"uarm",el:"farm",wr:"hand",hip:"thigh",knee:"shank",ank:"foot",mtp:"toes"}[name]; return tf(seg?seg+side:name,c); };
+  const segOf=(v)=>{ const az=Math.abs(v[2]); return ZA_RIG.segOfPart({center:v,side:v[2]>=0?1:-1,n:"",c:"muscle"},LMK||{AO:[0,1.54,0],TMJ:[0,1.57,0],EL:[0,1.1,0],WR:[0,0.86,0],HIP:[0,0.86,0],KN:[0,0.44,0],AN:[0,0.066,0],MTP:[0.1,0,0],C7:[0,1.44,0],L5S1:[0,0.975,0],GH:[0,1.39,0]}); };
+  return {mount,setPose,highlight,layers,pose:()=>pose,LAYER,jointWorld,C,segOf,tf,R,isReady:()=>ready,onReady:(f)=>ready?f():onReady.push(f),parts:()=>parts,updateMatrices};
 })();
 
 const FIG_PAGE="muscle";
@@ -1330,7 +1468,13 @@ const FIG_PAGE="muscle";
       if(r.Mh>5){ groups.push(...HFLEX); txt.push("hip flexors (hip moment +)"); } else if(r.Mh<-5){ groups.push(...HEXT); txt.push("hip extensors (hip moment −)"); }
       FIG.highlight(groups,true,"R"); note(`<b>${P.n}.</b> Highlighted on the right leg: ${txt.join("; ")||"no net muscle moment above 5 N·m"}. The net moment tells you which group dominates, not how hard each muscle works.`); }
     else { FIG.setPose(STAND); FIG.highlight([]); note("Anatomical position. Pick a segment on the left; its mass fraction and COM come from Dempster's cadaver data."); } }
-  function arthro(){ const S=AL.get(); const tab=activeTab(); window.FIG_TICK=(tab==="knee"&&S.kn.playing)||(tab==="ccrule"&&S.cc.playing);
+  let rgsCam=null;
+  function arthro(){ const S=AL.get(); const tab=activeTab(); window.FIG_TICK=(tab==="knee"&&S.kn.playing)||(tab==="ccrule"&&S.cc.playing)||tab==="rgs";
+    if(tab==="rgs"){ const p=S.rgs.t%1; const w=0.5-0.5*Math.cos(2*Math.PI*p); const m=S.rgs.mode; if(rgsCam!==m){ rgsCam=m; FIG.onReady(()=>{ const t=m==="spin"?FIG.jointWorld("el","R"):FIG.jointWorld("knee","R"); FIG.R.flyTo(t,m==="spin"?0.7:0.9,m==="spin"?0.9:0.1,0.15); }); }
+      if(m==="roll"){ const fl=10+60*w; FIG.setPose({hipR:fl*0.9,kneeR:fl,ankR:fl*0.3,hipL:fl*0.9,kneeL:fl,ankL:fl*0.3,trunk:fl*0.4,shR:40,shL:40}); FIG.highlight([],false); note("<b>Roll on the real knee (closed chain, squat).</b> As the knee flexes the convex femoral condyles roll backwards on the tibial plateau — successive points of the condyle meet successive points of the plateau, like the tire on the road. Pure roll would carry the femur off the back of the tibia; the glide (next) keeps it centred."); }
+      else if(m==="glide"){ const fl=5+70*w; FIG.setPose({hipR:90,kneeR:fl,hipL:90,kneeL:90,trunk:0,shR:0,shL:0}); FIG.highlight([],false); note("<b>Glide on the real knee (open chain, seated).</b> The concave tibial plateau slides backwards on the femoral condyles as the knee flexes: one patch of the plateau skids along the condyle, like the locked tire on ice. In the knee this glide is what lets the joint stay congruent while it rolls."); }
+      else { const pro=-80+160*w; FIG.setPose({shR:0,elR:90,proR:pro,shL:0,elL:0}); FIG.highlight(["pt","sup","bic"],true,"R"); note("<b>Spin on the real elbow.</b> In pronation–supination the disc-shaped radial head spins in place against the capitulum: many points of the radial head meet the same point of the capitulum, like the wheel in the pothole. The forearm and hand turn with it."); }
+      return; } else rgsCam=null;
     if(tab==="knee"){ const fl=S.kn.flex; if(S.kn.chain==="open"){ FIG.setPose({hipR:90,kneeR:fl,hipL:90,kneeL:90,trunk:0,shR:0,shL:0},{fixGround:true}); FIG.highlight(fl<45?QUADS:HAMS,true,"R"); note(`Open chain, seated: the tibia swings on a fixed femur. ${fl<45?"Near extension the quadriceps are working":"Deep in flexion the hamstrings are flexing the knee"}; the concave tibial plateau rolls and glides the same way.`); }
       else { FIG.setPose({hipR:fl*0.9,kneeR:fl,ankR:fl*0.3,hipL:fl*0.9,kneeL:fl,ankL:fl*0.3,trunk:fl*0.4,shR:50,shL:50}); FIG.highlight([...QUADS,"gmax"]); note("Closed chain, squat: the femur moves on a planted tibia. Quadriceps and gluteus maximus control the descent eccentrically and drive the ascent; the convex femoral condyles roll back and glide forward."); } }
     else if(tab==="angles"){ const an=180-S.ang.inc; FIG.setPose({elR:Math.max(0,an),shR:0}); FIG.highlight(["bic","brach","brd"],true,"R"); note(`Right elbow at ${an}° of flexion (included angle ${S.ang.inc}°). The elbow flexors are highlighted.`); }
@@ -1392,10 +1536,10 @@ const FIG_PAGE="muscle";
     else if(tab==="invu"||tab==="frame"){ const t=S.hm.task; if(t==="vjump"||t==="ljump"){ FIG.setPose({hipR:70,kneeR:90,ankR:25,hipL:70,kneeL:90,ankL:25,trunk:30,shR:-40,shL:-40}); FIG.highlight([]); note("The task under analysis: a jump at the bottom of the countermovement."); } else if(t==="glass"){ FIG.setPose({shR:45,elR:100}); FIG.highlight([]); note("The task under analysis: reaching for a glass."); } else { const d=CP.G(0.3,false); FIG.setPose({hipR:d.hip,kneeR:d.knee,ankR:d.ank,hipL:CP.G(0.8,false).hip,kneeL:CP.G(0.8,false).knee}); FIG.highlight([]); note("The task under analysis: walking."); } }
     else { FIG.setPose(STAND); FIG.highlight([]); note(""); } }
   const update=()=>{ try{ ({invdyn,arthro,muscle,kinetics,tissue,multi,mtc,capstone})[FIG_PAGE](); }catch(e){ console.warn(e); } };
-  window.addEventListener("load",()=>{ FIG.mount("#bcanvas",{theta:0.6,phi:0.1,dist:2.9,target:[0,0.92,0],layers:{skin:0.3,m1:1,m2:0.9,bone:0.9,joint:0}}); update();
+  window.addEventListener("load",()=>{ FIG.mount("#bcanvas",{theta:0.6,phi:0.1,dist:2.4,target:[0,0.9,0],layers:{lig:0,m1:1,m2:1,bone:1,joint:0}}); update();
     document.addEventListener("input",(e)=>{ if(e.target.closest(".mpane")) setTimeout(update,0); },true); document.addEventListener("click",(e)=>{ if(e.target.closest(".mpane")||e.target.closest("#mtabs")) setTimeout(update,0); },true);
     setInterval(()=>{ if(window.FIG_TICK) update(); },80);
-    $("#figskin").oninput=(e)=>FIG.layers({skin:+e.target.value}); $("#figmus").oninput=(e)=>FIG.layers({m1:+e.target.value,m2:+e.target.value*0.9}); $("#figbone").oninput=(e)=>FIG.layers({bone:+e.target.value}); });
+    $("#figskin").oninput=(e)=>FIG.layers({lig:+e.target.value}); $("#figmus").oninput=(e)=>FIG.layers({m1:+e.target.value,m2:+e.target.value}); $("#figbone").oninput=(e)=>FIG.layers({bone:+e.target.value}); });
 })();
 
 </script>

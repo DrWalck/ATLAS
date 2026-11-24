@@ -46,7 +46,7 @@ const AL=(()=>{
     return { toggle(){ const st=getState(); st.playing=!st.playing; last=0; if(st.playing&&!raf) raf=requestAnimationFrame(step); draw(true); }, stop(){ const st=getState(); st.playing=false; } }; }
 
   /* ---------- 2. convex–concave rule ---------- */
-  let cc={mover:"convex",theta:35,glide:1,playing:false};
+  let cc={mover:"convex",theta:35,glide:1,playing:false}; let ccWrap=null;
   function ccScene(){ const r=56; const th=rad(cc.theta); const dir=Math.sign(cc.theta)||1; let scene="";
     if(cc.mover==="convex"){ const cy=185; const shift=r*th*(1-cc.glide); const cx=300+shift; const plateauHalf=130;
       const plate=`<path d="M${300-plateauHalf},${cy+r} q0,-24 ${plateauHalf},-24 q${plateauHalf},0 ${plateauHalf},24 L${300+plateauHalf},${cy+r+60} L${300-plateauHalf},${cy+r+60} Z" fill="${BONE2}" stroke="#fff" stroke-width="1.5"/><path d="M${300-plateauHalf},${cy+r} q0,-24 ${plateauHalf},-24 q${plateauHalf},0 ${plateauHalf},24" fill="none" stroke="${CART}" stroke-width="5"/>`;
@@ -66,13 +66,16 @@ const AL=(()=>{
     }
     return svg(600,320,ARROW+scene); }
   function ccVerdict(){ const th=rad(cc.theta); return cc.mover==="convex"?`<b>Convex surface moving</b> (femur on tibia in closed chain, humerus on glenoid, talus on tibia): roll and glide are in <b>opposite</b> directions. Pure roll would carry the centre r·θ = ${f(Math.abs(th),2)} r along the plateau; a glide of ${f(cc.glide*100,0)} % of that pulls it back ${cc.glide===1?"to rest over the socket.":"only part-way."}`:`<b>Concave surface moving</b> (tibia on femur in open chain, ulna on humerus, proximal phalanx on metacarpal head): roll and glide are in the <b>same</b> direction, so the moving bone and its slide travel together.`; }
-  const ccAnim=animator(()=>({get playing(){return cc.playing;},set playing(v){cc.playing=v;},get value(){return cc.theta;}}),(v)=>{ cc.theta=v; },(full)=>{ if(full) renderCC(); else { const el=$("#ccrule"); const s=el.querySelector(".scene"); if(s) s.innerHTML=ccScene(); const b=el.querySelector("#ccthv"); if(b) b.textContent=f(cc.theta,0)+"°"; const sl=el.querySelector("#ccth"); if(sl) sl.value=Math.round(cc.theta); const v=el.querySelector(".verdict"); if(v) v.innerHTML=ccVerdict(); } },-60,60,40);
+  const ccAnim=animator(()=>({get playing(){return cc.playing;},set playing(v){cc.playing=v;},get value(){return cc.theta;}}),(v)=>{ cc.theta=v; },(full)=>{ if(full) renderCC(); else { const el=$("#ccrule"); KNEE3D.set({theta:cc.theta}); const b=el.querySelector("#ccthv"); if(b) b.textContent=f(cc.theta,0)+"°"; const sl=el.querySelector("#ccth"); if(sl) sl.value=Math.round(cc.theta); const v=el.querySelector(".verdict"); if(v) v.innerHTML=ccVerdict(); } },-60,60,40);
   function renderCC(){ const el=$("#ccrule");
     el.innerHTML=`${seg("Moving surface",[["convex","Convex (ball) moves"],["concave","Concave (socket) moves"]],cc.mover,"data-mv")}
       <div class="ctl"><label>Rotation of the moving bone <b id="ccthv">${f(cc.theta,0)}°</b><input type="range" id="ccth" min="-60" max="60" step="1" value="${Math.round(cc.theta)}"></label>
       <label>Glide supplied (100 % = healthy joint; 0 % = roll only) <b>${f(cc.glide*100,0)} %</b><input type="range" id="ccg" min="0" max="1" step="0.05" value="${cc.glide}"></label><div class="playrow">${playBtn("ccplay",cc.playing)}<span class="note">plays the rotation back and forth — set the glide to 0 % first to see the joint fail</span></div></div>
-      <div class="scene">${ccScene()}</div><p class="verdict">${ccVerdict()}</p>
+      <div class="scene3d-slot"></div><p class="note" style="margin:4px 0 0">Real right knee (Z-Anatomy), seen from the lateral side. <b>Drag the moving bone</b> to rotate it; drag the background to orbit, scroll to zoom. Orange dot: the point of the moving surface that started in contact; cyan: where the contact is now.</p><p class="verdict">${ccVerdict()}</p>
       <p class="note"><b>The rule:</b> <i>convex-on-concave → roll and glide opposite; concave-on-convex → roll and glide same direction.</i> The roll is always in the direction the bone is moving. Memory hook: the convex head has to slide <i>back</i> to stay in its socket, like keeping a ball centred in a cup while you tilt it. Orange dot: the point on the moving surface that started in contact; cyan: where contact actually is.</p>`;
+    /* the 3-D knee lives in a persistent wrapper so re-rendering the controls does not reload it */
+    const slot=el.querySelector(".scene3d-slot"); if(!ccWrap){ ccWrap=document.createElement("div"); ccWrap.className="scene3d"; ccWrap.style.cssText="user-select:none;position:relative;height:380px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%)"; ccWrap.innerHTML='<canvas id="cccanvas" style="width:100%;height:100%;display:block;touch-action:none"></canvas>'; slot.replaceWith(ccWrap); KNEE3D.mount("#cccanvas",(s)=>{ cc.theta=s.theta; ccAnim.stop(); const b=el.querySelector("#ccthv"); if(b) b.textContent=f(cc.theta,0)+"°"; const sl=el.querySelector("#ccth"); if(sl) sl.value=Math.round(cc.theta); const v=el.querySelector(".verdict"); if(v) v.innerHTML=ccVerdict(); }); } else slot.replaceWith(ccWrap);
+    KNEE3D.set({mover:cc.mover,theta:cc.theta,glide:cc.glide});
     el.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{ cc.mover=b.dataset.mv; renderCC(); }); $("#ccth").oninput=(e)=>{ cc.theta=+e.target.value; ccAnim.stop(); renderCC(); }; $("#ccg").oninput=(e)=>{ cc.glide=+e.target.value; renderCC(); }; $("#ccplay").onclick=()=>ccAnim.toggle(); fixSubs(el); }
 
   /* ---------- 3. knee: open vs closed chain, screw-home, ligaments ---------- */
@@ -199,6 +202,6 @@ const AL=(()=>{
     document.querySelectorAll("#mtabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#mtabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); document.querySelectorAll(".mpane").forEach(p=>p.hidden=p.id!==b.dataset.k); });
     rgsTimer=setInterval(rgsTick,40);
     $("#adrillstart").onclick=()=>{ DR.next(); $("#adrillstart").textContent="Skip →"; }; }
-  return {init,JOINTS,get:()=>({kn,ang,mp,cc})};
+  return {init,JOINTS,get:()=>({kn,ang,mp,cc,rgs:{mode:rgsMode,t:rgsT}})};
 })();
 AL.init();

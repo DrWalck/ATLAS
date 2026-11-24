@@ -580,11 +580,12 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
     <div><a class="back" href="./">&larr; All topics</a><h1>Jaw Motion &amp; Reconstruction: Tracking the Paediatric Jaw, Designing Its Implants</h1></div>
     <p>Open a sagittal jaw and watch the condyle hinge, then slide down the articular eminence; recover the mandible's pose from clutch markers and see what noise and skin artefact do to it; load the mandible as a class III lever to get bite force and joint reaction; check a reconstruction plate, its screws and a condylar stem against fatigue and wear; and read the phased plan for our project with a paediatric head and neck surgery partner (Theia for the fibula-donor leg, a chairside tracker with EMG and bite force in clinic, optical capture with a dental clutch for the jaw). Drills and ES 305 problems follow.</p>
   </header>
-<div class="tabs" id="mtabs"><button type="button" class="tabbtn on" data-k="anat">TMJ & the two phases</button><button type="button" class="tabbtn " data-k="track">Tracking jaw motion</button><button type="button" class="tabbtn " data-k="lever">Bite force & joint load</button><button type="button" class="tabbtn " data-k="impl">Reconstruction & implants</button><button type="button" class="tabbtn " data-k="proj">The design project</button><button type="button" class="tabbtn " data-k="drills">Drills · XP</button><button type="button" class="tabbtn " data-k="problems">Problems</button></div>
+<div class="tabs" id="mtabs"><button type="button" class="tabbtn on" data-k="anat">TMJ & the two phases</button><button type="button" class="tabbtn " data-k="track">Tracking jaw motion</button><button type="button" class="tabbtn " data-k="lever">Bite force & joint load</button><button type="button" class="tabbtn " data-k="impl">Reconstruction & implants</button><button type="button" class="tabbtn " data-k="study">Implant study</button><button type="button" class="tabbtn " data-k="proj">The design project</button><button type="button" class="tabbtn " data-k="drills">Drills · XP</button><button type="button" class="tabbtn " data-k="problems">Problems</button></div>
   <section class="panel mpane" id="anat"></section>
   <section class="panel mpane" id="track" hidden></section>
   <section class="panel mpane" id="lever" hidden></section>
   <section class="panel mpane" id="impl" hidden></section>
+  <section class="panel mpane" id="study" hidden></section>
   <section class="panel mpane" id="proj" hidden></section>
   <section class="panel mpane" id="drills" hidden><h4>Drills</h4><p class="note">Joint type and the two phases of opening, normal ranges, imaging choices, rigid-body tracking, the mandible lever, implant materials, wear and fatigue, and the growing jaw. +10 XP per correct answer.</p><button type="button" class="btn primary" id="jdrillstart">Start</button><div id="jdrill" style="margin-top:10px"></div></section>
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>
@@ -598,6 +599,155 @@ function fixSubs(root){
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
   nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
 }
+/* ===================== GL3: WebGL body renderer for the Z-Anatomy mesh =====================
+   Loads biomech/zanatomy.bin (ATLAS format: 'ZANA' + JSON header + int16 positions (×q m) + int8 normals + uint16 local indices),
+   one draw range per part. API mirrors the old canvas renderer (B3) where the explorer and labs use it:
+     GL3.load(url).then(parts)  GL3.init(canvasSelector,onPick)  GL3.S{sel,dirty,overlays,alphaFn,alwaysRender}  GL3.cam  GL3.flyTo
+     GL3.views  GL3.project(p)  GL3.label3/arrow3 (2-D overlay canvas)  part.M (optional 4×4 model matrix for posing)
+   Mesh: Z-Anatomy (CC BY-SA 4.0), decimated; coordinates in metres, ISB axes (X anterior, Y up, Z to the subject's right).      */
+const GL3=(()=>{
+  const GEOMCACHE={}; /* url -> promise of parsed geometry, shared by every instance on the page */
+  function makeInstance(){
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]; const norm=(v)=>{ const l=Math.hypot(v[0],v[1],v[2])||1; return [v[0]/l,v[1]/l,v[2]/l]; };
+  const CAT={bone:{col:[0.93,0.90,0.84],gloss:0.25},cart:{col:[0.80,0.86,0.90],gloss:0.35},muscle:{col:[0.62,0.18,0.15],gloss:0.5},tendon:{col:[0.92,0.88,0.78],gloss:0.3},lig:{col:[0.85,0.80,0.66],gloss:0.3}};
+  const cam={theta:Math.PI/2,phi:0.1,dist:2.6,target:[0,0.9,0],fov:34};
+  const views={front:[Math.PI/2,0.12,2.6],side:[0,0.1,2.6],left:[Math.PI,0.1,2.6],back:[-Math.PI/2,0.12,2.6],iso:[0.95,0.25,2.6],top:[0.9,1.35,2.4]};
+  const S={sel:null,hover:null,dirty:true,overlays:[],alphaFn:null,alwaysRender:false,viewDist:2.6,viewTarget:[0,0.9,0],parts:[],loaded:false,light:[0.35,0.8,0.55]};
+  let gl,canvas,ov,octx,W=0,H=0,dpr=1,prog,pick,vbo,nbo,ibo,q=1e-4,onPickCb=null,loc={},ploc={},fbo=null,fbtex=null,fbrb=null;
+  const VS=`attribute vec3 aP; attribute vec3 aN; uniform mat4 uPV; uniform mat4 uM; uniform float uQ; varying vec3 vN; varying vec3 vW;
+    void main(){ vec4 w=uM*vec4(aP*uQ,1.0); vW=w.xyz; vN=normalize(mat3(uM)*aN); gl_Position=uPV*w; }`;
+  const FS=`precision mediump float; varying vec3 vN; varying vec3 vW; uniform vec3 uCol; uniform float uA; uniform vec3 uEye; uniform vec3 uL; uniform float uGloss; uniform float uHi;
+    void main(){ vec3 n=normalize(vN); vec3 v=normalize(uEye-vW); if(dot(n,v)<0.0) n=-n; vec3 l=normalize(uL); vec3 l2=normalize(vec3(-0.6,0.3,-0.5));
+      float d=max(dot(n,l),0.0)*0.85+max(dot(n,l2),0.0)*0.35; vec3 h=normalize(l+v); float sp=pow(max(dot(n,h),0.0),28.0)*uGloss; float rim=pow(1.0-max(dot(n,v),0.0),3.0)*0.18;
+      vec3 c=uCol*(0.30+d)+vec3(sp)+vec3(rim)*uCol; c=mix(c,vec3(1.0,0.85,0.35),uHi*0.55)+uHi*0.15; gl_FragColor=vec4(c,uA); }`;
+  const PFS=`precision mediump float; uniform vec3 uId; void main(){ gl_FragColor=vec4(uId,1.0); }`;
+  function shader(vs,fs){ const p=gl.createProgram(); [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]].forEach(([t,s])=>{ const sh=gl.createShader(t); gl.shaderSource(sh,s); gl.compileShader(sh); if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(sh)); gl.attachShader(p,sh); }); gl.linkProgram(p); return p; }
+  /* ---------- loading ---------- */
+  function parse(buf){ const dv=new DataView(buf); if(String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3))!=="ZANA") throw new Error("bad mesh file");
+    const hl=dv.getUint32(4,true); const hdr=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,8,hl))); let off=8+hl;
+    const pos=new Int16Array(buf,off,hdr.nv*3); off+=hdr.nv*6; const nrm=new Int8Array(buf,off,hdr.nv*3); off+=hdr.nv*3; off+=(4-off%4)%4; const idx=new Uint16Array(buf,off,hdr.ni);
+    const gidx=new Uint32Array(hdr.ni); hdr.parts.forEach(p=>{ for(let k=0;k<p.ic;k++) gidx[p.io+k]=idx[p.io+k]+p.vo; }); return {hdr,pos,nrm,gidx}; }
+  async function load(url){ if(!GEOMCACHE[url]) GEOMCACHE[url]=fetch(url).then(r=>r.arrayBuffer()).then(parse); const g=await GEOMCACHE[url]; const hdr=g.hdr; q=hdr.q;
+    S.parts=hdr.parts.map((p,i)=>({i,n:p.n,s:p.s,c:p.c,vo:p.vo,vc:p.vc,io:p.io,ic:p.ic,bb:p.bb,center:[(p.bb[0]+p.bb[3])/2,(p.bb[1]+p.bb[4])/2,(p.bb[2]+p.bb[5])/2],side:p.s==="R"?1:p.s==="L"?-1:0,
+      col:CAT[p.c].col.slice(),gloss:CAT[p.c].gloss,alpha:1,M:null,sid:null,layer:p.c==="muscle"||p.c==="tendon"?"m1":p.c==="lig"?"lig":"bone",reg:null,kind:p.c}));
+    /* slight per-muscle colour variation so neighbouring bellies read as separate */
+    S.parts.forEach(p=>{ if(p.c==="muscle"){ let h=0; for(const ch of p.n) h=(h*31+ch.charCodeAt(0))&0xffff; const t=(h%100)/100; p.col=[0.60+0.14*t,0.18+0.06*(1-t),0.15+0.04*t]; } });
+    S.credit=hdr.credit; S.lm=hdr.lm||null; S.geom={pos:g.pos,nrm:g.nrm,gidx:g.gidx}; S.loaded=true; if(gl) upload(); S.dirty=true; return S.parts; }
+  /* ---------- extra geometry built at run time (ligament tubes, markers): float positions in metres + uint32 indices ---------- */
+  let xvbo=null,xnbo=null,xibo=null; S.extras=[];
+  function setExtras(list){ /* list: [{name,V:Float32Array(xyz...),N:Float32Array,I:Uint32Array,col,alpha,gloss,M}] */ S.extras=[]; if(!list.length){ S.dirty=true; return; }
+    let nv=0,ni=0; list.forEach(e=>{ nv+=e.V.length/3; ni+=e.I.length; }); const P=new Int16Array(nv*3), N=new Int8Array(nv*3), I=new Uint32Array(ni); let vo=0,io=0;
+    list.forEach((e,k)=>{ for(let i=0;i<e.V.length;i++){ P[vo*3+i]=Math.max(-32767,Math.min(32767,Math.round(e.V[i]/q))); N[vo*3+i]=Math.round(e.N[i]*127); } for(let i=0;i<e.I.length;i++) I[io+i]=e.I[i]+vo;
+      let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9]; for(let i=0;i<e.V.length;i+=3){ for(let k2=0;k2<3;k2++){ mn[k2]=Math.min(mn[k2],e.V[i+k2]); mx[k2]=Math.max(mx[k2],e.V[i+k2]); } }
+      S.extras.push({i:1e6+k,extra:true,n:e.name||"extra",c:e.c||"lig",s:"C",side:0,vo,vc:e.V.length/3,io,ic:e.I.length,bb:[...mn,...mx],center:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2],col:e.col||[0.9,0.85,0.7],gloss:e.gloss??0.3,alpha:e.alpha??1,M:e.M||null,sid:e.sid||null,layer:"lig",kind:"extra",noPick:e.noPick||false}); vo+=e.V.length/3; io+=e.I.length; });
+    if(gl){ if(!xvbo){ xvbo=gl.createBuffer(); xnbo=gl.createBuffer(); xibo=gl.createBuffer(); } gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.bufferData(gl.ARRAY_BUFFER,P,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.bufferData(gl.ARRAY_BUFFER,N,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,I,gl.DYNAMIC_DRAW); }
+    S._xraw={P,N,I}; S.dirty=true; }
+  function upload(){ if(S._xraw){ const r=S._xraw; xvbo=gl.createBuffer(); xnbo=gl.createBuffer(); xibo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.bufferData(gl.ARRAY_BUFFER,r.P,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.bufferData(gl.ARRAY_BUFFER,r.N,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,r.I,gl.DYNAMIC_DRAW); } const g=S.geom; vbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.bufferData(gl.ARRAY_BUFFER,g.pos,gl.STATIC_DRAW); nbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,nbo); gl.bufferData(gl.ARRAY_BUFFER,g.nrm,gl.STATIC_DRAW); ibo=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.gidx,gl.STATIC_DRAW); }
+  /* ---------- camera ---------- */
+  function camMatrix(){ const ct=Math.cos(cam.theta),st=Math.sin(cam.theta),cp=Math.cos(cam.phi),sp=Math.sin(cam.phi); const eye=[cam.target[0]+cam.dist*cp*st,cam.target[1]+cam.dist*sp,cam.target[2]+cam.dist*cp*ct];
+    const f=norm(sub(cam.target,eye)); const r=norm(cross(f,[0,1,0])); const u=cross(r,f); return {eye,f,r,u}; }
+  function pv(M){ const aspect=W/H, fy=1/Math.tan(cam.fov*Math.PI/360), n=0.05, fa=20; const P=[fy/aspect,0,0,0, 0,fy,0,0, 0,0,(fa+n)/(n-fa),-1, 0,0,2*fa*n/(n-fa),0];
+    const e=M.eye,r=M.r,u=M.u,f=M.f; const V=[r[0],u[0],-f[0],0, r[1],u[1],-f[1],0, r[2],u[2],-f[2],0, -(r[0]*e[0]+r[1]*e[1]+r[2]*e[2]),-(u[0]*e[0]+u[1]*e[1]+u[2]*e[2]),(f[0]*e[0]+f[1]*e[1]+f[2]*e[2]),1];
+    const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=P[k*4+j]*V[i*4+k]; o[i*4+j]=s; } return o; }
+  function project(p,M){ M=M&&M.eye?M:camMatrix(); const d=sub(p,M.eye); const x=d[0]*M.r[0]+d[1]*M.r[1]+d[2]*M.r[2], y=d[0]*M.u[0]+d[1]*M.u[1]+d[2]*M.u[2], z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; const s=(H/dpr/2)/Math.tan(cam.fov*Math.PI/360)/Math.max(z,0.05); return [W/dpr/2+x*s,H/dpr/2-y*s,z,s]; }
+  const I4=new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+  /* ---------- render ---------- */
+  function partAlpha(p){ let a=S.alphaFn?S.alphaFn(p):p.alpha; return Math.max(0,Math.min(1,a)); }
+  function bindMain(L){ gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.enableVertexAttribArray(L.aP); gl.vertexAttribPointer(L.aP,3,gl.SHORT,false,0,0); if(L.aN>=0){ gl.bindBuffer(gl.ARRAY_BUFFER,nbo); gl.enableVertexAttribArray(L.aN); gl.vertexAttribPointer(L.aN,3,gl.BYTE,true,0,0); } gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo); }
+  function bindExtra(L){ gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.enableVertexAttribArray(L.aP); gl.vertexAttribPointer(L.aP,3,gl.SHORT,false,0,0); if(L.aN>=0){ gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.enableVertexAttribArray(L.aN); gl.vertexAttribPointer(L.aN,3,gl.BYTE,true,0,0); } gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); }
+  function render(){ if(!gl||!(S.loaded||S.extras.length)) return; const M=camMatrix(); const PV=pv(M); gl.viewport(0,0,W,H); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(prog); gl.uniformMatrix4fv(loc.uPV,false,PV); gl.uniform1f(loc.uQ,q); gl.uniform3fv(loc.uEye,M.eye); gl.uniform3fv(loc.uL,S.light);
+    const pulse=0.55+0.45*Math.sin(performance.now()/300); const opaque=[],trans=[];
+    const all=S.loaded?S.parts.concat(S.extras):S.extras; for(const p of all){ const a=p.extra?(p.alpha):partAlpha(p); if(a<=0.02) continue; p._a=a; (a>=0.98?opaque:trans).push(p); }
+    let bound=null; const draw=(p)=>{ const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(loc); bound=b; } gl.uniformMatrix4fv(loc.uM,false,p.M||I4); gl.uniform3fv(loc.uCol,p.col); gl.uniform1f(loc.uA,p._a); gl.uniform1f(loc.uGloss,p.gloss); gl.uniform1f(loc.uHi,(S.sel&&p.sid&&p.sid===S.sel)||p.hi||(S.hover&&p===S.hover)?pulse:0); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); };
+    gl.depthMask(true); opaque.forEach(draw);
+    if(trans.length){ trans.forEach(p=>{ const c=p.M?mulM(p.M,p.center):p.center; const d=sub(c,M.eye); p._z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; }); trans.sort((a,b)=>b._z-a._z); gl.depthMask(false); trans.forEach(draw); gl.depthMask(true); }
+    octx.clearRect(0,0,W/dpr,H/dpr); S.overlays.forEach(fn=>fn(octx,M,project)); }
+  const mulM=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12], m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13], m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];
+  /* ---------- picking (ID render) ---------- */
+  function pickAt(x,y){ if(!gl) return null; const M=camMatrix(); const PV=pv(M); if(!fbo){ fbo=gl.createFramebuffer(); fbtex=gl.createTexture(); fbrb=gl.createRenderbuffer(); }
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fbo); gl.bindTexture(gl.TEXTURE_2D,fbtex); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,null); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,fbtex,0);
+    gl.bindRenderbuffer(gl.RENDERBUFFER,fbrb); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,W,H); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,fbrb);
+    gl.viewport(0,0,W,H); gl.disable(gl.BLEND); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.useProgram(pick); gl.uniformMatrix4fv(ploc.uPV,false,PV); gl.uniform1f(ploc.uQ,q);
+    let bound=null; const all=S.loaded?S.parts.concat(S.extras):S.extras;
+    for(const p of all){ const a=p.extra?p.alpha:partAlpha(p); if(a<0.15||p.noPick) continue; const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(ploc); bound=b; } const id=(p.extra?(1e6+ (p.i-1e6)):p.i)+1; gl.uniform3f(ploc.uId,(id&255)/255,((id>>8)&255)/255,((id>>16)&255)/255); gl.uniformMatrix4fv(ploc.uM,false,p.M||I4); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); }
+    const px=new Uint8Array(4); gl.readPixels(Math.round(x*dpr),Math.round(H-y*dpr),1,1,gl.RGBA,gl.UNSIGNED_BYTE,px); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.enable(gl.BLEND); const id=px[0]|(px[1]<<8)|(px[2]<<16); if(!id) return null; return id>1e6?S.extras[id-1-1e6]:S.parts[id-1]; }
+  /* ---------- overlay helpers (2-D canvas on top) ---------- */
+  function arrow3(ctx,M,proj,a,b,color,label,width=2){ const A=project(a),B=project(b); if(A[2]<0.1||B[2]<0.1) return; ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width; ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke(); const ang=Math.atan2(B[1]-A[1],B[0]-A[0]); ctx.beginPath(); ctx.moveTo(B[0],B[1]); ctx.lineTo(B[0]-9*Math.cos(ang-0.4),B[1]-9*Math.sin(ang-0.4)); ctx.lineTo(B[0]-9*Math.cos(ang+0.4),B[1]-9*Math.sin(ang+0.4)); ctx.closePath(); ctx.fill(); if(label){ ctx.font="700 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(label).width+8; ctx.fillStyle="rgba(5,10,24,.85)"; ctx.fillRect(B[0]+6,B[1]-16,w,18); ctx.fillStyle=color; ctx.fillText(label,B[0]+10,B[1]-3); } }
+  function label3(ctx,M,proj,p,txt,color="#ffd23f",dy=-14){ const P=project(p); if(P[2]<0.1) return; ctx.font="600 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(txt).width+10; ctx.fillStyle="rgba(5,10,24,.88)"; ctx.strokeStyle=color; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(P[0]-w/2,P[1]+dy-14,w,18,4):ctx.rect(P[0]-w/2,P[1]+dy-14,w,18); ctx.fill(); ctx.stroke(); ctx.fillStyle=color; ctx.textAlign="center"; ctx.fillText(txt,P[0],P[1]+dy-1); ctx.textAlign="left"; ctx.beginPath(); ctx.arc(P[0],P[1],2.5,0,Math.PI*2); ctx.fill(); }
+  function quad3(ctx,M,proj,pts,fill,stroke){ const P=pts.map(p=>project(p)); if(P.some(p=>p[2]<0.1)) return; ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.beginPath(); P.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  function dot3(ctx,M,proj,p,color,r=4){ const P=project(p); if(P[2]<0.1) return; ctx.fillStyle=color; ctx.beginPath(); ctx.arc(P[0],P[1],r,0,Math.PI*2); ctx.fill(); }
+  /* ---------- init, input, animation ---------- */
+  let fly=null, lastT=0;
+  function flyTo(target,dist,theta,phi){ fly={t0:performance.now(),a:{...cam,target:cam.target.slice()},b:{target,dist:dist??cam.dist,theta:theta??cam.theta,phi:phi??cam.phi}}; S.dirty=true; }
+  function tick(){ if(fly){ const u=Math.min(1,(performance.now()-fly.t0)/700); const e=u<.5?2*u*u:-1+(4-2*u)*u; cam.dist=fly.a.dist+(fly.b.dist-fly.a.dist)*e; cam.theta=fly.a.theta+(fly.b.theta-fly.a.theta)*e; cam.phi=fly.a.phi+(fly.b.phi-fly.a.phi)*e; cam.target=[0,1,2].map(i=>fly.a.target[i]+(fly.b.target[i]-fly.a.target[i])*e); if(u>=1) fly=null; S.dirty=true; }
+    const now=performance.now(); const dt=lastT?Math.min(0.1,(now-lastT)/1000):0; lastT=now; if(S.tick) S.tick(dt); if(S.dirty||S.alwaysRender||S.sel||S.hover){ render(); S.dirty=false; } requestAnimationFrame(tick); }
+  function resize(){ dpr=Math.min(2,window.devicePixelRatio||1); const r=canvas.getBoundingClientRect(); W=Math.max(1,Math.round(r.width*dpr)); H=Math.max(1,Math.round(r.height*dpr)); canvas.width=W; canvas.height=H; ov.width=W; ov.height=H; ov.style.width=r.width+"px"; ov.style.height=r.height+"px"; octx.setTransform(dpr,0,0,dpr,0,0); S.dirty=true; }
+  function init(sel,onPick){ canvas=document.querySelector(sel); onPickCb=onPick; const wrap=canvas.parentElement; if(getComputedStyle(wrap).position==="static") wrap.style.position="relative";
+    ov=document.createElement("canvas"); ov.style.cssText="position:absolute;left:0;top:0;pointer-events:none"; canvas.insertAdjacentElement("afterend",ov); octx=ov.getContext("2d");
+    gl=canvas.getContext("webgl",{antialias:true,alpha:true,premultipliedAlpha:false}); if(!gl){ canvas.insertAdjacentHTML("afterend","<p class='note'>WebGL is not available in this browser.</p>"); return; }
+    gl.getExtension("OES_element_index_uint"); prog=shader(VS,FS); pick=shader(VS,PFS); ["uPV","uM","uQ","uCol","uA","uEye","uL","uGloss","uHi"].forEach(k=>loc[k]=gl.getUniformLocation(prog,k)); loc.aP=gl.getAttribLocation(prog,"aP"); loc.aN=gl.getAttribLocation(prog,"aN");
+    ["uPV","uM","uQ","uId"].forEach(k=>ploc[k]=gl.getUniformLocation(pick,k)); ploc.aP=gl.getAttribLocation(pick,"aP"); ploc.aN=-1; if(S.loaded||S._xraw) upload();
+    resize(); window.addEventListener("resize",resize); if(window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
+    let drag=null,moved=0; const pos=(e)=>{ const r=canvas.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
+    let hook=null;
+    canvas.addEventListener("pointerdown",(e)=>{ drag=pos(e); moved=0; canvas.setPointerCapture(e.pointerId); hook=null; if(S.dragHook){ const part=pickAt(drag[0],drag[1]); hook=S.dragHook(part)||null; } });
+    canvas.addEventListener("pointermove",(e)=>{ if(!drag) return; const p=pos(e); const dx=p[0]-drag[0],dy=p[1]-drag[1]; moved+=Math.abs(dx)+Math.abs(dy); if(hook){ hook(dx,dy); drag=p; S.dirty=true; return; } if(e.shiftKey||e.buttons===4){ const M=camMatrix(); const k=cam.dist*0.0016; cam.target=add(cam.target,add(mul(M.r,-dx*k),mul(M.u,dy*k))); } else { cam.theta-=dx*0.008; cam.phi=Math.max(-1.45,Math.min(1.45,cam.phi+dy*0.008)); } drag=p; fly=null; S.dirty=true; });
+    canvas.addEventListener("pointerup",(e)=>{ if(hook){ hook=null; drag=null; return; } if(drag&&moved<6&&onPickCb){ const p=pos(e); onPickCb(pickAt(p[0],p[1])); } drag=null; });
+    canvas.addEventListener("wheel",(e)=>{ e.preventDefault(); cam.dist=Math.max(S.minDist||0.3,Math.min(6,cam.dist*(1+Math.sign(e.deltaY)*0.1))); fly=null; S.dirty=true; },{passive:false});
+    canvas.addEventListener("dblclick",(e)=>{ const p=pos(e); const part=pickAt(p[0],p[1]); if(part) flyTo(part.M?mulM(part.M,part.center):part.center,Math.max(0.5,cam.dist*0.6)); });
+    const host=canvas.parentElement&&canvas.parentElement.parentElement; if(host) host.querySelectorAll("[data-view]").forEach(b=>{ if(!b._gl3){ b._gl3=true; b.addEventListener("click",()=>view(b.dataset.view)); } });
+    requestAnimationFrame(tick); }
+  function view(k){ const v=views[k]; if(!v) return; flyTo(S.viewTarget.slice(),S.viewDist,v[0],v[1]); }
+  return {load,init,S,cam,views,view,flyTo,project,arrow3,label3,quad3,dot3,pickAt,setExtras,add,sub,mul,norm,cross,CAT,mulM};
+  }
+  const main=makeInstance(); main.create=makeInstance; return main;
+})();
+
+/* Z-Anatomy part names → ATLAS structure ids (ANM.MUSCLES / ANM.BONES). A part that matches no pattern keeps its Z-Anatomy name. */
+const ZA_MAP=(()=>{
+  const M=[["scm",/^Sternocleidomastoid/],["scal",/^Scalenus/],["trap",/trapezius muscle/],["ls",/^Levator scapulae/],["rhomb",/^Rhomboid/],["delt",/deltoid muscle$/],["pecmaj",/pectoralis major/],["pecmin",/^Pectoralis minor/],["serr",/^Serratus anterior/],["lat",/^Latissimus dorsi/],
+    ["es",/^(Iliocostalis|Longissimus|Spinalis)/],["ql",/^Quadratus lumborum/],["ra",/^Rectus abdominis/],["eo",/^External abdominal oblique/],["io",/^Internal abdominal oblique/],["ta",/^Transversus abdominis/],
+    ["ssp",/^Supraspinatus/],["isp",/^Infraspinatus/],["tmin",/^Teres minor/],["tmaj",/^Teres major/],["subs",/^Subscapularis/],["cb",/^Coracobrachialis/],["bic",/head of biceps brachii/],["brach",/^Brachialis/],["tri",/head of triceps brachii/],["brd",/^Brachioradialis/],
+    ["flexg",/^(Flexor carpi radialis|Palmaris longus|\w+ head of flexor carpi ulnaris|.*head of flexor digitorum superficialis)/],["extg",/^(Extensor carpi radialis|Extensor digitorum$|\w+ head of extensor carpi ulnaris|Extensor digiti minimi$)/],["pt",/pronator teres/],["sup",/^Supinator/],
+    ["ilps",/^(Psoas major|Iliacus muscle)/],["gmax",/^Gluteus maximus/],["gmed",/^Gluteus medius/],["gmin",/^Gluteus minimus/],["pir",/^Piriformis muscle/],["tfl",/^(Tensor fasciae latae|Iliotibial tract)/],["sart",/^Sartorius/],["rf",/^Rectus femoris/],["vl",/^Vastus lateralis/],["vm",/^Vastus medialis/],["vi",/^Vastus intermedius/],
+    ["al",/^Adductor longus/],["ab",/^Adductor brevis/],["am",/Adductor (magnus|minimus)/],["grac",/^Gracilis/],["pect",/^Pectineus/],["bf",/head of biceps femoris/],["st",/^Semitendinosus/],["sm",/^Semimembranosus muscle/],["pop",/^Popliteus/],
+    ["ta_",/^Tibialis anterior/],["edl",/extensor digitorum longus/i],["ehl",/^Extensor hallucis longus/],["fl",/^Fibularis longus/],["fb",/^Fibularis brevis/],["gas",/head of gastrocnemius/],["sol",/^Soleus/],["tp",/^Tibialis posterior/],["fhl",/^Flexor hallucis longus/],["fdl",/^Flexor digitorum longus/]];
+  const B=[["mand",/^(Mandible|Lower .*(incisor|canine|molar|premolar))/],["skull",/^(Frontal bone|Parietal|Occipital|Temporal bone|Sphenoid|Ethmoid|Zygomatic|Nasal bone|Lacrimal|Palatine|Vomer|Maxilla|Inferior nasal concha|Sinus of|Upper .*(incisor|canine|molar|premolar)|Incus|Malleus|Stapes)/],
+    ["cerv",/^(Atlas|Axis|Vertebra C)/],["thor",/^Vertebra T/],["lumb",/^Vertebra L/],["sacr",/^(Sacrum|Coccyx)/],["ribs",/( rib$|^Costal cartilage)/],["stern",/(sternum|^Xiphoid)/],["clav",/^Clavicle/],["scap",/^Scapula/],["hum",/^Humerus/],["rad",/^Radius/],["uln",/^Ulna/],
+    ["carp",/^(Capitate|Hamate|Lunate|Pisiform|Scaphoid|Trapezium|Trapezoid|Triquetrum) bone/],["meta",/(metacarpal bone|phalanx of .* finger of hand)/],["pelv",/^Hip bone/],["fem",/^Femur/],["pat",/^Patella/],["tib",/^Tibia/],["fib",/^Fibula/],
+    ["tars",/^(Talus|Calcaneus|Navicular bone|Cuboid bone|.*cuneiform bone)/],["mtt",/(metatarsal bone|phalanx of .* finger of foot|Sesamoid bones of foot)/]];
+  function idOf(part){ const list=(part.c==="muscle"||part.c==="tendon")?M:(part.c==="bone"||part.c==="cart")?B:[]; for(const [id,re] of list) if(re.test(part.n)) return id; return null; }
+  function regionOf(part){ const c=part.center; if(c[1]>1.47) return "head"; if(Math.abs(c[2])>0.17&&c[1]>0.7) return "upper"; if(c[1]<0.96||/^(Hip bone|Gluteus|Piriformis|Iliacus|Psoas|Obturator|Gemellus|Quadratus femoris|Tensor fasciae)/.test(part.n)) return "lower"; return "trunk"; }
+  return {idOf,regionOf};
+})();
+
+/* ===================== ZA_RIG: kinematic rig for the Z-Anatomy body =====================
+   Shared by the Frames lab and the posable figure: which body segment each mesh part belongs to, and the joint-centre
+   landmarks measured on the skeleton (header 'lm' of zanatomy.bin, right side; the left is mirrored in z). */
+const ZA_RIG=(()=>{
+  const BONESEG={skull:"head",mand:"jaw",cerv:"neck",thor:"trunk",lumb:"trunk",sacr:"pelvis",ribs:"trunk",stern:"trunk",pelv:"pelvis",clav:"scap",scap:"scap",hum:"uarm",rad:"farm",uln:"farm",carp:"hand",fem:"thigh",pat:"thigh",tib:"shank",fib:"shank",tars:"foot"};
+  function segOfPart(p,LMK){ const c=p.center; const side=p.side>0?"R":p.side<0?"L":(c[2]>=0?"R":"L"); const id=ZA_MAP.idOf(p); const withSide=(k)=>/^(head|jaw|neck|trunk|pelvis)$/.test(k)?k:k+side;
+    if(id&&BONESEG[id]) return withSide(BONESEG[id]);
+    if(id==="meta") return /metacarpal/.test(p.n)?"hand"+side:(/first finger/.test(p.n)?"thumb"+side:"fing"+side);
+    if(id==="mtt") return /metatarsal|Sesamoid/.test(p.n)?"foot"+side:"toes"+side;
+    if(/^(Hyoid|Thyroid cartilage|Cricoid|Arytenoid|Corniculate)/.test(p.n)) return "neck";
+    const az=Math.abs(c[2]);
+    if(c[1]>LMK.AO[1]+0.015&&az<0.12) return /masseter|pterygoid|Mentalis|Orbicularis oris|Depressor|Platysma/i.test(p.n)&&c[1]<LMK.TMJ[1]?"jaw":"head";
+    if(az>0.13&&c[1]>0.66){ if(c[1]>LMK.EL[1]+0.015) return "uarm"+side; if(c[1]>LMK.WR[1]+0.01) return "farm"+side; return "hand"+side; }
+    if(c[1]<=LMK.HIP[1]+0.01&&c[1]>LMK.KN[1]+0.01&&az>0.02) return "thigh"+side;
+    if(c[1]<=LMK.KN[1]+0.01&&c[1]>LMK.AN[1]+0.015) return "shank"+side;
+    if(c[1]<=LMK.AN[1]+0.015) return c[0]>LMK.MTP[0]?"toes"+side:"foot"+side;
+    if(c[1]>LMK.C7[1]-0.01&&az<0.09) return "neck";
+    if(c[1]<LMK.L5S1[1]-0.01||/^(Gluteus|Piriformis|Obturator|Gemellus|Quadratus femoris|Iliacus|Psoas|Pubo|Iliococcygeus|Coccygeus|Levator ani)/.test(p.n)) return "pelvis";
+    if(az>0.12&&c[1]>LMK.GH[1]-0.12&&/deltoid|Teres|Coracobrachialis|triceps|biceps brachii|Subscapularis|Infraspinatus|Supraspinatus/i.test(p.n)) return "uarm"+side;
+    return "trunk"; }
+  /* 4×4 column-major matrix from an affine point transform f */
+  function matrixOf(f){ const o=f([0,0,0]); const d=(v)=>{ const w=f(v); return [w[0]-o[0],w[1]-o[1],w[2]-o[2]]; }; const ex=d([1,0,0]),ey=d([0,1,0]),ez=d([0,0,1]); return new Float32Array([ex[0],ex[1],ex[2],0, ey[0],ey[1],ey[2],0, ez[0],ez[1],ez[2],0, o[0],o[1],o[2],1]); }
+  return {segOfPart,matrixOf,BONESEG};
+})();
+
 const GAME_PAGE="biomech-tmj"; const DRILL_KEY="dpl-biomech-tmj";
 const SL_VARS=()=>window.__slvars||(window.__slvars={});
 /* ---------- Game layer: XP, levels, streak, cleared badges, celebration ---------- */
@@ -676,6 +826,50 @@ const GAME=(()=>{
   return {S,hud,markNav,onCheck,onReveal,addXP,toast,burst,rec,unsolve};
 })();
 
+
+const JAWDATA={"torque":{"ang":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],"healthy":[19136,19052,18973,18885,18797,18702,18604,18512,18403,18296,18239,18202,18159,18115,18066,18013,17958,17901,17841,17774,17706,17636,17562,18365,19202,20112,21100,22118,23026,23888,24726,25517,26308],"ps":[13024,12971,12924,12870,12817,12757,12695,12640,12568,12499,12481,12482,12481,12478,12471,12460,12449,12435,12420,12398,12375,12351,12325,12896,13482,14082,14672,15270,15866,16514,17194,17899,18556],"generic":[13023,12973,12924,12872,12816,12757,12696,12641,12567,12499,12480,12481,12479,12475,12468,12460,12448,12434,12417,12398,12375,12349,12323,null,null,null,null,null,null,null,null,null,null],"fff":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,null,null,null,null,null,null,null,null,null,null]},"disp":{"healthy":[0,1.12,2.23,3.33,4.42,5.51,6.59,7.66,8.72,9.78,10.82,11.85,12.88,13.89,14.89,15.88,16.86,17.83,18.79,19.73,20.66,21.58,22.49,23.55,24.57,25.88,27.53,29.27,30.61,31.8,32.92,33.86,34.84],"ps":[0,1.12,2.23,3.33,4.42,5.51,6.59,7.66,8.72,9.78,10.82,11.85,12.88,13.89,14.89,15.88,16.86,17.83,18.79,19.73,20.66,21.58,22.49,23.55,24.52,25.56,26.56,27.6,28.65,29.95,31.43,33.02,34.39],"generic":[0,1.12,2.23,3.33,4.42,5.51,6.59,7.66,8.72,9.78,10.82,11.85,12.88,13.89,14.89,15.88,16.86,17.83,18.79,19.73,20.66,21.58,22.49,null,null,null,null,null,null,null,null,null,null]},"muscles":[{"n":"Posterior temporalis","ins":[3.88,3.59,21.94],"org":[-13.1,50.0,-50.0]},{"n":"Middle temporalis","ins":[3.88,3.59,21.94],"org":[-13.1,70.6,-20.9]},{"n":"Anterior temporalis","ins":[3.88,3.59,21.94],"org":[-13.1,70.6,20.9]},{"n":"Superficial masseter","ins":[1.25,-22.3,18.6],"org":[7.2,16.5,45.5]},{"n":"Deep masseter","ins":[1.25,-22.3,18.6],"org":[7.2,16.5,26.6]},{"n":"Medial pterygoid","ins":[2.77,-38.19,14.4],"org":[-22.0,-1.19,35.4]},{"n":"Inferior lateral pterygoid","ins":[0,0,0],"org":[-22,-5,20]},{"n":"Superior lateral pterygoid","ins":[0,0,0],"org":[-22,5,20]}],"force":{"healthy":[75.6,95.6,158,190.4,81.6,174.8,66.9,28.7],"ps":[75.6,95.6,158,38.1,0,174.8,0,0],"generic":[75.6,95.6,158,38.1,0,174.8,0,0],"fff":[0,0,0,0,0,0,0,0]},"credit":"Walck C, Lim Y, Rosenstein S. A Novel Review of Temporomandibular Joint Replacement Options (Embry-Riddle Aeronautical University; from the ME 530 Advanced Kinematics course project). Attachment coordinates after Koolstra & van Eijden 1997 and She et al. 2018; maximum forces after Ahn et al. 2014; anthropometry from the NIH 3D Print Exchange mandible (male, 50\u201365 y)."};
+
+/* ===================== JAW3D: the implant-comparison study on the real skull =====================
+   Skull + mandible (and the jaw-closing muscles) from the Z-Anatomy mesh. The mandible is driven with the two-phase kinematics of
+   Walck, Lim & Rosenstein: pure rotation about the condylar ICR from 0° to 22° of jaw rotation, then rotation plus translation of the
+   condyle along the fossa path up to 32° (maximum mouth open, MMO). Four systems: healthy jaw, patient-specific implant (rotation +
+   a 7.65 % shorter translation path), generic implant and free fibula flap (rotation only, 22° maximum). Muscle lines of action use the
+   study's origin/insertion coordinates (mm, relative to the ICR; cut muscles drawn dashed).                                           */
+const JAW3D=(()=>{
+  let R=null, ready=false, LM=null, parts=[], st={system:"healthy",angle:0,showMuscles:false,showLines:true}, T=null, inc0=null;
+  const rad=(d)=>d*Math.PI/180;
+  const SYS={healthy:{n:"Healthy jaw",max:32,trans:1.0},ps:{n:"Patient-specific implant",max:32,trans:16.9/18.3},generic:{n:"Generic implant",max:22,trans:0},fff:{n:"Free fibula flap",max:22,trans:0}};
+  const JAWPART=/^(Mandible|Lower .*(incisor|canine|molar|premolar))$/; const MUSPART=/masseter|Temporalis muscle|pterygoid/i;
+  const rotZ=(a,c)=>{ const ca=Math.cos(a),sa=Math.sin(a); return new Float32Array([ca,sa,0,0, -sa,ca,0,0, 0,0,1,0, c[0]-ca*c[0]+sa*c[1], c[1]-sa*c[0]-ca*c[1], 0,1]); };
+  const apply=(M,p)=>M?[M[0]*p[0]+M[4]*p[1]+M[8]*p[2]+M[12],M[1]*p[0]+M[5]*p[1]+M[9]*p[2]+M[13],M[2]*p[0]+M[6]*p[1]+M[10]*p[2]+M[14]]:p;
+  let Mj=null;
+  function kin(){ const S=SYS[st.system]; const a=Math.min(st.angle,S.max); const ph2=Math.max(0,a-22)/10; /* 0→1 over the translation phase */
+    const tx=0.0183*S.trans*ph2, ty=-0.0039*S.trans*ph2; /* condyle: 18.3 mm anterior, 3.9 mm inferior at MMO (healthy) */
+    const M=rotZ(-rad(a),T); M[12]+=tx; M[13]+=ty; return {M,a,tx,ty}; }
+  function update(){ if(!ready) return; const k=kin(); Mj=k.M; parts.forEach(p=>{ if(p._jaw) p.M=Mj; }); R.S.dirty=true; }
+  function alphaOf(p){ if(p._jaw||p._skull) return 1; if(p._mus) return st.showMuscles?(cutSet().has(p._musName)?0.12:0.85):0; return 0; }
+  function cutSet(){ const F=JAWDATA.force[st.system]; const s=new Set(); JAWDATA.muscles.forEach((m,i)=>{ if(F[i]===0) s.add(m.n); }); return s; }
+  /* study coordinates (mm, origin at the ICR; x lateral, y up, z anterior) → ATLAS metres */
+  const P=(c)=>[T[0]+c[2]/1000, T[1]+c[1]/1000, T[2]+c[0]/1000];
+  function overlays(ctx,M,project){ if(!ready||!st.showLines) return; const F=JAWDATA.force[st.system]; const full=JAWDATA.force.healthy;
+    JAWDATA.muscles.forEach((m,i)=>{ if(/lateral pterygoid/.test(m.n)) return; const o=P(m.org), ins=apply(Mj,P(m.ins)); const A=project(o),B=project(ins); if(A[2]<0.1||B[2]<0.1) return; const cut=F[i]===0, partial=F[i]>0&&F[i]<full[i];
+      ctx.save(); ctx.lineWidth=cut?1.5:2.5; ctx.strokeStyle=cut?"rgba(200,200,220,.45)":partial?"#ffd23f":"#7cff6b"; if(cut) ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke(); ctx.restore();
+      ctx.fillStyle=cut?"rgba(200,200,220,.6)":"#7cff6b"; ctx.beginPath(); ctx.arc(A[0],A[1],3,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#ffd23f"; ctx.beginPath(); ctx.arc(B[0],B[1],3,0,Math.PI*2); ctx.fill();
+      const t=0.28+0.09*(i%3); const lx=A[0]+(B[0]-A[0])*t, ly=A[1]+(B[1]-A[1])*t; const txt=m.n+(cut?" (cut)":partial?" (20 % cut)":"")+" · "+F[i].toFixed(0)+" N"; ctx.font="600 11px 'Chakra Petch', sans-serif"; const w=ctx.measureText(txt).width+8; ctx.fillStyle="rgba(5,10,24,.8)"; ctx.fillRect(lx+4,ly-13,w,16); ctx.fillStyle=cut?"rgba(200,200,220,.7)":"#eaf2ff"; ctx.fillText(txt,lx+8,ly-1); });
+    const icr=apply(null,T); R.dot3(ctx,M,project,icr,"#22d3ee",5); R.label3(ctx,M,project,icr,"ICR of the condyle (origin)","#22d3ee",22);
+    const k=kin(); if(k.tx>0){ R.arrow3(ctx,M,project,T,[T[0]+k.tx*3,T[1]+k.ty*3,T[2]],"#ff8a3d",`condyle slide ${(Math.hypot(k.tx,k.ty)*1000).toFixed(1)} mm`,2); } }
+  function incisor(){ const p=parts.find(x=>x.n==="Lower medial incisor"&&x.side>=0)||parts.find(x=>x.n==="Mandible"); if(!p) return null; const c=[(p.bb[0]+p.bb[3])/2,p.bb[4],0]; return c; }
+  function readout(){ if(!ready) return null; const i0=incisor(); const i1=apply(Mj,i0); const k=kin(); return {disp:Math.hypot(i1[0]-i0[0],i1[1]-i0[1])*1000,inferior:(i0[1]-i1[1])*1000,angle:k.a,slide:Math.hypot(k.tx,k.ty)*1000,max:SYS[st.system].max}; }
+  function mount(sel){ R=GL3.create(); R.S.alphaFn=alphaOf; R.S.alwaysRender=false; R.S.minDist=0.15; R.cam.theta=0.25; R.cam.phi=0.05; R.S.overlays=[overlays];
+    R.init(sel,null);
+    R.load("zanatomy.bin").then(ps=>{ parts=ps; LM=R.S.lm; T=[LM.TMJ[0],LM.TMJ[1],0]; /* rotation axis through both condyles */
+      parts.forEach(p=>{ p._jaw=JAWPART.test(p.n); p._skull=!p._jaw&&(ZA_MAP.idOf(p)==="skull"||/^(Upper .*(incisor|canine|molar|premolar)|Hyoid)/.test(p.n)); p._mus=MUSPART.test(p.n)&&(p.c==="muscle"||p.c==="tendon"); if(p._mus){ p._musName=/Superficial part of masseter/.test(p.n)?"Superficial masseter":/Deep part of masseter/.test(p.n)?"Deep masseter":/Temporalis/.test(p.n)?"Anterior temporalis":/Medial pterygoid/.test(p.n)?"Medial pterygoid":/lateral pterygoid/i.test(p.n)?"Inferior lateral pterygoid":""; }
+        /* muscles that insert on the mandible stay with the skull in this view (their lines of action are drawn separately) */ });
+      ready=true; R.cam.target=[T[0]+0.02,T[1]-0.04,0]; R.cam.dist=0.42; R.S.viewTarget=R.cam.target.slice(); R.S.viewDist=0.42; update(); if(onReady) onReady(); }); }
+  let onReady=null;
+  function set(s){ Object.assign(st,s); update(); }
+  return {mount,set,get:()=>st,readout,SYS,isReady:()=>ready,onReady:(f)=>{ onReady=f; if(ready) f(); },get R(){ return R; }};
+})();
 
 /* ===================== JAW MOTION & TMJ IMPLANTS LAB =====================
    Tabs: TMJ anatomy & the two phases of opening · tracking jaw motion (imaging + markers, rigid-body pose) · mandible as a lever
@@ -821,7 +1015,49 @@ const TJ=(()=>{
     el.querySelectorAll("[data-iv]").forEach(b=>b.onclick=()=>{ im.view=b.dataset.iv; renderImpl(); });
     ["imd","ime","imf","imse","imc"].forEach(id=>{ const e=$("#"+id); if(e) e.oninput=(ev)=>{ im[{imd:"d",ime:"e",imf:"F",imse:"Se",imc:"cyc"}[id]]=+ev.target.value; renderImpl(); }; }); fixSubs(el); }
 
-  /* ---------- 5. the two-phase project brief ---------- */
+
+  /* ---------- 5. the implant comparison study (Walck, Lim & Rosenstein) on the real skull ---------- */
+  let sj={system:"healthy",angle:12,play:false,showMuscles:false,showLines:true}; let sjWrap=null;
+  const sjAnim=animator(()=>({play:sj.play,val:sj.angle}),(v)=>{ sj.angle=Math.min(v,JAW3D.SYS[sj.system].max); },()=>{ JAW3D.set({angle:sj.angle}); sjReadout(); },0,32,10);
+  function chart(id,series,ymax,ylab,unit){ const W=560,H=230,L=58,Rm=16,Tp=14,B=34; const X=(a)=>L+(W-L-Rm)*a/32, Y=(v)=>Tp+(H-Tp-B)*(1-v/ymax);
+    const grid=[0,0.25,0.5,0.75,1].map(f=>`<line x1="${L}" y1="${Y(f*ymax)}" x2="${W-Rm}" y2="${Y(f*ymax)}" stroke="#2c4274" stroke-dasharray="3 4"/><text x="${L-6}" y="${Y(f*ymax)+4}" text-anchor="end" class="mlab" style="font-size:10px;fill:#c9d7ff">${(f*ymax).toLocaleString()}</text>`).join("");
+    const xs=[0,10,20,22,32].map(a=>`<line x1="${X(a)}" y1="${Tp}" x2="${X(a)}" y2="${H-B}" stroke="${a===22?"#ff8a3d":"#2c4274"}" stroke-dasharray="${a===22?"5 3":"3 4"}"/><text x="${X(a)}" y="${H-B+14}" text-anchor="middle" class="mlab" style="font-size:10px;fill:#c9d7ff">${a}°</text>`).join("");
+    const lines=series.map(sr=>{ const pts=sr.v.map((v,i)=>v==null?null:`${X(i)},${Y(v)}`).filter(Boolean); return `<polyline points="${pts.join(" ")}" fill="none" stroke="${sr.col}" stroke-width="${sr.k===sj.system?3.5:1.8}" opacity="${sr.k===sj.system?1:0.55}"/>`; }).join("");
+    const cur=series.find(sr=>sr.k===sj.system); const a=Math.round(Math.min(sj.angle,JAW3D.SYS[sj.system].max)); const cv=cur&&cur.v[a]; const mark=cv==null?"":`<circle cx="${X(a)}" cy="${Y(cv)}" r="5" fill="${cur.col}" stroke="#fff"/><text x="${X(a)+8}" y="${Y(cv)-6}" class="mlab" style="font-size:11px;fill:${cur.col}">${cv.toLocaleString()} ${unit}</text>`;
+    const leg=series.map((sr,i)=>`<rect x="${L+i*120}" y="${H-10}" width="14" height="3" fill="${sr.col}"/><text x="${L+i*120+18}" y="${H-6}" class="mlab" style="font-size:10px;fill:#c9d7ff">${sr.n}</text>`).join("");
+    return svg(W,H,`${grid}${xs}<text x="${L}" y="${Tp-4}" class="mlab" style="font-size:10px;fill:#c9d7ff">${ylab}</text><text x="${X(22)+3}" y="${Tp+10}" class="mlab" style="font-size:10px;fill:#ff8a3d">translation phase →</text>${lines}${mark}${leg}`); }
+  const SCOL={healthy:"#7cff6b",ps:"#ffd23f",generic:"#22d3ee",fff:"#ff5a5a"};
+  function sjReadout(){ const el=$("#sjread"); if(!el) return; const r=JAW3D.readout(); if(!r) return; const a=Math.round(r.angle); const D=JAWDATA.disp; const study=sj.system==="healthy"?D.healthy[a]:sj.system==="ps"?D.ps[a]:D.generic[Math.min(a,22)]; const Tq=JAWDATA.torque[sj.system][a];
+    el.innerHTML=`<tr><td>Jaw rotation</td><td>${a}° of ${r.max}° (${sj.system==="healthy"||sj.system==="ps"?"MMO = 32°":"rotation-only limit = 22°"})</td></tr><tr><td>Condyle translation</td><td>${r.slide.toFixed(1)} mm along the fossa path</td></tr><tr><td>Incisor displacement on this skull</td><td>${r.disp.toFixed(1)} mm (inferior ${r.inferior.toFixed(1)} mm)</td></tr><tr><td>Study value (NIH mandible)</td><td>${study!=null?study.toFixed(1)+" mm":"—"}</td></tr><tr><td>Net closing torque about the ICR</td><td>${Tq!=null?Tq.toLocaleString()+" N·mm":"—"}</td></tr>`;
+    const c1=$("#sjchart1"), c2=$("#sjchart2"); if(c1) c1.innerHTML=chart("t",[{k:"healthy",n:"Healthy",col:SCOL.healthy,v:JAWDATA.torque.healthy},{k:"ps",n:"Patient-specific",col:SCOL.ps,v:JAWDATA.torque.ps},{k:"generic",n:"Generic",col:SCOL.generic,v:JAWDATA.torque.generic},{k:"fff",n:"Free fibula flap",col:SCOL.fff,v:JAWDATA.torque.fff}],30000,"net torque about the ICR (N·mm)","N·mm");
+    if(c2) c2.innerHTML=chart("d",[{k:"healthy",n:"Healthy",col:SCOL.healthy,v:JAWDATA.disp.healthy},{k:"ps",n:"Patient-specific",col:SCOL.ps,v:JAWDATA.disp.ps},{k:"generic",n:"Generic / FFF",col:SCOL.generic,v:JAWDATA.disp.generic},{k:"fff",n:"",col:SCOL.fff,v:JAWDATA.disp.generic}],40,"inferior displacement of the incisors (mm)","mm");
+    const sl=$("#sjang"); if(sl&&document.activeElement!==sl) sl.value=sj.angle; const sv=$("#sjangv"); if(sv) sv.textContent=f(sj.angle,0)+"°"; }
+  function renderStudy(){ const el=$("#study"); const S=JAW3D.SYS;
+    el.innerHTML=`<p>The jaw-closing motion of a healthy TMJ has two phases: <b>pure rotation</b> of the condyle about its instantaneous centre of rotation (ICR) from mouth closed to 22° of jaw rotation, then <b>rotation plus translation</b> of the condyle forward and down the mandibular fossa up to the maximum mouth-open position (MMO, 32°). A reconstruction decides which of these the patient keeps. In this study the healthy jaw was compared with a <b>free fibula flap</b> reconstruction and two implants — a <b>generic</b> metal-and-polymer joint that behaves as a revolute (pin) joint, and a <b>patient-specific</b> joint that behaves as a pin-in-a-slot and can translate — using CAD models built on an NIH mandible (male, 50–65 y) and the muscle lines of action of the jaw closers. Here the same kinematics drive the real skull; the lines of action are the study's coordinates.</p>
+      ${seg("System",Object.keys(S).map(k=>[k,S[k].n]),sj.system,"data-sys")}
+      <div class="two"><div><div class="scene3d-slot"></div>
+        <label class="note">Jaw rotation <b id="sjangv">${f(sj.angle,0)}°</b><input type="range" id="sjang" min="0" max="32" step="0.5" value="${sj.angle}"></label>
+        <div class="playrow">${playBtn("sjplay",sj.play)}<label class="chk"><input type="checkbox" id="sjmus" ${sj.showMuscles?"checked":""}> muscles</label><label class="chk"><input type="checkbox" id="sjlines" ${sj.showLines?"checked":""}> lines of action &amp; forces</label></div>
+        <table class="mini txt" id="sjread"></table></div>
+      <div><div id="sjchart1"></div><div id="sjchart2"></div></div></div>
+      <h4 style="margin-top:12px">What each system keeps</h4><table class="mini txt"><tr><th>System</th><th>Joint analogy</th><th>Max rotation</th><th>Condyle translation</th><th>Muscles cut</th><th>Peak net torque</th><th>Incisor drop at MMO</th></tr>
+      <tr><td>Healthy jaw</td><td>rotation + slide along the fossa</td><td>32°</td><td>18.3 mm anterior, 3.9 mm inferior</td><td>none</td><td>26 300 N·mm</td><td>34.8 mm</td></tr>
+      <tr><td>Patient-specific implant</td><td>pin-in-slot</td><td>32°</td><td>16.9 mm (7.65 % shorter path)</td><td>deep masseter, lateral pterygoid; 20 % of superficial masseter</td><td>18 600 N·mm (−29.3 %)</td><td>34.4 mm (−1.15 %)</td></tr>
+      <tr><td>Generic implant</td><td>revolute (pin)</td><td>22°</td><td>none</td><td>deep masseter, lateral pterygoid; 20 % of superficial masseter</td><td>13 000 N·mm; nothing beyond 22°</td><td>22.5 mm (−35.3 %)</td></tr>
+      <tr><td>Free fibula flap</td><td>revolute, no closers</td><td>22°</td><td>none</td><td>ramus and all of temporalis, masseter, pterygoids</td><td>0</td><td>22.5 mm (−35.3 %)</td></tr></table>
+      <h4 style="margin-top:12px">How the numbers were made</h4><p><b>Kinematics.</b> The mandible is a link of length ℓ<sub>m</sub> (100.2 mm, adult male) from the ICR to the incisors; the ICR follows a best-fit polynomial path along the fossa (healthy: R² = 0.997; PS implant: 0.996) scaled to the mean condylar excursion. Each position closes a three-bar loop ℓ<sub>m</sub>e<sup>jΦ₁</sup> + ℓ<sub>b</sub>e<sup>jΦ₂</sup> + ℓ<sub>g</sub>e<sup>jΦ₃</sup> = 0 — two sliders and a revolute during the translation phase, two revolutes and a slider during pure rotation — the same vector-loop method as the Multi-Joint lab. Inferior displacement was then measured directly on the incisor point at one-degree steps.</p>
+      <p><b>Kinetics.</b> Net torque about the ICR = Σ (muscle force × perpendicular distance from the ICR to its line of action), with the eight closing muscles projected onto the sagittal plane and maximum forces from the literature. The lateral pterygoids insert at the origin and contribute no moment. Cutting muscles (table above) removes their terms; the generic implant's torque stops at 22° because it cannot rotate further; the FFF has no closers left on that side, so its torque is zero.</p>
+      <p><b>Reading the charts.</b> During pure rotation every system that keeps the temporalis and medial pterygoid produces similar torque; the difference opens up in the translation phase, where the healthy jaw and the PS implant keep rotating (and the moment arms grow) while the pin joints have stopped. That is the engineering case for an implant that translates: it is not the strength of the hinge, it is the degrees of freedom.</p>
+      <p><b>Limits the authors note.</b> Sagittal plane only; the healthy contralateral side was ignored; the condylar path for the PS implant does not reach as far inferiorly as the real fossa; lateral deviation, protrusion and retrusion were not modelled — all of which the motion-tracking phases of the design project would supply.</p>
+      <p class="note">${JAWDATA.credit}</p>`;
+    const slot=el.querySelector(".scene3d-slot"); if(!sjWrap){ sjWrap=document.createElement("div"); sjWrap.className="scene3d"; sjWrap.style.cssText="user-select:none;position:relative;height:360px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#101a33,#070b16 70%)"; sjWrap.innerHTML='<canvas id="sjcanvas" style="width:100%;height:100%;display:block;touch-action:none"></canvas>'; slot.replaceWith(sjWrap); JAW3D.mount("#sjcanvas"); JAW3D.onReady(()=>{ JAW3D.set({system:sj.system,angle:sj.angle,showMuscles:sj.showMuscles,showLines:sj.showLines}); sjReadout(); }); } else slot.replaceWith(sjWrap);
+    JAW3D.set({system:sj.system,angle:Math.min(sj.angle,S[sj.system].max),showMuscles:sj.showMuscles,showLines:sj.showLines}); sjReadout();
+    el.querySelectorAll("[data-sys]").forEach(b=>b.onclick=()=>{ sj.system=b.dataset.sys; sj.angle=Math.min(sj.angle,S[sj.system].max); renderStudy(); });
+    $("#sjang").oninput=(e)=>{ sj.angle=Math.min(+e.target.value,S[sj.system].max); sjAnim.stop(); JAW3D.set({angle:sj.angle}); sjReadout(); };
+    $("#sjplay").onclick=()=>{ sj.play=!sj.play; if(sj.play) sjAnim.start(); else sjAnim.stop(); $("#sjplay").textContent=sj.play?"❚❚ Pause":"▶ Play"; $("#sjplay").classList.toggle("on",sj.play); };
+    $("#sjmus").onchange=(e)=>{ sj.showMuscles=e.target.checked; JAW3D.set({showMuscles:sj.showMuscles}); }; $("#sjlines").onchange=(e)=>{ sj.showLines=e.target.checked; JAW3D.set({showLines:sj.showLines}); };
+    fixSubs(el); }
+  /* ---------- 6. the two-phase project brief ---------- */
   function renderProj(){ const el=$("#proj"); el.innerHTML=`<p>Our biomechanics lab is working with a <b>paediatric head and neck surgery programme</b> in Central Florida (a cranio-oncology service that reconstructs children's jaws after tumour surgery) on measuring how a child's jaw moves and works after mandible reconstruction. The practice already plans surgery on CT with CAD/CAM, prints patient-specific guides and implants, and uses optical navigation in the operating room; what nobody measures yet is <i>function</i> afterwards — opening, excursion, muscle use, bite force — and how it changes as the child grows. That gap is the project.</p>
       <div class="two"><div>
       <h4>The tools on the table</h4><table class="mini txt"><tr><th>System</th><th>What it does</th><th>Jaw?</th></tr>
@@ -875,7 +1111,7 @@ const TJ=(()=>{
     function answer(o,b){ const ok=o===cur.ans; St.done++; if(ok){ St.correct++; St.streak++; St.best=Math.max(St.best,St.streak); } else St.streak=0; save(); $("#jdrill").querySelectorAll(".dopt").forEach(x=>{ x.disabled=true; if(x.dataset.o===cur.ans) x.classList.add("good"); else if(x===b&&!ok) x.classList.add("bad"); }); $("#jdfb").innerHTML=`<p class="${ok?"fb good":"fb bad"}">${ok?"Correct.":"Not quite — the answer is <b>"+cur.ans+"</b>."} ${cur.why}</p><button type="button" class="btn primary small" id="jnext">Next question →</button>`; $("#jnext").onclick=next; const ds=$("#jdrill .dstat"); if(ds) ds.textContent=`Answered ${St.done} · correct ${St.correct} · in a row ${St.streak} (best ${St.best})`; if(typeof GAME!=="undefined"&&ok) GAME.addXP(10,St.streak>1?`+10 XP · ${St.streak} in a row`:"+10 XP"); }
     return {next}; })();
 
-  function init(){ renderAnat(); renderTrack(); renderLever(); renderImpl(); renderProj();
+  function init(){ renderAnat(); renderTrack(); renderLever(); renderImpl(); renderStudy(); renderProj();
     document.querySelectorAll("#mtabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#mtabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); document.querySelectorAll(".mpane").forEach(p=>p.hidden=p.id!==b.dataset.k); });
     $("#jdrillstart").onclick=()=>{ DR.next(); $("#jdrillstart").textContent="Skip →"; }; }
   return {init,jawPose,lever,stem,kabsch2,JAW};
@@ -1025,7 +1261,24 @@ const PROBLEMS=[
   steps:(v,r)=>[{t:"Moment at the defect",eq:`M = ${v.Fb} × ${v.L} = <b>${fmt(r.M)} N·mm</b>`},{t:"Section modulus and stress",eq:`Z = ${v.t}·${v.w}²/6 = <b>${fmt(r.Z)} mm³</b>; σ = M/Z = <b>${fmt(r.sig)} MPa</b>`},{t:"Plate safety factors",eq:`n_y = ${v.Sy}/${fmt(r.sig)} = <b>${fmt(r.fy)}</b>; n_f = ${v.Se}/${fmt(r.sig)} = <b>${fmt(r.ff)}</b>`},{t:"Screw pull-out capacity",eq:`F_pull = ${v.tau} × π × ${v.ds} × ${v.Lc} = <b>${fmt(r.Fpull)} N</b>`},{t:"Force per screw and safety",eq:`F_screw = M / (${v.n/2} × 8) = <b>${fmt(r.Fs)} N</b>; n_s = ${fmt(r.Fpull)}/${fmt(r.Fs)} = <b>${fmt(r.fs)}</b>`}],
   comments:(v,r)=>["The plate itself is rarely the weak link; the screws in a thin paediatric cortex are. Bicortical engagement, more screws or a longer plate lower F_screw.","Plates do not grow: in a child the fixation may need removal or revision as the mandible lengthens — another reason to follow function and growth with repeated, radiation-free measurements."],
   references:["Strength of materials: bending of rectangular sections; screw pull-out as shear over the engaged thread cylinder.","Clinical context: fibula free-flap mandible reconstruction in children with virtual surgical planning (published case reports from paediatric head and neck surgery programmes)."],
-  takeaway:"Bite moment ÷ section modulus gives the plate stress; bite moment ÷ screw-row spacing gives what the screws must hold. Design the screws for the child's cortex, and plan for growth."}
+  takeaway:"Bite moment ÷ section modulus gives the plate stress; bite moment ÷ screw-row spacing gives what the screws must hold. Design the screws for the child's cortex, and plan for growth."},
+ {id:"icrtorque",name:"Muscle Torque About the Condylar ICR from CAD Coordinates",tag:"implant study",level:"full",group:"Loads on the joint",
+  credit:"Method and coordinates from Walck, Lim & Rosenstein, A Novel Review of TMJ Replacement Options (ERAU): sagittal-plane lines of action from CAD origin/insertion points, torque = force × perpendicular distance to the ICR.",
+  original:{Fs:190.4,Ft:158,Fp:174.8,oy:16.5,oz:45.5,iy:-22.3,iz:18.6,ty:70.6,tz:20.9,tiy:3.59,tiz:21.94,py:-1.19,pz:35.4,piy:-38.19,piz:14.4,cut:20},
+  randomize(){ return {Fs:pick(150,230,1),Ft:pick(120,190,1),Fp:pick(140,200,1),oy:16.5,oz:45.5,iy:-22.3,iz:18.6,ty:70.6,tz:20.9,tiy:3.59,tiz:21.94,py:-1.19,pz:35.4,piy:-38.19,piz:14.4,cut:pick(0,50,5)}; },
+  solve(v){ const mom=(F,oy,oz,iy,iz)=>{ const dy=oy-iy, dz=oz-iz; const L=Math.hypot(dy,dz); const Fy=F*dy/L, Fz=F*dz/L; /* torque about the origin (ICR): r × F with r = insertion point, in the y–z (sagittal) plane: M = z·Fy − y·Fz */ const M=iz*Fy-iy*Fz; return {Fy,Fz,M,d:Math.abs(M)/F}; };
+    const s=mom(v.Fs,v.oy,v.oz,v.iy,v.iz), t=mom(v.Ft,v.ty,v.tz,v.tiy,v.tiz), p=mom(v.Fp,v.py,v.pz,v.piy,v.piz); const net=s.M+t.M+p.M; const after=s.M*(1-v.cut/100)+t.M+p.M; return {s,t,p,net,after,loss:100*(net-after)/net}; },
+  statement:(v,r)=>`In the implant study the jaw-closing muscles are projected onto the sagittal (y–z) plane with the condylar ICR as origin (y up, z anterior, mm). Three muscles with the mouth closed: superficial masseter, force ${N(v.Fs,"N")}, origin (y, z) = (${v.oy}, ${v.oz}) on the zygomatic arch, insertion (${v.iy}, ${v.iz}) on the mandibular angle; anterior temporalis, ${N(v.Ft,"N")}, origin (${v.ty}, ${v.tz}), insertion (${v.tiy}, ${v.tiz}) on the coronoid process; medial pterygoid, ${N(v.Fp,"N")}, origin (${v.py}, ${v.pz}), insertion (${v.piy}, ${v.piz}). Each muscle pulls its insertion toward its origin. (a) Resolve each force into y and z components. (b) Find each muscle's torque about the ICR (counter-clockwise, closing, positive) and its perpendicular moment arm. (c) Sum them for the net closing torque. (d) A generic implant removes ${N(v.cut,"%")} of the superficial masseter: what fraction of the net torque is lost?`,
+  known:(v,r)=>[`Superficial masseter: F = ${v.Fs} N, origin (${v.oy}, ${v.oz}), insertion (${v.iy}, ${v.iz}) mm`,`Anterior temporalis: F = ${v.Ft} N, origin (${v.ty}, ${v.tz}), insertion (${v.tiy}, ${v.tiz}) mm`,`Medial pterygoid: F = ${v.Fp} N, origin (${v.py}, ${v.pz}), insertion (${v.piy}, ${v.piz}) mm`,`Sagittal plane, ICR at the origin, mouth closed`],
+  find:["(a) F_y, F_z of each muscle","(b) M = z·F_y − y·F_z and d = |M|/F for each","(c) net torque","(d) % lost with the masseter cut"],
+  schematic:(v,r)=>{ const X=(z)=>330+z*3, Y=(y)=>150-y*2.6; const line=(oy,oz,iy,iz,col,n)=>`<line x1="${X(oz)}" y1="${Y(oy)}" x2="${X(iz)}" y2="${Y(iy)}" stroke="${col}" stroke-width="2.5"/><circle cx="${X(oz)}" cy="${Y(oy)}" r="4" fill="#7cff6b"/><circle cx="${X(iz)}" cy="${Y(iy)}" r="4" fill="#ffd23f"/><text x="${X(oz)+6}" y="${Y(oy)-4}" font-size="11" fill="${col}">${n}</text>`; return sv(`<line x1="330" y1="20" x2="330" y2="230" stroke="#2c4274"/><line x1="200" y1="150" x2="560" y2="150" stroke="#2c4274"/><text x="548" y="146" font-size="11" fill="#c9d7ff">z (anterior)</text><text x="334" y="30" font-size="11" fill="#c9d7ff">y (up)</text><circle cx="330" cy="150" r="5" fill="#22d3ee"/><text x="250" y="166" font-size="11" fill="#22d3ee">ICR (origin)</text>${line(v.oy,v.oz,v.iy,v.iz,"#ff8a3d","superficial masseter")}${line(v.ty,v.tz,v.tiy,v.tiz,"#b58cff","anterior temporalis")}${line(v.py,v.pz,v.piy,v.piz,"#ff5a8a","medial pterygoid")}<text x="300" y="228" font-size="11" fill="#c9d7ff" text-anchor="middle">green = origin (skull) · yellow = insertion (mandible); scale exaggerated vertically</text>`); },
+  assumptions:["Straight lines of action from insertion to origin, projected onto the sagittal plane (the study's 2-D model).","Each muscle acts at its maximum force simultaneously; the lateral pterygoids insert at the origin and add no torque.","Mouth closed: the insertion points are at their rest coordinates."],
+  answers:(v,r)=>[{label:"(a) masseter F_y",unit:"N",val:r.s.Fy},{label:"(a) masseter F_z",unit:"N",val:r.s.Fz},{label:"(b) masseter M",unit:"N·mm",val:r.s.M},{label:"(b) masseter d",unit:"mm",val:r.s.d},{label:"(b) temporalis M",unit:"N·mm",val:r.t.M},{label:"(b) pterygoid M",unit:"N·mm",val:r.p.M},{label:"(c) net torque",unit:"N·mm",val:r.net},{label:"(d) torque lost",unit:"%",val:r.loss}],
+  hints:(v,r)=>["Direction of pull = (origin − insertion)/length; multiply by F for the components.","2-D moment about the origin with r = insertion point: M = r_z·F_y − r_y·F_z (counter-clockwise positive in the y–z plane).","Moment arm d = |M|/F. Net torque is the sum; the cut scales only the masseter term."],
+  steps:(v,r)=>[{t:"Superficial masseter",eq:`direction (Δy, Δz) = (${v.oy}−(${v.iy}), ${v.oz}−${v.iz}); F_y = <b>${fmt(r.s.Fy)} N</b>, F_z = <b>${fmt(r.s.Fz)} N</b>; M = ${v.iz}·${fmt(r.s.Fy)} − (${v.iy})·${fmt(r.s.Fz)} = <b>${fmt(r.s.M)} N·mm</b>; d = <b>${fmt(r.s.d)} mm</b>`},{t:"Anterior temporalis",eq:`F_y = ${fmt(r.t.Fy)} N, F_z = ${fmt(r.t.Fz)} N; M = <b>${fmt(r.t.M)} N·mm</b> (d = ${fmt(r.t.d)} mm)`},{t:"Medial pterygoid",eq:`F_y = ${fmt(r.p.Fy)} N, F_z = ${fmt(r.p.Fz)} N; M = <b>${fmt(r.p.M)} N·mm</b> (d = ${fmt(r.p.d)} mm)`},{t:"Net closing torque",eq:`Σ M = <b>${fmt(r.net)} N·mm</b>`},{t:"Generic implant",eq:`masseter term × (1 − ${v.cut}/100): net = ${fmt(r.after)} N·mm → <b>${fmt(r.loss)} %</b> lost`}],
+  comments:(v,r)=>["This is one angle of the study's 33-step sweep; repeating it with the mandible rotated (and translated past 22°) gives the torque curves in the Implant study tab.","A muscle with a long moment arm but a small force (temporalis) can matter as much as a strong one close to the joint — compare the d values."],
+  references:["Walck C, Lim Y, Rosenstein S. A Novel Review of Temporomandibular Joint Replacement Options (ERAU).","Koolstra JH, van Eijden TMGJ (1997) The jaw open–close movements predicted by biomechanical modelling. J Biomech 30:943–950."],
+  takeaway:"Torque about the ICR is just r × F with real attachment coordinates; the implant that cuts a muscle or stops the rotation early loses torque exactly where the moment arms were growing."}
 ];
 
 BP.init(); GAME.hud(); TJ.init();
