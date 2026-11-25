@@ -5,7 +5,7 @@
 const FIG=(()=>{
   const {rotAxis,add,sub,mul}=B3; const rad=(d)=>d*Math.PI/180;
   const L=ANM.L;
-  /* joint centres (right side); left mirrored */
+  /* joint centers (right side); left mirrored */
   const C={trunk:[-0.01,1.00,0],head:[-0.02,1.50,0],sh:[-0.02,1.43,0.19],el:[-0.01,1.14,0.21],wr:[0.0,0.875,0.235],hip:[0,0.92,0.09],knee:[0,0.48,0.09],ank:[0,0.08,0.085]}; if(typeof OSIM!=="undefined"){ const j=OSIM.joints; C.hip=[j.hip_r[0],j.hip_r[1],0.09]; C.knee=[j.walker_knee_r[0],j.walker_knee_r[1],0.09]; C.ank=[j.ankle_r[0],j.ankle_r[1],0.085]; }
   const Z=[0,0,1],X=[1,0,0],Y=[0,1,0];
   let pose={};

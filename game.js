@@ -45,7 +45,7 @@ const GAME=(()=>{
     const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
     const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
     let t0=null;
-    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
       P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
       requestAnimationFrame(f); })(performance.now());
   }

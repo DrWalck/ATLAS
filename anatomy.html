@@ -563,6 +563,18 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 .figlayout .layout{grid-template-columns:220px minmax(0,1fr);gap:16px}
 #fignote{min-height:3em}
 @media (max-width:900px){.layout{grid-template-columns:1fr}}
+@media (max-width:900px){.figlayout .layout{grid-template-columns:1fr}}
+.figlayout>section,.figlayout>aside{min-width:0}.mpane{min-width:0}.mlsvg,.schemsvg{max-width:100%;height:auto}
+.figlayout.nofig{grid-template-columns:1fr}.figlayout.nofig>aside{display:none}.figlayout.nofig .layout{grid-template-columns:250px minmax(0,1fr)}
+@media (max-width:900px){.figlayout.nofig .layout{grid-template-columns:1fr}}
+.figlayout .two{grid-template-columns:1fr}
+@media (min-width:1500px){.figlayout .two{grid-template-columns:1fr 1fr}}
+#bsplit{display:grid;grid-template-columns:1fr 1fr;gap:6px}#bsplit[hidden],#bscene[hidden]{display:none}
+table.mini,table.jt,table.ptab{max-width:100%}.panel{min-width:0;overflow-wrap:anywhere}
+.btn .note{font-size:.82em;opacity:.8}
+.atlasfoot a{color:#5eeaff}
+.mlsvg text.mlab{paint-order:stroke;stroke:#080d1a;stroke-width:3px;stroke-linejoin:round}
+.atlasfoot{margin:28px 0 8px;text-align:center;opacity:.8;font-size:.85rem;color:var(--muted)}
 .solution .note{font-size:.88rem;color:var(--muted)}
 .seg{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px 4px 10px;margin:0 0 10px;border:1px solid var(--line,#2c4274);border-radius:999px;background:rgba(12,20,44,.7);width:max-content;max-width:100%}
 .seglab{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
@@ -578,10 +590,10 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
 <div class="wrap">
   <header class="top">
     <div><a class="back" href="./">&larr; All topics</a><h1>Anatomy Explorer: Peel Back the Body</h1></div>
-    <p>Skin, superficial muscles, deep muscles, skeleton and joints of the whole body — fade each layer in and out, click any structure for its origin, insertion, action, joints and planes, isolate it, and drill until the names stick.</p>
+    <p>Real muscle, tendon, bone, cartilage and ligament surfaces of the whole body (Z-Anatomy atlas) — fade each layer in and out, split the body into skeleton and muscles, click any structure for its origin, insertion, action, joints and planes, isolate it, and drill until the names stick.</p>
   </header>
 
-  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore</button><button type="button" class="tabbtn" data-k="drills">Drills · earn XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
+  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore</button><button type="button" class="tabbtn" data-k="drills">Drills · XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
   <div class="jetlayout">
     <section>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
@@ -589,35 +601,203 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
       <div class="panel" id="explore" style="margin-top:12px"><div id="ainfo"></div></div>
       <div class="panel" id="drills" style="margin-top:12px" hidden><h4>Drills</h4><p class="note">A structure is highlighted and isolated on the body — name it, give its origin/insertion/action, or pick the prime mover for a movement. Rotate the body if you need another view. +10 XP per correct answer.</p><button type="button" class="btn primary" id="andrillstart">Start</button><div id="andrill" style="margin-top:10px"></div></div>
       <div class="panel" id="reference" style="margin-top:12px" hidden><h4>Muscles: origin · insertion · action</h4><div id="areftable"></div></div>
+      <p class="note" style="margin-top:10px">Body surfaces: <a href="https://github.com/Z-Anatomy" target="_blank" rel="noopener">Z-Anatomy</a> open-source 3-D atlas (CC BY-SA 4.0), decimated for the web; structure notes from the ME 320 course; muscle parameters from the OpenSim Rajagopal model. See <a href="../NOTICE.md">NOTICE</a> and <a href="../LICENSE">LICENSE</a>.</p>
     </section>
     <aside>
       <div class="panel"><h4>Peel back the layers</h4>
-        <div class="xray"><button type="button" class="btn small" data-preset="skin">Skin</button><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="deep">Deep muscles</button><button type="button" class="btn small" data-preset="skeleton">Skeleton</button><button type="button" class="btn small" data-preset="joints">Joints</button></div>
+        <div class="xray"><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="deep">Deep muscles</button><button type="button" class="btn small" data-preset="skeleton">Skeleton</button><button type="button" class="btn small" data-preset="half">Half &amp; half</button><button type="button" class="btn small" data-preset="joints">Joints</button><button type="button" class="btn small" data-preset="skin">Everything</button></div>
         <div class="ctl" style="margin-top:6px">
-          <label>Skin <input type="range" id="lay-skin" min="0" max="1" step="0.05"></label>
+          <label>Ligaments &amp; retinacula <input type="range" id="lay-skin" min="0" max="1" step="0.05"></label>
           <label>Superficial muscles <input type="range" id="lay-m1" min="0" max="1" step="0.05"></label>
           <label>Deep muscles <input type="range" id="lay-m2" min="0" max="1" step="0.05"></label>
-          <label>Bones <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
-          <label>Joints <input type="range" id="lay-joint" min="0" max="1" step="0.05"></label>
+          <label>Skeleton (bones) <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
+          <label>Joint surfaces (articular cartilage) <input type="range" id="lay-joint" min="0" max="1" step="0.05"></label>
         </div>
         <div class="two" style="margin-top:6px"><label class="note">Region<select id="aregion"><option value="all">Whole body</option><option value="head">Head &amp; neck</option><option value="trunk">Trunk</option><option value="upper">Upper limb</option><option value="lower">Lower limb</option></select></label>
         <label class="note">Sides<select id="aside"><option value="both">Both sides</option><option value="right">Right side only</option></select></label></div>
       </div>
       <div class="panel" style="margin-top:12px"><h4>Find a structure</h4><input type="search" id="asearch" placeholder="search…" style="width:100%;background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit"><select id="astruct" style="margin-top:6px"></select>
         <small class="note" style="display:block;margin-top:8px">Click a muscle on the body to see its origin (green), insertion (yellow), action, joints and planes. Isolate it to see its path through the other layers.</small></div>
-      <div class="panel legend" style="margin-top:12px"><h4>Colours</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b8413a"></i> superficial muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8e2f3a"></i> deep muscle</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e8e2d2"></i> bone &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#22d3ee"></i> joint centre &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d9b38c"></i> skin</small><small style="margin-top:6px">Pelvis, sacrum, femur, tibia and fibula are the bone meshes of the open-source OpenSim lower-limb model, and the lower-limb muscles are drawn along that model's attachment paths with its Hill-type parameters (Rajagopal et al. 2016; Lai et al. 2017; Uhlrich et al. 2022 — OpenSim, Apache 2.0; see NOTICE). Everything else is the original ATLAS model built from anatomical dimensions; those shapes are schematic. Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's).</small></div>
+      <div class="panel legend" style="margin-top:12px"><h4>Colors</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#a83a30"></i> muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ebe1c7"></i> tendon &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ede6d6"></i> bone</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ccdbe6"></i> cartilage &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#59dbf2"></i> joint surface (Joints view) &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ffd23f"></i> selected</small><small style="margin-top:6px">The body surfaces are from the open-source Z-Anatomy atlas (CC BY-SA 4.0). Muscle parameters in the detail panel (maximum force, optimal fiber length, tendon slack length, pennation) come from the OpenSim model of Rajagopal et al. 2016, Lai et al. 2017 and Uhlrich et al. 2022 (Apache 2.0). Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's). See <a href="../NOTICE.md">NOTICE</a>.</small></div>
     </aside>
   </div>
+<p class="atlasfoot">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE">LICENSE</a> · third-party components in <a href="../NOTICE.md">NOTICE</a>.</p>
 </div>
 <script src="osim_data.js"></script><script>
 function fixSubs(root){
   if(!root) return;
-  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="PRE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="INPUT"||t==="SUB"||(p.getAttribute&&p.getAttribute("data-sub")==="1")||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")||p.classList.contains("katex")||p.classList.contains("mlcode")))) return true; } return false; };
+  const inSvgText=(n)=>{ for(let p=n.parentNode;p;p=p.parentNode){ if(p.nodeName==="text"||p.nodeName==="tspan") return true; if(p.nodeName==="svg"||p.nodeName==="BODY") return false; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:,[a-z]+)?(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
-  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+  nodes.forEach(n=>{ const s=n.nodeValue; re.lastIndex=0; if(!re.test(s)) return; re.lastIndex=0; const svg=inSvgText(n); const frag=document.createDocumentFragment(); let last=0, afterSub=false;
+    const plain=(t)=>{ if(!t) return; if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent=t; frag.appendChild(ts); } else frag.appendChild(document.createTextNode(t)); afterSub=false; };
+    s.replace(re,(m,a,b,i)=>{ plain(s.slice(last,i)+a); let sb; if(svg){ sb=document.createElementNS(SVGNS,"tspan"); sb.setAttribute("dy","0.25em"); sb.setAttribute("font-size","75%"); sb.setAttribute("data-sub","1"); } else sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); afterSub=true; last=i+m.length; return m; });
+    const rest=s.slice(last); if(rest) plain(rest); else if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent="​"; frag.appendChild(ts); }
+    n.parentNode.replaceChild(frag,n); });
 }
+/* diagrams and feedback that are re-drawn without calling fixSubs (animations, drills): tidy them automatically */
+(function(){ if(typeof MutationObserver==="undefined"||typeof document==="undefined") return; let queued=false;
+  /* keep diagram labels inside their drawing: nudge any <text> that sticks out of the viewBox back in */
+  const keepIn=()=>{ document.querySelectorAll("svg.mlsvg, svg.schemsvg").forEach(svg=>{ const vb=svg.viewBox&&svg.viewBox.baseVal; if(!vb||!vb.width||!svg.getBoundingClientRect().width) return; svg.querySelectorAll("text").forEach(t=>{ if(t.closest("g[transform]")||(t.getAttribute("transform")&&!t.dataset.nudged)) return; let b; try{ b=t.getBBox(); }catch(e){ return; } if(!b.width) return; let dx=0,dy=0; if(b.x+b.width>vb.x+vb.width-3) dx=vb.x+vb.width-3-(b.x+b.width); if(b.x+dx<vb.x+3) dx=vb.x+3-b.x; if(b.y<vb.y+1) dy=vb.y+1-b.y; if(b.y+b.height>vb.y+vb.height-1) dy=vb.y+vb.height-1-(b.y+b.height); const cur=t.getAttribute("transform")||""; const want=(Math.abs(dx)>0.5||Math.abs(dy)>0.5)?`translate(${dx.toFixed(1)},${dy.toFixed(1)})`:""; if(want!==cur){ if(want){ t.setAttribute("transform",want); t.dataset.nudged="1"; } else if(t.dataset.nudged){ t.removeAttribute("transform"); } } }); }); };
+  const run=()=>{ queued=false; try{ keepIn(); }catch(e){} try{ document.querySelectorAll("svg text, .dfb, .dq, .dopts, .ro, .note, table.mini, table.jt, .verdict, .chip, .tag, li, .ptag, h3, h4").forEach(el=>{ if(el.textContent.indexOf("_")>=0) fixSubs(el); }); }catch(e){} };
+  const start=()=>{ new MutationObserver(()=>{ if(!queued){ queued=true; requestAnimationFrame(run); } }).observe(document.body,{childList:true,subtree:true,characterData:true}); run(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start); })();
+
+/* ===================== GL3: WebGL body renderer for the Z-Anatomy mesh =====================
+   Loads biomech/zanatomy.bin (ATLAS format: 'ZANA' + JSON header + int16 positions (×q m) + int8 normals + uint16 local indices),
+   one draw range per part. API mirrors the old canvas renderer (B3) where the explorer and labs use it:
+     GL3.load(url).then(parts)  GL3.init(canvasSelector,onPick)  GL3.S{sel,dirty,overlays,alphaFn,alwaysRender}  GL3.cam  GL3.flyTo
+     GL3.views  GL3.project(p)  GL3.label3/arrow3 (2-D overlay canvas)  part.M (optional 4×4 model matrix for posing)
+   Mesh: Z-Anatomy (CC BY-SA 4.0), decimated; coordinates in meters, ISB axes (X anterior, Y up, Z to the subject's right).      */
+const GL3=(()=>{
+  const GEOMCACHE={}; /* url -> promise of parsed geometry, shared by every instance on the page */
+  function makeInstance(){
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]; const norm=(v)=>{ const l=Math.hypot(v[0],v[1],v[2])||1; return [v[0]/l,v[1]/l,v[2]/l]; };
+  const CAT={bone:{col:[0.93,0.90,0.84],gloss:0.25},cart:{col:[0.80,0.86,0.90],gloss:0.35},muscle:{col:[0.62,0.18,0.15],gloss:0.5},tendon:{col:[0.92,0.88,0.78],gloss:0.3},lig:{col:[0.85,0.80,0.66],gloss:0.3}};
+  const cam={theta:Math.PI/2,phi:0.1,dist:2.6,target:[0,0.9,0],fov:34};
+  const views={front:[Math.PI/2,0.12,2.6],side:[0,0.1,2.6],left:[Math.PI,0.1,2.6],back:[-Math.PI/2,0.12,2.6],iso:[0.95,0.25,2.6],top:[0.9,1.35,2.4]};
+  const S={sel:null,hover:null,dirty:true,overlays:[],alphaFn:null,alwaysRender:false,viewDist:2.6,viewTarget:[0,0.9,0],parts:[],loaded:false,light:[0.35,0.8,0.55]};
+  let gl,canvas,ov,octx,W=0,H=0,dpr=1,prog,pick,vbo,nbo,ibo,q=1e-4,onPickCb=null,loc={},ploc={},fbo=null,fbtex=null,fbrb=null;
+  const VS=`attribute vec3 aP; attribute vec3 aN; uniform mat4 uPV; uniform mat4 uM; uniform float uQ; varying vec3 vN; varying vec3 vW;
+    void main(){ vec4 w=uM*vec4(aP*uQ,1.0); vW=w.xyz; vN=normalize(mat3(uM)*aN); gl_Position=uPV*w; }`;
+  const FS=`precision mediump float; varying vec3 vN; varying vec3 vW; uniform vec3 uCol; uniform float uA; uniform vec3 uEye; uniform vec3 uL; uniform float uGloss; uniform float uHi;
+    void main(){ vec3 n=normalize(vN); vec3 v=normalize(uEye-vW); if(dot(n,v)<0.0) n=-n; vec3 l=normalize(uL); vec3 l2=normalize(vec3(-0.6,0.3,-0.5));
+      float d=max(dot(n,l),0.0)*0.85+max(dot(n,l2),0.0)*0.35; vec3 h=normalize(l+v); float sp=pow(max(dot(n,h),0.0),28.0)*uGloss; float rim=pow(1.0-max(dot(n,v),0.0),3.0)*0.18;
+      vec3 c=uCol*(0.30+d)+vec3(sp)+vec3(rim)*uCol; c=mix(c,vec3(1.0,0.85,0.35),uHi*0.55)+uHi*0.15; gl_FragColor=vec4(c,uA); }`;
+  const PFS=`precision mediump float; uniform vec3 uId; void main(){ gl_FragColor=vec4(uId,1.0); }`;
+  function shader(vs,fs){ const p=gl.createProgram(); [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]].forEach(([t,s])=>{ const sh=gl.createShader(t); gl.shaderSource(sh,s); gl.compileShader(sh); if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(sh)); gl.attachShader(p,sh); }); gl.linkProgram(p); return p; }
+  /* ---------- loading ---------- */
+  function parse(buf){ const dv=new DataView(buf); if(String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3))!=="ZANA") throw new Error("bad mesh file");
+    const hl=dv.getUint32(4,true); const hdr=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,8,hl))); let off=8+hl;
+    const pos=new Int16Array(buf,off,hdr.nv*3); off+=hdr.nv*6; const nrm=new Int8Array(buf,off,hdr.nv*3); off+=hdr.nv*3; off+=(4-off%4)%4; const idx=new Uint16Array(buf,off,hdr.ni);
+    const gidx=new Uint32Array(hdr.ni); hdr.parts.forEach(p=>{ for(let k=0;k<p.ic;k++) gidx[p.io+k]=idx[p.io+k]+p.vo; }); return {hdr,pos,nrm,gidx}; }
+  async function load(url){ if(!GEOMCACHE[url]) GEOMCACHE[url]=fetch(url).then(r=>r.arrayBuffer()).then(parse); const g=await GEOMCACHE[url]; const hdr=g.hdr; q=hdr.q;
+    S.parts=hdr.parts.map((p,i)=>({i,n:p.n,s:p.s,c:p.c,vo:p.vo,vc:p.vc,io:p.io,ic:p.ic,bb:p.bb,center:[(p.bb[0]+p.bb[3])/2,(p.bb[1]+p.bb[4])/2,(p.bb[2]+p.bb[5])/2],side:p.s==="R"?1:p.s==="L"?-1:0,
+      col:CAT[p.c].col.slice(),gloss:CAT[p.c].gloss,alpha:1,M:null,sid:null,layer:p.c==="muscle"||p.c==="tendon"?"m1":p.c==="lig"?"lig":"bone",reg:null,kind:p.c}));
+    /* slight per-muscle color variation so neighboring bellies read as separate */
+    S.parts.forEach(p=>{ if(p.c==="muscle"){ let h=0; for(const ch of p.n) h=(h*31+ch.charCodeAt(0))&0xffff; const t=(h%100)/100; p.col=[0.60+0.14*t,0.18+0.06*(1-t),0.15+0.04*t]; } });
+    S.credit=hdr.credit; S.lm=hdr.lm||null; S.geom={pos:g.pos,nrm:g.nrm,gidx:g.gidx}; S.loaded=true; if(gl) upload(); S.dirty=true; return S.parts; }
+  /* ---------- extra geometry built at run time (ligament tubes, markers): float positions in meters + uint32 indices ---------- */
+  let xvbo=null,xnbo=null,xibo=null; S.extras=[];
+  function setExtras(list){ /* list: [{name,V:Float32Array(xyz...),N:Float32Array,I:Uint32Array,col,alpha,gloss,M}] */ S.extras=[]; if(!list.length){ S.dirty=true; return; }
+    let nv=0,ni=0; list.forEach(e=>{ nv+=e.V.length/3; ni+=e.I.length; }); const P=new Int16Array(nv*3), N=new Int8Array(nv*3), I=new Uint32Array(ni); let vo=0,io=0;
+    list.forEach((e,k)=>{ for(let i=0;i<e.V.length;i++){ P[vo*3+i]=Math.max(-32767,Math.min(32767,Math.round(e.V[i]/q))); N[vo*3+i]=Math.round(e.N[i]*127); } for(let i=0;i<e.I.length;i++) I[io+i]=e.I[i]+vo;
+      let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9]; for(let i=0;i<e.V.length;i+=3){ for(let k2=0;k2<3;k2++){ mn[k2]=Math.min(mn[k2],e.V[i+k2]); mx[k2]=Math.max(mx[k2],e.V[i+k2]); } }
+      S.extras.push({i:1e6+k,extra:true,n:e.name||"extra",c:e.c||"lig",s:"C",side:0,vo,vc:e.V.length/3,io,ic:e.I.length,bb:[...mn,...mx],center:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2],col:e.col||[0.9,0.85,0.7],gloss:e.gloss??0.3,alpha:e.alpha??1,M:e.M||null,sid:e.sid||null,layer:"lig",kind:"extra",noPick:e.noPick||false}); vo+=e.V.length/3; io+=e.I.length; });
+    if(gl){ if(!xvbo){ xvbo=gl.createBuffer(); xnbo=gl.createBuffer(); xibo=gl.createBuffer(); } gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.bufferData(gl.ARRAY_BUFFER,P,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.bufferData(gl.ARRAY_BUFFER,N,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,I,gl.DYNAMIC_DRAW); }
+    S._xraw={P,N,I}; S.dirty=true; }
+  function upload(){ if(S._xraw){ const r=S._xraw; xvbo=gl.createBuffer(); xnbo=gl.createBuffer(); xibo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.bufferData(gl.ARRAY_BUFFER,r.P,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.bufferData(gl.ARRAY_BUFFER,r.N,gl.DYNAMIC_DRAW); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,r.I,gl.DYNAMIC_DRAW); } const g=S.geom; vbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.bufferData(gl.ARRAY_BUFFER,g.pos,gl.STATIC_DRAW); nbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,nbo); gl.bufferData(gl.ARRAY_BUFFER,g.nrm,gl.STATIC_DRAW); ibo=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.gidx,gl.STATIC_DRAW); }
+  /* ---------- camera ---------- */
+  function camMatrix(){ const ct=Math.cos(cam.theta),st=Math.sin(cam.theta),cp=Math.cos(cam.phi),sp=Math.sin(cam.phi); const eye=[cam.target[0]+cam.dist*cp*st,cam.target[1]+cam.dist*sp,cam.target[2]+cam.dist*cp*ct];
+    const f=norm(sub(cam.target,eye)); const r=norm(cross(f,[0,1,0])); const u=cross(r,f); return {eye,f,r,u}; }
+  function pv(M){ const aspect=W/H, fy=1/Math.tan(cam.fov*Math.PI/360), n=0.05, fa=20; const P=[fy/aspect,0,0,0, 0,fy,0,0, 0,0,(fa+n)/(n-fa),-1, 0,0,2*fa*n/(n-fa),0];
+    const e=M.eye,r=M.r,u=M.u,f=M.f; const V=[r[0],u[0],-f[0],0, r[1],u[1],-f[1],0, r[2],u[2],-f[2],0, -(r[0]*e[0]+r[1]*e[1]+r[2]*e[2]),-(u[0]*e[0]+u[1]*e[1]+u[2]*e[2]),(f[0]*e[0]+f[1]*e[1]+f[2]*e[2]),1];
+    const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=P[k*4+j]*V[i*4+k]; o[i*4+j]=s; } return o; }
+  function project(p,M){ M=M&&M.eye?M:camMatrix(); const d=sub(p,M.eye); const x=d[0]*M.r[0]+d[1]*M.r[1]+d[2]*M.r[2], y=d[0]*M.u[0]+d[1]*M.u[1]+d[2]*M.u[2], z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; const s=(H/dpr/2)/Math.tan(cam.fov*Math.PI/360)/Math.max(z,0.05); return [W/dpr/2+x*s,H/dpr/2-y*s,z,s]; }
+  const I4=new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+  /* ---------- render ---------- */
+  function partAlpha(p){ let a=S.alphaFn?S.alphaFn(p):p.alpha; return Math.max(0,Math.min(1,a)); }
+  function bindMain(L){ gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.enableVertexAttribArray(L.aP); gl.vertexAttribPointer(L.aP,3,gl.SHORT,false,0,0); if(L.aN>=0){ gl.bindBuffer(gl.ARRAY_BUFFER,nbo); gl.enableVertexAttribArray(L.aN); gl.vertexAttribPointer(L.aN,3,gl.BYTE,true,0,0); } gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo); }
+  function bindExtra(L){ gl.bindBuffer(gl.ARRAY_BUFFER,xvbo); gl.enableVertexAttribArray(L.aP); gl.vertexAttribPointer(L.aP,3,gl.SHORT,false,0,0); if(L.aN>=0){ gl.bindBuffer(gl.ARRAY_BUFFER,xnbo); gl.enableVertexAttribArray(L.aN); gl.vertexAttribPointer(L.aN,3,gl.BYTE,true,0,0); } gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,xibo); }
+  function render(){ if(!gl||!(S.loaded||S.extras.length)) return; const M=camMatrix(); const PV=pv(M); gl.viewport(0,0,W,H); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(prog); gl.uniformMatrix4fv(loc.uPV,false,PV); gl.uniform1f(loc.uQ,q); gl.uniform3fv(loc.uEye,M.eye); gl.uniform3fv(loc.uL,S.light);
+    const pulse=0.55+0.45*Math.sin(performance.now()/300); const opaque=[],trans=[];
+    const all=S.loaded?S.parts.concat(S.extras):S.extras; for(const p of all){ const a=p.extra?(p.alpha):partAlpha(p); if(a<=0.02) continue; p._a=a; (a>=0.98?opaque:trans).push(p); }
+    let bound=null, offOn=false; gl.disable(gl.POLYGON_OFFSET_FILL); const draw=(p)=>{ const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(loc); bound=b; } const po=(p.c==="tendon"||p.c==="lig"); if(po!==offOn){ offOn=po; if(po){ gl.enable(gl.POLYGON_OFFSET_FILL); gl.polygonOffset(-2,-4); } else gl.disable(gl.POLYGON_OFFSET_FILL); } /* thin tendon sheets (iliotibial tract, aponeuroses) sit on the muscle surface: pull them forward in depth so they do not z-fight into speckles */ gl.uniformMatrix4fv(loc.uM,false,modelM(p)); gl.uniform3fv(loc.uCol,p.col); gl.uniform1f(loc.uA,p._a); gl.uniform1f(loc.uGloss,p.gloss); gl.uniform1f(loc.uHi,(S.sel&&p.sid&&p.sid===S.sel)||p.hi||(S.hover&&p===S.hover)?pulse:0); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); };
+    gl.depthMask(true); opaque.forEach(draw);
+    if(trans.length){ trans.forEach(p=>{ const c=p.M?mulM(p.M,p.center):p.center; const d=sub(c,M.eye); p._z=d[0]*M.f[0]+d[1]*M.f[1]+d[2]*M.f[2]; }); trans.sort((a,b)=>b._z-a._z); gl.depthMask(false); trans.forEach(draw); gl.depthMask(true); }
+    octx.clearRect(0,0,W/dpr,H/dpr); S.overlays.forEach(fn=>fn(octx,M,project)); }
+  /* model matrix: optional pose (p.M) composed with a small shrink about the part's own center (p.shrink, e.g. 0.97 for bones so they do not poke through the muscles that wrap them) */
+  const mulMat=(A,B)=>{ const o=new Float32Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=A[k*4+j]*B[i*4+k]; o[i*4+j]=s; } return o; };
+  function modelM(p){ const k=p.shrink; if(!k||k===1) return p.M||I4; if(p._shK!==k){ const c=p.center; p._shM=new Float32Array([k,0,0,0, 0,k,0,0, 0,0,k,0, c[0]*(1-k),c[1]*(1-k),c[2]*(1-k),1]); p._shK=k; } return p.M?mulMat(p.M,p._shM):p._shM; }
+  const mulM=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12], m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13], m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];
+  /* ---------- picking (ID render) ---------- */
+  function pickAt(x,y){ if(!gl) return null; const M=camMatrix(); const PV=pv(M); if(!fbo){ fbo=gl.createFramebuffer(); fbtex=gl.createTexture(); fbrb=gl.createRenderbuffer(); }
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fbo); gl.bindTexture(gl.TEXTURE_2D,fbtex); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,null); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,fbtex,0);
+    gl.bindRenderbuffer(gl.RENDERBUFFER,fbrb); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,W,H); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,fbrb);
+    gl.viewport(0,0,W,H); gl.disable(gl.BLEND); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.useProgram(pick); gl.uniformMatrix4fv(ploc.uPV,false,PV); gl.uniform1f(ploc.uQ,q);
+    let bound=null; const all=S.loaded?S.parts.concat(S.extras):S.extras;
+    for(const p of all){ const a=p.extra?p.alpha:partAlpha(p); if(a<0.15||p.noPick) continue; const b=p.extra?"x":"m"; if(b!==bound){ (b==="x"?bindExtra:bindMain)(ploc); bound=b; } const id=(p.extra?(1e6+ (p.i-1e6)):p.i)+1; gl.uniform3f(ploc.uId,(id&255)/255,((id>>8)&255)/255,((id>>16)&255)/255); gl.uniformMatrix4fv(ploc.uM,false,modelM(p)); gl.drawElements(gl.TRIANGLES,p.ic,gl.UNSIGNED_INT,p.io*4); }
+    const px=new Uint8Array(4); gl.readPixels(Math.round(x*dpr),Math.round(H-y*dpr),1,1,gl.RGBA,gl.UNSIGNED_BYTE,px); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.enable(gl.BLEND); const id=px[0]|(px[1]<<8)|(px[2]<<16); if(!id) return null; return id>1e6?S.extras[id-1-1e6]:S.parts[id-1]; }
+  /* ---------- overlay helpers (2-D canvas on top) ---------- */
+  function arrow3(ctx,M,proj,a,b,color,label,width=2){ const A=project(a),B=project(b); if(A[2]<0.1||B[2]<0.1) return; ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width; ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.stroke(); const ang=Math.atan2(B[1]-A[1],B[0]-A[0]); ctx.beginPath(); ctx.moveTo(B[0],B[1]); ctx.lineTo(B[0]-9*Math.cos(ang-0.4),B[1]-9*Math.sin(ang-0.4)); ctx.lineTo(B[0]-9*Math.cos(ang+0.4),B[1]-9*Math.sin(ang+0.4)); ctx.closePath(); ctx.fill(); if(label){ ctx.font="700 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(label).width+8; ctx.fillStyle="rgba(5,10,24,.85)"; ctx.fillRect(B[0]+6,B[1]-16,w,18); ctx.fillStyle=color; ctx.fillText(label,B[0]+10,B[1]-3); } }
+  function label3(ctx,M,proj,p,txt,color="#ffd23f",dy=-14){ const P=project(p); if(P[2]<0.1) return; ctx.font="600 12px 'Chakra Petch', sans-serif"; const w=ctx.measureText(txt).width+10; ctx.fillStyle="rgba(5,10,24,.88)"; ctx.strokeStyle=color; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect?ctx.roundRect(P[0]-w/2,P[1]+dy-14,w,18,4):ctx.rect(P[0]-w/2,P[1]+dy-14,w,18); ctx.fill(); ctx.stroke(); ctx.fillStyle=color; ctx.textAlign="center"; ctx.fillText(txt,P[0],P[1]+dy-1); ctx.textAlign="left"; ctx.beginPath(); ctx.arc(P[0],P[1],2.5,0,Math.PI*2); ctx.fill(); }
+  function quad3(ctx,M,proj,pts,fill,stroke){ const P=pts.map(p=>project(p)); if(P.some(p=>p[2]<0.1)) return; ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.beginPath(); P.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  function dot3(ctx,M,proj,p,color,r=4){ const P=project(p); if(P[2]<0.1) return; ctx.fillStyle=color; ctx.beginPath(); ctx.arc(P[0],P[1],r,0,Math.PI*2); ctx.fill(); }
+  /* ---------- init, input, animation ---------- */
+  let fly=null, lastT=0;
+  function flyTo(target,dist,theta,phi){ fly={t0:performance.now(),a:{...cam,target:cam.target.slice()},b:{target,dist:dist??cam.dist,theta:theta??cam.theta,phi:phi??cam.phi}}; S.dirty=true; }
+  function tick(){ if(fly){ const u=Math.min(1,(performance.now()-fly.t0)/700); const e=u<.5?2*u*u:-1+(4-2*u)*u; cam.dist=fly.a.dist+(fly.b.dist-fly.a.dist)*e; cam.theta=fly.a.theta+(fly.b.theta-fly.a.theta)*e; cam.phi=fly.a.phi+(fly.b.phi-fly.a.phi)*e; cam.target=[0,1,2].map(i=>fly.a.target[i]+(fly.b.target[i]-fly.a.target[i])*e); if(u>=1) fly=null; S.dirty=true; }
+    const now=performance.now(); const dt=lastT?Math.min(0.1,(now-lastT)/1000):0; lastT=now; if(S.tick) S.tick(dt); if(S.dirty||S.alwaysRender||S.sel||S.hover){ render(); S.dirty=false; } requestAnimationFrame(tick); }
+  function resize(){ dpr=Math.min(2,window.devicePixelRatio||1); const r=canvas.getBoundingClientRect(); W=Math.max(1,Math.round(r.width*dpr)); H=Math.max(1,Math.round(r.height*dpr)); canvas.width=W; canvas.height=H; ov.width=W; ov.height=H; ov.style.width=r.width+"px"; ov.style.height=r.height+"px"; octx.setTransform(dpr,0,0,dpr,0,0); S.dirty=true; }
+  function init(sel,onPick){ canvas=document.querySelector(sel); onPickCb=onPick; const wrap=canvas.parentElement; if(getComputedStyle(wrap).position==="static") wrap.style.position="relative";
+    ov=document.createElement("canvas"); ov.style.cssText="position:absolute;left:0;top:0;pointer-events:none"; canvas.insertAdjacentElement("afterend",ov); octx=ov.getContext("2d");
+    gl=canvas.getContext("webgl",{antialias:true,alpha:true,premultipliedAlpha:false}); if(!gl){ canvas.insertAdjacentHTML("afterend","<p class='note'>WebGL is not available in this browser.</p>"); return; }
+    gl.getExtension("OES_element_index_uint"); prog=shader(VS,FS); pick=shader(VS,PFS); ["uPV","uM","uQ","uCol","uA","uEye","uL","uGloss","uHi"].forEach(k=>loc[k]=gl.getUniformLocation(prog,k)); loc.aP=gl.getAttribLocation(prog,"aP"); loc.aN=gl.getAttribLocation(prog,"aN");
+    ["uPV","uM","uQ","uId"].forEach(k=>ploc[k]=gl.getUniformLocation(pick,k)); ploc.aP=gl.getAttribLocation(pick,"aP"); ploc.aN=-1; if(S.loaded||S._xraw) upload();
+    resize(); window.addEventListener("resize",resize); if(window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
+    let drag=null,moved=0; const pos=(e)=>{ const r=canvas.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
+    let hook=null;
+    canvas.addEventListener("pointerdown",(e)=>{ drag=pos(e); moved=0; canvas.setPointerCapture(e.pointerId); hook=null; if(S.dragHook){ const part=pickAt(drag[0],drag[1]); hook=S.dragHook(part)||null; } });
+    canvas.addEventListener("pointermove",(e)=>{ if(!drag) return; const p=pos(e); const dx=p[0]-drag[0],dy=p[1]-drag[1]; moved+=Math.abs(dx)+Math.abs(dy); if(hook){ hook(dx,dy); drag=p; S.dirty=true; return; } if(e.shiftKey||e.buttons===4){ const M=camMatrix(); const k=cam.dist*0.0016; cam.target=add(cam.target,add(mul(M.r,-dx*k),mul(M.u,dy*k))); } else { cam.theta-=dx*0.008; cam.phi=Math.max(-1.45,Math.min(1.45,cam.phi+dy*0.008)); } drag=p; fly=null; S.dirty=true; });
+    canvas.addEventListener("pointerup",(e)=>{ if(hook){ hook=null; drag=null; return; } if(drag&&moved<6&&onPickCb){ const p=pos(e); onPickCb(pickAt(p[0],p[1])); } drag=null; });
+    canvas.addEventListener("wheel",(e)=>{ e.preventDefault(); cam.dist=Math.max(S.minDist||0.3,Math.min(6,cam.dist*(1+Math.sign(e.deltaY)*0.1))); fly=null; S.dirty=true; },{passive:false});
+    canvas.addEventListener("dblclick",(e)=>{ const p=pos(e); const part=pickAt(p[0],p[1]); if(part) flyTo(part.M?mulM(part.M,part.center):part.center,Math.max(0.5,cam.dist*0.6)); });
+    const host=canvas.parentElement&&canvas.parentElement.parentElement; if(host) host.querySelectorAll("[data-view]").forEach(b=>{ if(!b._gl3){ b._gl3=true; b.addEventListener("click",()=>view(b.dataset.view)); } });
+    requestAnimationFrame(tick); }
+  function view(k){ const v=views[k]; if(!v) return; flyTo(S.viewTarget.slice(),S.viewDist,v[0],v[1]); }
+  return {load,init,S,cam,views,view,flyTo,project,arrow3,label3,quad3,dot3,pickAt,setExtras,add,sub,mul,norm,cross,CAT,mulM};
+  }
+  const main=makeInstance(); main.create=makeInstance; return main;
+})();
+
+/* Z-Anatomy part names → ATLAS structure ids (ANM.MUSCLES / ANM.BONES). A part that matches no pattern keeps its Z-Anatomy name. */
+const ZA_MAP=(()=>{
+  const M=[["scm",/^Sternocleidomastoid/],["scal",/^Scalenus/],["trap",/trapezius muscle/],["ls",/^Levator scapulae/],["rhomb",/^Rhomboid/],["delt",/deltoid muscle$/],["pecmaj",/pectoralis major/],["pecmin",/^Pectoralis minor/],["serr",/^Serratus anterior/],["lat",/^Latissimus dorsi/],
+    ["es",/^(Iliocostalis|Longissimus|Spinalis)/],["ql",/^Quadratus lumborum/],["ra",/^Rectus abdominis/],["eo",/^External abdominal oblique/],["io",/^Internal abdominal oblique/],["ta",/^Transversus abdominis/],
+    ["ssp",/^Supraspinatus/],["isp",/^Infraspinatus/],["tmin",/^Teres minor/],["tmaj",/^Teres major/],["subs",/^Subscapularis/],["cb",/^Coracobrachialis/],["bic",/head of biceps brachii/],["brach",/^Brachialis/],["tri",/head of triceps brachii/],["brd",/^Brachioradialis/],
+    ["flexg",/^(Flexor carpi radialis|Palmaris longus|\w+ head of flexor carpi ulnaris|.*head of flexor digitorum superficialis)/],["extg",/^(Extensor carpi radialis|Extensor digitorum$|\w+ head of extensor carpi ulnaris|Extensor digiti minimi$)/],["pt",/pronator teres/],["sup",/^Supinator/],
+    ["ilps",/^(Psoas major|Iliacus muscle)/],["gmax",/^Gluteus maximus/],["gmed",/^Gluteus medius/],["gmin",/^Gluteus minimus/],["pir",/^Piriformis muscle/],["tfl",/^(Tensor fasciae latae|Iliotibial tract)/],["sart",/^Sartorius/],["rf",/^Rectus femoris/],["vl",/^Vastus lateralis/],["vm",/^Vastus medialis/],["vi",/^Vastus intermedius/],
+    ["al",/^Adductor longus/],["ab",/^Adductor brevis/],["am",/Adductor (magnus|minimus)/],["grac",/^Gracilis/],["pect",/^Pectineus/],["bf",/head of biceps femoris/],["st",/^Semitendinosus/],["sm",/^Semimembranosus muscle/],["pop",/^Popliteus/],
+    ["ta_",/^Tibialis anterior/],["edl",/extensor digitorum longus/i],["ehl",/^Extensor hallucis longus/],["fl",/^Fibularis longus/],["fb",/^Fibularis brevis/],["gas",/head of gastrocnemius/],["sol",/^Soleus/],["tp",/^Tibialis posterior/],["fhl",/^Flexor hallucis longus/],["fdl",/^Flexor digitorum longus/]];
+  const B=[["mand",/^(Mandible|Lower .*(incisor|canine|molar|premolar))/],["skull",/^(Frontal bone|Parietal|Occipital|Temporal bone|Sphenoid|Ethmoid|Zygomatic|Nasal bone|Lacrimal|Palatine|Vomer|Maxilla|Inferior nasal concha|Sinus of|Upper .*(incisor|canine|molar|premolar)|Incus|Malleus|Stapes)/],
+    ["cerv",/^(Atlas|Axis|Vertebra C)/],["thor",/^Vertebra T/],["lumb",/^Vertebra L/],["sacr",/^(Sacrum|Coccyx)/],["ribs",/( rib$|^Costal cartilage)/],["stern",/(sternum|^Xiphoid)/],["clav",/^Clavicle/],["scap",/^Scapula/],["hum",/^Humerus/],["rad",/^Radius/],["uln",/^Ulna/],
+    ["carp",/^(Capitate|Hamate|Lunate|Pisiform|Scaphoid|Trapezium|Trapezoid|Triquetrum) bone/],["meta",/(metacarpal bone|phalanx of .* finger of hand)/],["pelv",/^Hip bone/],["fem",/^Femur/],["pat",/^Patella/],["tib",/^Tibia/],["fib",/^Fibula/],
+    ["tars",/^(Talus|Calcaneus|Navicular bone|Cuboid bone|.*cuneiform bone)/],["mtt",/(metatarsal bone|phalanx of .* finger of foot|Sesamoid bones of foot)/]];
+  function idOf(part){ const list=(part.c==="muscle"||part.c==="tendon")?M:(part.c==="bone"||part.c==="cart")?B:[]; for(const [id,re] of list) if(re.test(part.n)) return id; return null; }
+  function regionOf(part){ const c=part.center; if(c[1]>1.47) return "head"; if(Math.abs(c[2])>0.17&&c[1]>0.7) return "upper"; if(c[1]<0.96||/^(Hip bone|Gluteus|Piriformis|Iliacus|Psoas|Obturator|Gemellus|Quadratus femoris|Tensor fasciae)/.test(part.n)) return "lower"; return "trunk"; }
+  return {idOf,regionOf};
+})();
+
+/* ===================== ZA_RIG: kinematic rig for the Z-Anatomy body =====================
+   Shared by the Frames lab and the posable figure: which body segment each mesh part belongs to, and the joint-center
+   landmarks measured on the skeleton (header 'lm' of zanatomy.bin, right side; the left is mirrored in z). */
+const ZA_RIG=(()=>{
+  const BONESEG={skull:"head",mand:"jaw",cerv:"neck",thor:"trunk",lumb:"trunk",sacr:"pelvis",ribs:"trunk",stern:"trunk",pelv:"pelvis",clav:"scap",scap:"scap",hum:"uarm",rad:"farm",uln:"farm",carp:"hand",fem:"thigh",pat:"thigh",tib:"shank",fib:"shank",tars:"foot"};
+  function segOfPart(p,LMK){ const c=p.center; const side=p.side>0?"R":p.side<0?"L":(c[2]>=0?"R":"L"); const id=ZA_MAP.idOf(p); const withSide=(k)=>/^(head|jaw|neck|trunk|pelvis)$/.test(k)?k:k+side;
+    if(id&&BONESEG[id]) return withSide(BONESEG[id]);
+    if(id==="meta") return /metacarpal/.test(p.n)?"hand"+side:(/first finger/.test(p.n)?"thumb"+side:"fing"+side);
+    if(id==="mtt") return /metatarsal|Sesamoid/.test(p.n)?"foot"+side:"toes"+side;
+    if(/^(Hyoid|Thyroid cartilage|Cricoid|Arytenoid|Corniculate)/.test(p.n)) return "neck";
+    const az=Math.abs(c[2]);
+    if(c[1]>LMK.AO[1]+0.015&&az<0.12) return /masseter|pterygoid|Mentalis|Orbicularis oris|Depressor|Platysma/i.test(p.n)&&c[1]<LMK.TMJ[1]?"jaw":"head";
+    if(az>0.13&&c[1]>0.66){ if(c[1]>LMK.EL[1]+0.015) return "uarm"+side; if(c[1]>LMK.WR[1]+0.01) return "farm"+side; return "hand"+side; }
+    if(c[1]<=LMK.HIP[1]+0.01&&c[1]>LMK.KN[1]+0.01&&az>0.02) return "thigh"+side;
+    if(c[1]<=LMK.KN[1]+0.01&&c[1]>LMK.AN[1]+0.015) return "shank"+side;
+    if(c[1]<=LMK.AN[1]+0.015) return c[0]>LMK.MTP[0]?"toes"+side:"foot"+side;
+    if(c[1]>LMK.C7[1]-0.01&&az<0.09) return "neck";
+    if(c[1]<LMK.L5S1[1]-0.01||/^(Gluteus|Piriformis|Obturator|Gemellus|Quadratus femoris|Iliacus|Psoas|Pubo|Iliococcygeus|Coccygeus|Levator ani)/.test(p.n)) return "pelvis";
+    if(az>0.12&&c[1]>LMK.GH[1]-0.12&&/deltoid|Teres|Coracobrachialis|triceps|biceps brachii|Subscapularis|Infraspinatus|Supraspinatus/i.test(p.n)) return "uarm"+side;
+    return "trunk"; }
+  /* 4×4 column-major matrix from an affine point transform f */
+  function matrixOf(f){ const o=f([0,0,0]); const d=(v)=>{ const w=f(v); return [w[0]-o[0],w[1]-o[1],w[2]-o[2]]; }; const ex=d([1,0,0]),ey=d([0,1,0]),ez=d([0,0,1]); return new Float32Array([ex[0],ex[1],ex[2],0, ey[0],ey[1],ey[2],0, ez[0],ez[1],ez[2],0, o[0],o[1],o[2],1]); }
+  return {segOfPart,matrixOf,BONESEG};
+})();
+
 /* OpenSim data loaded from osim_data.js */
 const GAME_PAGE="biomech-anatomy"; const DRILL_KEY="dpl-biomech-anatomy";
 const SL_VARS=()=>window.__slvars||(window.__slvars={});
@@ -666,7 +846,7 @@ const GAME=(()=>{
     const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
     const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
     let t0=null;
-    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
       P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
       requestAnimationFrame(f); })(performance.now());
   }
@@ -710,8 +890,8 @@ const B3=(()=>{
   const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
   const rotAxis=(v,ax,ang)=>{ /* Rodrigues: rotate v about unit axis ax by ang (rad) */ const c=Math.cos(ang),s=Math.sin(ang); const k=norm(ax); const d=k[0]*v[0]+k[1]*v[1]+k[2]*v[2]; const cx=cross(k,v); return [v[0]*c+cx[0]*s+k[0]*d*(1-c), v[1]*c+cx[1]*s+k[1]*d*(1-c), v[2]*c+cx[2]*s+k[2]*d*(1-c)]; };
   /* ---------- geometry builders (vertices in anatomical-position world coordinates) ---------- */
-  const parts=[]; const addPart=(p)=>{ p.tris=p.tris||[]; parts.push(p); return p; }; const vc=new WeakMap(); /* vertex → ring centre, for skinning */ const vseg=new WeakMap(); /* vertex → forced body segment (mesh bones) */
-  const lathe=(part,profile,seg,c,axis,dir)=>{ /* profile [[t,r]] along 'axis' from centre c; dir = +1/-1 along the axis */
+  const parts=[]; const addPart=(p)=>{ p.tris=p.tris||[]; parts.push(p); return p; }; const vc=new WeakMap(); /* vertex → ring center, for skinning */ const vseg=new WeakMap(); /* vertex → forced body segment (mesh bones) */
+  const lathe=(part,profile,seg,c,axis,dir)=>{ /* profile [[t,r]] along 'axis' from center c; dir = +1/-1 along the axis */
     const ring=(t,r,r2)=>{ const o=[]; const cc=c.slice(); if(axis==="y") cc[1]+=t*(dir||1); else if(axis==="x") cc[0]+=t*(dir||1); else cc[2]+=t*(dir||1); for(let i=0;i<seg;i++){ const a=2*Math.PI*i/seg; const u=r*Math.cos(a),v=(r2??r)*Math.sin(a); const p=c.slice(); if(axis==="y"){ p[1]+=t*(dir||1); p[0]+=u; p[2]+=v; } else if(axis==="x"){ p[0]+=t*(dir||1); p[1]+=u; p[2]+=v; } else { p[2]+=t*(dir||1); p[0]+=u; p[1]+=v; } vc.set(p,cc); o.push(p); } return o; };
     const rings=profile.map(([t,r,r2])=>ring(t,Math.max(r,1e-4),r2==null?null:Math.max(r2,1e-4)));
     for(let k=0;k<rings.length-1;k++){ const A=rings[k],B=rings[k+1]; for(let i=0;i<seg;i++){ const j=(i+1)%seg; part.tris.push([A[i],B[i],B[j]],[A[i],B[j],A[j]]); } }
@@ -743,7 +923,7 @@ const B3=(()=>{
     const axisOf=(p)=>{ const z=Math.abs(p[2]); const zs=Math.sign(p[2])||1; if(p[1]>0.98&&z<0.17) return [p[0]*0.2,p[1],0]; if(z>0.17&&p[1]>0.7) return [-0.005,p[1],0.215*zs]; return [0,p[1],0.09*zs]; };
     const tangents=P.map((p,k)=>norm(sub(P[Math.min(k+1,N)],P[Math.max(k-1,0)]))); const rings=[];
     for(let k=0;k<=N;k++){ const T=tangents[k]; let o=sub(P[k],axisOf(P[k])); o=sub(o,mul(T,o[0]*T[0]+o[1]*T[1]+o[2]*T[2])); if(Math.hypot(...o)<1e-4) o=Math.abs(T[1])<0.9?[0,1,0]:[1,0,0]; const n1=norm(o); const n2=norm(cross(T,n1));
-      const r=prof[k]; const wide=r*(1+(1-flat)*0.5), thin=r*Math.max(flat,0.6); const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centred on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
+      const r=prof[k]; const wide=r*(1+(1-flat)*0.5), thin=r*Math.max(flat,0.6); const C=add(P[k],mul(n1,lift*(r-rt))); /* the belly sits on top of the bone, not centerd on the path line */ const ring=[]; for(let s=0;s<seg;s++){ const a=2*Math.PI*s/seg; const v=add(add(C,mul(n1,thin*Math.cos(a))),mul(n2,wide*Math.sin(a))); vc.set(v,P[k]); ring.push(v); } rings.push(ring); }
     for(let k=0;k<N;k++){ const A=rings[k],B=rings[k+1]; for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([A[s],B[j],B[s]],[A[s],A[j],B[j]]); } }
     for(let s=0;s<seg;s++){ const j=(s+1)%seg; part.tris.push([P[0],rings[0][j],rings[0][s]],[P[N],rings[N][s],rings[N][j]]); } };
   const box=(part,x0,y0,z0,x1,y1,z1)=>{ const p=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]; [[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]].forEach(q=>{ part.tris.push([p[q[0]],p[q[1]],p[q[2]]],[p[q[0]],p[q[2]],p[q[3]]]); }); };
@@ -794,7 +974,7 @@ const B3=(()=>{
 /* ===================== ANATOMY EXPLORER: peel-back full body =====================
    Procedural model (skin → superficial muscles → deep muscles → skeleton → joints). When osim_data.js is loaded, the pelvis, sacrum, femur,
    tibia and fibula become the OpenSim Rajagopal-model bone meshes and the lower-limb muscles follow that model's path points (see NOTICE.md).
-   Coordinates: metres, anatomical position, ISB axes (X anterior, Y up, Z to the subject's right). Right-side
+   Coordinates: meters, anatomical position, ISB axes (X anterior, Y up, Z to the subject's right). Right-side
    structures are defined and mirrored. Attachments and actions follow standard anatomy references (Gray's; Neumann;
    Moore's Clinically Oriented Anatomy) and the ME 320 lecture material; positions are approximate for a 1.75 m body.  */
 const ANM=(()=>{
@@ -809,9 +989,9 @@ const ANM=(()=>{
   const MUSCLES=[
    {id:"scm",n:"Sternocleidomastoid",reg:"head",lay:1,paths:[[[0.06,1.45,0.03],[0.01,1.52,0.06],L.MAST]],r:[0.006,0.013,0.006],o:"Manubrium of the sternum and medial clavicle",i:"Mastoid process of the temporal bone",a:"Bilaterally: flexes the neck / protracts the head. Unilaterally: laterally flexes the neck to the same side and rotates the face to the opposite side.",j:"Cervical spine, atlanto-occipital",pl:"sagittal + frontal + transverse"},
    {id:"scal",n:"Scalenes (anterior, middle, posterior)",reg:"head",lay:2,paths:[[[-0.01,1.57,0.04],[0.02,1.46,0.07]]],r:[0.005,0.008],o:"Transverse processes of C2–C7",i:"First and second ribs",a:"Lateral flexion of the neck; elevate ribs 1–2 in forced inspiration.",j:"Cervical spine",pl:"frontal"},
-   {id:"trap",n:"Trapezius",reg:"trunk",lay:1,paths:[[[-0.07,1.60,0.01],[-0.05,1.52,0.10],[-0.02,1.465,0.17]],[[-0.06,1.45,0.01],[-0.08,1.43,0.12]],[[-0.06,1.22,0.01],[-0.09,1.41,0.10]]],r:[0.005,0.013,0.008],o:"External occipital protuberance, ligamentum nuchae, spinous processes C7–T12",i:"Lateral third of the clavicle, acromion, spine of the scapula",a:"Upper fibres elevate and upwardly rotate the scapula; middle fibres retract; lower fibres depress and upwardly rotate. Extends the neck bilaterally.",j:"Scapulothoracic, AC/SC, cervical spine",pl:"frontal / transverse (scapular plane)"},
+   {id:"trap",n:"Trapezius",reg:"trunk",lay:1,paths:[[[-0.07,1.60,0.01],[-0.05,1.52,0.10],[-0.02,1.465,0.17]],[[-0.06,1.45,0.01],[-0.08,1.43,0.12]],[[-0.06,1.22,0.01],[-0.09,1.41,0.10]]],r:[0.005,0.013,0.008],o:"External occipital protuberance, ligamentum nuchae, spinous processes C7–T12",i:"Lateral third of the clavicle, acromion, spine of the scapula",a:"Upper fibers elevate and upwardly rotate the scapula; middle fibers retract; lower fibers depress and upwardly rotate. Extends the neck bilaterally.",j:"Scapulothoracic, AC/SC, cervical spine",pl:"frontal / transverse (scapular plane)"},
    {id:"ls",n:"Levator scapulae",reg:"trunk",lay:2,paths:[[[-0.04,1.58,0.05],[-0.10,1.45,0.08]]],r:[0.005,0.009],o:"Transverse processes of C1–C4",i:"Superior angle and medial border of the scapula",a:"Elevates and downwardly rotates the scapula; lateral flexion of the neck.",j:"Scapulothoracic",pl:"frontal"},
-   {id:"rhomb",n:"Rhomboids (major & minor)",reg:"trunk",lay:2,paths:[[[-0.07,1.44,0.01],[-0.10,1.36,0.08]]],r:[0.006,0.012],o:"Spinous processes C7–T5",i:"Medial border of the scapula",a:"Retract and downwardly rotate the scapula; stabilise it against the thorax.",j:"Scapulothoracic",pl:"frontal / transverse"},
+   {id:"rhomb",n:"Rhomboids (major & minor)",reg:"trunk",lay:2,paths:[[[-0.07,1.44,0.01],[-0.10,1.36,0.08]]],r:[0.006,0.012],o:"Spinous processes C7–T5",i:"Medial border of the scapula",a:"Retract and downwardly rotate the scapula; stabilize it against the thorax.",j:"Scapulothoracic",pl:"frontal / transverse"},
    {id:"delt",n:"Deltoid",reg:"upper",lay:1,paths:[[[0.04,1.46,0.14],[0.03,1.38,0.20],[0.0,1.30,0.22]],[[-0.01,1.47,0.19],[-0.01,1.39,0.225],[0.0,1.30,0.22]],[[-0.07,1.43,0.12],[-0.05,1.37,0.20],[0.0,1.30,0.22]]],r:[0.006,0.02,0.007],o:"Lateral third of the clavicle (anterior), acromion (middle), spine of the scapula (posterior)",i:"Deltoid tuberosity of the humerus",a:"Anterior: flexion and internal rotation. Middle: abduction (prime mover beyond ≈15°). Posterior: extension and external rotation.",j:"Glenohumeral",pl:"sagittal / frontal / transverse"},
    {id:"pecmaj",n:"Pectoralis major",reg:"trunk",lay:1,paths:[[[0.06,1.45,0.06],[0.06,1.42,0.14],[0.02,1.40,0.19]],[[0.09,1.35,0.02],[0.08,1.37,0.12],[0.02,1.40,0.19]]],r:[0.006,0.02,0.007],o:"Clavicular head: medial clavicle. Sternocostal head: sternum and costal cartilages 1–6",i:"Lateral lip of the bicipital (intertubercular) groove of the humerus",a:"Adduction and internal rotation of the humerus; clavicular head flexes, sternal head extends from a flexed position; horizontal adduction.",j:"Glenohumeral",pl:"frontal / transverse"},
    {id:"pecmin",n:"Pectoralis minor",reg:"trunk",lay:2,paths:[[[0.07,1.33,0.10],L.COR]],r:[0.007,0.009],o:"Ribs 3–5 near the costal cartilages",i:"Coracoid process of the scapula",a:"Protracts, depresses and downwardly rotates the scapula; tilts it anteriorly.",j:"Scapulothoracic",pl:"sagittal / transverse"},
@@ -822,7 +1002,7 @@ const ANM=(()=>{
    {id:"ra",n:"Rectus abdominis",reg:"trunk",lay:1,paths:[[[0.07,0.93,0.03],[0.11,1.10,0.03],[0.09,1.28,0.03]]],r:[0.008,0.02,0.012],o:"Pubic crest and pubic symphysis",i:"Xiphoid process and costal cartilages 5–7",a:"Flexes the trunk (brings ribcage and pelvis together); posterior pelvic tilt; raises intra-abdominal pressure.",j:"Lumbar spine",pl:"sagittal"},
    {id:"eo",n:"External oblique",reg:"trunk",lay:1,paths:[[[0.04,1.22,0.135],[0.07,1.08,0.11],[0.07,0.98,0.08]]],r:[0.006,0.015,0.008],o:"External surfaces of ribs 5–12",i:"Linea alba, pubic tubercle, anterior half of the iliac crest",a:"Trunk flexion (bilateral); lateral flexion to the same side and rotation to the opposite side (unilateral); compresses the abdomen.",j:"Thoracolumbar spine",pl:"sagittal / frontal / transverse"},
    {id:"io",n:"Internal oblique",reg:"trunk",lay:2,paths:[[[0.05,1.00,0.11],[0.07,1.10,0.09],[0.08,1.20,0.07]]],r:[0.007,0.012,0.006],o:"Thoracolumbar fascia, iliac crest, inguinal ligament",i:"Lower ribs 10–12, linea alba",a:"Trunk flexion; lateral flexion and rotation to the same side (works with the opposite external oblique).",j:"Thoracolumbar spine",pl:"sagittal / frontal / transverse"},
-   {id:"ta",n:"Transversus abdominis",reg:"trunk",lay:2,paths:[[[-0.02,1.08,0.13],[0.06,1.08,0.11],[0.10,1.08,0.02]]],r:[0.006,0.008,0.004],o:"Thoracolumbar fascia, iliac crest, inguinal ligament, costal cartilages 7–12",i:"Linea alba via the rectus sheath",a:"Compresses the abdomen (corset); stabilises the lumbar spine by raising intra-abdominal pressure.",j:"Lumbar spine (stabiliser)",pl:"—"},
+   {id:"ta",n:"Transversus abdominis",reg:"trunk",lay:2,paths:[[[-0.02,1.08,0.13],[0.06,1.08,0.11],[0.10,1.08,0.02]]],r:[0.006,0.008,0.004],o:"Thoracolumbar fascia, iliac crest, inguinal ligament, costal cartilages 7–12",i:"Linea alba via the rectus sheath",a:"Compresses the abdomen (corset); stabilizes the lumbar spine by raising intra-abdominal pressure.",j:"Lumbar spine (stabilizer)",pl:"—"},
    {id:"ssp",n:"Supraspinatus",reg:"upper",lay:2,paths:[[[-0.08,1.45,0.10],[-0.04,1.46,0.16],[-0.01,1.45,0.20]]],r:[0.006,0.011,0.005],o:"Supraspinous fossa of the scapula",i:"Superior facet of the greater tubercle of the humerus",a:"Initiates abduction; compresses the humeral head into the glenoid (rotator cuff).",j:"Glenohumeral",pl:"frontal"},
    {id:"isp",n:"Infraspinatus",reg:"upper",lay:2,paths:[[[-0.10,1.36,0.10],[-0.07,1.40,0.16],[-0.04,1.43,0.20]]],r:[0.007,0.014,0.005],o:"Infraspinous fossa of the scapula",i:"Middle facet of the greater tubercle",a:"External rotation of the humerus; posterior stability of the humeral head (rotator cuff).",j:"Glenohumeral",pl:"transverse"},
    {id:"tmin",n:"Teres minor",reg:"upper",lay:2,paths:[[[-0.09,1.33,0.13],[-0.04,1.42,0.20]]],r:[0.005,0.008],o:"Upper lateral border of the scapula",i:"Inferior facet of the greater tubercle",a:"External rotation and weak adduction; rotator cuff.",j:"Glenohumeral",pl:"transverse"},
@@ -837,16 +1017,16 @@ const ANM=(()=>{
    {id:"extg",n:"Forearm extensor group (ECRL/ECRB, ED, ECU)",reg:"upper",lay:1,paths:[[[-0.01,1.15,0.24],[-0.03,1.00,0.235],[-0.02,0.86,0.23]]],r:[0.006,0.016,0.007],o:"Common extensor origin: lateral epicondyle (ECRL from the supracondylar ridge)",i:"Bases of metacarpals 2–3 (ECRL/ECRB), extensor expansions of the fingers (ED), 5th metacarpal (ECU)",a:"Wrist extension; radial/ulnar deviation; finger extension (ED). 'Tennis elbow' origin.",j:"Wrist, MCP, IP",pl:"sagittal / frontal"},
    {id:"pt",n:"Pronator teres",reg:"upper",lay:2,paths:[[[0.0,1.15,0.18],[0.02,1.03,0.235]]],r:[0.005,0.009],o:"Medial epicondyle and coronoid process",i:"Lateral surface of the mid radius",a:"Forearm pronation; assists elbow flexion.",j:"Radioulnar",pl:"transverse"},
    {id:"sup",n:"Supinator",reg:"upper",lay:2,paths:[[[-0.01,1.13,0.23],[0.02,1.09,0.225]]],r:[0.005,0.008],o:"Lateral epicondyle, supinator crest of the ulna",i:"Proximal third of the radius",a:"Forearm supination (unopposed by elbow angle, unlike biceps).",j:"Radioulnar",pl:"transverse"},
-   {id:"ilps",osim:true,n:"Iliopsoas (psoas major + iliacus)",reg:"lower",lay:2,paths:[[[0.02,1.12,0.04],[0.06,0.95,0.09],[-0.01,0.87,0.10]]],r:[0.012,0.02,0.007],o:"Psoas: bodies and transverse processes T12–L5. Iliacus: iliac fossa",i:"Lesser trochanter of the femur",a:"Prime hip flexor; anterior pelvic tilt; lumbar stabiliser.",j:"Hip, lumbar spine",pl:"sagittal"},
-   {id:"gmax",osim:true,n:"Gluteus maximus",reg:"lower",lay:1,paths:[[[-0.08,0.98,0.05],[-0.08,0.90,0.11],[-0.03,0.82,0.14]]],r:[0.015,0.035,0.012],o:"Posterior ilium, sacrum, coccyx, sacrotuberous ligament",i:"Iliotibial band (≈75 %) and gluteal tuberosity of the femur",a:"Hip extension (especially from flexion: stairs, rising, sprinting) and external rotation; upper fibres abduct.",j:"Hip",pl:"sagittal / transverse"},
-   {id:"gmed",osim:true,n:"Gluteus medius",reg:"lower",lay:1,paths:[[[-0.03,1.00,0.13],[-0.01,0.92,0.165]]],r:[0.016,0.012],o:"Outer surface of the ilium between the anterior and posterior gluteal lines",i:"Lateral surface of the greater trochanter",a:"Hip abduction; anterior fibres internally rotate, posterior fibres externally rotate. Keeps the pelvis level in single-leg stance (Trendelenburg).",j:"Hip",pl:"frontal"},
-   {id:"gmin",osim:true,n:"Gluteus minimus",reg:"lower",lay:2,paths:[[[-0.02,0.98,0.125],[0.0,0.92,0.16]]],r:[0.012,0.008],o:"Outer ilium between the anterior and inferior gluteal lines",i:"Anterior surface of the greater trochanter",a:"Hip abduction and internal rotation; pelvic stabiliser.",j:"Hip",pl:"frontal / transverse"},
+   {id:"ilps",osim:true,n:"Iliopsoas (psoas major + iliacus)",reg:"lower",lay:2,paths:[[[0.02,1.12,0.04],[0.06,0.95,0.09],[-0.01,0.87,0.10]]],r:[0.012,0.02,0.007],o:"Psoas: bodies and transverse processes T12–L5. Iliacus: iliac fossa",i:"Lesser trochanter of the femur",a:"Prime hip flexor; anterior pelvic tilt; lumbar stabilizer.",j:"Hip, lumbar spine",pl:"sagittal"},
+   {id:"gmax",osim:true,n:"Gluteus maximus",reg:"lower",lay:1,paths:[[[-0.08,0.98,0.05],[-0.08,0.90,0.11],[-0.03,0.82,0.14]]],r:[0.015,0.035,0.012],o:"Posterior ilium, sacrum, coccyx, sacrotuberous ligament",i:"Iliotibial band (≈75 %) and gluteal tuberosity of the femur",a:"Hip extension (especially from flexion: stairs, rising, sprinting) and external rotation; upper fibers abduct.",j:"Hip",pl:"sagittal / transverse"},
+   {id:"gmed",osim:true,n:"Gluteus medius",reg:"lower",lay:1,paths:[[[-0.03,1.00,0.13],[-0.01,0.92,0.165]]],r:[0.016,0.012],o:"Outer surface of the ilium between the anterior and posterior gluteal lines",i:"Lateral surface of the greater trochanter",a:"Hip abduction; anterior fibers internally rotate, posterior fibers externally rotate. Keeps the pelvis level in single-leg stance (Trendelenburg).",j:"Hip",pl:"frontal"},
+   {id:"gmin",osim:true,n:"Gluteus minimus",reg:"lower",lay:2,paths:[[[-0.02,0.98,0.125],[0.0,0.92,0.16]]],r:[0.012,0.008],o:"Outer ilium between the anterior and inferior gluteal lines",i:"Anterior surface of the greater trochanter",a:"Hip abduction and internal rotation; pelvic stabilizer.",j:"Hip",pl:"frontal / transverse"},
    {id:"pir",osim:true,n:"Piriformis",reg:"lower",lay:2,paths:[[[-0.06,0.95,0.03],[-0.02,0.93,0.16]]],r:[0.006,0.008],o:"Anterior surface of the sacrum",i:"Superior border of the greater trochanter",a:"External rotation of the extended hip; abduction of the flexed hip.",j:"Hip",pl:"transverse"},
-   {id:"tfl",osim:true,n:"Tensor fasciae latae & iliotibial band",reg:"lower",lay:1,paths:[[L.ASIS,[0.05,0.88,0.15],[0.03,0.70,0.14],[0.02,0.45,0.13]]],r:[0.005,0.014,0.006,0.005],o:"Anterior iliac crest and ASIS",i:"Iliotibial band → Gerdy's tubercle on the lateral tibia",a:"Hip flexion, abduction and internal rotation; tenses the IT band to stabilise the extended knee.",j:"Hip, knee",pl:"sagittal / frontal"},
+   {id:"tfl",osim:true,n:"Tensor fasciae latae & iliotibial band",reg:"lower",lay:1,paths:[[L.ASIS,[0.05,0.88,0.15],[0.03,0.70,0.14],[0.02,0.45,0.13]]],r:[0.005,0.014,0.006,0.005],o:"Anterior iliac crest and ASIS",i:"Iliotibial band → Gerdy's tubercle on the lateral tibia",a:"Hip flexion, abduction and internal rotation; tenses the IT band to stabilize the extended knee.",j:"Hip, knee",pl:"sagittal / frontal"},
    {id:"sart",osim:true,n:"Sartorius",reg:"lower",lay:1,paths:[[[0.08,1.00,0.115],[0.07,0.80,0.07],[0.03,0.60,0.05],L.PES]],r:[0.005,0.011,0.009,0.004],o:"ASIS",i:"Pes anserinus (medial proximal tibia)",a:"Hip flexion, abduction and external rotation with knee flexion — the 'tailor's' cross-legged position. Longest muscle in the body.",j:"Hip, knee",pl:"sagittal / frontal / transverse"},
    {id:"rf",osim:true,n:"Rectus femoris",reg:"lower",lay:1,paths:[[[0.06,0.96,0.10],[0.07,0.70,0.09],[0.05,0.52,0.09],L.TT]],r:[0.006,0.024,0.012,0.005],o:"Anterior inferior iliac spine (AIIS) and the acetabular rim",i:"Patella → patellar ligament → tibial tuberosity",a:"Knee extension and hip flexion (biarticular); the only quadriceps head crossing the hip.",j:"Knee, hip",pl:"sagittal"},
    {id:"vl",osim:true,n:"Vastus lateralis",reg:"lower",lay:1,paths:[[[0.0,0.86,0.14],[0.04,0.70,0.135],[0.045,0.52,0.11]]],r:[0.008,0.026,0.009],o:"Greater trochanter and lateral lip of the linea aspera",i:"Lateral patella and quadriceps tendon",a:"Knee extension; the largest quadriceps head.",j:"Knee",pl:"sagittal"},
-   {id:"vm",osim:true,n:"Vastus medialis",reg:"lower",lay:1,paths:[[[0.0,0.80,0.06],[0.04,0.62,0.055],[0.045,0.52,0.07]]],r:[0.007,0.022,0.009],o:"Intertrochanteric line and medial lip of the linea aspera",i:"Medial patella and quadriceps tendon",a:"Knee extension; oblique fibres (VMO) pull the patella medially in terminal extension.",j:"Knee",pl:"sagittal"},
+   {id:"vm",osim:true,n:"Vastus medialis",reg:"lower",lay:1,paths:[[[0.0,0.80,0.06],[0.04,0.62,0.055],[0.045,0.52,0.07]]],r:[0.007,0.022,0.009],o:"Intertrochanteric line and medial lip of the linea aspera",i:"Medial patella and quadriceps tendon",a:"Knee extension; oblique fibers (VMO) pull the patella medially in terminal extension.",j:"Knee",pl:"sagittal"},
    {id:"vi",osim:true,n:"Vastus intermedius",reg:"lower",lay:2,paths:[[[0.02,0.82,0.09],[0.04,0.65,0.09],[0.045,0.53,0.09]]],r:[0.008,0.02,0.008],o:"Anterior and lateral femoral shaft",i:"Quadriceps tendon → patella",a:"Knee extension (deep to rectus femoris).",j:"Knee",pl:"sagittal"},
    {id:"al",osim:true,n:"Adductor longus",reg:"lower",lay:1,paths:[[[0.06,0.92,0.03],[0.02,0.80,0.06],[-0.02,0.68,0.085]]],r:[0.005,0.016,0.006],o:"Body of the pubis below the crest",i:"Middle third of the linea aspera",a:"Hip adduction; assists flexion from extension.",j:"Hip",pl:"frontal"},
    {id:"ab",osim:true,n:"Adductor brevis",reg:"lower",lay:2,paths:[[[0.04,0.90,0.035],[-0.02,0.78,0.085]]],r:[0.006,0.012],o:"Body and inferior ramus of the pubis",i:"Pectineal line and upper linea aspera",a:"Hip adduction; weak flexion.",j:"Hip",pl:"frontal"},
@@ -952,49 +1132,62 @@ const ANM=(()=>{
   return {MUSCLES,BONES,JOINTS,L,COL,build,pathsOf,HAS_OSIM};
 })();
 
+/* ===================== ANATOMY EXPLORER on the Z-Anatomy mesh (WebGL) =====================
+   Real muscle, tendon, bone, cartilage and ligament surfaces from Z-Anatomy (CC BY-SA 4.0), rendered by gl3d.js. Structure text
+   (origin, insertion, action, joints, planes) and the OpenSim parameters still come from anatomy_model.js / osim_data.js;
+   za_map.js links the mesh part names to those structures. Parts without an ATLAS entry show their Z-Anatomy name.          */
 const AN=(()=>{
-  const $=(s)=>document.querySelector(s); const {add,mul}=B3; const {MUSCLES,BONES,JOINTS,L,COL}=ANM;
-  /* ---------- build the scene ---------- */
-  const LAYER={skin:0,m1:1,m2:1,bone:1,joint:0}; /* joint markers off by default; the Joints preset or slider turns them on */ let state={reg:"all",side:"both",iso:null,sel:null,focusLayer:null};
-  const byId={}; const partsOf={};
-  function alphaOf(p){ const base=LAYER[p.layer]; if(base<=0.02) return 0; let a=base;
-    if(state.reg!=="all"&&p.reg&&p.reg!==state.reg&&p.layer!=="skin") a*=0.12;
-    if(state.iso&&p.layer!=="skin"){ a=p.sid===state.iso?Math.max(a,0.95):(p.layer==="bone"?Math.min(a,0.35):Math.min(a,0.08)); }
+  const $=(s)=>document.querySelector(s); const {MUSCLES,BONES,JOINTS,COL}=ANM; const {add,mul}=GL3;
+  const LAYER={lig:0.0,m1:1,m2:1,bone:1,joint:0}; let state={reg:"all",side:"both",iso:null,sel:null};
+  const byId={}; MUSCLES.forEach(m=>byId[m.id]={kind:"muscle",d:m}); BONES.forEach(b=>byId[b.id]={kind:"bone",d:b}); JOINTS.forEach(j=>byId[j.id]={kind:"joint",d:j});
+  const partsOf={}; let parts=[];
+  function tagParts(){ parts.forEach(p=>{ p.sid=ZA_MAP.idOf(p); const e=p.sid&&byId[p.sid]; if(e){ p.reg=e.d.reg; p.layer=e.kind==="muscle"?(e.d.lay===1?"m1":"m2"):"bone"; } else { p.reg=ZA_MAP.regionOf(p); p.layer=(p.c==="muscle"||p.c==="tendon")?"m1":p.c==="lig"?"lig":"bone"; }
+      if(p.sid){ (partsOf[p.sid]=partsOf[p.sid]||[]).push(p); } }); }
+  function alphaOf(p){ if(state.side==="right"&&p.side<0) return 0; if(p.c==="cart"&&LAYER.joint>0.02) return Math.max(LAYER.bone,LAYER.joint); const base=LAYER[p.layer]??1; if(base<=0.02) return 0; let a=base;
+    if(state.reg!=="all"&&p.reg!==state.reg) a*=0.1;
+    if(state.iso){ const hit=p.sid?p.sid===state.iso:("za:"+p.n)===state.iso; a=hit?1:(p.layer==="bone"?Math.min(a,0.3):Math.min(a,0.06)); }
     return a; }
-  function build(){ const r=ANM.build((p)=>{ if(state.side==="right"&&p.side<0&&!p.single&&p.layer!=="skin") return 0; return alphaOf(p); }); Object.assign(byId,r.byId); Object.assign(partsOf,r.partsOf); }
-  const dirty=()=>{ B3.S.dirty=true; };
-  /* ---------- attachments overlay for the selected muscle ---------- */
-  B3.S.overlays.push((ctx,M,project)=>{ if(!state.sel) return; const e=byId[state.sel]; if(!e||e.kind!=="muscle") return; const mu=e.d; const sides=state.side==="right"?[1]:[1,-1];
-    sides.forEach(s=>ANM.pathsOf(mu).forEach((path,k)=>{ const o=[path[0][0],path[0][1],path[0][2]*s], i=path[path.length-1]; const ip=[i[0],i[1],i[2]*s]; const dot=(p,c)=>{ const P=project(p,M); if(P[2]<0.1) return; ctx.fillStyle=c; ctx.beginPath(); ctx.arc(P[0],P[1],3.5,0,2*Math.PI); ctx.fill(); }; dot(o,"#7cff6b"); dot(ip,"#ffd23f"); if(k===0){ B3.label3(ctx,M,project,o,"origin","#7cff6b",-12); B3.label3(ctx,M,project,ip,"insertion","#ffd23f",18); } })); });
-
-  /* ---------- UI ---------- */
+  const dirty=()=>{ GL3.S.dirty=true; };
+  /* joints: the Joints view lights up the articular cartilage of the real skeleton (Z-Anatomy keeps it as separate surfaces); joint centers for
+     fly-to and labels come from the bones themselves (header landmarks), falling back to the ATLAS positions */
+  const LMKEY={hip:"HIP",knee:"KN",ank:"AN",gh:"GH",elb:"EL",wr:"WR",mcp:"MCP",cmc1:"CMC",sc:"SC",ac:"AC",stj:"SCAP",pru:"RU",ao:"AO",aa:"AA",tmj:"TMJ",sub:"SUB",mid:"MID",mtp1:"MTP",ivd:"L5S1"};
+  function jointPos(j,s=1){ const lm=GL3.S.lm; const k=LMKEY[j.id]; let p=(lm&&k&&lm[k])?lm[k].slice():j.pos.slice(); if(j.id==="pf"&&lm) p=[lm.KN[0]+0.045,lm.KN[1]+0.02,lm.KN[2]]; if(j.id==="ptf"&&lm) p=[lm.KN[0]-0.01,lm.KN[1]-0.03,lm.KN[2]+0.04]; if(j.id==="dru"&&lm) p=[lm.WR[0]-0.01,lm.WR[1]+0.01,lm.WR[2]-0.03]; if(j.id==="si"&&lm) p=[lm.L5S1[0]-0.03,lm.L5S1[1]-0.03,0.045]; if(j.id==="ps"&&lm) p=[lm.ASIS[0]-0.02,lm.HIP[1]-0.03,0]; p[2]*=s; return p; }
+  const CYAN=[0.35,0.86,0.95];
+  function tintCartilage(){ parts.forEach(p=>{ if(p.c!=="cart") return; const t=LAYER.joint; p.col=[GL3.CAT.cart.col[0]*(1-t)+CYAN[0]*t,GL3.CAT.cart.col[1]*(1-t)+CYAN[1]*t,GL3.CAT.cart.col[2]*(1-t)+CYAN[2]*t]; p.gloss=0.35+0.4*t; }); }
+  GL3.S.overlays.push((ctx,M,project)=>{ if(!state.sel||!byId[state.sel]||byId[state.sel].kind!=="joint") return; const j=byId[state.sel].d; const sides=(Math.abs(j.pos[2])<0.01||state.side==="right")?[1]:[1,-1];
+    sides.forEach(s=>{ const p=jointPos(j,s); const P=project(p); if(P[2]<0.1) return; const r=Math.max(10,0.03*P[3]); ctx.strokeStyle="#22d3ee"; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.arc(P[0],P[1],r,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); if(s>0) GL3.label3(ctx,M,project,p,j.n,"#22d3ee",-(r+8)); }); });
   const REGN={head:"Head & neck",trunk:"Trunk",upper:"Upper limb",lower:"Lower limb"};
   function osimRows(d){ if(!ANM.HAS_OSIM||!d.osim||!OSIM.muscles[d.id]) return ""; const L=OSIM.muscles[d.id]; const row=(m)=>`<tr><td>${m.label||d.n.split(" (")[0]}</td><td>${m.Fmax.toFixed(0)}</td><td>${(m.lopt*100).toFixed(1)}</td><td>${(m.lslack*100).toFixed(1)}</td><td>${(m.alpha*180/Math.PI).toFixed(0)}°</td></tr>`;
-    return `<details class="osim" style="margin:8px 0"><summary><b>Model parameters</b> <span class="note">(OpenSim · Rajagopal et al.)</span></summary><table class="mini"><thead><tr><th>part</th><th>F<sub>max</sub> (N)</th><th>ℓ<sub>opt</sub> (cm)</th><th>ℓ<sub>slack</sub> (cm)</th><th>α<sub>opt</sub></th></tr></thead><tbody>${L.map(row).join("")}</tbody></table><p class="note" style="margin:4px 0 0">Path drawn from the model's attachment points; the tube radius scales with PCSA = F<sub>max</sub>/σ, σ = 60 N/cm².</p></details>`; }
-  function muscleCenter(mu){ const pts=ANM.pathsOf(mu).flat(); return pts.reduce((a,p)=>add(a,mul(p,1/pts.length)),[0,0,0]); }
-  function select(sid,fly=true){ state.sel=sid; B3.S.sel=sid; const e=byId[sid]; if(!e){ $("#ainfo").innerHTML="<p class='note'>Click any structure. Use the layer sliders to peel the body back: skin → superficial muscles → deep muscles → bones → joints.</p>"; dirty(); return; }
-    /* highlight: mark all parts of this structure as selected by id match in render (B3 highlights one id) — we pulse via alpha instead */
+    return `<details class="osim" style="margin:8px 0"><summary><b>Model parameters</b> <span class="note">(OpenSim · Rajagopal et al.)</span></summary><table class="mini"><thead><tr><th>part</th><th>F<sub>max</sub> (N)</th><th>ℓ<sub>opt</sub> (cm)</th><th>ℓ<sub>slack</sub> (cm)</th><th>α<sub>opt</sub></th></tr></thead><tbody>${L.map(row).join("")}</tbody></table></details>`; }
+  function centerOf(sid){ const ps=partsOf[sid]||[]; if(!ps.length) return null; const vis=ps.filter(p=>GL3.S.alphaFn(p)>0.3); const r=(vis.length?vis:ps).filter(p=>p.side>=0); const use=r.length?r:(vis.length?vis:ps); const c=use.reduce((a,p)=>add(a,p.center),[0,0,0]); return mul(c,1/use.length); }
+  const sizeOf=(sid)=>{ const ps=partsOf[sid]||[]; if(!ps.length) return 0.6; let mn=[9,9,9],mx=[-9,-9,-9]; ps.forEach(p=>{ for(let k=0;k<3;k++){ mn[k]=Math.min(mn[k],p.bb[k]); mx[k]=Math.max(mx[k],p.bb[k+3]); } }); return Math.hypot(mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]); };
+  function partsList(sid){ const ps=partsOf[sid]||[]; const names=[...new Set(ps.filter(p=>p.c!=="tendon"&&p.c!=="cart").map(p=>p.n))]; return names.length>1?`<p class="note"><b>Mesh parts:</b> ${names.join(" · ")}</p>`:""; }
+  function select(sid,fly=true){ state.sel=sid; GL3.S.sel=sid; const e=byId[sid];
+    if(!e){ if(sid&&sid.startsWith("za:")){ const n=sid.slice(3); const p=parts.find(x=>"za:"+x.n===sid); $("#ainfo").innerHTML=`<div class="jmeta"><span class="chip">${p?p.c==="muscle"||p.c==="tendon"?"muscle":p.c==="lig"?"ligament / retinaculum":p.c==="cart"?"cartilage":"bone":"structure"}</span><span class="chip">${REGN[p?p.reg:"trunk"]}</span></div><h3 style="margin:6px 0">${n}</h3><p class="note">Named in the Z-Anatomy atlas; not one of the structures covered in the ME 320 tables. Use the search box for the muscles, bones and joints with full notes.</p><div class="xray" style="margin-top:8px"><button type="button" class="btn small" id="isob">${state.iso===sid?"Show all":"Isolate"}</button></div>`; const ib=$("#isob"); if(ib) ib.onclick=()=>{ state.iso=state.iso===sid?null:sid; select(sid,false); }; if(fly&&p) GL3.flyTo(p.center,Math.max(0.5,Math.hypot(p.bb[3]-p.bb[0],p.bb[4]-p.bb[1],p.bb[5]-p.bb[2])*3)); dirty(); return; }
+      $("#ainfo").innerHTML="<p class='note'>Click any structure on the body. Use the layer sliders to peel it back: superficial muscles → deep muscles → bones; drag to rotate, scroll to zoom, shift-drag to pan, double-click to zoom in on a part.</p>"; dirty(); return; }
     const d=e.d; let html="";
     if(e.kind==="muscle"){ html=`<div class="jmeta"><span class="chip" style="border-color:${COL.m1}">muscle · ${d.lay===1?"superficial":"deep"}</span><span class="chip">${REGN[d.reg]}</span></div><h3 style="margin:6px 0">${d.n}</h3>
       <div class="ro"><span>Origin</span><b style="text-align:right;max-width:60%;font-family:inherit;font-weight:500">${d.o}</b></div><div class="ro"><span>Insertion</span><b style="text-align:right;max-width:60%;font-family:inherit;font-weight:500">${d.i}</b></div>
-      <p style="margin:8px 0 4px"><b>Action.</b> ${d.a}</p>${osimRows(d)}<div class="ro"><span>Joint(s) crossed</span><b style="font-family:inherit;font-weight:500">${d.j}</b></div><div class="ro"><span>Plane(s)</span><b style="font-family:inherit;font-weight:500">${d.pl}</b></div>
-      <div class="xray" style="margin-top:8px"><button type="button" class="btn small" id="isob">${state.iso===sid?"Show all":"Isolate"}</button><button type="button" class="btn small" id="flyb">Fly to</button></div>`;
-      if(fly){ const c=muscleCenter(d); B3.flyTo([c[0],c[1],0],1.6); } }
-    else if(e.kind==="bone"){ html=`<div class="jmeta"><span class="chip">bone</span><span class="chip">${REGN[d.reg]}</span></div><h3 style="margin:6px 0">${d.n}</h3><p>${d.txt}</p>
-      <p class="note"><b>Muscles attaching here or nearby:</b> ${MUSCLES.filter(m=>(m.o+" "+m.i).toLowerCase().includes(d.n.split(" ")[0].toLowerCase().replace(/[()]/g,""))).map(m=>m.n).join(", ")||"—"}</p>
-      <div class="xray" style="margin-top:8px"><button type="button" class="btn small" id="isob">${state.iso===sid?"Show all":"Isolate"}</button></div>`; }
+      <p style="margin:8px 0 4px"><b>Action.</b> ${d.a}</p>${osimRows(d)}<div class="ro"><span>Joint(s) crossed</span><b style="font-family:inherit;font-weight:500">${d.j}</b></div><div class="ro"><span>Plane(s)</span><b style="font-family:inherit;font-weight:500">${d.pl}</b></div>${partsList(sid)}
+      <div class="xray" style="margin-top:8px"><button type="button" class="btn small" id="isob">${state.iso===sid?"Show all":"Isolate"}</button><button type="button" class="btn small" id="flyb">Fly to</button></div>`; }
+    else if(e.kind==="bone"){ html=`<div class="jmeta"><span class="chip">bone</span><span class="chip">${REGN[d.reg]}</span></div><h3 style="margin:6px 0">${d.n}</h3><p>${d.txt}</p>${partsList(sid)}
+      <p class="note"><b>Muscles attaching here or nearby:</b> ${MUSCLES.filter(m=>(m.o+" "+m.i).toLowerCase().includes(d.n.split(" ")[0].toLowerCase().replace(/[()]/g,""))).map(m=>`<a href="#" data-sel="${m.id}">${m.n}</a>`).join(", ")||"—"}</p>
+      <div class="xray" style="margin-top:8px"><button type="button" class="btn small" id="isob">${state.iso===sid?"Show all":"Isolate"}</button><button type="button" class="btn small" id="flyb">Fly to</button></div>`; }
     else { const acting=MUSCLES.filter(m=>m.j.toLowerCase().includes(d.n.split(" ")[0].toLowerCase().slice(0,5))); html=`<div class="jmeta"><span class="chip" style="border-color:${COL.joint}">joint · ${d.type}</span><span class="chip">${d.dof} DOF</span></div><h3 style="margin:6px 0">${d.n}</h3><p><b>Movements.</b> ${d.mv}</p>
-      <p class="note"><b>Muscles acting across it:</b> ${acting.map(m=>`<a href="#" data-sel="${m.id}">${m.n}</a>`).join(", ")||"—"}</p>`; if(fly) B3.flyTo([d.pos[0],d.pos[1],0],1.2); }
-    $("#ainfo").innerHTML=html; const ib=$("#isob"); if(ib) ib.onclick=()=>{ state.iso=state.iso===sid?null:sid; select(sid,false); }; const fb=$("#flyb"); if(fb) fb.onclick=()=>{ const c=muscleCenter(d); B3.flyTo([c[0],c[1],0],1.2); };
+      <p class="note"><b>Muscles acting across it:</b> ${acting.map(m=>`<a href="#" data-sel="${m.id}">${m.n}</a>`).join(", ")||"—"}</p>`; if(LAYER.joint<0.3){ LAYER.joint=1; const el=$("#lay-joint"); if(el) el.value=1; tintCartilage(); } if(fly) GL3.flyTo(jointPos(d),0.9); }
+    $("#ainfo").innerHTML=html; const ib=$("#isob"); if(ib) ib.onclick=()=>{ state.iso=state.iso===sid?null:sid; select(sid,false); }; const fb=$("#flyb"); if(fb) fb.onclick=()=>{ const c=centerOf(sid); if(c) GL3.flyTo(c,Math.max(0.6,sizeOf(sid)*2.2)); };
+    if(fly&&e.kind!=="joint"){ const c=centerOf(sid); if(c) GL3.flyTo(c,Math.max(0.7,sizeOf(sid)*2.4)); }
     $("#ainfo").querySelectorAll("[data-sel]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); select(a.dataset.sel); });
     fixSubs($("#ainfo")); dirty(); }
-  /* selection glow: B3 highlights by part.id; we set it to the right-side part and flag left via color tweak */
-  const origRender=null;
-  function applyLayerUI(){ ["skin","m1","m2","bone","joint"].forEach(k=>{ const el=$("#lay-"+k); if(el) LAYER[k]=+el.value; }); dirty(); }
-  const PRESET={skin:{skin:1,m1:0,m2:0,bone:0,joint:0},muscles:{skin:0.12,m1:1,m2:1,bone:0.9,joint:0},deep:{skin:0,m1:0.08,m2:1,bone:0.9,joint:0},skeleton:{skin:0,m1:0,m2:0,bone:1,joint:0},joints:{skin:0.08,m1:0,m2:0,bone:0.7,joint:1}};
+  const KEYS=["lig","m1","m2","bone","joint"]; const SL={lig:"lay-skin",m1:"lay-m1",m2:"lay-m2",bone:"lay-bone",joint:"lay-joint"};
+  function applyLayerUI(){ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) LAYER[k]=+el.value; }); tintCartilage(); shrinkBones(); dirty(); }
+  const syncSliders=()=>{ KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el) el.value=LAYER[k]; }); tintCartilage(); shrinkBones(); };
+  const shrinkBones=()=>parts.forEach(p=>{ if(p.c==="bone"||p.c==="cart") p.shrink=(LAYER.m1>0.5||LAYER.m2>0.5)?0.965:1; });
+  const PRESET={skin:{lig:1,m1:1,m2:1,bone:1,joint:0},muscles:{lig:0,m1:1,m2:1,bone:1,joint:0},deep:{lig:0,m1:0.08,m2:1,bone:1,joint:0},skeleton:{lig:0,m1:0,m2:0,bone:1,joint:0},joints:{lig:0,m1:0,m2:0,bone:0.45,joint:1},half:{lig:0,m1:1,m2:1,bone:1,joint:0}};
   function fillList(){ const sel=$("#astruct"); const q=($("#asearch").value||"").toLowerCase(); const grp=(label,items)=>items.length?`<optgroup label="${label}">${items.map(x=>`<option value="${x.id}">${x.n}</option>`).join("")}</optgroup>`:"";
     const f=(arr)=>arr.filter(x=>(state.reg==="all"||x.reg===state.reg)&&(!q||x.n.toLowerCase().includes(q)));
-    sel.innerHTML=`<option value="">— pick a structure —</option>`+grp("Superficial muscles",f(MUSCLES.filter(m=>m.lay===1)))+grp("Deep muscles",f(MUSCLES.filter(m=>m.lay===2)))+grp("Bones",f(BONES))+grp("Joints",f(JOINTS)); }
+    const extra=q?[...new Set(parts.filter(p=>!p.sid&&p.c!=="cart"&&p.n.toLowerCase().includes(q)&&(state.reg==="all"||p.reg===state.reg)).map(p=>p.n))].slice(0,40).map(n=>({id:"za:"+n,n})):[];
+    sel.innerHTML=`<option value="">— pick a structure —</option>`+grp("Superficial muscles",f(MUSCLES.filter(m=>m.lay===1)))+grp("Deep muscles",f(MUSCLES.filter(m=>m.lay===2)))+grp("Bones",f(BONES))+grp("Joints",f(JOINTS))+grp("Other named structures (Z-Anatomy)",extra); }
   /* ---------- drills ---------- */
   const DR=(()=>{ const KEY="dpl-biomech-anatomy"; let St={done:0,correct:0,streak:0,best:0}; try{ Object.assign(St,JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){} const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(St)); }catch(e){} };
     const pick=(a)=>a[Math.floor(Math.random()*a.length)]; const shuffle=(a)=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
@@ -1011,28 +1204,55 @@ const AN=(()=>{
       ()=>{ const m=pick(MUSCLES); showStructure(m.id,"muscles"); const ans=m.lay===1?"superficial":"deep"; return {q:`Is the ${m.n.toLowerCase()} superficial or deep?`,opts:["superficial","deep"],ans,why:m.lay===1?"It lies directly under the skin/fascia.":"It lies under other muscles."}; },
       ()=>{ const acts=[["hip flexion","Iliopsoas (psoas major + iliacus)","ilps"],["knee extension","Vastus lateralis","vl"],["ankle plantarflexion","Soleus","sol"],["ankle dorsiflexion","Tibialis anterior","ta_"],["hip abduction","Gluteus medius","gmed"],["hip extension from a deep squat","Gluteus maximus","gmax"],["elbow flexion with the forearm pronated","Brachialis","brach"],["elbow extension","Triceps brachii","tri"],["shoulder abduction beyond 15°","Deltoid","delt"],["scapular protraction","Serratus anterior","serr"],["forearm supination with the elbow extended","Supinator","sup"],["knee flexion and tibial external rotation","Biceps femoris","bf"]]; const a=pick(acts); showStructure(a[2],"muscles"); const m=byId[a[2]].d; return {q:`A prime mover for ${a[0]} is…`,opts:shuffle([a[1],...others(MUSCLES,m,3).map(x=>x.n)]),ans:a[1],why:`${m.n}: ${m.a}`}; }
     ];
-    let cur=null; function next(){ cur=pick(Q)(); const el=$("#andrill"); el.innerHTML=`<div class="dq">${cur.q}</div><div class="dopts">${shuffle(cur.opts).map(o=>`<button type="button" class="btn dopt" data-o="${o.replace(/"/g,"&quot;")}">${o}</button>`).join("")}</div><div class="dfb" id="andfb"></div><div class="dstat">Answered ${St.done} · correct ${St.correct} · streak ${St.streak} (best ${St.best})</div>`; el.querySelectorAll(".dopt").forEach(b=>b.onclick=()=>answer(b.dataset.o,b)); fixSubs(el); }
-    function answer(o,b){ const ok=o===cur.ans; St.done++; if(ok){ St.correct++; St.streak++; St.best=Math.max(St.best,St.streak); } else St.streak=0; save(); $("#andrill").querySelectorAll(".dopt").forEach(x=>{ x.disabled=true; if(x.dataset.o===cur.ans) x.classList.add("good"); else if(x===b&&!ok) x.classList.add("bad"); }); $("#andfb").innerHTML=`<p class="${ok?"fb good":"fb bad"}">${ok?"Correct.":"Not quite — the answer is <b>"+cur.ans+"</b>."} ${cur.why}</p><button type="button" class="btn primary small" id="annext">Next question →</button>`; $("#annext").onclick=next; const ds=$("#andrill .dstat"); if(ds) ds.textContent=`Answered ${St.done} · correct ${St.correct} · streak ${St.streak} (best ${St.best})`; if(typeof GAME!=="undefined"&&ok) GAME.addXP(10,St.streak>1?`+10 XP · ${St.streak} in a row`:"+10 XP"); if(state.sel) select(state.sel,false); }
+    let cur=null; function next(){ cur=pick(Q)(); const el=$("#andrill"); el.innerHTML=`<div class="dq">${cur.q}</div><div class="dopts">${shuffle(cur.opts).map(o=>`<button type="button" class="btn dopt" data-o="${o.replace(/"/g,"&quot;")}">${o}</button>`).join("")}</div><div class="dfb" id="andfb"></div><div class="dstat">Answered ${St.done} · correct ${St.correct} · in a row ${St.streak} (best ${St.best})</div>`; el.querySelectorAll(".dopt").forEach(b=>b.onclick=()=>answer(b.dataset.o,b)); fixSubs(el); }
+    function answer(o,b){ const ok=o===cur.ans; St.done++; if(ok){ St.correct++; St.streak++; St.best=Math.max(St.best,St.streak); } else St.streak=0; save(); $("#andrill").querySelectorAll(".dopt").forEach(x=>{ x.disabled=true; if(x.dataset.o===cur.ans) x.classList.add("good"); else if(x===b&&!ok) x.classList.add("bad"); }); $("#andfb").innerHTML=`<p class="${ok?"fb good":"fb bad"}">${ok?"Correct.":"Not quite — the answer is <b>"+cur.ans+"</b>."} ${cur.why}</p><button type="button" class="btn primary small" id="annext">Next question →</button>`; $("#annext").onclick=next; const ds=$("#andrill .dstat"); if(ds) ds.textContent=`Answered ${St.done} · correct ${St.correct} · in a row ${St.streak} (best ${St.best})`; if(typeof GAME!=="undefined"&&ok) GAME.addXP(10,St.streak>1?`+10 XP · ${St.streak} in a row`:"+10 XP"); if(state.sel) select(state.sel,false); }
     return {next}; })();
-  function showStructure(sid,preset){ Object.assign(LAYER,PRESET[preset]); ["skin","m1","m2","bone","joint"].forEach(k=>{ const el=$("#lay-"+k); if(el) el.value=LAYER[k]; }); state.iso=sid; state.sel=null; $("#ainfo").innerHTML="<p class='note'>Answer the question — the structure is highlighted and isolated.</p>"; const e=byId[sid]; const c=e.kind==="muscle"?muscleCenter(e.d):e.kind==="joint"?e.d.pos:null; if(c) B3.flyTo([c[0],c[1],0],e.kind==="joint"?1.2:1.7); else B3.flyTo([0,0.92,0],2.5); dirty(); }
+  function showStructure(sid,preset){ Object.assign(LAYER,PRESET[preset]); syncSliders(); state.iso=sid; state.sel=null; GL3.S.sel=sid; $("#ainfo").innerHTML="<p class='note'>Answer the question — the structure is highlighted and isolated.</p>"; const e=byId[sid]; const c=e.kind==="joint"?jointPos(e.d):centerOf(sid); if(c) GL3.flyTo(c,e.kind==="joint"?0.9:Math.max(0.7,sizeOf(sid)*2.4)); else GL3.flyTo([0,0.9,0],2.9); dirty(); }
   function reference(){ const el=$("#areftable"); el.innerHTML=`<table class="jt"><tr><th>Muscle</th><th>Layer</th><th>Origin</th><th>Insertion</th><th>Action</th><th>Joint(s)</th></tr>${MUSCLES.map(m=>`<tr><td><a href="#" data-sel="${m.id}">${m.n}</a></td><td>${m.lay===1?"superficial":"deep"}</td><td>${m.o}</td><td>${m.i}</td><td>${m.a}</td><td>${m.j}</td></tr>`).join("")}</table>
     <h4 style="margin:14px 0 6px">Joints</h4><table class="jt"><tr><th>Joint</th><th>Type</th><th>DOF</th><th>Movements</th></tr>${JOINTS.map(j=>`<tr><td><a href="#" data-sel="${j.id}">${j.n}</a></td><td>${j.type}</td><td>${j.dof}</td><td>${j.mv}</td></tr>`).join("")}</table>`;
-    el.querySelectorAll("[data-sel]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); document.querySelector('#tabs [data-k="explore"]').click(); const e=byId[a.dataset.sel]; Object.assign(LAYER,PRESET[e.kind==="joint"?"joints":e.kind==="bone"?"skeleton":e.d.lay===2?"deep":"muscles"]); ["skin","m1","m2","bone","joint"].forEach(k=>{ const x=$("#lay-"+k); if(x) x.value=LAYER[k]; }); select(a.dataset.sel); }); }
-  function init(){ build(); B3.S.alwaysRender=false; B3.S.viewDist=2.8; B3.S.viewTarget=[0,0.88,0]; B3.cam.target=[0,0.88,0]; B3.cam.dist=2.8; B3.cam.theta=Math.PI/2; B3.cam.phi=0.1;
-    B3.init("#bcanvas",(p)=>{ if(!p) return; select(p.sid); });
+    el.querySelectorAll("[data-sel]").forEach(a=>a.onclick=(ev)=>{ ev.preventDefault(); document.querySelector('#tabs [data-k="explore"]').click(); const e=byId[a.dataset.sel]; Object.assign(LAYER,PRESET[e.kind==="joint"?"joints":e.kind==="bone"?"skeleton":e.d.lay===2?"deep":"muscles"]); syncSliders(); select(a.dataset.sel); }); }
+  function init(){ GL3.S.alphaFn=alphaOf; GL3.S.viewDist=2.9; GL3.S.viewTarget=[0,0.88,0]; GL3.cam.target=[0,0.88,0]; GL3.cam.dist=2.9; GL3.cam.theta=Math.PI/2; GL3.cam.phi=0.08;
+    GL3.init("#bcanvas",(p)=>{ if(!p) return; select(p.sid||("za:"+p.n)); });
+    const note=$("#bscene"); const ld=document.createElement("div"); ld.className="note"; ld.style.cssText="position:absolute;left:12px;top:12px"; ld.textContent="loading the body (6 MB)…"; note.appendChild(ld);
+    GL3.load("zanatomy.bin").then(ps=>{ parts=ps; tagParts(); parts.forEach(p=>{ if(p.c==="bone"||p.c==="cart") p.shrink=LAYER.m1>0.5?0.965:1; }); ld.remove(); fillList(); dirty(); }).catch(e=>{ ld.textContent="Could not load the body mesh: "+e.message; });
     document.querySelectorAll("#tabs .tabbtn").forEach(b=>b.onclick=()=>{ document.querySelectorAll("#tabs .tabbtn").forEach(x=>x.classList.toggle("on",x===b)); ["explore","drills","reference"].forEach(k=>$("#"+k).hidden=k!==b.dataset.k); });
-    ["skin","m1","m2","bone","joint"].forEach(k=>{ const el=$("#lay-"+k); el.value=LAYER[k]; el.oninput=applyLayerUI; });
-    document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ Object.assign(LAYER,PRESET[b.dataset.preset]); ["skin","m1","m2","bone","joint"].forEach(k=>$("#lay-"+k).value=LAYER[k]); state.iso=null; dirty(); if(state.sel) select(state.sel,false); });
+    KEYS.forEach(k=>{ const el=$("#"+SL[k]); if(el){ el.value=LAYER[k]; el.oninput=applyLayerUI; } });
+    document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ Object.assign(LAYER,PRESET[b.dataset.preset]||{}); syncSliders(); state.iso=null; state.split=b.dataset.preset==="half"; dirty(); if(state.sel) select(state.sel,false); });
+    document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>GL3.view(b.dataset.view));
     $("#aregion").onchange=(e)=>{ state.reg=e.target.value; fillList(); dirty(); }; $("#aside").onchange=(e)=>{ state.side=e.target.value; dirty(); };
-    $("#asearch").oninput=fillList; $("#astruct").onchange=(e)=>{ if(e.target.value){ const en=byId[e.target.value]; if(en.kind==="muscle"&&LAYER[en.d.lay===1?"m1":"m2"]<0.3){ Object.assign(LAYER,PRESET[en.d.lay===2?"deep":"muscles"]); ["skin","m1","m2","bone","joint"].forEach(k=>$("#lay-"+k).value=LAYER[k]); } select(e.target.value); } };
-    $("#showall").onclick=()=>{ state.iso=null; state.sel=null; select(null); B3.flyTo([0,0.92,0],2.5,Math.PI/2,0.1); };
+    $("#asearch").oninput=fillList; $("#astruct").onchange=(e)=>{ if(e.target.value){ const en=byId[e.target.value]; if(en&&en.kind==="muscle"&&LAYER[en.d.lay===1?"m1":"m2"]<0.3){ Object.assign(LAYER,PRESET[en.d.lay===2?"deep":"muscles"]); syncSliders(); } select(e.target.value); } };
+    $("#showall").onclick=()=>{ state.iso=null; state.sel=null; state.split=false; select(null); GL3.flyTo([0,0.88,0],2.9,Math.PI/2,0.08); };
     fillList(); reference(); select(null);
-    $("#andrillstart").onclick=()=>{ DR.next(); $("#andrillstart").textContent="Skip →"; };
-    /* pulse the selected structure */ setInterval(()=>{ if(state.sel) dirty(); },500); }
-  return {init,MUSCLES,BONES,JOINTS,state,LAYER,select};
+    $("#andrillstart").onclick=()=>{ DR.next(); $("#andrillstart").textContent="Skip →"; }; }
+  /* half-and-half: skeleton on the subject's right, muscles on the left */
+  const baseAlpha=alphaOf; function alphaSplit(p){ if(state.split){ if(p.side>0&&(p.c==="muscle"||p.c==="tendon"||p.c==="lig")) return 0; if(p.side<0&&(p.c==="bone"||p.c==="cart")) return 0; } return baseAlpha(p); }
+  return {init,MUSCLES,BONES,JOINTS,state,LAYER,select,alphaSplit};
 })();
-AN.init();
+AN.init(); GL3.S.alphaFn=AN.alphaSplit;
 
 GAME.hud();
+</script>
+<script src="../videos.js"></script>
+<script>
+/* ATLAS video slots: shows "Watch Dr. Walck set it up" on a problem when videos.js has a link for it. No tracking: the player loads only when the student presses the button. */
+(function(){
+  var V=window.ATLAS_VIDEOS||{}; var parts=location.pathname.split("/"); var file=(parts.pop()||"").replace(/\.html$/,""); var course=parts.pop()||""; var base=course+"/"+file;
+  function ytId(u){ u=String(u||"").trim(); if(!u) return ""; var m=u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/); if(m) return m[1]; return /^[A-Za-z0-9_-]{11}$/.test(u)?u:""; }
+  function curId(){ var o=document.getElementById("orig"); if(!o) return ""; var sheet=o.closest("#sheet,#psheet,section,main")||document; var h=sheet.querySelector("h2"); var name=h?h.textContent.trim():""; var btns=document.querySelectorAll("#nav button[data-id],#pnav button[data-id]"); for(var i=0;i<btns.length;i++){ var pn=btns[i].querySelector(".pname"); if(pn&&pn.textContent.trim()===name) return btns[i].dataset.id; } var c=document.querySelector("#nav button[aria-current='true'],#pnav button[aria-current='true']"); return c?c.dataset.id:""; }
+  function close(){ var m=document.getElementById("vidmodal"); if(m) m.remove(); document.removeEventListener("keydown",esc); }
+  function esc(e){ if(e.key==="Escape") close(); }
+  function open(url,title){ var id=ytId(url); if(!id){ window.open(url,"_blank","noopener"); return; } close();
+    var m=document.createElement("div"); m.id="vidmodal"; m.setAttribute("role","dialog"); m.setAttribute("aria-modal","true"); m.setAttribute("aria-label","Video: "+title);
+    m.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(4,8,18,.86);display:flex;align-items:center;justify-content:center;padding:16px";
+    m.innerHTML='<div style="width:min(960px,100%);background:#0c1326;border:1px solid #2a3a63;border-radius:14px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px"><b style="color:#eaf0ff;font-size:1rem"></b><button type="button" class="btn" id="vidclose" aria-label="Close video">✕ Close</button></div><div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p style="margin:10px 2px 0;color:#97a7c9;font-size:.88rem">This video uses the class example numbers, now showing on the page. When it ends, press <b>New numbers</b> and work it yourself.</p></div>';
+    m.querySelector("b").textContent="Dr. Walck sets it up: "+title; m.querySelector("iframe").src="https://www.youtube-nocookie.com/embed/"+id+"?rel=0&autoplay=1"; m.querySelector("iframe").title="Video: "+title;
+    m.addEventListener("click",function(e){ if(e.target===m) close(); }); document.body.appendChild(m); m.querySelector("#vidclose").onclick=close; m.querySelector("#vidclose").focus(); document.addEventListener("keydown",esc); }
+  function place(){ var o=document.getElementById("orig"); if(!o||document.getElementById("vidbtn")) return; var id=curId(); var url=id?V[base+"#"+id]:""; if(!url) return;
+    var b=document.createElement("button"); b.type="button"; b.id="vidbtn"; b.className="btn"; b.textContent="▶ Watch Dr. Walck set it up"; b.title="A short video of Dr. Walck explaining this problem, how to set it up and which method to use";
+    b.style.cssText="border-color:#ffc928;color:#ffc928"; var h=document.querySelector(".phead h2")||document.querySelector("#psheet h2,#sheet h2"); var title=h?h.textContent.trim():"";
+    b.onclick=function(){ var og=document.getElementById("orig"); if(og) og.click(); open(url,title); }; o.parentNode.insertBefore(b,o.nextSibling); }
+  var t=null; new MutationObserver(function(){ clearTimeout(t); t=setTimeout(place,60); }).observe(document.documentElement,{childList:true,subtree:true}); if(document.readyState!=="loading") place(); else document.addEventListener("DOMContentLoaded",place);
+  window.ATLAS_VIDEO_OPEN=open;
+})();
 </script>
 </body></html>

@@ -105,8 +105,8 @@ footer a{color:#5eeaff;text-decoration:none}footer a:hover{text-decoration:under
 
   <footer>
     <span>ATLAS · created by Dr. Christine Walck · <span class="handle">@LearningwithDrWalck</span>
-      <span class="social"><a href="https://www.instagram.com/learningwithdrwalck" target="_blank" rel="noopener">Instagram</a> · <a href="https://youtube.com/@learningwithdrwalck" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.erbal.org/" target="_blank" rel="noopener">ERBAL lab</a></span></span>
-    <span>Instructors: the site is plain HTML — fork it on GitHub and add your own course.</span>
+      <span class="social"><a href="https://www.instagram.com/learningwithdrwalck" target="_blank" rel="noopener">Instagram</a> · <a href="https://youtube.com/@learningwithdrwalck" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.erbal.org/" target="_blank" rel="noopener">ERBaL Lab</a></span></span>
+    <span>© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free for students and instructors to use on this site; copying, modifying or re-hosting the code, problem generators or figures is prohibited — see <a href="LICENSE">LICENSE</a>. Instructors who would like to use ATLAS in a course: <a href="mailto:christine.walck@erau.edu">get in touch</a>.</span>
   </footer>
 </div>
 
@@ -123,7 +123,7 @@ const COURSES = [
     blurb:"Solved the ES 305 way: Known, Find, Schematic, Assumptions, Properties, Analysis. Built-in property tables, process diagrams that animate, and a Concepts Lab. Chapters 1–5 so far; more each week.",
     stats:["Concepts Lab","property tables","43 problems","flow animations"], live:true },
   { href:"biomech/", color:"#7cff6b", icon:"bio", group:"Applied mechanics", title:"Fundamentals of Biomechanics",
-    blurb:"Peel back a 3-D body, then work from tissue and muscle to joints, inverse dynamics and whole-body movement: anatomy, frames, ligaments and tendons, the Hill model, arthrokinematics, joint kinetics, a movement-analysis capstone, and a jaw-tracking design project.", stats:["Anatomy Explorer","11 labs","59 problems"], live:true }
+    blurb:"Peel back a 3-D body, then work from tissue and muscle to joints, inverse dynamics and whole-body movement: anatomy, frames, ligaments and tendons, the Hill model, arthrokinematics, joint kinetics, a movement-analysis capstone, and a jaw-tracking design project.", stats:["Anatomy Explorer","11 labs","60 problems"], live:true }
 ];
 const ICON={
   setup:'<path d="M8 40V8M8 40h32"/><path d="M8 40 30 14m0 0-6 1.5M30 14l-1.5 6"/><circle cx="8" cy="40" r="3" fill="currentColor"/><path d="M22 32a6 6 0 1 0 12 0a6 6 0 1 0-12 0" opacity=".6"/>',
@@ -135,7 +135,7 @@ let G={xp:0,streak:0,best:0,solved:{}}; try{ Object.assign(G, JSON.parse(localSt
 const cleared=Object.values(G.solved||{}).reduce((n,a)=>n+a.length,0);
 document.getElementById("hud").innerHTML=`
   <div class="cell lvl"><span class="k">Level</span><div class="row"><span class="n">${Math.floor(G.xp/100)+1}</span><span class="xpbar" title="${G.xp%100}/100 XP to next level"><i style="width:${G.xp%100}%"></i></span></div><span class="k">${G.xp} XP total</span></div>
-  <div class="cell st"><span class="k">Streak · best ${G.best}</span><span class="n">${G.streak}</span></div>
+  <div class="cell st"><span class="k">In a row · best ${G.best}</span><span class="n">${G.streak}</span></div>
   <div class="cell cl"><span class="k">Problems cleared</span><span class="n">${cleared}</span></div>`;
 document.getElementById("courses").innerHTML=COURSES.map(c=>`
   <${c.live?`a href="${c.href}"`:"div"} class="course${c.live?"":" soon"}" style="--z:${c.color}">
