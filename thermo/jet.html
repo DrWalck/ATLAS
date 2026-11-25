@@ -68,6 +68,7 @@ nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);displ
 .concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
 .concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
 .concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid>div{min-width:0}.cgrid .ceq{overflow-x:auto;max-width:100%}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
 .cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
 .cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
@@ -497,7 +498,7 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 .ctl label{display:block;margin:6px 0;font-size:.8rem;color:var(--muted)} .ctl label b{float:right;color:#fff;font-family:ui-monospace,monospace} .ctl input[type=range]{width:100%;accent-color:#ffd23f}
 .xray{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px} .xray select{background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:5px 8px;font:inherit}
 .btn.small{padding:5px 9px;font-size:.72rem}
-.xgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px} .xgrid label{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted)} .xgrid label span{flex:0 0 46%} .xgrid input{flex:1;accent-color:#5fd3e6;min-width:0}
+.xgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 10px} .xgrid label{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted);min-width:0} .xgrid label span{flex:0 0 46%} .xgrid input{flex:1;accent-color:#5fd3e6;min-width:0}
 .panel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(8,14,30,.7)} .panel h4{margin:0 0 6px;font-family:var(--display);color:#fff;letter-spacing:.03em}
 #controls h4{margin:10px 0 4px;font-family:var(--display);font-size:.9rem;color:#ffd23f}
 .ceq2{font-family:ui-monospace,monospace;font-size:.8rem;color:#eaf2ff;background:rgba(255,255,255,.04);border-left:3px solid #ffd23f;padding:6px 8px;margin:6px 0;border-radius:4px;overflow-x:auto}
@@ -546,12 +547,25 @@ function N(x, unit="", sig=4){ return `<span class="num">${fmt(x,sig)}${unit?"&n
 
 function fixSubs(root){
   if(!root) return;
-  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="PRE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="INPUT"||t==="SUB"||(p.getAttribute&&p.getAttribute("data-sub")==="1")||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")||p.classList.contains("katex")||p.classList.contains("mlcode")))) return true; } return false; };
+  const inSvgText=(n)=>{ for(let p=n.parentNode;p;p=p.parentNode){ if(p.nodeName==="text"||p.nodeName==="tspan") return true; if(p.nodeName==="svg"||p.nodeName==="BODY") return false; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:,[a-z]+)?(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
-  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+  nodes.forEach(n=>{ const s=n.nodeValue; re.lastIndex=0; if(!re.test(s)) return; re.lastIndex=0; const svg=inSvgText(n); const frag=document.createDocumentFragment(); let last=0, afterSub=false;
+    const plain=(t)=>{ if(!t) return; if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent=t; frag.appendChild(ts); } else frag.appendChild(document.createTextNode(t)); afterSub=false; };
+    s.replace(re,(m,a,b,i)=>{ plain(s.slice(last,i)+a); let sb; if(svg){ sb=document.createElementNS(SVGNS,"tspan"); sb.setAttribute("dy","0.25em"); sb.setAttribute("font-size","75%"); sb.setAttribute("data-sub","1"); } else sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); afterSub=true; last=i+m.length; return m; });
+    const rest=s.slice(last); if(rest) plain(rest); else if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent="​"; frag.appendChild(ts); }
+    n.parentNode.replaceChild(frag,n); });
 }
+/* diagrams and feedback that are re-drawn without calling fixSubs (animations, drills): tidy them automatically */
+(function(){ if(typeof MutationObserver==="undefined"||typeof document==="undefined") return; let queued=false;
+  /* keep diagram labels inside their drawing: nudge any <text> that sticks out of the viewBox back in */
+  const keepIn=()=>{ document.querySelectorAll("svg.mlsvg, svg.schemsvg").forEach(svg=>{ const vb=svg.viewBox&&svg.viewBox.baseVal; if(!vb||!vb.width||!svg.getBoundingClientRect().width) return; svg.querySelectorAll("text").forEach(t=>{ if(t.closest("g[transform]")||(t.getAttribute("transform")&&!t.dataset.nudged)) return; let b; try{ b=t.getBBox(); }catch(e){ return; } if(!b.width) return; let dx=0,dy=0; if(b.x+b.width>vb.x+vb.width-3) dx=vb.x+vb.width-3-(b.x+b.width); if(b.x+dx<vb.x+3) dx=vb.x+3-b.x; if(b.y<vb.y+1) dy=vb.y+1-b.y; if(b.y+b.height>vb.y+vb.height-1) dy=vb.y+vb.height-1-(b.y+b.height); const cur=t.getAttribute("transform")||""; const want=(Math.abs(dx)>0.5||Math.abs(dy)>0.5)?`translate(${dx.toFixed(1)},${dy.toFixed(1)})`:""; if(want!==cur){ if(want){ t.setAttribute("transform",want); t.dataset.nudged="1"; } else if(t.dataset.nudged){ t.removeAttribute("transform"); } } }); }); };
+  const run=()=>{ queued=false; try{ keepIn(); }catch(e){} try{ document.querySelectorAll("svg text, .dfb, .dq, .dopts, .ro, .note, table.mini, table.jt, .verdict, .chip, .tag, li, .ptag, h3, h4").forEach(el=>{ if(el.textContent.indexOf("_")>=0) fixSubs(el); }); }catch(e){} };
+  const start=()=>{ new MutationObserver(()=>{ if(!queued){ queued=true; requestAnimationFrame(run); } }).observe(document.body,{childList:true,subtree:true,characterData:true}); run(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start); })();
 
 /* ===================== JET ENGINE LAB: turbofan (Brayton) + air cycle machine (reverse Brayton) =====================
    Generic two-spool high-bypass turbofan of the business-jet class. All station values are computed with the
@@ -620,7 +634,7 @@ const JET=(()=>{
     return {a,mb,ma,x,wc,wt,Wc:ma*wc,Wt:ma*wt,Wfan:ma*(wt*eta_m-wc),q1,q2,Q1:ma*q1,Q2:ma*q2,pcab,Tram,Tfan,COP,eta_c,eta_t,Tdem};
   }
   /* ---------- drawing ---------- */
-  const W=1000,H=420, cy=230;                      // engine axis
+  const W=1000,H=440, cy=230;                      // engine axis
   const X={inlet:40,fan:150,lpc:250,hpc:340,comb:470,hpt:560,lpt:640,noz:760,exit:930};   // station x positions
   const tC=(T)=>{ const t=Math.max(0,Math.min(1,(T-220)/1400)); const stops=[[0.0,[60,140,255]],[0.25,[90,220,255]],[0.45,[230,230,120]],[0.65,[255,140,40]],[0.85,[255,60,30]],[1,[255,240,230]]]; let i=1; while(i<stops.length&&stops[i][0]<t) i++; const [a,ca]=stops[i-1],[b,cb]=stops[i]; const u=(t-a)/(b-a); return `rgb(${ca.map((c,j)=>Math.round(c+u*(cb[j]-c))).join(",")})`; };
   const G=(id,cls,inner)=>`<g id="${id}" class="part ${cls||""}" data-part="${id}">${inner}</g>`;
@@ -837,4 +851,5 @@ const JET=(()=>{
 if(document.querySelector('#scene')) JET.init();
 
 </script>
+<p style="margin:28px auto 16px;max-width:1080px;padding:0 16px;text-align:center;opacity:.8;font-size:.85rem;color:#97a7c9">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE" style="color:#5eeaff">LICENSE</a> · third-party components in <a href="../NOTICE.md" style="color:#5eeaff">NOTICE</a>.</p>
 </body></html>

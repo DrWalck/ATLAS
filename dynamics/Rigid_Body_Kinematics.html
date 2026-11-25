@@ -69,6 +69,7 @@ nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);displ
 .concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
 .concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
 .concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid>div{min-width:0}.cgrid .ceq{overflow-x:auto;max-width:100%}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
 .cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
 .cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
@@ -739,12 +740,25 @@ const PROBLEMS = [
 /* Turn plain-text subscripts like a_t, ΣF_n, r_B/A into real subscripts (skips math and inputs). */
 function fixSubs(root){
   if(!root) return;
-  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="PRE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="INPUT"||t==="SUB"||(p.getAttribute&&p.getAttribute("data-sub")==="1")||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")||p.classList.contains("katex")||p.classList.contains("mlcode")))) return true; } return false; };
+  const inSvgText=(n)=>{ for(let p=n.parentNode;p;p=p.parentNode){ if(p.nodeName==="text"||p.nodeName==="tspan") return true; if(p.nodeName==="svg"||p.nodeName==="BODY") return false; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:,[a-z]+)?(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
-  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+  nodes.forEach(n=>{ const s=n.nodeValue; re.lastIndex=0; if(!re.test(s)) return; re.lastIndex=0; const svg=inSvgText(n); const frag=document.createDocumentFragment(); let last=0, afterSub=false;
+    const plain=(t)=>{ if(!t) return; if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent=t; frag.appendChild(ts); } else frag.appendChild(document.createTextNode(t)); afterSub=false; };
+    s.replace(re,(m,a,b,i)=>{ plain(s.slice(last,i)+a); let sb; if(svg){ sb=document.createElementNS(SVGNS,"tspan"); sb.setAttribute("dy","0.25em"); sb.setAttribute("font-size","75%"); sb.setAttribute("data-sub","1"); } else sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); afterSub=true; last=i+m.length; return m; });
+    const rest=s.slice(last); if(rest) plain(rest); else if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent="​"; frag.appendChild(ts); }
+    n.parentNode.replaceChild(frag,n); });
 }
+/* diagrams and feedback that are re-drawn without calling fixSubs (animations, drills): tidy them automatically */
+(function(){ if(typeof MutationObserver==="undefined"||typeof document==="undefined") return; let queued=false;
+  /* keep diagram labels inside their drawing: nudge any <text> that sticks out of the viewBox back in */
+  const keepIn=()=>{ document.querySelectorAll("svg.mlsvg, svg.schemsvg").forEach(svg=>{ const vb=svg.viewBox&&svg.viewBox.baseVal; if(!vb||!vb.width||!svg.getBoundingClientRect().width) return; svg.querySelectorAll("text").forEach(t=>{ if(t.closest("g[transform]")||(t.getAttribute("transform")&&!t.dataset.nudged)) return; let b; try{ b=t.getBBox(); }catch(e){ return; } if(!b.width) return; let dx=0,dy=0; if(b.x+b.width>vb.x+vb.width-3) dx=vb.x+vb.width-3-(b.x+b.width); if(b.x+dx<vb.x+3) dx=vb.x+3-b.x; if(b.y<vb.y+1) dy=vb.y+1-b.y; if(b.y+b.height>vb.y+vb.height-1) dy=vb.y+vb.height-1-(b.y+b.height); const cur=t.getAttribute("transform")||""; const want=(Math.abs(dx)>0.5||Math.abs(dy)>0.5)?`translate(${dx.toFixed(1)},${dy.toFixed(1)})`:""; if(want!==cur){ if(want){ t.setAttribute("transform",want); t.dataset.nudged="1"; } else if(t.dataset.nudged){ t.removeAttribute("transform"); } } }); }); };
+  const run=()=>{ queued=false; try{ keepIn(); }catch(e){} try{ document.querySelectorAll("svg text, .dfb, .dq, .dopts, .ro, .note, table.mini, table.jt, .verdict, .chip, .tag, li, .ptag, h3, h4").forEach(el=>{ if(el.textContent.indexOf("_")>=0) fixSubs(el); }); }catch(e){} };
+  const start=()=>{ new MutationObserver(()=>{ if(!queued){ queued=true; requestAnimationFrame(run); } }).observe(document.body,{childList:true,subtree:true,characterData:true}); run(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start); })();
 /* SCHEMATICS-START */
 /* ===================== SCHEMATIC HELPERS (SVG) =====================
    Coordinates are SVG pixels in a 360 × 220 box (y points down).
@@ -1758,7 +1772,7 @@ const GAME=(()=>{
     const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
     const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
     let t0=null;
-    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
       P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
       requestAnimationFrame(f); })(performance.now());
   }
@@ -1927,5 +1941,29 @@ state.id=start; state.vars={...cur().original};
 renderNav(); renderSheet(); GAME.hud();
 function renderConcepts(){ document.querySelectorAll('.ceq').forEach(el=>el.innerHTML=tex(el.dataset.tex)); }
 renderConcepts(); fixSubs(document.getElementById("concepts"));
+</script>
+<p style="margin:28px auto 16px;max-width:1080px;padding:0 16px;text-align:center;opacity:.8;font-size:.85rem;color:#97a7c9">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE" style="color:#5eeaff">LICENSE</a> · third-party components in <a href="../NOTICE.md" style="color:#5eeaff">NOTICE</a>.</p>
+<script src="../videos.js"></script>
+<script>
+/* ATLAS video slots: shows "Watch Dr. Walck set it up" on a problem when videos.js has a link for it. No tracking: the player loads only when the student presses the button. */
+(function(){
+  var V=window.ATLAS_VIDEOS||{}; var parts=location.pathname.split("/"); var file=(parts.pop()||"").replace(/\.html$/,""); var course=parts.pop()||""; var base=course+"/"+file;
+  function ytId(u){ u=String(u||"").trim(); if(!u) return ""; var m=u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/); if(m) return m[1]; return /^[A-Za-z0-9_-]{11}$/.test(u)?u:""; }
+  function curId(){ var o=document.getElementById("orig"); if(!o) return ""; var sheet=o.closest("#sheet,#psheet,section,main")||document; var h=sheet.querySelector("h2"); var name=h?h.textContent.trim():""; var btns=document.querySelectorAll("#nav button[data-id],#pnav button[data-id]"); for(var i=0;i<btns.length;i++){ var pn=btns[i].querySelector(".pname"); if(pn&&pn.textContent.trim()===name) return btns[i].dataset.id; } var c=document.querySelector("#nav button[aria-current='true'],#pnav button[aria-current='true']"); return c?c.dataset.id:""; }
+  function close(){ var m=document.getElementById("vidmodal"); if(m) m.remove(); document.removeEventListener("keydown",esc); }
+  function esc(e){ if(e.key==="Escape") close(); }
+  function open(url,title){ var id=ytId(url); if(!id){ window.open(url,"_blank","noopener"); return; } close();
+    var m=document.createElement("div"); m.id="vidmodal"; m.setAttribute("role","dialog"); m.setAttribute("aria-modal","true"); m.setAttribute("aria-label","Video: "+title);
+    m.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(4,8,18,.86);display:flex;align-items:center;justify-content:center;padding:16px";
+    m.innerHTML='<div style="width:min(960px,100%);background:#0c1326;border:1px solid #2a3a63;border-radius:14px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px"><b style="color:#eaf0ff;font-size:1rem"></b><button type="button" class="btn" id="vidclose" aria-label="Close video">✕ Close</button></div><div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p style="margin:10px 2px 0;color:#97a7c9;font-size:.88rem">This video uses the class example numbers, now showing on the page. When it ends, press <b>New numbers</b> and work it yourself.</p></div>';
+    m.querySelector("b").textContent="Dr. Walck sets it up: "+title; m.querySelector("iframe").src="https://www.youtube-nocookie.com/embed/"+id+"?rel=0&autoplay=1"; m.querySelector("iframe").title="Video: "+title;
+    m.addEventListener("click",function(e){ if(e.target===m) close(); }); document.body.appendChild(m); m.querySelector("#vidclose").onclick=close; m.querySelector("#vidclose").focus(); document.addEventListener("keydown",esc); }
+  function place(){ var o=document.getElementById("orig"); if(!o||document.getElementById("vidbtn")) return; var id=curId(); var url=id?V[base+"#"+id]:""; if(!url) return;
+    var b=document.createElement("button"); b.type="button"; b.id="vidbtn"; b.className="btn"; b.textContent="▶ Watch Dr. Walck set it up"; b.title="A short video of Dr. Walck explaining this problem, how to set it up and which method to use";
+    b.style.cssText="border-color:#ffc928;color:#ffc928"; var h=document.querySelector(".phead h2")||document.querySelector("#psheet h2,#sheet h2"); var title=h?h.textContent.trim():"";
+    b.onclick=function(){ var og=document.getElementById("orig"); if(og) og.click(); open(url,title); }; o.parentNode.insertBefore(b,o.nextSibling); }
+  var t=null; new MutationObserver(function(){ clearTimeout(t); t=setTimeout(place,60); }).observe(document.documentElement,{childList:true,subtree:true}); if(document.readyState!=="loading") place(); else document.addEventListener("DOMContentLoaded",place);
+  window.ATLAS_VIDEO_OPEN=open;
+})();
 </script>
 </body></html>

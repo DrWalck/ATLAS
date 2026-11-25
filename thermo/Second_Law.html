@@ -68,6 +68,7 @@ nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);displ
 .concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
 .concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
 .concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid>div{min-width:0}.cgrid .ceq{overflow-x:auto;max-width:100%}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
 .cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
 .cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
@@ -529,20 +530,20 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
   <details class="concepts" id="concepts">
     <summary>Key ideas: second-law statements, Carnot limits and the Clausius inequality</summary>
     <div class="cgrid">
-  <div><h4>Two classical statements</h4><p><b>Clausius:</b> it is impossible for any system to operate so that the <i>sole</i> result is heat transfer from a cooler to a hotter body. <b>Kelvin–Planck:</b> it is impossible for any system to run a cycle and deliver net work while receiving heat from a <i>single</i> thermal reservoir. Analytical form:</p><div class="ceq" data-tex="W_{cycle}\\le 0\\quad(\\text{single reservoir});\\qquad <0\\ \\text{irreversibilities present},\\ =0\\ \\text{none}"></div></div>
+  <div><h4>Two classical statements</h4><p><b>Clausius:</b> it is impossible for any system to operate so that the <i>sole</i> result is heat transfer from a cooler to a hotter body. <b>Kelvin–Planck:</b> it is impossible for any system to run a cycle and deliver net work while receiving heat from a <i>single</i> thermal reservoir. Analytical form:</p><div class="ceq" data-tex="W_{cycle}\le 0\quad(\text{single reservoir});\qquad <0\ \text{irreversibilities present},\ =0\ \text{none}"></div></div>
   <div><h4>Irreversibilities (what makes a real process fall short)</h4><p>Heat transfer through a finite ΔT · unrestrained expansion to a lower pressure · spontaneous chemical reaction · spontaneous mixing · friction (sliding and fluid) · electric current through a resistance · inelastic deformation. A process is <b>internally reversible</b> when none of these are present <i>inside</i> the system (a quasi-equilibrium process); irreversibilities may still exist in the surroundings.</p></div>
   <div><h4>Carnot corollaries</h4><p>1. An irreversible power cycle always has a <b>lower</b> thermal efficiency than a reversible one operating between the same two reservoirs ("real is always less than ideal"). 2. <b>All</b> reversible power cycles between the same two reservoirs have the <b>same</b> efficiency — an ideal Rankine plant and an ideal Brayton plant between the same T_H and T_C tie. The same two statements hold for the COP of refrigerators and heat pumps.</p></div>
-  <div><h4>Kelvin temperature scale</h4><div class="ceq" data-tex="\\left(\\frac{Q_C}{Q_H}\\right)_{rev}=\\frac{T_C}{T_H}\\qquad\\text{(Eq. 5.7, reversible cycles only; T in K or °R)}"></div><p>For a reversible cycle, and <i>only</i> then, the ratio of the heat transfers equals the ratio of the absolute reservoir temperatures. This is what lets temperature replace heat in every limit below.</p></div>
-  <div><h4>Maximum performance between two reservoirs</h4><div class="ceq" data-tex="\\eta_{max}=1-\\frac{T_C}{T_H},\\qquad \\beta_{max}=\\frac{T_C}{T_H-T_C},\\qquad \\gamma_{max}=\\frac{T_H}{T_H-T_C}"></div><p>Eqs. 5.9–5.11. Actual: η = W_cycle/Q_H = 1 − Q_C/Q_H, β = Q_C/W_cycle, γ = Q_H/W_cycle. Compare actual to maximum: <b>actual &lt; max → irreversible, = max → reversible, &gt; max → impossible.</b></p></div>
-  <div><h4>Performance table (class handout)</h4>
-    <table class="ptable"><tr><th>Device / cycle</th><th>Desired output</th><th>Required input</th><th>Performance metric</th><th>Ideal / upper limit</th></tr>
+  <div><h4>Kelvin temperature scale</h4><div class="ceq" data-tex="\left(\frac{Q_C}{Q_H}\right)_{rev}=\frac{T_C}{T_H}\qquad\text{(Eq. 5.7, reversible cycles only; T in K or °R)}"></div><p>For a reversible cycle, and <i>only</i> then, the ratio of the heat transfers equals the ratio of the absolute reservoir temperatures. This is what lets temperature replace heat in every limit below.</p></div>
+  <div><h4>Maximum performance between two reservoirs</h4><div class="ceq" data-tex="\eta_{max}=1-\frac{T_C}{T_H},\qquad \beta_{max}=\frac{T_C}{T_H-T_C},\qquad \gamma_{max}=\frac{T_H}{T_H-T_C}"></div><p>Eqs. 5.9–5.11. Actual: η = W_cycle/Q_H = 1 − Q_C/Q_H, β = Q_C/W_cycle, γ = Q_H/W_cycle. Compare actual to maximum: <b>actual &lt; max → irreversible, = max → reversible, &gt; max → impossible.</b></p></div>
+  <div style="grid-column:1/-1;min-width:0"><h4>Performance table (class handout)</h4>
+    <div style="overflow-x:auto"><table class="ptable"><tr><th>Device / cycle</th><th>Desired output</th><th>Required input</th><th>Performance metric</th><th>Ideal / upper limit</th></tr>
     <tr><td>Heat engine</td><td>Work W_out</td><td>Heat in Q_H</td><td>η = W_out/Q_H</td><td>η_max = 1 − T_C/T_H</td></tr>
     <tr><td>Refrigerator</td><td>Cooling Q_L</td><td>Work W_in</td><td>COP_R = β = Q_L/W_in</td><td>β_max = T_C/(T_H − T_C)</td></tr>
     <tr><td>Heat pump</td><td>Heating Q_H</td><td>Work W_in</td><td>COP_HP = γ = Q_H/W_in</td><td>γ_max = T_H/(T_H − T_C)</td></tr>
     <tr><td>Rankine cycle (steam power)</td><td>Work W_net,out</td><td>Heat in (boiler) Q_in</td><td>η_th = W_net/Q_in</td><td>η_Rankine &lt; η_Carnot</td></tr>
-    <tr><td>Brayton cycle (gas turbine)</td><td>Work W_net,out</td><td>Heat in (combustor) Q_in</td><td>η_th = W_net/Q_in</td><td>η_Brayton &lt; η_Carnot</td></tr></table>
+    <tr><td>Brayton cycle (gas turbine)</td><td>Work W_net,out</td><td>Heat in (combustor) Q_in</td><td>η_th = W_net/Q_in</td><td>η_Brayton &lt; η_Carnot</td></tr></table></div>
     <p>Brayton and Rankine are <b>specific designs</b> — real implementations of a heat engine, so they are still bounded by Carnot, which is a <b>universal limit</b>. "Brayton and Rankine are attempts to approach Carnot… but real constraints prevent it."</p></div>
-  <div><h4>Clausius inequality</h4><div class="ceq" data-tex="\\oint\\left(\\frac{\\delta Q}{T}\\right)_b=-\\sigma_{cycle}\\qquad \\sigma_{cycle}=0\\ \\text{reversible},\\ \\ \\sigma_{cycle}>0\\ \\text{irreversible},\\ \\ \\sigma_{cycle}<0\\ \\text{impossible}"></div><p>Eqs. 5.13–5.14. Evaluate δQ/T at the <i>boundary</i> temperature, over the whole cycle; the bodies supplying or receiving heat need not be reservoirs. For a two-reservoir cycle: Q_H/T_H − Q_C/T_C = −σ_cycle. σ_cycle is the entropy produced by irreversibilities inside the system — the starting point of Chapter 6.</p></div></div>
+  <div><h4>Clausius inequality</h4><div class="ceq" data-tex="\oint\left(\frac{\delta Q}{T}\right)_b=-\sigma_{cycle}\qquad \sigma_{cycle}=0\ \text{reversible},\ \ \sigma_{cycle}>0\ \text{irreversible},\ \ \sigma_{cycle}<0\ \text{impossible}"></div><p>Eqs. 5.13–5.14. Evaluate δQ/T at the <i>boundary</i> temperature, over the whole cycle; the bodies supplying or receiving heat need not be reservoirs. For a two-reservoir cycle: Q_H/T_H − Q_C/T_C = −σ_cycle. σ_cycle is the entropy produced by irreversibilities inside the system — the starting point of Chapter 6.</p></div></div>
   </details>
   <div class="layout">
     <nav class="problems" id="nav" aria-label="Problems"></nav>
@@ -655,20 +656,20 @@ const PROPS=(()=>{
    are always encoded as a NUMBER the student types: η − η_max, or σ_cycle in kJ/K.                     */
 const CONCEPTS_TITLE="Key ideas: second-law statements, Carnot limits and the Clausius inequality";
 const CONCEPTS=`
-  <div><h4>Two classical statements</h4><p><b>Clausius:</b> it is impossible for any system to operate so that the <i>sole</i> result is heat transfer from a cooler to a hotter body. <b>Kelvin–Planck:</b> it is impossible for any system to run a cycle and deliver net work while receiving heat from a <i>single</i> thermal reservoir. Analytical form:</p><div class="ceq" data-tex="W_{cycle}\\le 0\\quad(\\text{single reservoir});\\qquad <0\\ \\text{irreversibilities present},\\ =0\\ \\text{none}"></div></div>
+  <div><h4>Two classical statements</h4><p><b>Clausius:</b> it is impossible for any system to operate so that the <i>sole</i> result is heat transfer from a cooler to a hotter body. <b>Kelvin–Planck:</b> it is impossible for any system to run a cycle and deliver net work while receiving heat from a <i>single</i> thermal reservoir. Analytical form:</p><div class="ceq" data-tex="W_{cycle}\le 0\quad(\text{single reservoir});\qquad <0\ \text{irreversibilities present},\ =0\ \text{none}"></div></div>
   <div><h4>Irreversibilities (what makes a real process fall short)</h4><p>Heat transfer through a finite ΔT · unrestrained expansion to a lower pressure · spontaneous chemical reaction · spontaneous mixing · friction (sliding and fluid) · electric current through a resistance · inelastic deformation. A process is <b>internally reversible</b> when none of these are present <i>inside</i> the system (a quasi-equilibrium process); irreversibilities may still exist in the surroundings.</p></div>
   <div><h4>Carnot corollaries</h4><p>1. An irreversible power cycle always has a <b>lower</b> thermal efficiency than a reversible one operating between the same two reservoirs ("real is always less than ideal"). 2. <b>All</b> reversible power cycles between the same two reservoirs have the <b>same</b> efficiency — an ideal Rankine plant and an ideal Brayton plant between the same T_H and T_C tie. The same two statements hold for the COP of refrigerators and heat pumps.</p></div>
-  <div><h4>Kelvin temperature scale</h4><div class="ceq" data-tex="\\left(\\frac{Q_C}{Q_H}\\right)_{rev}=\\frac{T_C}{T_H}\\qquad\\text{(Eq. 5.7, reversible cycles only; T in K or °R)}"></div><p>For a reversible cycle, and <i>only</i> then, the ratio of the heat transfers equals the ratio of the absolute reservoir temperatures. This is what lets temperature replace heat in every limit below.</p></div>
-  <div><h4>Maximum performance between two reservoirs</h4><div class="ceq" data-tex="\\eta_{max}=1-\\frac{T_C}{T_H},\\qquad \\beta_{max}=\\frac{T_C}{T_H-T_C},\\qquad \\gamma_{max}=\\frac{T_H}{T_H-T_C}"></div><p>Eqs. 5.9–5.11. Actual: η = W_cycle/Q_H = 1 − Q_C/Q_H, β = Q_C/W_cycle, γ = Q_H/W_cycle. Compare actual to maximum: <b>actual &lt; max → irreversible, = max → reversible, &gt; max → impossible.</b></p></div>
-  <div><h4>Performance table (class handout)</h4>
-    <table class="ptable"><tr><th>Device / cycle</th><th>Desired output</th><th>Required input</th><th>Performance metric</th><th>Ideal / upper limit</th></tr>
+  <div><h4>Kelvin temperature scale</h4><div class="ceq" data-tex="\left(\frac{Q_C}{Q_H}\right)_{rev}=\frac{T_C}{T_H}\qquad\text{(Eq. 5.7, reversible cycles only; T in K or °R)}"></div><p>For a reversible cycle, and <i>only</i> then, the ratio of the heat transfers equals the ratio of the absolute reservoir temperatures. This is what lets temperature replace heat in every limit below.</p></div>
+  <div><h4>Maximum performance between two reservoirs</h4><div class="ceq" data-tex="\eta_{max}=1-\frac{T_C}{T_H},\qquad \beta_{max}=\frac{T_C}{T_H-T_C},\qquad \gamma_{max}=\frac{T_H}{T_H-T_C}"></div><p>Eqs. 5.9–5.11. Actual: η = W_cycle/Q_H = 1 − Q_C/Q_H, β = Q_C/W_cycle, γ = Q_H/W_cycle. Compare actual to maximum: <b>actual &lt; max → irreversible, = max → reversible, &gt; max → impossible.</b></p></div>
+  <div style="grid-column:1/-1;min-width:0"><h4>Performance table (class handout)</h4>
+    <div style="overflow-x:auto"><table class="ptable"><tr><th>Device / cycle</th><th>Desired output</th><th>Required input</th><th>Performance metric</th><th>Ideal / upper limit</th></tr>
     <tr><td>Heat engine</td><td>Work W_out</td><td>Heat in Q_H</td><td>η = W_out/Q_H</td><td>η_max = 1 − T_C/T_H</td></tr>
     <tr><td>Refrigerator</td><td>Cooling Q_L</td><td>Work W_in</td><td>COP_R = β = Q_L/W_in</td><td>β_max = T_C/(T_H − T_C)</td></tr>
     <tr><td>Heat pump</td><td>Heating Q_H</td><td>Work W_in</td><td>COP_HP = γ = Q_H/W_in</td><td>γ_max = T_H/(T_H − T_C)</td></tr>
     <tr><td>Rankine cycle (steam power)</td><td>Work W_net,out</td><td>Heat in (boiler) Q_in</td><td>η_th = W_net/Q_in</td><td>η_Rankine &lt; η_Carnot</td></tr>
-    <tr><td>Brayton cycle (gas turbine)</td><td>Work W_net,out</td><td>Heat in (combustor) Q_in</td><td>η_th = W_net/Q_in</td><td>η_Brayton &lt; η_Carnot</td></tr></table>
+    <tr><td>Brayton cycle (gas turbine)</td><td>Work W_net,out</td><td>Heat in (combustor) Q_in</td><td>η_th = W_net/Q_in</td><td>η_Brayton &lt; η_Carnot</td></tr></table></div>
     <p>Brayton and Rankine are <b>specific designs</b> — real implementations of a heat engine, so they are still bounded by Carnot, which is a <b>universal limit</b>. "Brayton and Rankine are attempts to approach Carnot… but real constraints prevent it."</p></div>
-  <div><h4>Clausius inequality</h4><div class="ceq" data-tex="\\oint\\left(\\frac{\\delta Q}{T}\\right)_b=-\\sigma_{cycle}\\qquad \\sigma_{cycle}=0\\ \\text{reversible},\\ \\ \\sigma_{cycle}>0\\ \\text{irreversible},\\ \\ \\sigma_{cycle}<0\\ \\text{impossible}"></div><p>Eqs. 5.13–5.14. Evaluate δQ/T at the <i>boundary</i> temperature, over the whole cycle; the bodies supplying or receiving heat need not be reservoirs. For a two-reservoir cycle: Q_H/T_H − Q_C/T_C = −σ_cycle. σ_cycle is the entropy produced by irreversibilities inside the system — the starting point of Chapter 6.</p></div>`;
+  <div><h4>Clausius inequality</h4><div class="ceq" data-tex="\oint\left(\frac{\delta Q}{T}\right)_b=-\sigma_{cycle}\qquad \sigma_{cycle}=0\ \text{reversible},\ \ \sigma_{cycle}>0\ \text{irreversible},\ \ \sigma_{cycle}<0\ \text{impossible}"></div><p>Eqs. 5.13–5.14. Evaluate δQ/T at the <i>boundary</i> temperature, over the whole cycle; the bodies supplying or receiving heat need not be reservoirs. For a two-reservoir cycle: Q_H/T_H − Q_C/T_C = −σ_cycle. σ_cycle is the entropy produced by irreversibilities inside the system — the starting point of Chapter 6.</p></div>`;
 
 /* verdict helpers: d = η − η_max (or β − β_max), s = σ_cycle */
 const VERD=(d,eps=1e-9)=>d<-eps?"irreversible":d>eps?"impossible":"reversible";
@@ -964,12 +965,25 @@ const PROBLEMS = [
 
 function fixSubs(root){
   if(!root) return;
-  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="PRE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="INPUT"||t==="SUB"||(p.getAttribute&&p.getAttribute("data-sub")==="1")||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")||p.classList.contains("katex")||p.classList.contains("mlcode")))) return true; } return false; };
+  const inSvgText=(n)=>{ for(let p=n.parentNode;p;p=p.parentNode){ if(p.nodeName==="text"||p.nodeName==="tspan") return true; if(p.nodeName==="svg"||p.nodeName==="BODY") return false; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:,[a-z]+)?(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
-  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+  nodes.forEach(n=>{ const s=n.nodeValue; re.lastIndex=0; if(!re.test(s)) return; re.lastIndex=0; const svg=inSvgText(n); const frag=document.createDocumentFragment(); let last=0, afterSub=false;
+    const plain=(t)=>{ if(!t) return; if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent=t; frag.appendChild(ts); } else frag.appendChild(document.createTextNode(t)); afterSub=false; };
+    s.replace(re,(m,a,b,i)=>{ plain(s.slice(last,i)+a); let sb; if(svg){ sb=document.createElementNS(SVGNS,"tspan"); sb.setAttribute("dy","0.25em"); sb.setAttribute("font-size","75%"); sb.setAttribute("data-sub","1"); } else sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); afterSub=true; last=i+m.length; return m; });
+    const rest=s.slice(last); if(rest) plain(rest); else if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent="​"; frag.appendChild(ts); }
+    n.parentNode.replaceChild(frag,n); });
 }
+/* diagrams and feedback that are re-drawn without calling fixSubs (animations, drills): tidy them automatically */
+(function(){ if(typeof MutationObserver==="undefined"||typeof document==="undefined") return; let queued=false;
+  /* keep diagram labels inside their drawing: nudge any <text> that sticks out of the viewBox back in */
+  const keepIn=()=>{ document.querySelectorAll("svg.mlsvg, svg.schemsvg").forEach(svg=>{ const vb=svg.viewBox&&svg.viewBox.baseVal; if(!vb||!vb.width||!svg.getBoundingClientRect().width) return; svg.querySelectorAll("text").forEach(t=>{ if(t.closest("g[transform]")||(t.getAttribute("transform")&&!t.dataset.nudged)) return; let b; try{ b=t.getBBox(); }catch(e){ return; } if(!b.width) return; let dx=0,dy=0; if(b.x+b.width>vb.x+vb.width-3) dx=vb.x+vb.width-3-(b.x+b.width); if(b.x+dx<vb.x+3) dx=vb.x+3-b.x; if(b.y<vb.y+1) dy=vb.y+1-b.y; if(b.y+b.height>vb.y+vb.height-1) dy=vb.y+vb.height-1-(b.y+b.height); const cur=t.getAttribute("transform")||""; const want=(Math.abs(dx)>0.5||Math.abs(dy)>0.5)?`translate(${dx.toFixed(1)},${dy.toFixed(1)})`:""; if(want!==cur){ if(want){ t.setAttribute("transform",want); t.dataset.nudged="1"; } else if(t.dataset.nudged){ t.removeAttribute("transform"); } } }); }); };
+  const run=()=>{ queued=false; try{ keepIn(); }catch(e){} try{ document.querySelectorAll("svg text, .dfb, .dq, .dopts, .ro, .note, table.mini, table.jt, .verdict, .chip, .tag, li, .ptag, h3, h4").forEach(el=>{ if(el.textContent.indexOf("_")>=0) fixSubs(el); }); }catch(e){} };
+  const start=()=>{ new MutationObserver(()=>{ if(!queued){ queued=true; requestAnimationFrame(run); } }).observe(document.body,{childList:true,subtree:true,characterData:true}); run(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start); })();
 
 /* ===================== SCHEMATIC HELPERS (SVG) =====================
    Coordinates are SVG pixels in a 360 × 220 box (y points down).
@@ -1956,7 +1970,7 @@ const GAME=(()=>{
     const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
     const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
     let t0=null;
-    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
       P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
       requestAnimationFrame(f); })(performance.now());
   }
@@ -2200,8 +2214,8 @@ const PD=(()=>{
     const dQ=pa&&pa.heat; svg.querySelector("#heat").innerHTML=dQ?`<g class="${dQ>0?"hin":"hout"}">${[70,110,150].map(x=>`<path d="M${x},228 q4,-6 0,-12 q-4,-6 0,-12" />`).join("")}</g>`:"";
     const u=PROPS.U[sp.units||"SI"]; host.querySelector("#readout").innerHTML=`<span>P = <b>${PROPS.f4(s.P)}</b> ${u.P}</span><span>v = <b>${PROPS.f4(s.v)}</b> ${u.v}</span>${isFinite(s.T)?`<span>T = <b>${PROPS.f4(s.T)}</b> ${u.T}</span>`:""}${pa&&pa.label?`<span class="pl">${pa.label}</span>`:""}`; }
   let raf=null;
-  function play(cv,sp,a,speed=1){ if(raf) cancelAnimationFrame(raf); const paths=sp.paths.map(pa=>pathPoints(sp,pa)); const total=paths.length; const dur=2600/speed; let t0=null; const host=$("#anim");
-    (function f(ts){ t0??=ts; const k=Math.min((ts-t0)/(dur*total),1); const i=Math.min(Math.floor(k*total),total-1); const pts=paths[i]; const q=(k*total-i); const j=Math.min(Math.floor(q*(pts.length-1)),pts.length-1); const pt=pts[j]; draw(cv,sp,pt);
+  function play(cv,sp,a,speed=1){ if(raf) cancelAnimationFrame(raf); const paths=sp.paths.map(pa=>pathPoints(sp,pa)); const total=paths.length; if(!total){ raf=null; return; } const dur=2600/speed; let t0=null; const host=$("#anim");
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=Math.min((ts-t0)/(dur*total),1); const i=Math.min(Math.floor(k*total),total-1); const pts=paths[i]; if(!pts||!pts.length){ raf=null; return; } const q=(k*total-i); const j=Math.min(Math.floor(q*(pts.length-1)),pts.length-1); const pt=pts[j]; draw(cv,sp,pt);
       if(host&&a){ const pa=sp.paths[i]; const A=sp.states[pa.a], B=sp.states[pa.b]; const sv={v:sp.x==="v"?pt[0]:A.v+(B.v-A.v)*q, P:sp.y==="P"?pt[1]:A.P+(B.P-A.P)*q, T:sp.y==="T"?pt[1]:(isFinite(A.T)&&isFinite(B.T)?A.T+(B.T-A.T)*q:NaN)}; animSet(host,a,sp,sv,pa); }
       if(k<1) raf=requestAnimationFrame(f); else raf=null; })(performance.now()); }
   return {draw,play,animInit,pathPoints};
@@ -2218,5 +2232,29 @@ renderConcepts(); fixSubs(document.getElementById("concepts"));
 { const _rn=renderNav; renderNav=function(){ _rn(); GAME.markNav(); };
   const _ds=drawSolution; drawSolution=function(p,v,r,ans,steps){ _ds(p,v,r,ans,steps); if(state.shown>=steps.length) GAME.onReveal(); }; }
 
+</script>
+<p style="margin:28px auto 16px;max-width:1080px;padding:0 16px;text-align:center;opacity:.8;font-size:.85rem;color:#97a7c9">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE" style="color:#5eeaff">LICENSE</a> · third-party components in <a href="../NOTICE.md" style="color:#5eeaff">NOTICE</a>.</p>
+<script src="../videos.js"></script>
+<script>
+/* ATLAS video slots: shows "Watch Dr. Walck set it up" on a problem when videos.js has a link for it. No tracking: the player loads only when the student presses the button. */
+(function(){
+  var V=window.ATLAS_VIDEOS||{}; var parts=location.pathname.split("/"); var file=(parts.pop()||"").replace(/\.html$/,""); var course=parts.pop()||""; var base=course+"/"+file;
+  function ytId(u){ u=String(u||"").trim(); if(!u) return ""; var m=u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/); if(m) return m[1]; return /^[A-Za-z0-9_-]{11}$/.test(u)?u:""; }
+  function curId(){ var o=document.getElementById("orig"); if(!o) return ""; var sheet=o.closest("#sheet,#psheet,section,main")||document; var h=sheet.querySelector("h2"); var name=h?h.textContent.trim():""; var btns=document.querySelectorAll("#nav button[data-id],#pnav button[data-id]"); for(var i=0;i<btns.length;i++){ var pn=btns[i].querySelector(".pname"); if(pn&&pn.textContent.trim()===name) return btns[i].dataset.id; } var c=document.querySelector("#nav button[aria-current='true'],#pnav button[aria-current='true']"); return c?c.dataset.id:""; }
+  function close(){ var m=document.getElementById("vidmodal"); if(m) m.remove(); document.removeEventListener("keydown",esc); }
+  function esc(e){ if(e.key==="Escape") close(); }
+  function open(url,title){ var id=ytId(url); if(!id){ window.open(url,"_blank","noopener"); return; } close();
+    var m=document.createElement("div"); m.id="vidmodal"; m.setAttribute("role","dialog"); m.setAttribute("aria-modal","true"); m.setAttribute("aria-label","Video: "+title);
+    m.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(4,8,18,.86);display:flex;align-items:center;justify-content:center;padding:16px";
+    m.innerHTML='<div style="width:min(960px,100%);background:#0c1326;border:1px solid #2a3a63;border-radius:14px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px"><b style="color:#eaf0ff;font-size:1rem"></b><button type="button" class="btn" id="vidclose" aria-label="Close video">✕ Close</button></div><div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p style="margin:10px 2px 0;color:#97a7c9;font-size:.88rem">This video uses the class example numbers, now showing on the page. When it ends, press <b>New numbers</b> and work it yourself.</p></div>';
+    m.querySelector("b").textContent="Dr. Walck sets it up: "+title; m.querySelector("iframe").src="https://www.youtube-nocookie.com/embed/"+id+"?rel=0&autoplay=1"; m.querySelector("iframe").title="Video: "+title;
+    m.addEventListener("click",function(e){ if(e.target===m) close(); }); document.body.appendChild(m); m.querySelector("#vidclose").onclick=close; m.querySelector("#vidclose").focus(); document.addEventListener("keydown",esc); }
+  function place(){ var o=document.getElementById("orig"); if(!o||document.getElementById("vidbtn")) return; var id=curId(); var url=id?V[base+"#"+id]:""; if(!url) return;
+    var b=document.createElement("button"); b.type="button"; b.id="vidbtn"; b.className="btn"; b.textContent="▶ Watch Dr. Walck set it up"; b.title="A short video of Dr. Walck explaining this problem, how to set it up and which method to use";
+    b.style.cssText="border-color:#ffc928;color:#ffc928"; var h=document.querySelector(".phead h2")||document.querySelector("#psheet h2,#sheet h2"); var title=h?h.textContent.trim():"";
+    b.onclick=function(){ var og=document.getElementById("orig"); if(og) og.click(); open(url,title); }; o.parentNode.insertBefore(b,o.nextSibling); }
+  var t=null; new MutationObserver(function(){ clearTimeout(t); t=setTimeout(place,60); }).observe(document.documentElement,{childList:true,subtree:true}); if(document.readyState!=="loading") place(); else document.addEventListener("DOMContentLoaded",place);
+  window.ATLAS_VIDEO_OPEN=open;
+})();
 </script>
 </body></html>

@@ -23,16 +23,16 @@ window.ATLAS_VIDEOS = {
   "dynamics/Impacts#rodhit": "",                                 // Ball Strikes a Free Rod
 
   // Particle Kinematics: Cartesian · Dynamics Practice
-  "dynamics/Particle_Kinematics_Cartesian#plane": "",            // Private Plane
-  "dynamics/Particle_Kinematics_Cartesian#yoke": "",             // Scotch Yoke
-  "dynamics/Particle_Kinematics_Cartesian#chute": "",            // Parachute
-  "dynamics/Particle_Kinematics_Cartesian#gasgun": "",           // Gas Gun
-  "dynamics/Particle_Kinematics_Cartesian#survey": "",           // Survey Plane Drop
-  "dynamics/Particle_Kinematics_Cartesian#station": "",          // Subway Station
-  "dynamics/Particle_Kinematics_Cartesian#vtgraph": "",          // Tram v–t Graph
-  "dynamics/Particle_Kinematics_Cartesian#rampjump": "",         // Motorcycle Ramp Jump
-  "dynamics/Particle_Kinematics_Cartesian#fieldgoal": "",        // Field Goal
-  "dynamics/Particle_Kinematics_Cartesian#pulley": "",           // Table & Movable Pulley
+  "dynamics/Particle_Kinematics_Cartesian#plane": "https://youtu.be/yeFnOAUPfyI",            // Private Plane
+  "dynamics/Particle_Kinematics_Cartesian#yoke": "https://youtu.be/trrFykJ5ggE",             // Scotch Yoke
+  "dynamics/Particle_Kinematics_Cartesian#chute": "https://youtu.be/vzkgFDseBDE",            // Parachute
+  "dynamics/Particle_Kinematics_Cartesian#gasgun": "https://youtu.be/eEdTfF7VER8",           // Gas Gun
+  "dynamics/Particle_Kinematics_Cartesian#survey": "https://youtu.be/PAKWqS6W1VA",           // Survey Plane Drop
+  "dynamics/Particle_Kinematics_Cartesian#station": "https://youtu.be/N_KbFOrBE0Q",          // Subway Station
+  "dynamics/Particle_Kinematics_Cartesian#vtgraph": "https://youtu.be/d0GAQAFRUzI",          // Tram v–t Graph
+  "dynamics/Particle_Kinematics_Cartesian#rampjump": "https://youtu.be/vr4aAnLSiNg",         // Motorcycle Ramp Jump
+  "dynamics/Particle_Kinematics_Cartesian#fieldgoal": "https://youtu.be/m_MEm1TDQtg",        // Field Goal
+  "dynamics/Particle_Kinematics_Cartesian#pulley": "https://youtu.be/hhTuQLsqthQ",           // Table & Movable Pulley
 
   // Particle Kinematics: Normal–Tangential · Dynamics Practice
   "dynamics/Particle_Kinematics_Normal_Tangential#robot": "",    // Robot Arm

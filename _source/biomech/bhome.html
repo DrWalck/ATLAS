@@ -56,10 +56,10 @@ a.topic:focus-visible{outline:2px solid var(--z);outline-offset:3px}
 .topic .eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:600;color:var(--z)}
 .topic h3{font-family:var(--display);font-weight:700;font-size:1.45rem;line-height:1.05;margin:2px 0 0;text-wrap:balance;color:#fff}
 .topic ul{list-style:none;margin:0;padding:10px 0 0;display:flex;flex-direction:column;gap:3px;border-top:1px solid color-mix(in srgb,var(--z) 20%,var(--line))}
-.topic li{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;min-width:0}
-.topic li span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;min-width:0}
+.topic li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:.9rem;min-width:0;padding:2px 0}
+.topic li span:first-child{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
 .topic li.done span:first-child::after{content:"✓";margin-left:.4em;color:var(--good);text-shadow:0 0 6px var(--good);font-weight:700}
-.topic li span:last-child{font-family:var(--mono);font-size:.72rem;color:#8ea3cf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 46%;text-align:right;min-width:0}
+.topic li span:last-child{font-family:var(--mono);font-size:.72rem;color:#8ea3cf;flex:0 1 42%;text-align:right;min-width:0;overflow-wrap:anywhere}
 .topic li:hover span{white-space:normal;overflow:visible}
 .prog{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .prog .bar{flex:1;height:6px;border-radius:9px;background:#141f3b;overflow:hidden}
@@ -70,7 +70,7 @@ sub{font-size:.72em;line-height:0;vertical-align:-.25em}
 .eyebrow sub{text-transform:none}
 @media (max-width:720px){header{grid-template-columns:1fr}.hud{min-width:0}}
 .topic.soon{opacity:.55;filter:saturate(.6)} .topic.soon:hover{transform:none}
-</style></head><body>
+</style>
 
 <div class="wrap">
   <header>
@@ -91,7 +91,7 @@ sub{font-size:.72em;line-height:0;vertical-align:-.25em}
         <li><a class="tblink" href="kinetics.html"><b>τ</b> Joint Kinetics Lab &rarr;</a></li>
         <li><a class="tblink" href="multi.html"><b>⛓</b> Multi-Joint Lab &rarr;</a></li>
         <li><a class="tblink" href="tmj.html"><b>⌒</b> Jaw Motion &amp; Reconstruction Lab &rarr;</a></li>
-        <li><a class="tblink" href="mtc.html"><b>∿</b> MTC &amp; Stability Lab &rarr;</a></li>
+        <li><a class="tblink" href="mtc.html"><b>∿</b> MTC &amp; Joint Stability Lab &rarr;</a></li>
         <li><a class="tblink" href="capstone.html"><b>★</b> Capstone &amp; Final Review &rarr;</a></li>
       </ul>
     </div>
@@ -105,6 +105,8 @@ sub{font-size:.72em;line-height:0;vertical-align:-.25em}
   </section>
 </div>
 
+
+<p style="margin:28px 0 8px;text-align:center;opacity:.8;font-size:.85rem;color:#97a7c9">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE" style="color:#5eeaff">LICENSE</a> · third-party components in <a href="../NOTICE.md" style="color:#5eeaff">NOTICE</a>.</p><!--atlasfoot-->
 <script>
 /* Turn plain-text subscripts like a_t, ΣF_n, r_B/A into real subscripts (skips math and inputs). */
 function fixSubs(root){
@@ -127,7 +129,7 @@ const TOPICS = [
     title: "Frames & Joints Lab: Planes, Axes, Joint Types & Movements",
     lab: true,
     problems: [
-      ["3-D body you can rotate and x-ray", "ISB frames · cardinal planes"],
+      ["Real 3-D body you can rotate, split and pose", "ISB frames · cardinal planes"],
       ["Every joint: type, DOF, movements", "animated in its plane about its axis"],
       ["Drills", "plane · axis · joint type · DOF"]
     ]
@@ -138,7 +140,7 @@ const TOPICS = [
     title: "Anatomy Explorer: Peel Back the Body",
     lab: true,
     problems: [
-      ["Skin → superficial → deep muscles → skeleton → joints", "layer sliders"],
+      ["Superficial → deep muscles → skeleton → joint surfaces", "layer sliders"],
       ["60 muscles with origin, insertion, action, planes", "click · isolate · fly to"],
       ["Drills: name it, where does it attach, prime mover", "+XP"]
     ]
@@ -151,7 +153,7 @@ const TOPICS = [
     problems: [
       ["Stress–strain curve builder: toe → elastic → plastic → failure", "interactive"],
       ["Creep vs stress relaxation · hysteresis · spring + damper", "interactive"],
-      ["Knee ligaments & clinical tests · healing", "drills + ES 305 problems"]
+      ["Knee ligaments & clinical tests · healing", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -162,7 +164,7 @@ const TOPICS = [
     problems: [
       ["Muscle → fascicle → fiber → myofibril → sarcomere", "5-level zoom"],
       ["Sliding filament, cross-bridge cycle, force–length", "interactive"],
-      ["Series vs parallel, pennation, PCSA, Hill curve · real OpenSim muscle", "drills + ES 305 problems"]
+      ["Series vs parallel, pennation, PCSA, Hill curve · real OpenSim muscle", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -173,7 +175,7 @@ const TOPICS = [
     problems: [
       ["3-element Hill model with real OpenSim muscles · motor/brake/strut/spring", "interactive"],
       ["Motor-unit recruitment, rate coding, RFD & fatigue", "interactive"],
-      ["Perturbed joint, co-contraction, popping sarcomeres", "drills + ES 305 problems"]
+      ["Perturbed joint, co-contraction, popping sarcomeres", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -184,7 +186,7 @@ const TOPICS = [
     problems: [
       ["Roll · glide · spin, convex–concave rule", "animated + interactive"],
       ["Knee open vs closed chain, screw-home, angles", "interactive"],
-      ["Mobilization planner (3-step workflow)", "drills + ES 305 problems"]
+      ["Mobilization planner (3-step workflow)", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -195,7 +197,7 @@ const TOPICS = [
     problems: [
       ["Dempster segment table, whole-body COM, parallel axis", "interactive"],
       ["Link-segment inverse dynamics: foot → shank → thigh", "FBDs + presets"],
-      ["Net joint moments, joint power, EMA", "drills + ES 305 problems"]
+      ["Net joint moments, joint power, EMA", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -206,7 +208,7 @@ const TOPICS = [
     problems: [
       ["Elbow torque lab, EMA, vector resolution, strength curves", "interactive"],
       ["Patellofemoral load vs squat depth · GRF force plate & jump impulse", "interactive"],
-      ["Load types & fracture patterns · George vs Jim", "drills + ES 305 problems"]
+      ["Load types & fracture patterns · George vs Jim", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -217,7 +219,7 @@ const TOPICS = [
     problems: [
       ["Two-link pattern player · forward kinematics & reach area", "interactive"],
       ["Angle–angle, coupling angle & polar plots for gait", "interactive"],
-      ["Energy transfers, biarticular muscles, sequencing, chain stiffness", "drills + ES 305 problems"]
+      ["Energy transfers, biarticular muscles, sequencing, chain stiffness", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -228,7 +230,7 @@ const TOPICS = [
     problems: [
       ["Hierarchical-model builder · inverted U · balance", "interactive"],
       ["Jump & landing, cycling, glass, wheelchair, gait viewer with a real measured stride (markers, force plates, EMG)", "interactive"],
-      ["Final review drawn from every topic", "drills + ES 305 problems"]
+      ["Final review drawn from every topic", "drills + problems (ES 305 format)"]
     ]
   },
   {
@@ -239,7 +241,7 @@ const TOPICS = [
     problems: [
       ["Sagittal TMJ: hinge phase, then the condyle slides down the eminence", "interactive"],
       ["Clutch-marker tracking → rigid-body pose · mandible as a class III lever", "interactive"],
-      ["Implant study on the real skull: healthy vs patient-specific vs generic vs fibula flap · torque about the ICR", "drills + ES 305 problems"]
+      ["Implant study on the real skull: healthy vs patient-specific vs generic vs fibula flap · torque about the ICR", "drills + problems (ES 305 format)"]
     ]
   }
 ];
@@ -290,10 +292,10 @@ const ICON = {
 let G={xp:0,streak:0,best:0,solved:{}};
 try{ Object.assign(G, JSON.parse(localStorage.getItem("dpl-game"))||{}); }catch(e){}
 const total=TOPICS.reduce((n,t)=>n+((t.lab||t.soon)?0:(t.pcount||t.problems.length)),0);
-const cleared=Object.values(G.solved||{}).reduce((n,a)=>n+a.length,0);
+const cleared=TOPICS.reduce((n,t)=>n+(((G.solved||{})[t.key]||[]).length),0); /* this course only */
 document.getElementById("hud").innerHTML=`
   <div class="cell lvl"><span class="k">Level</span><div class="row"><span class="n">${Math.floor(G.xp/100)+1}</span><span class="xpbar" title="${G.xp%100}/100 XP to next level"><i style="width:${G.xp%100}%"></i></span></div><span class="k">${G.xp} XP total</span></div>
-  <div class="cell st"><span class="k">Streak · best ${G.best}</span><span class="n">${G.streak}</span></div>
+  <div class="cell st"><span class="k">In a row · best ${G.best}</span><span class="n">${G.streak}</span></div>
   <div class="cell cl"><span class="k">Cleared</span><span class="n">${Math.min(cleared,total)}/${total}</span></div>`;
 
 document.getElementById("topics").innerHTML = TOPICS.map(t => {

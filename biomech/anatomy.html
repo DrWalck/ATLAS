@@ -563,6 +563,18 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
 .figlayout .layout{grid-template-columns:220px minmax(0,1fr);gap:16px}
 #fignote{min-height:3em}
 @media (max-width:900px){.layout{grid-template-columns:1fr}}
+@media (max-width:900px){.figlayout .layout{grid-template-columns:1fr}}
+.figlayout>section,.figlayout>aside{min-width:0}.mpane{min-width:0}.mlsvg,.schemsvg{max-width:100%;height:auto}
+.figlayout.nofig{grid-template-columns:1fr}.figlayout.nofig>aside{display:none}.figlayout.nofig .layout{grid-template-columns:250px minmax(0,1fr)}
+@media (max-width:900px){.figlayout.nofig .layout{grid-template-columns:1fr}}
+.figlayout .two{grid-template-columns:1fr}
+@media (min-width:1500px){.figlayout .two{grid-template-columns:1fr 1fr}}
+#bsplit{display:grid;grid-template-columns:1fr 1fr;gap:6px}#bsplit[hidden],#bscene[hidden]{display:none}
+table.mini,table.jt,table.ptab{max-width:100%}.panel{min-width:0;overflow-wrap:anywhere}
+.btn .note{font-size:.82em;opacity:.8}
+.atlasfoot a{color:#5eeaff}
+.mlsvg text.mlab{paint-order:stroke;stroke:#080d1a;stroke-width:3px;stroke-linejoin:round}
+.atlasfoot{margin:28px 0 8px;text-align:center;opacity:.8;font-size:.85rem;color:var(--muted)}
 .solution .note{font-size:.88rem;color:var(--muted)}
 .seg{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px 4px 10px;margin:0 0 10px;border:1px solid var(--line,#2c4274);border-radius:999px;background:rgba(12,20,44,.7);width:max-content;max-width:100%}
 .seglab{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
@@ -581,7 +593,7 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
     <p>Real muscle, tendon, bone, cartilage and ligament surfaces of the whole body (Z-Anatomy atlas) — fade each layer in and out, split the body into skeleton and muscles, click any structure for its origin, insertion, action, joints and planes, isolate it, and drill until the names stick.</p>
   </header>
 
-  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore</button><button type="button" class="tabbtn" data-k="drills">Drills · earn XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
+  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore</button><button type="button" class="tabbtn" data-k="drills">Drills · XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
   <div class="jetlayout">
     <section>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
@@ -589,7 +601,7 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
       <div class="panel" id="explore" style="margin-top:12px"><div id="ainfo"></div></div>
       <div class="panel" id="drills" style="margin-top:12px" hidden><h4>Drills</h4><p class="note">A structure is highlighted and isolated on the body — name it, give its origin/insertion/action, or pick the prime mover for a movement. Rotate the body if you need another view. +10 XP per correct answer.</p><button type="button" class="btn primary" id="andrillstart">Start</button><div id="andrill" style="margin-top:10px"></div></div>
       <div class="panel" id="reference" style="margin-top:12px" hidden><h4>Muscles: origin · insertion · action</h4><div id="areftable"></div></div>
-      <p class="note" style="margin-top:10px">Body surfaces: <a href="https://github.com/Z-Anatomy" target="_blank" rel="noopener">Z-Anatomy</a> open-source 3-D atlas (CC BY-SA 4.0), decimated for the web; structure notes from the ME 320 course; muscle parameters from the OpenSim Rajagopal model. See NOTICE.md.</p>
+      <p class="note" style="margin-top:10px">Body surfaces: <a href="https://github.com/Z-Anatomy" target="_blank" rel="noopener">Z-Anatomy</a> open-source 3-D atlas (CC BY-SA 4.0), decimated for the web; structure notes from the ME 320 course; muscle parameters from the OpenSim Rajagopal model. See <a href="../NOTICE.md">NOTICE</a> and <a href="../LICENSE">LICENSE</a>.</p>
     </section>
     <aside>
       <div class="panel"><h4>Peel back the layers</h4>
@@ -598,7 +610,7 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
           <label>Ligaments &amp; retinacula <input type="range" id="lay-skin" min="0" max="1" step="0.05"></label>
           <label>Superficial muscles <input type="range" id="lay-m1" min="0" max="1" step="0.05"></label>
           <label>Deep muscles <input type="range" id="lay-m2" min="0" max="1" step="0.05"></label>
-          <label>Bones <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
+          <label>Skeleton (bones) <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
           <label>Joint surfaces (articular cartilage) <input type="range" id="lay-joint" min="0" max="1" step="0.05"></label>
         </div>
         <div class="two" style="margin-top:6px"><label class="note">Region<select id="aregion"><option value="all">Whole body</option><option value="head">Head &amp; neck</option><option value="trunk">Trunk</option><option value="upper">Upper limb</option><option value="lower">Lower limb</option></select></label>
@@ -606,19 +618,34 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
       </div>
       <div class="panel" style="margin-top:12px"><h4>Find a structure</h4><input type="search" id="asearch" placeholder="search…" style="width:100%;background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit"><select id="astruct" style="margin-top:6px"></select>
         <small class="note" style="display:block;margin-top:8px">Click a muscle on the body to see its origin (green), insertion (yellow), action, joints and planes. Isolate it to see its path through the other layers.</small></div>
-      <div class="panel legend" style="margin-top:12px"><h4>Colors</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b8413a"></i> superficial muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8e2f3a"></i> deep muscle</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e8e2d2"></i> bone &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#22d3ee"></i> joint center &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d9b38c"></i> skin</small><small style="margin-top:6px">Pelvis, sacrum, femur, tibia and fibula are the bone meshes of the open-source OpenSim lower-limb model, and the lower-limb muscles are drawn along that model's attachment paths with its Hill-type parameters (Rajagopal et al. 2016; Lai et al. 2017; Uhlrich et al. 2022 — OpenSim, Apache 2.0; see NOTICE). Everything else is the original ATLAS model built from anatomical dimensions; those shapes are schematic. Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's).</small></div>
+      <div class="panel legend" style="margin-top:12px"><h4>Colors</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#a83a30"></i> muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ebe1c7"></i> tendon &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ede6d6"></i> bone</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ccdbe6"></i> cartilage &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#59dbf2"></i> joint surface (Joints view) &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ffd23f"></i> selected</small><small style="margin-top:6px">The body surfaces are from the open-source Z-Anatomy atlas (CC BY-SA 4.0). Muscle parameters in the detail panel (maximum force, optimal fiber length, tendon slack length, pennation) come from the OpenSim model of Rajagopal et al. 2016, Lai et al. 2017 and Uhlrich et al. 2022 (Apache 2.0). Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's). See <a href="../NOTICE.md">NOTICE</a>.</small></div>
     </aside>
   </div>
+<p class="atlasfoot">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE">LICENSE</a> · third-party components in <a href="../NOTICE.md">NOTICE</a>.</p>
 </div>
 <script src="osim_data.js"></script><script>
 function fixSubs(root){
   if(!root) return;
-  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="PRE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="INPUT"||t==="SUB"||(p.getAttribute&&p.getAttribute("data-sub")==="1")||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")||p.classList.contains("katex")||p.classList.contains("mlcode")))) return true; } return false; };
+  const inSvgText=(n)=>{ for(let p=n.parentNode;p;p=p.parentNode){ if(p.nodeName==="text"||p.nodeName==="tspan") return true; if(p.nodeName==="svg"||p.nodeName==="BODY") return false; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:,[a-z]+)?(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
-  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+  nodes.forEach(n=>{ const s=n.nodeValue; re.lastIndex=0; if(!re.test(s)) return; re.lastIndex=0; const svg=inSvgText(n); const frag=document.createDocumentFragment(); let last=0, afterSub=false;
+    const plain=(t)=>{ if(!t) return; if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent=t; frag.appendChild(ts); } else frag.appendChild(document.createTextNode(t)); afterSub=false; };
+    s.replace(re,(m,a,b,i)=>{ plain(s.slice(last,i)+a); let sb; if(svg){ sb=document.createElementNS(SVGNS,"tspan"); sb.setAttribute("dy","0.25em"); sb.setAttribute("font-size","75%"); sb.setAttribute("data-sub","1"); } else sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); afterSub=true; last=i+m.length; return m; });
+    const rest=s.slice(last); if(rest) plain(rest); else if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent="​"; frag.appendChild(ts); }
+    n.parentNode.replaceChild(frag,n); });
 }
+/* diagrams and feedback that are re-drawn without calling fixSubs (animations, drills): tidy them automatically */
+(function(){ if(typeof MutationObserver==="undefined"||typeof document==="undefined") return; let queued=false;
+  /* keep diagram labels inside their drawing: nudge any <text> that sticks out of the viewBox back in */
+  const keepIn=()=>{ document.querySelectorAll("svg.mlsvg, svg.schemsvg").forEach(svg=>{ const vb=svg.viewBox&&svg.viewBox.baseVal; if(!vb||!vb.width||!svg.getBoundingClientRect().width) return; svg.querySelectorAll("text").forEach(t=>{ if(t.closest("g[transform]")||(t.getAttribute("transform")&&!t.dataset.nudged)) return; let b; try{ b=t.getBBox(); }catch(e){ return; } if(!b.width) return; let dx=0,dy=0; if(b.x+b.width>vb.x+vb.width-3) dx=vb.x+vb.width-3-(b.x+b.width); if(b.x+dx<vb.x+3) dx=vb.x+3-b.x; if(b.y<vb.y+1) dy=vb.y+1-b.y; if(b.y+b.height>vb.y+vb.height-1) dy=vb.y+vb.height-1-(b.y+b.height); const cur=t.getAttribute("transform")||""; const want=(Math.abs(dx)>0.5||Math.abs(dy)>0.5)?`translate(${dx.toFixed(1)},${dy.toFixed(1)})`:""; if(want!==cur){ if(want){ t.setAttribute("transform",want); t.dataset.nudged="1"; } else if(t.dataset.nudged){ t.removeAttribute("transform"); } } }); }); };
+  const run=()=>{ queued=false; try{ keepIn(); }catch(e){} try{ document.querySelectorAll("svg text, .dfb, .dq, .dopts, .ro, .note, table.mini, table.jt, .verdict, .chip, .tag, li, .ptag, h3, h4").forEach(el=>{ if(el.textContent.indexOf("_")>=0) fixSubs(el); }); }catch(e){} };
+  const start=()=>{ new MutationObserver(()=>{ if(!queued){ queued=true; requestAnimationFrame(run); } }).observe(document.body,{childList:true,subtree:true,characterData:true}); run(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start); })();
+
 /* ===================== GL3: WebGL body renderer for the Z-Anatomy mesh =====================
    Loads biomech/zanatomy.bin (ATLAS format: 'ZANA' + JSON header + int16 positions (×q m) + int8 normals + uint16 local indices),
    one draw range per part. API mirrors the old canvas renderer (B3) where the explorer and labs use it:
@@ -819,7 +846,7 @@ const GAME=(()=>{
     const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
     const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
     let t0=null;
-    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
       P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
       requestAnimationFrame(f); })(performance.now());
   }
@@ -1204,5 +1231,28 @@ const AN=(()=>{
 AN.init(); GL3.S.alphaFn=AN.alphaSplit;
 
 GAME.hud();
+</script>
+<script src="../videos.js"></script>
+<script>
+/* ATLAS video slots: shows "Watch Dr. Walck set it up" on a problem when videos.js has a link for it. No tracking: the player loads only when the student presses the button. */
+(function(){
+  var V=window.ATLAS_VIDEOS||{}; var parts=location.pathname.split("/"); var file=(parts.pop()||"").replace(/\.html$/,""); var course=parts.pop()||""; var base=course+"/"+file;
+  function ytId(u){ u=String(u||"").trim(); if(!u) return ""; var m=u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/); if(m) return m[1]; return /^[A-Za-z0-9_-]{11}$/.test(u)?u:""; }
+  function curId(){ var o=document.getElementById("orig"); if(!o) return ""; var sheet=o.closest("#sheet,#psheet,section,main")||document; var h=sheet.querySelector("h2"); var name=h?h.textContent.trim():""; var btns=document.querySelectorAll("#nav button[data-id],#pnav button[data-id]"); for(var i=0;i<btns.length;i++){ var pn=btns[i].querySelector(".pname"); if(pn&&pn.textContent.trim()===name) return btns[i].dataset.id; } var c=document.querySelector("#nav button[aria-current='true'],#pnav button[aria-current='true']"); return c?c.dataset.id:""; }
+  function close(){ var m=document.getElementById("vidmodal"); if(m) m.remove(); document.removeEventListener("keydown",esc); }
+  function esc(e){ if(e.key==="Escape") close(); }
+  function open(url,title){ var id=ytId(url); if(!id){ window.open(url,"_blank","noopener"); return; } close();
+    var m=document.createElement("div"); m.id="vidmodal"; m.setAttribute("role","dialog"); m.setAttribute("aria-modal","true"); m.setAttribute("aria-label","Video: "+title);
+    m.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(4,8,18,.86);display:flex;align-items:center;justify-content:center;padding:16px";
+    m.innerHTML='<div style="width:min(960px,100%);background:#0c1326;border:1px solid #2a3a63;border-radius:14px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px"><b style="color:#eaf0ff;font-size:1rem"></b><button type="button" class="btn" id="vidclose" aria-label="Close video">✕ Close</button></div><div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p style="margin:10px 2px 0;color:#97a7c9;font-size:.88rem">This video uses the class example numbers, now showing on the page. When it ends, press <b>New numbers</b> and work it yourself.</p></div>';
+    m.querySelector("b").textContent="Dr. Walck sets it up: "+title; m.querySelector("iframe").src="https://www.youtube-nocookie.com/embed/"+id+"?rel=0&autoplay=1"; m.querySelector("iframe").title="Video: "+title;
+    m.addEventListener("click",function(e){ if(e.target===m) close(); }); document.body.appendChild(m); m.querySelector("#vidclose").onclick=close; m.querySelector("#vidclose").focus(); document.addEventListener("keydown",esc); }
+  function place(){ var o=document.getElementById("orig"); if(!o||document.getElementById("vidbtn")) return; var id=curId(); var url=id?V[base+"#"+id]:""; if(!url) return;
+    var b=document.createElement("button"); b.type="button"; b.id="vidbtn"; b.className="btn"; b.textContent="▶ Watch Dr. Walck set it up"; b.title="A short video of Dr. Walck explaining this problem, how to set it up and which method to use";
+    b.style.cssText="border-color:#ffc928;color:#ffc928"; var h=document.querySelector(".phead h2")||document.querySelector("#psheet h2,#sheet h2"); var title=h?h.textContent.trim():"";
+    b.onclick=function(){ var og=document.getElementById("orig"); if(og) og.click(); open(url,title); }; o.parentNode.insertBefore(b,o.nextSibling); }
+  var t=null; new MutationObserver(function(){ clearTimeout(t); t=setTimeout(place,60); }).observe(document.documentElement,{childList:true,subtree:true}); if(document.readyState!=="loading") place(); else document.addEventListener("DOMContentLoaded",place);
+  window.ATLAS_VIDEO_OPEN=open;
+})();
 </script>
 </body></html>

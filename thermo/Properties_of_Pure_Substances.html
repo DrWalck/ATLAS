@@ -68,6 +68,7 @@ nav.problems{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);displ
 .concepts{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:24px}
 .concepts summary{cursor:pointer;padding:14px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem}
 .concepts summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cgrid>div{min-width:0}.cgrid .ceq{overflow-x:auto;max-width:100%}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:0 18px 18px}
 .cgrid h4{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 6px;font-weight:600}
 .cgrid p{margin:6px 0 0;font-size:.93rem;color:var(--muted)}
@@ -530,12 +531,12 @@ nav.problems .topic .ptag{white-space:normal;line-height:1.3}
     <div class="cgrid">
   <div><h4>Fixing a state</h4><p>A simple compressible substance needs <b>two independent</b> intensive properties. In the two-phase region T and p are <i>not</i> independent (p = p<sub>sat</sub>(T)); you need T or p <b>plus</b> v, u, h, s or x.</p></div>
   <div><h4>Which region?</h4><p>Given T and p: compare p with p<sub>sat</sub>(T) — p &gt; p<sub>sat</sub> is compressed liquid, p &lt; p<sub>sat</sub> superheated vapor. Given T (or p) and v: compare v with v<sub>f</sub> and v<sub>g</sub> — v<sub>f</sub> &lt; v &lt; v<sub>g</sub> is a mixture, v &gt; v<sub>g</sub> superheated, v &lt; v<sub>f</sub> compressed liquid.</p></div>
-  <div><h4>Quality</h4><div class="ceq" data-tex="x=\\frac{m_{vap}}{m_{liq}+m_{vap}},\\qquad v=v_f+x\\,(v_g-v_f),\\qquad u=u_f+x\\,u_{fg},\\qquad h=h_f+x\\,h_{fg}"></div><p>Same form for s. x = 0 saturated liquid, x = 1 saturated vapor. Solve backwards: x = (v − v<sub>f</sub>)/(v<sub>g</sub> − v<sub>f</sub>).</p></div>
+  <div><h4>Quality</h4><div class="ceq" data-tex="x=\frac{m_{vap}}{m_{liq}+m_{vap}},\qquad v=v_f+x\,(v_g-v_f),\qquad u=u_f+x\,u_{fg},\qquad h=h_f+x\,h_{fg}"></div><p>Same form for s. x = 0 saturated liquid, x = 1 saturated vapor. Solve backwards: x = (v − v<sub>f</sub>)/(v<sub>g</sub> − v<sub>f</sub>).</p></div>
   <div><h4>Tables</h4><p><b>W-1/W-2</b> saturated water by T / by p, <b>W-3</b> superheated vapor, <b>W-4</b> compressed liquid; <b>R134a-1/11/12</b> the same for R-134a; English versions carry an E. Interpolate linearly between rows: y = y₁ + (x − x₁)/(x₂ − x₁)·(y₂ − y₁).</p></div>
-  <div><h4>Compressed-liquid approximation</h4><div class="ceq" data-tex="v\\approx v_f(T),\\quad u\\approx u_f(T),\\quad h\\approx h_f(T)+v_f(T)\\,[p-p_{sat}(T)]"></div><p>Liquid properties depend on T far more than p — use saturated-liquid values at the same temperature when Table W-4 does not cover the state.</p></div>
-  <div><h4>Ideal-gas model</h4><div class="ceq" data-tex="pv=RT,\\quad pV=mRT,\\quad R=\\frac{\\bar R}{M},\\quad Z=\\frac{pv}{RT}\\to1"></div><p>Valid when p ≪ p<sub>c</sub> or T ≫ T<sub>c</sub> (check the compressibility chart). Absolute T and absolute p only.</p></div>
-  <div><h4>u and h of an ideal gas</h4><div class="ceq" data-tex="du=c_v\\,dT,\\quad dh=c_p\\,dT,\\quad c_p-c_v=R,\\quad k=\\frac{c_p}{c_v},\\quad c_v=\\frac{R}{k-1}"></div><p>u and h depend on T only. Use Table G-3 (air) for the exact Δu, Δh; or constant c<sub>v</sub>, c<sub>p</sub> (Table G-2) when ΔT is modest.</p></div>
-  <div><h4>Polytropic ideal gas, pVⁿ = const</h4><div class="ceq" data-tex="\\frac{T_2}{T_1}=\\left(\\frac{p_2}{p_1}\\right)^{(n-1)/n}=\\left(\\frac{V_1}{V_2}\\right)^{n-1},\\qquad W=\\frac{mR(T_2-T_1)}{1-n}\\ (n\\ne1)"></div><p>n = k for an adiabatic, internally reversible process; n = 1 isothermal gives W = mRT ln(V₂/V₁).</p></div></div>
+  <div><h4>Compressed-liquid approximation</h4><div class="ceq" data-tex="v\approx v_f(T),\quad u\approx u_f(T),\quad h\approx h_f(T)+v_f(T)\,[p-p_{sat}(T)]"></div><p>Liquid properties depend on T far more than p — use saturated-liquid values at the same temperature when Table W-4 does not cover the state.</p></div>
+  <div><h4>Ideal-gas model</h4><div class="ceq" data-tex="pv=RT,\quad pV=mRT,\quad R=\frac{\bar R}{M},\quad Z=\frac{pv}{RT}\to1"></div><p>Valid when p ≪ p<sub>c</sub> or T ≫ T<sub>c</sub> (check the compressibility chart). Absolute T and absolute p only.</p></div>
+  <div><h4>u and h of an ideal gas</h4><div class="ceq" data-tex="du=c_v\,dT,\quad dh=c_p\,dT,\quad c_p-c_v=R,\quad k=\frac{c_p}{c_v},\quad c_v=\frac{R}{k-1}"></div><p>u and h depend on T only. Use Table G-3 (air) for the exact Δu, Δh; or constant c<sub>v</sub>, c<sub>p</sub> (Table G-2) when ΔT is modest.</p></div>
+  <div><h4>Polytropic ideal gas, pVⁿ = const</h4><div class="ceq" data-tex="\frac{T_2}{T_1}=\left(\frac{p_2}{p_1}\right)^{(n-1)/n}=\left(\frac{V_1}{V_2}\right)^{n-1},\qquad W=\frac{mR(T_2-T_1)}{1-n}\ (n\ne1)"></div><p>n = k for an adiabatic, internally reversible process; n = 1 isothermal gives W = mRT ln(V₂/V₁).</p></div></div>
   </details>
   <div class="layout">
     <nav class="problems" id="nav" aria-label="Problems"></nav>
@@ -651,12 +652,12 @@ const CONCEPTS_TITLE="Key ideas: phase diagrams, quality, tables and the ideal-g
 const CONCEPTS=`
   <div><h4>Fixing a state</h4><p>A simple compressible substance needs <b>two independent</b> intensive properties. In the two-phase region T and p are <i>not</i> independent (p = p<sub>sat</sub>(T)); you need T or p <b>plus</b> v, u, h, s or x.</p></div>
   <div><h4>Which region?</h4><p>Given T and p: compare p with p<sub>sat</sub>(T) — p &gt; p<sub>sat</sub> is compressed liquid, p &lt; p<sub>sat</sub> superheated vapor. Given T (or p) and v: compare v with v<sub>f</sub> and v<sub>g</sub> — v<sub>f</sub> &lt; v &lt; v<sub>g</sub> is a mixture, v &gt; v<sub>g</sub> superheated, v &lt; v<sub>f</sub> compressed liquid.</p></div>
-  <div><h4>Quality</h4><div class="ceq" data-tex="x=\\frac{m_{vap}}{m_{liq}+m_{vap}},\\qquad v=v_f+x\\,(v_g-v_f),\\qquad u=u_f+x\\,u_{fg},\\qquad h=h_f+x\\,h_{fg}"></div><p>Same form for s. x = 0 saturated liquid, x = 1 saturated vapor. Solve backwards: x = (v − v<sub>f</sub>)/(v<sub>g</sub> − v<sub>f</sub>).</p></div>
+  <div><h4>Quality</h4><div class="ceq" data-tex="x=\frac{m_{vap}}{m_{liq}+m_{vap}},\qquad v=v_f+x\,(v_g-v_f),\qquad u=u_f+x\,u_{fg},\qquad h=h_f+x\,h_{fg}"></div><p>Same form for s. x = 0 saturated liquid, x = 1 saturated vapor. Solve backwards: x = (v − v<sub>f</sub>)/(v<sub>g</sub> − v<sub>f</sub>).</p></div>
   <div><h4>Tables</h4><p><b>W-1/W-2</b> saturated water by T / by p, <b>W-3</b> superheated vapor, <b>W-4</b> compressed liquid; <b>R134a-1/11/12</b> the same for R-134a; English versions carry an E. Interpolate linearly between rows: y = y₁ + (x − x₁)/(x₂ − x₁)·(y₂ − y₁).</p></div>
-  <div><h4>Compressed-liquid approximation</h4><div class="ceq" data-tex="v\\approx v_f(T),\\quad u\\approx u_f(T),\\quad h\\approx h_f(T)+v_f(T)\\,[p-p_{sat}(T)]"></div><p>Liquid properties depend on T far more than p — use saturated-liquid values at the same temperature when Table W-4 does not cover the state.</p></div>
-  <div><h4>Ideal-gas model</h4><div class="ceq" data-tex="pv=RT,\\quad pV=mRT,\\quad R=\\frac{\\bar R}{M},\\quad Z=\\frac{pv}{RT}\\to1"></div><p>Valid when p ≪ p<sub>c</sub> or T ≫ T<sub>c</sub> (check the compressibility chart). Absolute T and absolute p only.</p></div>
-  <div><h4>u and h of an ideal gas</h4><div class="ceq" data-tex="du=c_v\\,dT,\\quad dh=c_p\\,dT,\\quad c_p-c_v=R,\\quad k=\\frac{c_p}{c_v},\\quad c_v=\\frac{R}{k-1}"></div><p>u and h depend on T only. Use Table G-3 (air) for the exact Δu, Δh; or constant c<sub>v</sub>, c<sub>p</sub> (Table G-2) when ΔT is modest.</p></div>
-  <div><h4>Polytropic ideal gas, pVⁿ = const</h4><div class="ceq" data-tex="\\frac{T_2}{T_1}=\\left(\\frac{p_2}{p_1}\\right)^{(n-1)/n}=\\left(\\frac{V_1}{V_2}\\right)^{n-1},\\qquad W=\\frac{mR(T_2-T_1)}{1-n}\\ (n\\ne1)"></div><p>n = k for an adiabatic, internally reversible process; n = 1 isothermal gives W = mRT ln(V₂/V₁).</p></div>`;
+  <div><h4>Compressed-liquid approximation</h4><div class="ceq" data-tex="v\approx v_f(T),\quad u\approx u_f(T),\quad h\approx h_f(T)+v_f(T)\,[p-p_{sat}(T)]"></div><p>Liquid properties depend on T far more than p — use saturated-liquid values at the same temperature when Table W-4 does not cover the state.</p></div>
+  <div><h4>Ideal-gas model</h4><div class="ceq" data-tex="pv=RT,\quad pV=mRT,\quad R=\frac{\bar R}{M},\quad Z=\frac{pv}{RT}\to1"></div><p>Valid when p ≪ p<sub>c</sub> or T ≫ T<sub>c</sub> (check the compressibility chart). Absolute T and absolute p only.</p></div>
+  <div><h4>u and h of an ideal gas</h4><div class="ceq" data-tex="du=c_v\,dT,\quad dh=c_p\,dT,\quad c_p-c_v=R,\quad k=\frac{c_p}{c_v},\quad c_v=\frac{R}{k-1}"></div><p>u and h depend on T only. Use Table G-3 (air) for the exact Δu, Δh; or constant c<sub>v</sub>, c<sub>p</sub> (Table G-2) when ΔT is modest.</p></div>
+  <div><h4>Polytropic ideal gas, pVⁿ = const</h4><div class="ceq" data-tex="\frac{T_2}{T_1}=\left(\frac{p_2}{p_1}\right)^{(n-1)/n}=\left(\frac{V_1}{V_2}\right)^{n-1},\qquad W=\frac{mR(T_2-T_1)}{1-n}\ (n\ne1)"></div><p>n = k for an adiabatic, internally reversible process; n = 1 isothermal gives W = mRT ln(V₂/V₁).</p></div>`;
 
 /* isotherm through the superheat table: points (v, p) between va and vb at temperature T (water, SI) */
 function isoTpts(T,va,vb,n=14){ const pts=[]; for(let i=0;i<=n;i++){ const vv=va*Math.pow(vb/va,i/n); const s=PROPS.state("water",{T,v:vv},"SI"); if(!s.error&&isFinite(s.P)) pts.push([vv,s.P]); } return pts.length>=2?pts:null; }
@@ -1054,12 +1055,25 @@ function p2f(v,T1R,T2R){ return v.p1*T2R/T1R; }
 
 function fixSubs(root){
   if(!root) return;
-  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="svg"||t==="text"||t==="tspan"||t==="MATH"||t==="math"||t==="CODE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="SUB"||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")))) return true; } return false; };
-  const re=/([^\s_(])_([A-Za-z0-9]+(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=(n)=>{ for(let p=n.parentNode;p&&p!==root.parentNode;p=p.parentNode){ const t=p.nodeName; if(t==="MATH"||t==="math"||t==="CODE"||t==="PRE"||t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="INPUT"||t==="SUB"||(p.getAttribute&&p.getAttribute("data-sub")==="1")||(p.classList&&(p.classList.contains("eq")||p.classList.contains("ceq")||p.classList.contains("katex")||p.classList.contains("mlcode")))) return true; } return false; };
+  const inSvgText=(n)=>{ for(let p=n.parentNode;p;p=p.parentNode){ if(p.nodeName==="text"||p.nodeName==="tspan") return true; if(p.nodeName==="svg"||p.nodeName==="BODY") return false; } return false; };
+  const re=/([^\s_(])_([A-Za-z0-9]+(?:,[a-z]+)?(?:\/[A-Z][A-Za-z]*(?![_A-Za-z]))?|[θαωρμ∞])/g;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null); const nodes=[];
   while(w.nextNode()){ const n=w.currentNode; if(n.nodeValue.indexOf("_")>=0 && !skip(n)) nodes.push(n); }
-  nodes.forEach(n=>{ const s=n.nodeValue; const frag=document.createDocumentFragment(); let last=0; s.replace(re,(m,a,b,i)=>{ frag.appendChild(document.createTextNode(s.slice(last,i)+a)); const sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); last=i+m.length; return m; }); frag.appendChild(document.createTextNode(s.slice(last))); n.parentNode.replaceChild(frag,n); });
+  nodes.forEach(n=>{ const s=n.nodeValue; re.lastIndex=0; if(!re.test(s)) return; re.lastIndex=0; const svg=inSvgText(n); const frag=document.createDocumentFragment(); let last=0, afterSub=false;
+    const plain=(t)=>{ if(!t) return; if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent=t; frag.appendChild(ts); } else frag.appendChild(document.createTextNode(t)); afterSub=false; };
+    s.replace(re,(m,a,b,i)=>{ plain(s.slice(last,i)+a); let sb; if(svg){ sb=document.createElementNS(SVGNS,"tspan"); sb.setAttribute("dy","0.25em"); sb.setAttribute("font-size","75%"); sb.setAttribute("data-sub","1"); } else sb=document.createElement("sub"); sb.textContent=b; frag.appendChild(sb); afterSub=true; last=i+m.length; return m; });
+    const rest=s.slice(last); if(rest) plain(rest); else if(svg&&afterSub){ const ts=document.createElementNS(SVGNS,"tspan"); ts.setAttribute("dy","-0.19em"); ts.setAttribute("data-sub","1"); ts.textContent="​"; frag.appendChild(ts); }
+    n.parentNode.replaceChild(frag,n); });
 }
+/* diagrams and feedback that are re-drawn without calling fixSubs (animations, drills): tidy them automatically */
+(function(){ if(typeof MutationObserver==="undefined"||typeof document==="undefined") return; let queued=false;
+  /* keep diagram labels inside their drawing: nudge any <text> that sticks out of the viewBox back in */
+  const keepIn=()=>{ document.querySelectorAll("svg.mlsvg, svg.schemsvg").forEach(svg=>{ const vb=svg.viewBox&&svg.viewBox.baseVal; if(!vb||!vb.width||!svg.getBoundingClientRect().width) return; svg.querySelectorAll("text").forEach(t=>{ if(t.closest("g[transform]")||(t.getAttribute("transform")&&!t.dataset.nudged)) return; let b; try{ b=t.getBBox(); }catch(e){ return; } if(!b.width) return; let dx=0,dy=0; if(b.x+b.width>vb.x+vb.width-3) dx=vb.x+vb.width-3-(b.x+b.width); if(b.x+dx<vb.x+3) dx=vb.x+3-b.x; if(b.y<vb.y+1) dy=vb.y+1-b.y; if(b.y+b.height>vb.y+vb.height-1) dy=vb.y+vb.height-1-(b.y+b.height); const cur=t.getAttribute("transform")||""; const want=(Math.abs(dx)>0.5||Math.abs(dy)>0.5)?`translate(${dx.toFixed(1)},${dy.toFixed(1)})`:""; if(want!==cur){ if(want){ t.setAttribute("transform",want); t.dataset.nudged="1"; } else if(t.dataset.nudged){ t.removeAttribute("transform"); } } }); }); };
+  const run=()=>{ queued=false; try{ keepIn(); }catch(e){} try{ document.querySelectorAll("svg text, .dfb, .dq, .dopts, .ro, .note, table.mini, table.jt, .verdict, .chip, .tag, li, .ptag, h3, h4").forEach(el=>{ if(el.textContent.indexOf("_")>=0) fixSubs(el); }); }catch(e){} };
+  const start=()=>{ new MutationObserver(()=>{ if(!queued){ queued=true; requestAnimationFrame(run); } }).observe(document.body,{childList:true,subtree:true,characterData:true}); run(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start); })();
 
 /* ===================== SCHEMATIC HELPERS (SVG) =====================
    Coordinates are SVG pixels in a 360 × 220 box (y points down).
@@ -2099,7 +2113,7 @@ const GAME=(()=>{
     const cols=["#22d3ee","#8b5cf6","#ff4fd8","#7cff6b","#ffd23f","#ff8a3d"];
     const P=Array.from({length:140},()=>{ const a=Math.random()*Math.PI*2, s=3+Math.random()*9; return {x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,r:2+Math.random()*3.5,c:cols[Math.random()*cols.length|0],rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:Math.random()<.5}; });
     let t0=null;
-    (function f(ts){ t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=(ts-t0)/1600; c.clearRect(0,0,W,H); if(k>=1){ c.clearRect(0,0,W,H); return; }
       P.forEach(p=>{ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; c.save(); c.globalAlpha=1-k; c.translate(p.x,p.y); c.rotate(p.rot); c.fillStyle=p.c; c.shadowColor=p.c; c.shadowBlur=8; if(p.sq) c.fillRect(-p.r,-p.r/2,p.r*2,p.r); else { c.beginPath(); c.arc(0,0,p.r*.7,0,7); c.fill(); } c.restore(); });
       requestAnimationFrame(f); })(performance.now());
   }
@@ -2331,8 +2345,8 @@ const PD=(()=>{
     const dQ=pa&&pa.heat; svg.querySelector("#heat").innerHTML=dQ?`<g class="${dQ>0?"hin":"hout"}">${[70,110,150].map(x=>`<path d="M${x},228 q4,-6 0,-12 q-4,-6 0,-12" />`).join("")}</g>`:"";
     const u=PROPS.U[sp.units||"SI"]; host.querySelector("#readout").innerHTML=`<span>P = <b>${PROPS.f4(s.P)}</b> ${u.P}</span><span>v = <b>${PROPS.f4(s.v)}</b> ${u.v}</span>${isFinite(s.T)?`<span>T = <b>${PROPS.f4(s.T)}</b> ${u.T}</span>`:""}${pa&&pa.label?`<span class="pl">${pa.label}</span>`:""}`; }
   let raf=null;
-  function play(cv,sp,a,speed=1){ if(raf) cancelAnimationFrame(raf); const paths=sp.paths.map(pa=>pathPoints(sp,pa)); const total=paths.length; const dur=2600/speed; let t0=null; const host=$("#anim");
-    (function f(ts){ t0??=ts; const k=Math.min((ts-t0)/(dur*total),1); const i=Math.min(Math.floor(k*total),total-1); const pts=paths[i]; const q=(k*total-i); const j=Math.min(Math.floor(q*(pts.length-1)),pts.length-1); const pt=pts[j]; draw(cv,sp,pt);
+  function play(cv,sp,a,speed=1){ if(raf) cancelAnimationFrame(raf); const paths=sp.paths.map(pa=>pathPoints(sp,pa)); const total=paths.length; if(!total){ raf=null; return; } const dur=2600/speed; let t0=null; const host=$("#anim");
+    (function f(ts){ if(ts===undefined){ requestAnimationFrame(f); return; } t0??=ts; const k=Math.min((ts-t0)/(dur*total),1); const i=Math.min(Math.floor(k*total),total-1); const pts=paths[i]; if(!pts||!pts.length){ raf=null; return; } const q=(k*total-i); const j=Math.min(Math.floor(q*(pts.length-1)),pts.length-1); const pt=pts[j]; draw(cv,sp,pt);
       if(host&&a){ const pa=sp.paths[i]; const A=sp.states[pa.a], B=sp.states[pa.b]; const sv={v:sp.x==="v"?pt[0]:A.v+(B.v-A.v)*q, P:sp.y==="P"?pt[1]:A.P+(B.P-A.P)*q, T:sp.y==="T"?pt[1]:(isFinite(A.T)&&isFinite(B.T)?A.T+(B.T-A.T)*q:NaN)}; animSet(host,a,sp,sv,pa); }
       if(k<1) raf=requestAnimationFrame(f); else raf=null; })(performance.now()); }
   return {draw,play,animInit,pathPoints};
@@ -2349,5 +2363,29 @@ renderConcepts(); fixSubs(document.getElementById("concepts"));
 { const _rn=renderNav; renderNav=function(){ _rn(); GAME.markNav(); };
   const _ds=drawSolution; drawSolution=function(p,v,r,ans,steps){ _ds(p,v,r,ans,steps); if(state.shown>=steps.length) GAME.onReveal(); }; }
 
+</script>
+<p style="margin:28px auto 16px;max-width:1080px;padding:0 16px;text-align:center;opacity:.8;font-size:.85rem;color:#97a7c9">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE" style="color:#5eeaff">LICENSE</a> · third-party components in <a href="../NOTICE.md" style="color:#5eeaff">NOTICE</a>.</p>
+<script src="../videos.js"></script>
+<script>
+/* ATLAS video slots: shows "Watch Dr. Walck set it up" on a problem when videos.js has a link for it. No tracking: the player loads only when the student presses the button. */
+(function(){
+  var V=window.ATLAS_VIDEOS||{}; var parts=location.pathname.split("/"); var file=(parts.pop()||"").replace(/\.html$/,""); var course=parts.pop()||""; var base=course+"/"+file;
+  function ytId(u){ u=String(u||"").trim(); if(!u) return ""; var m=u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/); if(m) return m[1]; return /^[A-Za-z0-9_-]{11}$/.test(u)?u:""; }
+  function curId(){ var o=document.getElementById("orig"); if(!o) return ""; var sheet=o.closest("#sheet,#psheet,section,main")||document; var h=sheet.querySelector("h2"); var name=h?h.textContent.trim():""; var btns=document.querySelectorAll("#nav button[data-id],#pnav button[data-id]"); for(var i=0;i<btns.length;i++){ var pn=btns[i].querySelector(".pname"); if(pn&&pn.textContent.trim()===name) return btns[i].dataset.id; } var c=document.querySelector("#nav button[aria-current='true'],#pnav button[aria-current='true']"); return c?c.dataset.id:""; }
+  function close(){ var m=document.getElementById("vidmodal"); if(m) m.remove(); document.removeEventListener("keydown",esc); }
+  function esc(e){ if(e.key==="Escape") close(); }
+  function open(url,title){ var id=ytId(url); if(!id){ window.open(url,"_blank","noopener"); return; } close();
+    var m=document.createElement("div"); m.id="vidmodal"; m.setAttribute("role","dialog"); m.setAttribute("aria-modal","true"); m.setAttribute("aria-label","Video: "+title);
+    m.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(4,8,18,.86);display:flex;align-items:center;justify-content:center;padding:16px";
+    m.innerHTML='<div style="width:min(960px,100%);background:#0c1326;border:1px solid #2a3a63;border-radius:14px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px"><b style="color:#eaf0ff;font-size:1rem"></b><button type="button" class="btn" id="vidclose" aria-label="Close video">✕ Close</button></div><div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p style="margin:10px 2px 0;color:#97a7c9;font-size:.88rem">This video uses the class example numbers, now showing on the page. When it ends, press <b>New numbers</b> and work it yourself.</p></div>';
+    m.querySelector("b").textContent="Dr. Walck sets it up: "+title; m.querySelector("iframe").src="https://www.youtube-nocookie.com/embed/"+id+"?rel=0&autoplay=1"; m.querySelector("iframe").title="Video: "+title;
+    m.addEventListener("click",function(e){ if(e.target===m) close(); }); document.body.appendChild(m); m.querySelector("#vidclose").onclick=close; m.querySelector("#vidclose").focus(); document.addEventListener("keydown",esc); }
+  function place(){ var o=document.getElementById("orig"); if(!o||document.getElementById("vidbtn")) return; var id=curId(); var url=id?V[base+"#"+id]:""; if(!url) return;
+    var b=document.createElement("button"); b.type="button"; b.id="vidbtn"; b.className="btn"; b.textContent="▶ Watch Dr. Walck set it up"; b.title="A short video of Dr. Walck explaining this problem, how to set it up and which method to use";
+    b.style.cssText="border-color:#ffc928;color:#ffc928"; var h=document.querySelector(".phead h2")||document.querySelector("#psheet h2,#sheet h2"); var title=h?h.textContent.trim():"";
+    b.onclick=function(){ var og=document.getElementById("orig"); if(og) og.click(); open(url,title); }; o.parentNode.insertBefore(b,o.nextSibling); }
+  var t=null; new MutationObserver(function(){ clearTimeout(t); t=setTimeout(place,60); }).observe(document.documentElement,{childList:true,subtree:true}); if(document.readyState!=="loading") place(); else document.addEventListener("DOMContentLoaded",place);
+  window.ATLAS_VIDEO_OPEN=open;
+})();
 </script>
 </body></html>

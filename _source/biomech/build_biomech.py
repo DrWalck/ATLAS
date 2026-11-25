@@ -54,6 +54,18 @@ BCSS='''
 .figlayout .layout{grid-template-columns:220px minmax(0,1fr);gap:16px}
 #fignote{min-height:3em}
 @media (max-width:900px){.layout{grid-template-columns:1fr}}
+@media (max-width:900px){.figlayout .layout{grid-template-columns:1fr}}
+.figlayout>section,.figlayout>aside{min-width:0}.mpane{min-width:0}.mlsvg,.schemsvg{max-width:100%;height:auto}
+.figlayout.nofig{grid-template-columns:1fr}.figlayout.nofig>aside{display:none}.figlayout.nofig .layout{grid-template-columns:250px minmax(0,1fr)}
+@media (max-width:900px){.figlayout.nofig .layout{grid-template-columns:1fr}}
+.figlayout .two{grid-template-columns:1fr}
+@media (min-width:1500px){.figlayout .two{grid-template-columns:1fr 1fr}}
+#bsplit{display:grid;grid-template-columns:1fr 1fr;gap:6px}#bsplit[hidden],#bscene[hidden]{display:none}
+table.mini,table.jt,table.ptab{max-width:100%}.panel{min-width:0;overflow-wrap:anywhere}
+.btn .note{font-size:.82em;opacity:.8}
+.atlasfoot a{color:#5eeaff}
+.mlsvg text.mlab{paint-order:stroke;stroke:#080d1a;stroke-width:3px;stroke-linejoin:round}
+.atlasfoot{margin:28px 0 8px;text-align:center;opacity:.8;font-size:.85rem;color:var(--muted)}
 .solution .note{font-size:.88rem;color:var(--muted)}
 .seg{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px 4px 10px;margin:0 0 10px;border:1px solid var(--line,#2c4274);border-radius:999px;background:rgba(12,20,44,.7);width:max-content;max-width:100%}
 .seglab{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
@@ -68,10 +80,10 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}tab
 
 FIG_ASIDE="""
     <aside><div class="panel"><h4>On a real body</h4>
-      <div id="bsplit" style="display:grid;grid-template-columns:1fr 1fr;gap:6px" hidden><div><div id="bscene2" style="position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#101a33,#070b16 70%)"><canvas id="bcanvas2" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div><p class="note" id="bsplitlab2" style="margin:4px 0 0;text-align:center"></p></div><div><div id="bscene3" style="position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#101a33,#070b16 70%)"><canvas id="bcanvas3" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div><p class="note" id="bsplitlab3" style="margin:4px 0 0;text-align:center"></p></div></div>
+      <div id="bsplit" hidden><div><div id="bscene2" style="position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#101a33,#070b16 70%)"><canvas id="bcanvas2" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div><p class="note" id="bsplitlab2" style="margin:4px 0 0;text-align:center"></p></div><div><div id="bscene3" style="position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#101a33,#070b16 70%)"><canvas id="bcanvas3" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div><p class="note" id="bsplitlab3" style="margin:4px 0 0;text-align:center"></p></div></div>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
       <div class="xray" style="margin-top:6px"><button type="button" class="btn small" data-view="front">Anterior</button><button type="button" class="btn small" data-view="side">Lateral</button><button type="button" class="btn small" data-view="back">Posterior</button><button type="button" class="btn small" data-view="iso">Oblique</button></div>
-      <div class="ctl"><label>Ligaments &amp; retinacula <input type="range" id="figskin" min="0" max="1" step="0.05" value="0"></label><label>Muscles <input type="range" id="figmus" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="figbone" min="0" max="1" step="0.05" value="1"></label><label>Transparency (see through to the working muscle) <input type="range" id="figopa" min="0.1" max="1" step="0.05" value="1"></label></div>
+      <div class="ctl"><label>Ligaments &amp; retinacula <input type="range" id="figskin" min="0" max="1" step="0.05" value="0"></label><label>Muscles <input type="range" id="figmus" min="0" max="1" step="0.05" value="1"></label><label>Skeleton (bones) <input type="range" id="figbone" min="0" max="1" step="0.05" value="1"></label><label>Transparency (see through to the working muscle) <input type="range" id="figopa" min="0" max="0.9" step="0.05" value="0"></label></div>
       <p class="note" id="fignote"></p>
       <small class="note">Drag to rotate, wheel to zoom. The body follows the simulation; highlighted muscles are the ones doing the work. Full model: <a href="anatomy.html">Anatomy Explorer</a>.</small></div></aside>"""
 def with_figure(body):
@@ -82,11 +94,11 @@ import shutil; os.makedirs(OUT,exist_ok=True); shutil.copy(os.path.join(W,'osim_
 def fig_scripts(page):
     return '\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'figure_gl.js')).read()+'\nconst FIG_PAGE="'+page+'";\n'+open(os.path.join(W,'fig_hooks.js')).read()
 def page(title,h1,blurb,body,scripts,zone):
-    html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>'+title+' · ATLAS Biomechanics</title>\n'+FONTS+'\n<style>\n'+css+':root:root:root{--zone:'+zone+'}\n'+BCSS+'</style>\n</head><body>\n<div class="wrap">\n  <header class="top">\n    <div><a class="back" href="./">&larr; All topics</a><h1>'+h1+'</h1></div>\n    <p>'+blurb+'</p>\n  </header>\n'+body+'\n</div>\n<script src="osim_data.js"></script><script>\n'+scripts+'\n</script>\n</body></html>'
+    html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>'+title+' · ATLAS Biomechanics</title>\n'+FONTS+'\n<style>\n'+css+':root:root:root{--zone:'+zone+'}\n'+BCSS+'</style>\n</head><body>\n<div class="wrap">\n  <header class="top">\n    <div><a class="back" href="./">&larr; All topics</a><h1>'+h1+'</h1></div>\n    <p>'+blurb+'</p>\n  </header>\n'+body+'\n<p class="atlasfoot">© 2026 Dr. Christine Walck · ERBaL Lab. All rights reserved. Free to use on this site for students and instructors; copying, modifying or re-hosting is prohibited — see <a href="../LICENSE">LICENSE</a> · third-party components in <a href="../NOTICE.md">NOTICE</a>.</p>\n</div>\n<script src="osim_data.js"></script><script>\n'+scripts+'\n</script>\n<script src="../videos.js"></script>\n<script>\n'+open(os.path.join(R,'vidslot.js'),encoding='utf-8').read()+'</script>\n</body></html>'
     return html
 def build_frames():
     body='''
-  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore the body</button><button type="button" class="tabbtn" data-k="drills">Drills · earn XP</button><button type="button" class="tabbtn" data-k="reference">Reference table</button></div>
+  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore the body</button><button type="button" class="tabbtn" data-k="drills">Drills · XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
   <div class="jetlayout">
     <section>
       <div id="bscene"><canvas id="bcanvas"></canvas></div>
@@ -100,7 +112,7 @@ def build_frames():
         <div class="tog"><label><input type="checkbox" id="globalframe" checked> global frame</label><label><input type="checkbox" id="globalbeside" checked> draw it beside the body</label><label><input type="checkbox" id="allframes"> all segment frames</label><label><input type="checkbox" id="showjoints"> joint markers</label></div>
         <div class="tog" style="margin-top:6px"><label><input type="checkbox" id="pl-sagittal"><i style="background:#ff8a3d"></i> sagittal plane</label><label><input type="checkbox" id="pl-frontal"><i style="background:#22d3ee"></i> frontal plane</label><label><input type="checkbox" id="pl-transverse"><i style="background:#a78bfa"></i> transverse plane</label></div>
         <div class="xray" style="margin-top:10px"><span class="note">Show:</span><button type="button" class="btn small" data-preset="muscles">Muscles</button><button type="button" class="btn small" data-preset="bones">Skeleton</button><button type="button" class="btn small" data-preset="half">Half &amp; half</button><button type="button" class="btn small" data-preset="skin">Everything</button></div>
-        <div class="ctl" style="margin-top:6px"><label>Ligaments &amp; retinacula <input type="range" id="lay-skin" min="0" max="1" step="0.05" value="0"></label><label>Muscles <input type="range" id="lay-muscles" min="0" max="1" step="0.05" value="1"></label><label>Bones <input type="range" id="lay-bones" min="0" max="1" step="0.05" value="1"></label></div>
+        <div class="ctl" style="margin-top:6px"><label>Ligaments &amp; retinacula <input type="range" id="lay-skin" min="0" max="1" step="0.05" value="0"></label><label>Muscles <input type="range" id="lay-muscles" min="0" max="1" step="0.05" value="1"></label><label>Skeleton (bones) <input type="range" id="lay-bones" min="0" max="1" step="0.05" value="1"></label></div>
         <div class="tog"><label><input type="checkbox" id="split"> split view: skeleton on the subject\'s right, muscles on the left</label></div>
         <select id="jointsel"></select>
       </div>
@@ -162,12 +174,12 @@ def build_invdyn():
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
     body=with_figure(body)
     scripts=fix+'\n'+GLCORE+'\n'+OSIMJS+'\n'+game('biomech-invdyn','dpl-biomech-invdyn')+'\n'+open(os.path.join(W,'invdyn_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'invdyn_problems.js')).read()+'\nBP.init(); GAME.hud();'+fig_scripts('invdyn')
-    html=page('Anthropometry & Inverse Dynamics Lab','Anthropometry &amp; Inverse Dynamics: From Body Segments to Joint Moments','Turn body mass and height into segment masses, centers of mass and moments of inertia; pose a body and watch its whole-body COM move (even outside the body); see why a bent knee halves the leg’s inertia; then walk the link-segment model from the force plate up through ankle, knee and hip to get joint reactions, net moments and powers. Drills and ES 305 problems follow.',body,scripts,'#b58cff')
+    html=page('Anthropometry & Inverse Dynamics Lab','Anthropometry &amp; Inverse Dynamics: From Body Segments to Joint Moments','Turn body mass and height into segment masses, centers of mass and moments of inertia; pose a body and watch its whole-body COM move (even outside the body); see why a bent knee halves the leg’s inertia; then walk the link-segment model from the force plate up through ankle, knee and hip to get joint reactions, net moments and powers. Drills and problems in the ES 305 format follow.',body,scripts,'#b58cff')
     open(os.path.join(OUT,'invdyn.html'),'w').write(html); print('built invdyn.html',len(html)//1024,'KB')
 
 def build_anatomy():
     body="""
-  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore</button><button type="button" class="tabbtn" data-k="drills">Drills · earn XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
+  <div class="tabs" id="tabs"><button type="button" class="tabbtn on" data-k="explore">Explore</button><button type="button" class="tabbtn" data-k="drills">Drills · XP</button><button type="button" class="tabbtn" data-k="reference">Reference tables</button></div>
   <div class="jetlayout">
     <section>
       <div id="bscene" class="tall"><canvas id="bcanvas"></canvas></div>
@@ -175,7 +187,7 @@ def build_anatomy():
       <div class="panel" id="explore" style="margin-top:12px"><div id="ainfo"></div></div>
       <div class="panel" id="drills" style="margin-top:12px" hidden><h4>Drills</h4><p class="note">A structure is highlighted and isolated on the body — name it, give its origin/insertion/action, or pick the prime mover for a movement. Rotate the body if you need another view. +10 XP per correct answer.</p><button type="button" class="btn primary" id="andrillstart">Start</button><div id="andrill" style="margin-top:10px"></div></div>
       <div class="panel" id="reference" style="margin-top:12px" hidden><h4>Muscles: origin · insertion · action</h4><div id="areftable"></div></div>
-      <p class="note" style="margin-top:10px">Body surfaces: <a href="https://github.com/Z-Anatomy" target="_blank" rel="noopener">Z-Anatomy</a> open-source 3-D atlas (CC BY-SA 4.0), decimated for the web; structure notes from the ME 320 course; muscle parameters from the OpenSim Rajagopal model. See NOTICE.md.</p>
+      <p class="note" style="margin-top:10px">Body surfaces: <a href="https://github.com/Z-Anatomy" target="_blank" rel="noopener">Z-Anatomy</a> open-source 3-D atlas (CC BY-SA 4.0), decimated for the web; structure notes from the ME 320 course; muscle parameters from the OpenSim Rajagopal model. See <a href="../NOTICE.md">NOTICE</a> and <a href="../LICENSE">LICENSE</a>.</p>
     </section>
     <aside>
       <div class="panel"><h4>Peel back the layers</h4>
@@ -184,7 +196,7 @@ def build_anatomy():
           <label>Ligaments &amp; retinacula <input type="range" id="lay-skin" min="0" max="1" step="0.05"></label>
           <label>Superficial muscles <input type="range" id="lay-m1" min="0" max="1" step="0.05"></label>
           <label>Deep muscles <input type="range" id="lay-m2" min="0" max="1" step="0.05"></label>
-          <label>Bones <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
+          <label>Skeleton (bones) <input type="range" id="lay-bone" min="0" max="1" step="0.05"></label>
           <label>Joint surfaces (articular cartilage) <input type="range" id="lay-joint" min="0" max="1" step="0.05"></label>
         </div>
         <div class="two" style="margin-top:6px"><label class="note">Region<select id="aregion"><option value="all">Whole body</option><option value="head">Head &amp; neck</option><option value="trunk">Trunk</option><option value="upper">Upper limb</option><option value="lower">Lower limb</option></select></label>
@@ -192,7 +204,7 @@ def build_anatomy():
       </div>
       <div class="panel" style="margin-top:12px"><h4>Find a structure</h4><input type="search" id="asearch" placeholder="search…" style="width:100%;background:var(--surface-3);color:var(--ink);border:1px solid #2c4274;border-radius:8px;padding:6px 8px;font:inherit"><select id="astruct" style="margin-top:6px"></select>
         <small class="note" style="display:block;margin-top:8px">Click a muscle on the body to see its origin (green), insertion (yellow), action, joints and planes. Isolate it to see its path through the other layers.</small></div>
-      <div class="panel legend" style="margin-top:12px"><h4>Colors</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b8413a"></i> superficial muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8e2f3a"></i> deep muscle</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e8e2d2"></i> bone &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#22d3ee"></i> joint center &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d9b38c"></i> skin</small><small style="margin-top:6px">Pelvis, sacrum, femur, tibia and fibula are the bone meshes of the open-source OpenSim lower-limb model, and the lower-limb muscles are drawn along that model's attachment paths with its Hill-type parameters (Rajagopal et al. 2016; Lai et al. 2017; Uhlrich et al. 2022 — OpenSim, Apache 2.0; see NOTICE). Everything else is the original ATLAS model built from anatomical dimensions; those shapes are schematic. Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's).</small></div>
+      <div class="panel legend" style="margin-top:12px"><h4>Colors</h4><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#a83a30"></i> muscle &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ebe1c7"></i> tendon &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ede6d6"></i> bone</small><small><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ccdbe6"></i> cartilage &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#59dbf2"></i> joint surface (Joints view) &nbsp; <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ffd23f"></i> selected</small><small style="margin-top:6px">The body surfaces are from the open-source Z-Anatomy atlas (CC BY-SA 4.0). Muscle parameters in the detail panel (maximum force, optimal fiber length, tendon slack length, pennation) come from the OpenSim model of Rajagopal et al. 2016, Lai et al. 2017 and Uhlrich et al. 2022 (Apache 2.0). Attachments, actions and joint types follow standard references (Neumann; Moore; Gray's). See <a href="../NOTICE.md">NOTICE</a>.</small></div>
     </aside>
   </div>"""
     scripts=fix+'\n'+GLCORE+'\n'+OSIMJS+'\n'+game('biomech-anatomy','dpl-biomech-anatomy')+'\n'+open(os.path.join(W,'body3d.js')).read()+'\n'+open(os.path.join(W,'anatomy_model.js')).read()+'\n'+open(os.path.join(W,'anatomy_gl.js')).read()+'\nGAME.hud();'
@@ -213,7 +225,7 @@ def build_kinetics():
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
     body=with_figure(body)
     scripts=fix+'\n'+GLCORE+'\n'+OSIMJS+'\n'+game('biomech-kinetics','dpl-biomech-kinetics')+'\n'+open(os.path.join(W,'kinetics_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'kinetics_problems.js')).read()+'\nBP.init(); GAME.hud();'+fig_scripts('kinetics')
-    html=page('Joint Kinetics Lab','Joint Kinetics: Torque, Leverage, Joint Loads &amp; the Force Plate','Hold a dumbbell and watch the external and muscle moment arms fight; resolve the biceps force into the part that turns and the part that squeezes; see why the bench press is hardest at the bottom; squat deeper and watch the patella load climb to several body weights; jump on a force plate and read impulse, take-off velocity and height; and learn which load type breaks a bone which way. Drills and ES 305 problems follow.',body,scripts,'#ffd23f')
+    html=page('Joint Kinetics Lab','Joint Kinetics: Torque, Leverage, Joint Loads &amp; the Force Plate','Hold a dumbbell and watch the external and muscle moment arms fight; resolve the biceps force into the part that turns and the part that squeezes; see why the bench press is hardest at the bottom; squat deeper and watch the patella load climb to several body weights; jump on a force plate and read impulse, take-off velocity and height; and learn which load type breaks a bone which way. Drills and problems in the ES 305 format follow.',body,scripts,'#ffd23f')
     open(os.path.join(OUT,'kinetics.html'),'w').write(html); print('built kinetics.html',len(html)//1024,'KB')
 
 def build_tissue():
@@ -230,7 +242,7 @@ def build_tissue():
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
     body=with_figure(body)
     scripts=fix+'\n'+GLCORE+'\n'+OSIMJS+'\n'+game('biomech-tissue','dpl-biomech-tissue')+'\n'+open(os.path.join(W,'tissue_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'tissue_problems.js')).read()+'\nBP.init(); GAME.hud();'+fig_scripts('tissue')
-    html=page('Ligaments & Tendons Lab','Ligaments &amp; Tendons: Viscoelastic Tissue','Pull a tendon or ligament through the toe, elastic, plastic and failure regions and release it; hold a calf stretch and watch the force relax, or a brace and watch the tissue creep; load and unload to see the hysteresis loop widen with speed; model the passive force as spring plus damper; test the knee ligaments with Lachman, drawer, pivot shift and stress tests; and see why these tissues heal so slowly. Drills and ES 305 problems follow.',body,scripts,'#9fd8ff')
+    html=page('Ligaments & Tendons Lab','Ligaments &amp; Tendons: Viscoelastic Tissue','Pull a tendon or ligament through the toe, elastic, plastic and failure regions and release it; hold a calf stretch and watch the force relax, or a brace and watch the tissue creep; load and unload to see the hysteresis loop widen with speed; model the passive force as spring plus damper; test the knee ligaments with Lachman, drawer, pivot shift and stress tests; and see why these tissues heal so slowly. Drills and problems in the ES 305 format follow.',body,scripts,'#9fd8ff')
     open(os.path.join(OUT,'tissue.html'),'w').write(html); print('built tissue.html',len(html)//1024,'KB')
 
 def build_multi():
@@ -247,7 +259,7 @@ def build_multi():
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
     body=with_figure(body)
     scripts=fix+'\n'+GLCORE+'\n'+OSIMJS+'\n'+game('biomech-multi','dpl-biomech-multi')+'\n'+open(os.path.join(W,'multi_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'multi_problems.js')).read()+'\nBP.init(); GAME.hud();'+fig_scripts('multi')
-    html=page('Multi-Joint Movement Lab','Multi-Joint Movement: Patterns, Coordination &amp; Energy Transfer','Drive a two-link chain and watch flexion, extension, swing and whip patterns draw their paths; turn joint angles into hand positions and map the reach area; read angle–angle and coupling-angle plots for gait; trace how energy moves between joints and links and why biarticular muscles matter; see why throwers sequence proximal-to-distal; and feel how a chain’s stiffness depends on its configuration. Drills and ES 305 problems follow.',body,scripts,'#b58cff')
+    html=page('Multi-Joint Movement Lab','Multi-Joint Movement: Patterns, Coordination &amp; Energy Transfer','Drive a two-link chain and watch flexion, extension, swing and whip patterns draw their paths; turn joint angles into hand positions and map the reach area; read angle–angle and coupling-angle plots for gait; trace how energy moves between joints and links and why biarticular muscles matter; see why throwers sequence proximal-to-distal; and feel how a chain’s stiffness depends on its configuration. Drills and problems in the ES 305 format follow.',body,scripts,'#b58cff')
     open(os.path.join(OUT,'multi.html'),'w').write(html); print('built multi.html',len(html)//1024,'KB')
 
 def build_mtc():
@@ -264,7 +276,7 @@ def build_mtc():
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
     body=with_figure(body)
     scripts=fix+'\n'+GLCORE+'\n'+OSIMJS+'\n'+game('biomech-mtc','dpl-biomech-mtc')+'\n'+open(os.path.join(W,'mtc_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'mtc_problems.js')).read()+'\nBP.init(); GAME.hud();'+fig_scripts('mtc')
-    html=page('MTC & Joint Stability Lab','The Muscle–Tendon Complex, Neural Control &amp; Joint Stability','Drive a three-element Hill model and watch the fibers shorten as the tendon stretches; set an MTC against a load and see it act as motor, brake, strut or spring; recruit motor units by size and fuse twitches into tetanus; race a fast-developing muscle against a strong one and watch fatigue meet task failure; perturb a joint held by one ligament and add co-contraction; and run the popping-sarcomere cascade. Drills and ES 305 problems follow.',body,scripts,'#ff5a8a')
+    html=page('MTC & Joint Stability Lab','The Muscle–Tendon Complex, Neural Control &amp; Joint Stability','Drive a three-element Hill model and watch the fibers shorten as the tendon stretches; set an MTC against a load and see it act as motor, brake, strut or spring; recruit motor units by size and fuse twitches into tetanus; race a fast-developing muscle against a strong one and watch fatigue meet task failure; perturb a joint held by one ligament and add co-contraction; and run the popping-sarcomere cascade. Drills and problems in the ES 305 format follow.',body,scripts,'#ff5a8a')
     open(os.path.join(OUT,'mtc.html'),'w').write(html); print('built mtc.html',len(html)//1024,'KB')
 
 def build_capstone():
@@ -298,7 +310,7 @@ def build_tmj():
   <section class="panel mpane" id="drills" hidden><h4>Drills</h4><p class="note">Joint type and the two phases of opening, normal ranges, imaging choices, rigid-body tracking, the mandible lever, implant materials, wear and fatigue, and the growing jaw. +10 XP per correct answer.</p><button type="button" class="btn primary" id="jdrillstart">Start</button><div id="jdrill" style="margin-top:10px"></div></section>
   <section class="mpane" id="problems" hidden><div class="layout"><nav class="problems" id="pnav"></nav><main class="sheet" id="psheet"></main></div></section>"""
     scripts=fix+'\n'+GLCORE+'\n'+game('biomech-tmj','dpl-biomech-tmj')+'\n'+open(os.path.join(W,'jaw_data.js')).read()+'\n'+open(os.path.join(W,'jaw3d.js')).read()+'\n'+open(os.path.join(W,'tmj_lab.js')).read()+'\n'+open(os.path.join(W,'bioprob.js')).read()+'\n'+open(os.path.join(W,'tmj_problems.js')).read()+'\nBP.init(); GAME.hud(); TJ.init();'
-    html=page('Jaw Motion & Reconstruction','Jaw Motion &amp; Reconstruction: Tracking the Pediatric Jaw, Designing Its Implants','Open a sagittal jaw and watch the condyle hinge, then slide down the articular eminence; recover the mandible\'s pose from clutch markers and see what noise and skin artifact do to it; load the mandible as a class III lever to get bite force and joint reaction; check a reconstruction plate, its screws and a condylar stem against fatigue and wear; and read the phased plan for our project with a pediatric head and neck surgery partner (Theia for the fibula-donor leg, a chairside tracker with EMG and bite force in clinic, optical capture with a dental clutch for the jaw). Drills and ES 305 problems follow.',body,scripts,'#5fa8ff')
+    html=page('Jaw Motion & Reconstruction','Jaw Motion &amp; Reconstruction: Tracking the Pediatric Jaw, Designing Its Implants','Open a sagittal jaw and watch the condyle hinge, then slide down the articular eminence; recover the mandible\'s pose from clutch markers and see what noise and skin artifact do to it; load the mandible as a class III lever to get bite force and joint reaction; check a reconstruction plate, its screws and a condylar stem against fatigue and wear; and read the phased plan for our project with a pediatric head and neck surgery partner (Theia for the fibula-donor leg, a chairside tracker with EMG and bite force in clinic, optical capture with a dental clutch for the jaw). Drills and problems in the ES 305 format follow.',body,scripts,'#5fa8ff')
     open(os.path.join(OUT,'tmj.html'),'w').write(html); print('built tmj.html',len(html)//1024,'KB')
 def build_home():
     h=open(os.path.join(W,'bhome.html')).read()
